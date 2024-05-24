@@ -1,0 +1,61 @@
+{
+  "name": "financo",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "devcontainer",
+  "runServices": [
+    "redis",
+    "postgres"
+  ],
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "golang.Go",
+        "davidanson.vscode-markdownlint",
+        "shardulm94.trailing-spaces",
+        "IBM.output-colorizer",
+        "rangav.vscode-thunder-client",
+        "donjayamanne.githistory",
+        "streetsidesoftware.code-spell-checker",
+        "bradlc.vscode-tailwindcss",
+        "tamasfe.even-better-toml",
+        "Gruntfuggly.todo-tree",
+        "eamodio.gitlens",
+        "Catppuccin.catppuccin-vsc-icons",
+        "Catppuccin.catppuccin-vsc"
+      ],
+      "settings": {
+        "go.useLanguageServer": true,
+        "workbench.colorTheme": "Catppuccin Mocha",
+        "workbench.iconTheme": "catppuccin-mocha",
+        "editor.rulers": [
+          100
+        ],
+        "editor.formatOnSave": true,
+        "editor.fontSize": 16,
+        "editor.fontFamily": "'Geist Mono Medium'",
+        "editor.fontLigatures": true,
+        "editor.quickSuggestions": {
+          "other": "on",
+          "comments": "off",
+          "strings": "on"
+        },
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 120,
+        "files.associations": {
+          "*.css": "tailwindcss"
+        },
+        "terminal.integrated.fontSize": 16,
+        "chat.editor.fontSize": 16,
+        "markdown.preview.fontFamily": "'Geist Mono Medium'",
+        "markdown.preview.fontSize": 16,
+        "markdown.preview.lineHeight": 1.1,
+        "gopls": {
+          "ui.semanticTokens": true
+        }
+      }
+    }
+  }
+}
