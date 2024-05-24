@@ -1,0 +1,6 @@
+{
+    "name": "financo",
+    "workspaces": [
+        "webapp"
+    ]
+}
