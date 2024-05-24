@@ -11,9 +11,6 @@ services:
         NODE_VERSION: "20"
         NPM_VERSION: "latest"
         GO_AIR_VERSION: "latest"
-    ports:
-      - "3000:3000"
-      - "5173:5173"
     user: vscode
     volumes:
       - .:/workspace:cached
