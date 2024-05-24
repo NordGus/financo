@@ -57,5 +57,8 @@
         }
       }
     }
+  },
+  "postStartCommand": {
+    "npm:install": "npm install"
   }
 }
