@@ -60,7 +60,7 @@
     }
   },
   "postStartCommand": {
-    "go:install:dependencies": "go download download",
+    "go:install:dependencies": "go mod download",
     "npm:install:dependencies": "npm install"
   }
 }
