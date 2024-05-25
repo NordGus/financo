@@ -30,7 +30,7 @@ RUN adduser $USERNAME -s /bin/sh -D -u $USER_UID $USER_GID && \
     chmod 0440 /etc/sudoers.d/$USERNAME
 
 # install packages
-RUN apk add -q --update --progress --no-cache git sudo openssh-client zsh nano postgresql16-client
+RUN apk add -q --update --progress --no-cache git make sudo openssh-client zsh nano postgresql16-client
 
 # updating npm
 RUN npm install -g npm@$NPM_VERSION

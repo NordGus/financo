@@ -7,3 +7,5 @@ A simple personal finances application to bring order to the chaos of your perso
 - [ ] Find the datetime spec for javascript/ecmascript to add to the dummy server.
 
 - [ ] Move the docs files from the other projects to this one.
+
+- [x] Learn how to use Makefile for task automation.
