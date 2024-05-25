@@ -25,7 +25,9 @@
         "eamodio.gitlens",
         "Catppuccin.catppuccin-vsc-icons",
         "Catppuccin.catppuccin-vsc",
-        "bierner.markdown-preview-github-styles"
+        "bierner.markdown-preview-github-styles",
+        "bierner.github-markdown-preview",
+        "bierner.markdown-mermaid"
       ],
       "settings": {
         "go.useLanguageServer": true,
