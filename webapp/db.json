@@ -107,6 +107,42 @@
             "createdAt": "2022-12-05",
             "updatedAt": "2023-05-05",
             "children": []
+        },
+        {
+            "id": 7,
+            "kind": "debt.credit",
+            "name": "Credit Card",
+            "description": "My bank's credit card",
+            "currency": "EUR",
+            "balance": -133742,
+            "capital": 200000,
+            "history": {
+                "present": true,
+                "capital": -8000,
+                "at": "2023-10-11"
+            },
+            "archived": false,
+            "createdAt": "2022-12-24",
+            "updatedAt": "2024-05-08",
+            "children": []
+        },
+        {
+            "id": 8,
+            "kind": "debt.credit",
+            "name": "Laptop financing Credit Line",
+            "description": "",
+            "currency": "EUR",
+            "balance": 0,
+            "capital": 250000,
+            "history": {
+                "present": true,
+                "capital": -123469,
+                "at": "2020-09-15"
+            },
+            "archived": true,
+            "createdAt": "2022-08-09",
+            "updatedAt": "2024-05-08",
+            "children": []
         }
     ]
 }
