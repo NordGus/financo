@@ -290,5 +290,97 @@
                 }
             ]
         }
+    ],
+    "goals": [
+        {
+            "id": 1,
+            "name": "My first emergency fund",
+            "description": "A journey of a thousand kilometers start with a single step",
+            "goal": 100000,
+            "currency": "EUR",
+            "position": 0,
+            "archived": true,
+            "fulfilled": {
+                "reached": false,
+                "at": "0001-01-01"
+            },
+            "createdAt": "2024-02-12",
+            "updatedAt": "2024-05-08"
+        },
+        {
+            "id": 1,
+            "name": "My first emergency fund",
+            "description": "A journey of a thousand kilometers start with a single step",
+            "goal": 100000,
+            "currency": "EUR",
+            "position": 0,
+            "archived": true,
+            "fulfilled": {
+                "reached": false,
+                "at": "0001-01-01"
+            },
+            "createdAt": "2024-02-12",
+            "updatedAt": "2024-05-08"
+        },
+        {
+            "id": 6,
+            "name": "Upgrade for my PC",
+            "description": "Time for better tools",
+            "goal": 100000,
+            "currency": "EUR",
+            "position": 1,
+            "archived": false,
+            "fulfilled": {
+                "reached": true,
+                "at": "2022-01-22"
+            },
+            "createdAt": "2024-02-12",
+            "updatedAt": "2024-05-08"
+        },
+        {
+            "id": 5,
+            "name": "Better art for the vertical slice",
+            "description": "Everything can be better",
+            "goal": 500000,
+            "currency": "EUR",
+            "position": 1,
+            "archived": false,
+            "fulfilled": {
+                "reached": false,
+                "at": "0001-01-01"
+            },
+            "createdAt": "2024-02-12",
+            "updatedAt": "2024-05-08"
+        },
+        {
+            "id": 3,
+            "name": "6 months emergency fund",
+            "description": "Nothing like air",
+            "goal": 2000000,
+            "currency": "EUR",
+            "position": 2,
+            "archived": false,
+            "fulfilled": {
+                "reached": false,
+                "at": "0001-01-01"
+            },
+            "createdAt": "2024-02-12",
+            "updatedAt": "2024-05-08"
+        },
+        {
+            "id": 4,
+            "name": "Trip to Asia",
+            "description": "Finding myself",
+            "goal": 500000,
+            "currency": "EUR",
+            "position": 3,
+            "archived": false,
+            "fulfilled": {
+                "reached": false,
+                "at": "0001-01-01"
+            },
+            "createdAt": "2024-02-12",
+            "updatedAt": "2024-05-08"
+        }
     ]
 }
