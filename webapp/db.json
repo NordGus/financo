@@ -53,6 +53,60 @@
             "createdAt": "2022-08-05",
             "updatedAt": "2023-12-28",
             "children": []
+        },
+        {
+            "id": 4,
+            "kind": "debt.loan",
+            "name": "Car loan",
+            "description": "My japanese shit-box",
+            "currency": "EUR",
+            "balance": -219869,
+            "capital": 500000,
+            "history": {
+                "present": true,
+                "capital": 0,
+                "at": "0001-01-01"
+            },
+            "archived": false,
+            "createdAt": "2023-08-05",
+            "updatedAt": "2024-03-14",
+            "children": []
+        },
+        {
+            "id": 5,
+            "kind": "debt.personal",
+            "name": "Morgan's Loan",
+            "description": "I helped Morgan's with their rent",
+            "currency": "EUR",
+            "balance": 40000,
+            "capital": -50000,
+            "history": {
+                "present": true,
+                "capital": 30000,
+                "at": "2023-11-05"
+            },
+            "archived": false,
+            "createdAt": "2023-12-05",
+            "updatedAt": "2024-05-05",
+            "children": []
+        },
+        {
+            "id": 6,
+            "kind": "debt.personal",
+            "name": "Carlo's Lunch",
+            "description": "Carlo's catch up lunch",
+            "currency": "EUR",
+            "balance": 0,
+            "capital": -8000,
+            "history": {
+                "present": true,
+                "capital": -8000,
+                "at": "2021-10-11"
+            },
+            "archived": true,
+            "createdAt": "2022-12-05",
+            "updatedAt": "2023-05-05",
+            "children": []
         }
     ]
 }
