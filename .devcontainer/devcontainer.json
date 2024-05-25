@@ -24,7 +24,8 @@
         "Gruntfuggly.todo-tree",
         "eamodio.gitlens",
         "Catppuccin.catppuccin-vsc-icons",
-        "Catppuccin.catppuccin-vsc"
+        "Catppuccin.catppuccin-vsc",
+        "bierner.markdown-preview-github-styles"
       ],
       "settings": {
         "go.useLanguageServer": true,

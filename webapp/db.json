@@ -1,0 +1,21 @@
+{
+    "accounts": [
+        {
+            "id": 1,
+            "kind": "capital.normal",
+            "name": "My personal bank account",
+            "description": "The account where I get my paycheck",
+            "currency": "EUR",
+            "balance": 432169,
+            "capital": 0,
+            "history": {
+                "present": true,
+                "capital": 133742,
+                "at": "2014-07-21"
+            },
+            "archived": false,
+            "createdAt": "2024-01-22",
+            "updatedAt": "2024-05-19"
+        }
+    ]
+}
