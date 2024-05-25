@@ -143,6 +143,79 @@
             "createdAt": "2022-08-09",
             "updatedAt": "2024-05-08",
             "children": []
+        },
+        {
+            "id": 9,
+            "kind": "external.income",
+            "name": "Paycheck",
+            "description": "Where the bread comes from",
+            "currency": "EUR",
+            "balance": 0,
+            "capital": 0,
+            "history": {
+                "present": false,
+                "capital": 0,
+                "at": "0001-01-01"
+            },
+            "archived": false,
+            "createdAt": "2022-12-24",
+            "updatedAt": "2024-05-08",
+            "children": [
+                {
+                    "id": 10,
+                    "kind": "external.income",
+                    "name": "Freelancing",
+                    "description": "Hustling",
+                    "currency": "EUR",
+                    "balance": 0,
+                    "capital": 0,
+                    "history": {
+                        "present": false,
+                        "capital": 0,
+                        "at": "0001-01-01"
+                    },
+                    "archived": true,
+                    "createdAt": "2022-12-24",
+                    "updatedAt": "2024-05-08",
+                    "children": []
+                },
+                {
+                    "id": 11,
+                    "kind": "external.income",
+                    "name": "Day Job",
+                    "description": "Grinding",
+                    "currency": "EUR",
+                    "balance": 0,
+                    "capital": 0,
+                    "history": {
+                        "present": false,
+                        "capital": 0,
+                        "at": "0001-01-01"
+                    },
+                    "archived": false,
+                    "createdAt": "2022-12-24",
+                    "updatedAt": "2024-05-08",
+                    "children": []
+                },
+                {
+                    "id": 12,
+                    "kind": "external.income",
+                    "name": "Teaching",
+                    "description": "Side Hustle",
+                    "currency": "EUR",
+                    "balance": 0,
+                    "capital": 0,
+                    "history": {
+                        "present": false,
+                        "capital": 0,
+                        "at": "0001-01-01"
+                    },
+                    "archived": false,
+                    "createdAt": "2022-12-24",
+                    "updatedAt": "2024-05-08",
+                    "children": []
+                }
+            ]
         }
     ]
 }
