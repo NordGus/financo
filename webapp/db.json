@@ -15,7 +15,44 @@
             },
             "archived": false,
             "createdAt": "2024-01-22",
-            "updatedAt": "2024-05-19"
+            "updatedAt": "2024-05-19",
+            "children": []
+        },
+        {
+            "id": 2,
+            "kind": "capital.savings",
+            "name": "My savings accounts",
+            "description": "The account where I store my savings",
+            "currency": "EUR",
+            "balance": 42069,
+            "capital": 0,
+            "history": {
+                "present": false,
+                "capital": 0,
+                "at": "0001-01-01"
+            },
+            "archived": false,
+            "createdAt": "2024-02-14",
+            "updatedAt": "2024-04-19",
+            "children": []
+        },
+        {
+            "id": 3,
+            "kind": "capital.normal",
+            "name": "Freelance bank account",
+            "description": "Where I get paid for my freelance job",
+            "currency": "EUR",
+            "balance": 0,
+            "capital": 0,
+            "history": {
+                "present": true,
+                "capital": 42,
+                "at": "2009-06-28"
+            },
+            "archived": true,
+            "createdAt": "2022-08-05",
+            "updatedAt": "2023-12-28",
+            "children": []
         }
     ]
 }
