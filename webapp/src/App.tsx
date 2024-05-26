@@ -1,43 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+type NavLinkProps = {
+  name: string
+}
+
+function NavLink({ name }: NavLinkProps) {
+  return (
+    <a
+      className="px-4 py-1.5
+      flex justify-end items-end
+      w-[85%] hover:w-full h-14
+      border rounded-lg dark:border-neutral-800
+      bg-neutral-50 dark:bg-neutral-900
+      shadow
+      hover:font-bold
+      duration-200"
+    >
+      {name}
+    </a>
+  )
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className='mx-auto my-auto max-w-[60dvw] h-[100dvh] flex flex-col justify-center items-center gap-4'>
-      <div className='flex justify-center items-center gap-10'>
-        <a href="https://vitejs.dev" target="_blank">
-          <img
-            src={viteLogo}
-            className="hover:drop-shadow-[0_0_1.5rem_#d946ef] w-20 h-20"
-            alt="Vite logo"
-          />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img
-            src={reactLogo}
-            className="animate-spin-slow hover:drop-shadow-[0_0_1.5rem_#0ea5e9] w-20 h-20"
-            alt="React logo"
-          />
-        </a>
-      </div>
-      <h1 className='text-5xl text-neutral-100'>Vite + React</h1>
-      <div className="card flex flex-col justify-center items-center gap-2">
-        <button
-          className='px-4 py-1.5 bg-neutral-900 text-neutral-100 rounded hover:ring-2'
-          onClick={() => setCount((count) => count + 1)}
+    <div className='w-full h-[100dvh] grid grid-cols-[15dvw_minmax(0,_1fr)] gap-1 p-1'>
+      <nav className='flex flex-col gap-1 h-full p-0 m-0'>
+        <NavLink name="Accounts & Goals" />
+        <NavLink name="Books" />
+        <NavLink name="Budgets" />
+        <NavLink name="Payment Plans" />
+        <NavLink name="Summary" />
+        <NavLink name="Intelligence" />
+      </nav>
+      <div className='block h-full overflow-y-auto'>
+        <div
+          className="p-1.5
+          flex flex-col justify-center items-center gap-1
+          h-full
+          border rounded-lg dark:border-neutral-800
+          bg-neutral-50 dark:bg-neutral-900
+          shadow"
         >
-          count is {count}
-        </button>
-        <p className='text-neutral-100'>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+          <h1 className="text-4xl">Welcome to financo</h1>
+          <p>Your personal finances helper</p>
+        </div>
       </div>
-      <p className="text-neutral-400">
-        Click on the Vite and React logos to learn more
-      </p>
     </div>
   )
 }
