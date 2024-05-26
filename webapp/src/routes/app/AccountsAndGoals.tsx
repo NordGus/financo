@@ -1,41 +1,4 @@
-type SummaryAmount = {
-    amount: number
-    currency: string
-}
-
-type SummaryCardProps = {
-    name: string,
-    amounts: SummaryAmount[]
-}
-
-function SummaryCard({ name, amounts }: SummaryCardProps) {
-    return (
-        <div
-            className="
-                flex items-center justify-between gap-1
-                px-4 py-1.5 h-14
-                border rounded-lg dark:border-neutral-800
-                bg-neutral-50 dark:bg-neutral-900
-                shadow
-            "
-        >
-            <p className="flex-grow">{name}</p>
-            {amounts.map(({ amount, currency }) => (
-                <p
-                    className={
-                        amount > 0
-                            ? "text-green-500"
-                            : amount < 0
-                                ? "text-red-500"
-                                : ""
-                    }
-                >
-                    {amount} {currency}
-                </p>
-            ))}
-        </div>
-    )
-}
+import SummaryCard from "../../components/SummaryCard"
 
 type ListCardProps = {
     title: string,
@@ -84,15 +47,15 @@ function AccountsAndGoals() {
         >
             <SummaryCard
                 name="Capital"
-                amounts={[{ amount: 133742, currency: "EUR" }]}
+                summaries={[{ amount: 133742, currency: "EUR" }]}
             />
             <SummaryCard
                 name="Debts"
-                amounts={[{ amount: -133742, currency: "EUR" }]}
+                summaries={[{ amount: -133742, currency: "EUR" }]}
             />
             <SummaryCard
                 name="Total"
-                amounts={[{ amount: 133742, currency: "EUR" }]}
+                summaries={[{ amount: 133742, currency: "EUR" }]}
             />
             <ListCard title="Goals" className="row-span-3" />
             <ListCard title="Bank Accounts" />
