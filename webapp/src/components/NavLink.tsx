@@ -1,8 +1,8 @@
 import { NavLink as RouterNavLink } from "react-router-dom"
 
-type NavLinkProps = { name: string, path: string }
+type Props = { name: string, path: string }
 
-function NavLink({ name, path }: NavLinkProps) {
+function NavLink({ name, path }: Props) {
     return (
         <RouterNavLink
             to={path}
