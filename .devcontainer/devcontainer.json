@@ -36,6 +36,8 @@
         "editor.rulers": [
           100
         ],
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 100,
         "editor.formatOnSave": true,
         "editor.fontSize": 16,
         "editor.fontFamily": "'Geist Mono Medium'",
@@ -45,8 +47,6 @@
           "comments": "off",
           "strings": "on"
         },
-        "editor.wordWrap": "wordWrapColumn",
-        "editor.wordWrapColumn": 120,
         "files.associations": {
           "*.css": "tailwindcss"
         },
