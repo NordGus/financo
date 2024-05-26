@@ -13,7 +13,7 @@ function Panel({ header, className, children }: PropsWithChildren<Props>) {
                 h-full
                 bg-neutral-50 dark:bg-neutral-900
                 divide-y dark:divide-neutral-800
-                border dark:border-neutral-800 rounded-lg
+                border dark:border-neutral-800 rounded
                 shadow overflow-clip
                 ${className}
             `}
@@ -27,7 +27,7 @@ function Panel({ header, className, children }: PropsWithChildren<Props>) {
             >
                 {header}
             </div>
-            <div className="flex-grow overflow-y-auto divide-y">
+            <div className="flex-grow overflow-y-auto divide-y dark:divide-neutral-800">
                 {
                     children
                         ? children

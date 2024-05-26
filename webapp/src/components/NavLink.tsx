@@ -9,7 +9,7 @@ function NavLink({ name, path }: Props) {
             className={({ isActive, isPending }) => [
                 "flex justify-end items-end",
                 "py-1.5 px-4 h-14",
-                "border rounded-lg dark:border-neutral-800",
+                "border rounded dark:border-neutral-800",
                 "bg-neutral-50 dark:bg-neutral-900",
                 "shadow duration-200",
                 isActive

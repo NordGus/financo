@@ -14,7 +14,7 @@ function SummaryCard({ name, summaries }: Props) {
             className="
                 flex items-center justify-between gap-1
                 px-4 py-1.5 h-14
-                border rounded-lg dark:border-neutral-800
+                border rounded dark:border-neutral-800
                 bg-neutral-50 dark:bg-neutral-900
                 shadow
             "

@@ -4,7 +4,7 @@ function Welcome() {
             className="p-1.5
             flex flex-col justify-center items-center gap-1
             h-full
-            border rounded-lg dark:border-neutral-800
+            border rounded dark:border-neutral-800
             bg-neutral-50 dark:bg-neutral-900
             shadow"
         >
