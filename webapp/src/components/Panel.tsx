@@ -1,11 +1,11 @@
-import { PropsWithChildren } from "react"
+import { PropsWithChildren, ReactNode } from "react"
 
 type Props = {
-    title: string,
+    header: ReactNode,
     className?: string
 }
 
-function Panel({ title, className, children }: PropsWithChildren<Props>) {
+function Panel({ header, className, children }: PropsWithChildren<Props>) {
     return (
         <div
             className={`
@@ -14,12 +14,18 @@ function Panel({ title, className, children }: PropsWithChildren<Props>) {
                 bg-neutral-50 dark:bg-neutral-900
                 divide-y dark:divide-neutral-800
                 border dark:border-neutral-800 rounded-lg
-                shadow
+                shadow overflow-clip
                 ${className}
             `}
         >
-            <div className="h-14 flex justify-between items-stretch">
-                <h2 className="text-lg px-4 py-1.5 flex items-center">{title}</h2>
+            <div
+                className="
+                    flex justify-between items-stretch
+                    h-14
+                    divide-x dark:divide-neutral-800
+                "
+            >
+                {header}
             </div>
             <div className="flex-grow overflow-y-auto divide-y">
                 {
