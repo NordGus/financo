@@ -21,7 +21,7 @@ function Panel({ header, className, children }: PropsWithChildren<Props>) {
             <div
                 className="
                     flex justify-between items-stretch
-                    h-14
+                    h-12
                     divide-x dark:divide-neutral-800
                 "
             >
