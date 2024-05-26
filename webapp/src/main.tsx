@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import './index.css'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 
 import App from "./routes/App";
@@ -9,6 +8,8 @@ import AccountsAndGoals from './routes/app/AccountsAndGoals';
 import Books from './routes/app/Books';
 
 import ErrorPage from './ErrorPage';
+
+import './index.css'
 
 const router = createBrowserRouter([
   {
