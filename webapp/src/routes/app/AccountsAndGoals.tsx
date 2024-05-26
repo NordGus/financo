@@ -83,24 +83,24 @@ function AccountsAndGoals() {
             "
         >
             <SummaryCard
-                name="capital"
+                name="Capital"
                 amounts={[{ amount: 133742, currency: "EUR" }]}
             />
             <SummaryCard
-                name="debts"
+                name="Debts"
                 amounts={[{ amount: -133742, currency: "EUR" }]}
             />
             <SummaryCard
-                name="total"
+                name="Total"
                 amounts={[{ amount: 133742, currency: "EUR" }]}
             />
-            <ListCard title="goals" className="row-span-3" />
-            <ListCard title="bank accounts" />
-            <ListCard title="loans" />
-            <ListCard title="income" />
-            <ListCard title="savings" />
-            <ListCard title="credit line" />
-            <ListCard title="expenses" />
+            <ListCard title="Goals" className="row-span-3" />
+            <ListCard title="Bank Accounts" />
+            <ListCard title="Loans" />
+            <ListCard title="Income" />
+            <ListCard title="Savings" />
+            <ListCard title="Credit Lines" />
+            <ListCard title="Expenses" />
         </div>
     )
 }
