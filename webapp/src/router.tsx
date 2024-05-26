@@ -7,7 +7,7 @@ import Books from './routes/app/Books';
 
 import ErrorPage from './routes/ErrorPage';
 
-export default createBrowserRouter([
+const router = createBrowserRouter([
     {
         path: "/",
         element: <App />,
@@ -28,3 +28,5 @@ export default createBrowserRouter([
         ]
     }
 ])
+
+export default router
