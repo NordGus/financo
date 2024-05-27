@@ -1,4 +1,4 @@
-function Root() {
+export default function Root() {
     return (
         <div
             className="p-1.5
@@ -13,5 +13,3 @@ function Root() {
         </div>
     )
 }
-
-export default Root

@@ -1,4 +1,4 @@
-function Books() {
+export default function Books() {
     return (
         <div
             className="p-1.5
@@ -13,5 +13,3 @@ function Books() {
         </div>
     )
 }
-
-export default Books

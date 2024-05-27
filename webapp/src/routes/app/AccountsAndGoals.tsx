@@ -20,7 +20,7 @@ function AddButton() {
     )
 }
 
-function AccountsAndGoals() {
+export default function AccountsAndGoals() {
     return (
         <div
             className="
@@ -100,5 +100,3 @@ function AccountsAndGoals() {
         </div>
     )
 }
-
-export default AccountsAndGoals
