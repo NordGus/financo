@@ -1,5 +1,32 @@
+import { useQuery } from "@tanstack/react-query"
+
+import Account from "../../types/Account"
+import Goal from "../../types/Goal"
+
 import Panel from "../../components/Panel"
 import SummaryCard from "../../components/SummaryCard"
+
+async function getAccounts() {
+    const response = await fetch("/api/accounts")
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
+}
+
+async function getGoals() {
+    const response = await fetch("/api/goals")
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
+}
 
 function PanelTitle({ title }: { title: string }) {
     return <h2 className="flex-grow flex items-center px-4">{title}</h2>
@@ -21,6 +48,9 @@ function AddButton() {
 }
 
 export default function AccountsAndGoals() {
+    const accountsQuery = useQuery<Account[]>({ queryKey: ['accounts'], queryFn: getAccounts })
+    const goalsQuery = useQuery<Goal[]>({ queryKey: ['goals'], queryFn: getGoals })
+
     return (
         <div
             className="
@@ -29,14 +59,17 @@ export default function AccountsAndGoals() {
             "
         >
             <SummaryCard
+                key="Capital"
                 name="Capital"
                 summaries={[{ amount: 133742, currency: "EUR" }]}
             />
             <SummaryCard
+                key="Debts"
                 name="Debts"
                 summaries={[{ amount: -133742, currency: "EUR" }]}
             />
             <SummaryCard
+                key="Total"
                 name="Total"
                 summaries={[{ amount: 133742, currency: "EUR" }]}
             />
@@ -48,7 +81,12 @@ export default function AccountsAndGoals() {
                     </>
                 }
                 className="row-span-3"
-            ></Panel>
+            >
+                {
+                    goalsQuery.data?.
+                        map((goal) => (<p key={`goal:${goal.id}`}>{goal.name}</p>))
+                }
+            </Panel>
             <Panel
                 header={
                     <>
@@ -56,7 +94,17 @@ export default function AccountsAndGoals() {
                         <AddButton />
                     </>
                 }
-            ></Panel>
+            >
+                {
+                    accountsQuery.data?.
+                        filter((account) => account.kind === 'capital.normal')?.
+                        map(
+                            (account) => (
+                                <p key={`capital.normal:${account.id}`}>{account.name}</p>
+                            )
+                        )
+                }
+            </Panel>
             <Panel
                 header={
                     <>
@@ -64,7 +112,17 @@ export default function AccountsAndGoals() {
                         <AddButton />
                     </>
                 }
-            ></Panel>
+            >
+                {
+                    accountsQuery.data?.
+                        filter((account) => ['debt.loan', 'debt.personal'].includes(account.kind))?.
+                        map(
+                            (account) => (
+                                <p key={`debt.loans:${account.id}`}>{account.name}</p>
+                            )
+                        )
+                }
+            </Panel>
             <Panel
                 header={
                     <>
@@ -72,7 +130,17 @@ export default function AccountsAndGoals() {
                         <AddButton />
                     </>
                 }
-            ></Panel>
+            >
+                {
+                    accountsQuery.data?.
+                        filter((account) => account.kind === 'external.income')?.
+                        map(
+                            (account) => (
+                                <span key={`external.income:${account.id}`}>{account.name}</span>
+                            )
+                        )
+                }
+            </Panel>
             <Panel
                 header={
                     <>
@@ -80,7 +148,17 @@ export default function AccountsAndGoals() {
                         <AddButton />
                     </>
                 }
-            ></Panel>
+            >
+                {
+                    accountsQuery.data?.
+                        filter((account) => account.kind === 'capital.savings')?.
+                        map(
+                            (account) => (
+                                <span key={`capital.savings:${account.id}`}>{account.name}</span>
+                            )
+                        )
+                }
+            </Panel>
             <Panel
                 header={
                     <>
@@ -88,7 +166,17 @@ export default function AccountsAndGoals() {
                         <AddButton />
                     </>
                 }
-            ></Panel>
+            >
+                {
+                    accountsQuery.data?.
+                        filter((account) => account.kind === 'debt.credit')?.
+                        map(
+                            (account) => (
+                                <p key={`debt.credit:${account.id}`}>{account.name}</p>
+                            )
+                        )
+                }
+            </Panel>
             <Panel
                 header={
                     <>
@@ -96,7 +184,17 @@ export default function AccountsAndGoals() {
                         <AddButton />
                     </>
                 }
-            ></Panel>
+            >
+                {
+                    accountsQuery.data?.
+                        filter((account) => account.kind === 'external.expense')?.
+                        map(
+                            (account) => (
+                                <p key={`external.expense:${account.id}`}>{account.name}</p>
+                            )
+                        )
+                }
+            </Panel>
         </div>
     )
 }

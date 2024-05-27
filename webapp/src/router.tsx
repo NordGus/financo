@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+import { QueryClient } from "@tanstack/react-query";
 
 import App from "./routes/App";
 import Root from './routes/app/Root';
@@ -7,7 +8,7 @@ import Books from './routes/app/Books';
 
 import ErrorPage from './routes/ErrorPage';
 
-const router = createBrowserRouter([
+const router = (_queryClient: QueryClient) => createBrowserRouter([
     {
         path: "/",
         element: <App />,
