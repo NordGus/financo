@@ -16,7 +16,7 @@ function NavLink({ name, path }: Props) {
                     ? "w-full font-bold"
                     : isPending
                         ? "w-full animate-pulse"
-                        : "w-[85%] hover:w-full hover:font-bold",
+                        : "w-[85%] hover:w-full",
             ].join(" ")
             }
         >
