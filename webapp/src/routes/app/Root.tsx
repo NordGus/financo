@@ -1,4 +1,4 @@
-function Welcome() {
+function Root() {
     return (
         <div
             className="p-1.5
@@ -14,4 +14,4 @@ function Welcome() {
     )
 }
 
-export default Welcome
+export default Root
