@@ -1,6 +1,10 @@
+import { Currency } from "dinero.js"
+import currencyAmountColor from "../helpers/currencyAmountColor"
+import currencyAmountToHuman from "../helpers/currencyAmountToHuman"
+
 type Money = {
     amount: number
-    currency: string
+    currency: Currency
 }
 
 type Props = {
@@ -20,17 +24,9 @@ function SummaryCard({ name, summaries }: Props) {
             "
         >
             <p className="flex-grow">{name}</p>
-            {summaries.map(({ amount, currency }) => (
-                <p
-                    className={
-                        amount > 0
-                            ? "text-green-500"
-                            : amount < 0
-                                ? "text-red-500"
-                                : ""
-                    }
-                >
-                    {amount} {currency}
+            {summaries.map(({ amount, currency }, idx) => (
+                <p key={`${name.toLowerCase()}:${idx}`} className={currencyAmountColor(amount)}>
+                    {currencyAmountToHuman(amount, currency)}
                 </p>
             ))}
         </div>
