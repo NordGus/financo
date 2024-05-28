@@ -5,8 +5,7 @@ import Goal from "../../types/Goal"
 
 import Panel from "../../components/Panel"
 import SummaryCard from "../../components/SummaryCard"
-import CapitalNormalAccountPreview from "../../components/account/preview/capital/Normal"
-import CapitalSavingsAccountPreview from "../../components/account/preview/capital/Savings"
+import CapitalAccountPreview from "../../components/account/preview/capital/Account"
 import DebtLoanAccountPreview from "../../components/account/preview/debt/Loan"
 import DebtCreditLineAccountPreview from "../../components/account/preview/debt/CreditLine"
 import ExternalAccountPreview from "../../components/account/preview/external/Account"
@@ -64,17 +63,14 @@ export default function AccountsAndGoals() {
             "
         >
             <SummaryCard
-                key="Capital"
                 name="Capital"
                 summaries={[{ amount: 133742, currency: "EUR" }]}
             />
             <SummaryCard
-                key="Debts"
                 name="Debts"
                 summaries={[{ amount: -133742, currency: "EUR" }]}
             />
             <SummaryCard
-                key="Total"
                 name="Total"
                 summaries={[{ amount: 133742, currency: "EUR" }]}
             />
@@ -104,7 +100,7 @@ export default function AccountsAndGoals() {
                     accountsQuery.data?.
                         filter((account) => account.kind === 'capital.normal')?.
                         map((account) => (
-                            <CapitalNormalAccountPreview
+                            <CapitalAccountPreview
                                 key={`account:${account.id}`}
                                 account={account}
                             />
@@ -161,7 +157,7 @@ export default function AccountsAndGoals() {
                     accountsQuery.data?.
                         filter((account) => account.kind === 'capital.savings')?.
                         map((account) => (
-                            <CapitalSavingsAccountPreview
+                            <CapitalAccountPreview
                                 key={`account:${account.id}`}
                                 account={account}
                             />
