@@ -16,11 +16,11 @@ export default function Account({ account: { name, description, balance, currenc
                 cursor-pointer
             "
         >
-            <p className="text-lg col-span-2">{name}</p>
+            <p className="text-lg">{name}</p>
             <p className={`text-lg ${currencyAmountColor(balance)}`}>
                 {currencyAmountToHuman(balance, currency)}
             </p>
-            <p className="text-sm text-neutral-400 col-span-2">{description}</p>
+            <p className="text-sm text-neutral-400">{description}</p>
         </div>
     )
 }
