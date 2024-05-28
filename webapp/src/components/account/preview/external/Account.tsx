@@ -26,7 +26,11 @@ export default function Account({ account: { name, description, currency, childr
                     children.map(({ id, name }) => (
                         <span
                             key={`account:${id}`}
-                            className="px-3 py-1 border rounded dark:border-neutral-800 text-sm"
+                            className="
+                                px-3 py-1
+                                border rounded dark:border-neutral-50 border-neutral-950
+                                text-sm
+                            "
                         >
                             {name}
                         </span>
