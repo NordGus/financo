@@ -4,11 +4,11 @@ type Props = {
     account: AccountType
 }
 
-export default function Account({ account: { name, description, currency } }: Props) {
+export default function Account({ account: { name, description, currency, children } }: Props) {
     return (
         <div
             className="
-                px-4 py-1.5 h-24
+                px-4 py-1.5 min-h-24
                 flex flex-col justify-center
                 hover:bg-neutral-100 dark:hover:bg-neutral-800
                 cursor-pointer
@@ -18,7 +18,19 @@ export default function Account({ account: { name, description, currency } }: Pr
                 <p className="text-lg flex-grow">{name}</p>
                 <p className="text-sm text-neutral-400">{currency}</p>
             </div>
-            <p className="text-sm text-neutral-400">{description}</p>
+            <p className="text-sm text-neutral-400 mb-1.5">{description}</p>
+            <div className="flex gap-1">
+                {
+                    children.map(({ id, name }) => (
+                        <span
+                            key={`account:${id}`}
+                            className="px-3 py-1 border rounded dark:border-neutral-800 text-sm"
+                        >
+                            {name}
+                        </span>
+                    ))
+                }
+            </div>
         </div>
     )
 }
