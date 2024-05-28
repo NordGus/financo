@@ -5,6 +5,11 @@ import Goal from "../../types/Goal"
 
 import Panel from "../../components/Panel"
 import SummaryCard from "../../components/SummaryCard"
+import CapitalNormalAccountPreview from "../../components/account/preview/capital/Normal"
+import CapitalSavingsAccountPreview from "../../components/account/preview/capital/Savings"
+import DebtLoanAccountPreview from "../../components/account/preview/debt/Loan"
+import DebtCreditLineAccountPreview from "../../components/account/preview/debt/CreditLine"
+import ExternalAccountPreview from "../../components/account/preview/external/Account"
 
 async function getAccounts() {
     const response = await fetch("/api/accounts")
@@ -98,11 +103,12 @@ export default function AccountsAndGoals() {
                 {
                     accountsQuery.data?.
                         filter((account) => account.kind === 'capital.normal')?.
-                        map(
-                            (account) => (
-                                <p key={`capital.normal:${account.id}`}>{account.name}</p>
-                            )
-                        )
+                        map((account) => (
+                            <CapitalNormalAccountPreview
+                                key={`account:${account.id}`}
+                                account={account}
+                            />
+                        ))
                 }
             </Panel>
             <Panel
@@ -116,11 +122,12 @@ export default function AccountsAndGoals() {
                 {
                     accountsQuery.data?.
                         filter((account) => ['debt.loan', 'debt.personal'].includes(account.kind))?.
-                        map(
-                            (account) => (
-                                <p key={`debt.loans:${account.id}`}>{account.name}</p>
-                            )
-                        )
+                        map((account) => (
+                            <DebtLoanAccountPreview
+                                key={`account:${account.id}`}
+                                account={account}
+                            />
+                        ))
                 }
             </Panel>
             <Panel
@@ -134,11 +141,12 @@ export default function AccountsAndGoals() {
                 {
                     accountsQuery.data?.
                         filter((account) => account.kind === 'external.income')?.
-                        map(
-                            (account) => (
-                                <span key={`external.income:${account.id}`}>{account.name}</span>
-                            )
-                        )
+                        map((account) => (
+                            <ExternalAccountPreview
+                                key={`account:${account.id}`}
+                                account={account}
+                            />
+                        ))
                 }
             </Panel>
             <Panel
@@ -152,11 +160,12 @@ export default function AccountsAndGoals() {
                 {
                     accountsQuery.data?.
                         filter((account) => account.kind === 'capital.savings')?.
-                        map(
-                            (account) => (
-                                <span key={`capital.savings:${account.id}`}>{account.name}</span>
-                            )
-                        )
+                        map((account) => (
+                            <CapitalSavingsAccountPreview
+                                key={`account:${account.id}`}
+                                account={account}
+                            />
+                        ))
                 }
             </Panel>
             <Panel
@@ -170,11 +179,12 @@ export default function AccountsAndGoals() {
                 {
                     accountsQuery.data?.
                         filter((account) => account.kind === 'debt.credit')?.
-                        map(
-                            (account) => (
-                                <p key={`debt.credit:${account.id}`}>{account.name}</p>
-                            )
-                        )
+                        map((account) => (
+                            <DebtCreditLineAccountPreview
+                                key={`account:${account.id}`}
+                                account={account}
+                            />
+                        ))
                 }
             </Panel>
             <Panel
@@ -188,11 +198,12 @@ export default function AccountsAndGoals() {
                 {
                     accountsQuery.data?.
                         filter((account) => account.kind === 'external.expense')?.
-                        map(
-                            (account) => (
-                                <p key={`external.expense:${account.id}`}>{account.name}</p>
-                            )
-                        )
+                        map((account) => (
+                            <ExternalAccountPreview
+                                key={`account:${account.id}`}
+                                account={account}
+                            />
+                        ))
                 }
             </Panel>
         </div>
