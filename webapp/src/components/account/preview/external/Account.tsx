@@ -4,6 +4,16 @@ type Props = {
     account: AccountType
 }
 
+function ChildAccountPreview({ name }: { name: string }) {
+    return (
+        <span
+            className="px-3 py-1 border rounded dark:border-neutral-50 border-neutral-950 text-sm"
+        >
+            {name}
+        </span>
+    )
+}
+
 export default function Account({ account: { name, description, currency, children } }: Props) {
     return (
         <div
@@ -24,16 +34,7 @@ export default function Account({ account: { name, description, currency, childr
             {children.length !== 0 && (<div className="flex gap-1">
                 {
                     children.map(({ id, name }) => (
-                        <span
-                            key={`account:${id}`}
-                            className="
-                                px-3 py-1
-                                border rounded dark:border-neutral-50 border-neutral-950
-                                text-sm
-                            "
-                        >
-                            {name}
-                        </span>
+                        <ChildAccountPreview key={`account:${id}`} name={name} />
                     ))
                 }
             </div>)}
