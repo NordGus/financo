@@ -289,6 +289,24 @@
                     "children": []
                 }
             ]
+        },
+        {
+            "id": 17,
+            "kind": "external.expense",
+            "name": "Transport",
+            "description": "I need to move",
+            "currency": "EUR",
+            "balance": 0,
+            "capital": 0,
+            "history": {
+                "present": false,
+                "capital": 0,
+                "at": "0001-01-01"
+            },
+            "archived": false,
+            "createdAt": "2022-12-24",
+            "updatedAt": "2024-05-08",
+            "children": []
         }
     ],
     "goals": [
