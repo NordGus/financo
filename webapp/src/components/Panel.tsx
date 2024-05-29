@@ -10,7 +10,6 @@ function Panel({ header, className, children }: PropsWithChildren<Props>) {
         <div
             className={`
                 flex flex-col
-                h-full
                 bg-neutral-50 dark:bg-neutral-900
                 divide-y dark:divide-neutral-800
                 border dark:border-neutral-800 rounded
@@ -21,7 +20,7 @@ function Panel({ header, className, children }: PropsWithChildren<Props>) {
             <div
                 className="
                     flex justify-between items-stretch
-                    h-12
+                    min-h-12 h-12 max-h-12
                     divide-x dark:divide-neutral-800
                 "
             >
