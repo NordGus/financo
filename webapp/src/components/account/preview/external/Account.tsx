@@ -5,7 +5,9 @@ type Props = {
     account: AccountType
 }
 
-export default function Account({ account: { name, description, currency, children } }: Props) {
+export default function Account({ account: { id, name, description, currency, children } }: Props) {
+    const path = `/accounts/${id}`
+
     return (
         <details
             className="
@@ -21,7 +23,7 @@ export default function Account({ account: { name, description, currency, childr
                 "
             >
                 <Link
-                    to={'/books'}
+                    to={path}
                     className={`
                         flex flex-col justify-center
                         pl-4 py-1.5 ${children.length === 0 && "col-span-2"}
@@ -48,9 +50,9 @@ export default function Account({ account: { name, description, currency, childr
                                 height="20"
                                 width="20"
                                 stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
                                 viewBox="0 0 24 24"
                             >
                                 <polyline points="6 9 12 15 18 9"></polyline>
@@ -59,19 +61,20 @@ export default function Account({ account: { name, description, currency, childr
                     </div>
                 )}
             </summary>
-            {children.length !== 0 && children.map(({ id, name, description, currency }) => (
-                <div
-                    key={`account:${id}`}
+            {children.length !== 0 && children.map((child) => (
+                <Link
+                    to={path}
+                    key={`account:${child.id}`}
                     className="
                         flex flex-col justify-center
                         pl-8 pr-4 py-1.5 h-24
                         hover:bg-neutral-100 dark:hover:bg-neutral-800
                     "
                 >
-                    <p className="text-lg">{name}</p>
-                    <p className="text-sm text-neutral-400">{currency}</p>
-                    <p className="text-sm text-neutral-400">{description}</p>
-                </div>
+                    <p className="text-lg">{child.name}</p>
+                    <p className="text-sm text-neutral-400">{child.currency}</p>
+                    <p className="text-sm text-neutral-400">{child.description}</p>
+                </Link>
             ))}
         </details>
     )
