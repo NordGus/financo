@@ -39,8 +39,8 @@ export default function AccountsAndGoals() {
     const [outletCache, setOutletCache] = useState(outlet)
 
     useEffect(() => {
-        if (outlet) setOutletCache(outlet)
-    }, [outlet])
+        if (outlet && !outletCache) setOutletCache(outlet)
+    }, [outlet, outletCache])
 
     return (
         <>
@@ -105,8 +105,9 @@ export default function AccountsAndGoals() {
                 >
                     {
                         accountsQuery.data?.
-                            filter((account) => ['debt.loan', 'debt.personal'].includes(account.kind))?.
-                            map((account) => (
+                            filter(
+                                (account) => ['debt.loan', 'debt.personal'].includes(account.kind)
+                            )?.map((account) => (
                                 <DebtLoanAccountPreview
                                     key={`account:${account.id}`}
                                     account={account}
