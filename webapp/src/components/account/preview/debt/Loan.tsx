@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import currencyAmountColor from "../../../../helpers/currencyAmountColor"
 import currencyAmountToHuman from "../../../../helpers/currencyAmountToHuman"
 import Account from "../../../../types/Account"
+
 import Progress from "./Progress"
 
 type Props = {
