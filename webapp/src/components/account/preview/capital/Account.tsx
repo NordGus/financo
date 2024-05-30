@@ -12,7 +12,7 @@ export default function Account({ account: { id, name, description, balance, cur
     return (
         <Link
             to={`/accounts/${id}`}
-            className="px-4 py-1.5 h-24 flex flex-col justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer"
+            className="px-4 py-1.5 h-24 flex flex-col justify-center hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer transition-colors duration-200 ease-in-out"
         >
             <p className="text-lg">{name}</p>
             <p className={`text-lg ${currencyAmountColor(balance)}`}>

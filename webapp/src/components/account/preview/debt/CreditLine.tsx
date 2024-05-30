@@ -14,7 +14,6 @@ export default function CreditLine(
     {
         account: {
             id,
-            kind,
             name,
             capital,
             balance,
@@ -28,7 +27,7 @@ export default function CreditLine(
     return (
         <Link
             to={`/accounts/${id}`}
-            className="px-4 py-1.5 min-h-24 grid grid-cols-[minmax(0,_1fr)_min-content] gap-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer"
+            className="px-4 py-1.5 min-h-24 grid grid-cols-[minmax(0,_1fr)_min-content] gap-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer transition-colors duration-200 ease-in-out"
         >
             <div className="flex flex-col justify-center">
                 <p className="text-lg">{name}</p>

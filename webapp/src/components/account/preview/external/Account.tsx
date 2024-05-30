@@ -19,7 +19,7 @@ export default function Account({ account: { id, name, description, currency, ch
             <summary
                 className="
                     grid grid-cols-[minmax(0,_1fr)_min-content] gap-1 h-24
-                    hover:bg-neutral-100 dark:hover:bg-neutral-800
+                    hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors duration-200 ease-in-out
                 "
             >
                 <Link
@@ -65,11 +65,7 @@ export default function Account({ account: { id, name, description, currency, ch
                 <Link
                     to={path}
                     key={`account:${child.id}`}
-                    className="
-                        flex flex-col justify-center
-                        pl-8 pr-4 py-1.5 h-24
-                        hover:bg-neutral-100 dark:hover:bg-neutral-800
-                    "
+                    className="flex flex-col justify-center pl-8 pr-4 py-1.5 h-24 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors duration-200 ease-in-out"
                 >
                     <p className="text-lg">{child.name}</p>
                     <p className="text-sm text-neutral-400">{child.currency}</p>
