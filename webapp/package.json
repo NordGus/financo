@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "dummy:server": "json-server --watch db.json --routes routes.json --port 3000 --host 0.0.0.0"
+    "dummy:server": "json-server --watch json-server/db.json --routes json-server/routes.json --port 3000 --host 0.0.0.0"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.39.0",
