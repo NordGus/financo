@@ -35,7 +35,7 @@ export default function Loan(
                         {currencyAmountToHuman(balance, currency)}
                     </p>
                     {
-                        kind === "debt.personal" &&
+                        kind === "debt_personal" &&
                         (<p className="text-neutral-500">personal</p>)
                     }
                 </div>
