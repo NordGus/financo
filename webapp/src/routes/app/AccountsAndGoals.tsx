@@ -12,6 +12,7 @@ import CapitalAccountPreview from "../../components/account/preview/capital/Acco
 import DebtLoanAccountPreview from "../../components/account/preview/debt/Loan"
 import DebtCreditLineAccountPreview from "../../components/account/preview/debt/CreditLine"
 import ExternalAccountPreview from "../../components/account/preview/external/Account"
+import { staleTimeDefault } from "../../queyClient"
 
 function PanelTitle({ title }: { title: string }) {
     return <h2 className="flex-grow flex items-center px-4">{title}</h2>
@@ -35,32 +36,38 @@ function AddButton() {
 export default function AccountsAndGoals() {
     const capitalNormalAccountsQuery = useQuery({
         queryKey: ['accounts', 'capital', 'normal'],
-        queryFn: getAccounts('capital/normal')
+        queryFn: getAccounts('capital/normal'),
+        staleTime: staleTimeDefault
     })
 
     const capitalSavingsAccountsQuery = useQuery({
         queryKey: ['accounts', 'capital', 'savings'],
-        queryFn: getAccounts('capital/savings')
+        queryFn: getAccounts('capital/savings'),
+        staleTime: staleTimeDefault
     })
 
     const debtLoansAccountsQuery = useQuery({
         queryKey: ['accounts', 'debt', 'loans'],
-        queryFn: getAccounts('debt/loans')
+        queryFn: getAccounts('debt/loans'),
+        staleTime: staleTimeDefault
     })
 
     const debtCreditLinesAccountsQuery = useQuery({
         queryKey: ['accounts', 'debt', 'credit'],
-        queryFn: getAccounts('debt/credit')
+        queryFn: getAccounts('debt/credit'),
+        staleTime: staleTimeDefault
     })
 
     const externalIncomeAccountsQuery = useQuery({
         queryKey: ['accounts', 'external', 'income'],
-        queryFn: getAccounts('external/income')
+        queryFn: getAccounts('external/income'),
+        staleTime: staleTimeDefault
     })
 
     const externalExpensesAccountsQuery = useQuery({
         queryKey: ['accounts', 'external', 'expenses'],
-        queryFn: getAccounts('external/expenses')
+        queryFn: getAccounts('external/expenses'),
+        staleTime: staleTimeDefault
     })
 
     const goalsQuery = useQuery({ queryKey: ['goals'], queryFn: getGoals })
