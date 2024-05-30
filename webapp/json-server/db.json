@@ -1,5 +1,36 @@
 {
-    "summary": {},
+    "summary": {
+        "capital": [
+            {
+                "amount": 432169,
+                "currency": "EUR"
+            },
+            {
+                "amount": 42069,
+                "currency": "USD"
+            }
+        ],
+        "debt": [
+            {
+                "amount": -133469,
+                "currency": "EUR"
+            },
+            {
+                "amount": -42069,
+                "currency": "USD"
+            }
+        ],
+        "total": [
+            {
+                "amount": 298700,
+                "currency": "EUR"
+            },
+            {
+                "amount": 0,
+                "currency": "USD"
+            }
+        ]
+    },
     "accounts": [
         {
             "id": 1,

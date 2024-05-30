@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 import { Outlet, useOutlet } from "react-router-dom"
 import { useEffect, useState } from "react"
+import { staleTimeDefault } from "../../queyClient"
 
+import { getSummary } from "../../api/summary"
 import { getAccounts } from "../../api/accounts"
 import { getGoals } from "../../api/goals"
 
@@ -12,7 +14,6 @@ import CapitalAccountPreview from "../../components/account/preview/capital/Acco
 import DebtLoanAccountPreview from "../../components/account/preview/debt/Loan"
 import DebtCreditLineAccountPreview from "../../components/account/preview/debt/CreditLine"
 import ExternalAccountPreview from "../../components/account/preview/external/Account"
-import { staleTimeDefault } from "../../queyClient"
 
 function PanelTitle({ title }: { title: string }) {
     return <h2 className="flex-grow flex items-center px-4">{title}</h2>
@@ -34,42 +35,41 @@ function AddButton() {
 }
 
 export default function AccountsAndGoals() {
+    const summaryQuery = useQuery({
+        queryKey: ['accounts', 'summary'],
+        queryFn: getSummary,
+        staleTime: staleTimeDefault
+    })
     const capitalNormalAccountsQuery = useQuery({
         queryKey: ['accounts', 'capital', 'normal'],
         queryFn: getAccounts('capital/normal'),
         staleTime: staleTimeDefault
     })
-
     const capitalSavingsAccountsQuery = useQuery({
         queryKey: ['accounts', 'capital', 'savings'],
         queryFn: getAccounts('capital/savings'),
         staleTime: staleTimeDefault
     })
-
     const debtLoansAccountsQuery = useQuery({
         queryKey: ['accounts', 'debt', 'loans'],
         queryFn: getAccounts('debt/loans'),
         staleTime: staleTimeDefault
     })
-
     const debtCreditLinesAccountsQuery = useQuery({
         queryKey: ['accounts', 'debt', 'credit'],
         queryFn: getAccounts('debt/credit'),
         staleTime: staleTimeDefault
     })
-
     const externalIncomeAccountsQuery = useQuery({
         queryKey: ['accounts', 'external', 'income'],
         queryFn: getAccounts('external/income'),
         staleTime: staleTimeDefault
     })
-
     const externalExpensesAccountsQuery = useQuery({
         queryKey: ['accounts', 'external', 'expenses'],
         queryFn: getAccounts('external/expenses'),
         staleTime: staleTimeDefault
     })
-
     const goalsQuery = useQuery({ queryKey: ['goals'], queryFn: getGoals })
     const outlet = useOutlet()
     const [outletCache, setOutletCache] = useState(outlet)
@@ -88,15 +88,18 @@ export default function AccountsAndGoals() {
             >
                 <SummaryCard
                     name="Capital"
-                    summaries={[{ amount: 133742, currency: "EUR" }]}
+                    loading={summaryQuery.isLoading}
+                    summaries={summaryQuery?.data?.capital || []}
                 />
                 <SummaryCard
                     name="Debts"
-                    summaries={[{ amount: -133742, currency: "EUR" }]}
+                    loading={summaryQuery.isLoading}
+                    summaries={summaryQuery?.data?.debt || []}
                 />
                 <SummaryCard
                     name="Total"
-                    summaries={[{ amount: 133742, currency: "EUR" }]}
+                    loading={summaryQuery.isLoading}
+                    summaries={summaryQuery?.data?.total || []}
                 />
                 <Panel
                     header={

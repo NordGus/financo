@@ -9,10 +9,11 @@ type Money = {
 
 type Props = {
     name: string,
-    summaries: Money[]
+    summaries: Money[],
+    loading: boolean
 }
 
-function SummaryCard({ name, summaries }: Props) {
+function SummaryCard({ name, summaries, loading }: Props) {
     return (
         <div
             className="
@@ -24,11 +25,18 @@ function SummaryCard({ name, summaries }: Props) {
             "
         >
             <p className="flex-grow">{name}</p>
-            {summaries.map(({ amount, currency }, idx) => (
-                <p key={`${name.toLowerCase()}:${idx}`} className={currencyAmountColor(amount)}>
-                    {currencyAmountToHuman(amount, currency)}
-                </p>
-            ))}
+            {
+                loading
+                    ? <span className="animate-pulse">loading</span>
+                    : summaries.map(({ amount, currency }, idx) => (
+                        <p
+                            key={`${name.toLowerCase()}:${idx}`}
+                            className={currencyAmountColor(amount)}
+                        >
+                            {currencyAmountToHuman(amount, currency)}
+                        </p>
+                    ))
+            }
         </div>
     )
 }
