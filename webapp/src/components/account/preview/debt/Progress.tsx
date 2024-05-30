@@ -64,8 +64,8 @@ export default function Progress({ progress }: Props) {
                             height="24"
                             width="24"
                             stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                             strokeWidth={fillStrokeWidth}
                             viewBox="60 60 60 60"
                         >
