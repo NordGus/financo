@@ -1,8 +1,9 @@
 {
+    "summary": {},
     "accounts": [
         {
             "id": 1,
-            "kind": "capital.normal",
+            "kind": "capital_normal",
             "name": "My personal bank account",
             "description": "The account where I get my paycheck",
             "currency": "EUR",
@@ -20,7 +21,7 @@
         },
         {
             "id": 2,
-            "kind": "capital.savings",
+            "kind": "capital_savings",
             "name": "My savings accounts",
             "description": "The account where I store my savings",
             "currency": "EUR",
@@ -38,7 +39,7 @@
         },
         {
             "id": 3,
-            "kind": "capital.normal",
+            "kind": "capital_normal",
             "name": "Freelance bank account",
             "description": "Where I get paid for my freelance job",
             "currency": "EUR",
@@ -56,7 +57,7 @@
         },
         {
             "id": 4,
-            "kind": "debt.loan",
+            "kind": "debt_loan",
             "name": "Car loan",
             "description": "My japanese shit-box",
             "currency": "EUR",
@@ -74,7 +75,7 @@
         },
         {
             "id": 5,
-            "kind": "debt.personal",
+            "kind": "debt_personal",
             "name": "Morgan's Loan",
             "description": "I helped Morgan's with their rent",
             "currency": "EUR",
@@ -92,7 +93,7 @@
         },
         {
             "id": 6,
-            "kind": "debt.personal",
+            "kind": "debt_personal",
             "name": "Carlo's Lunch",
             "description": "Carlo's catch up lunch",
             "currency": "EUR",
@@ -110,7 +111,7 @@
         },
         {
             "id": 7,
-            "kind": "debt.credit",
+            "kind": "debt_credit",
             "name": "Credit Card",
             "description": "My bank's credit card",
             "currency": "EUR",
@@ -128,7 +129,7 @@
         },
         {
             "id": 8,
-            "kind": "debt.credit",
+            "kind": "debt_credit",
             "name": "Laptop financing Credit Line",
             "description": "",
             "currency": "EUR",
@@ -146,7 +147,7 @@
         },
         {
             "id": 9,
-            "kind": "external.income",
+            "kind": "external_income",
             "name": "Paycheck",
             "description": "Where the bread comes from",
             "currency": "EUR",
@@ -163,7 +164,7 @@
             "children": [
                 {
                     "id": 10,
-                    "kind": "external.income",
+                    "kind": "external_income",
                     "name": "Freelancing",
                     "description": "Hustling",
                     "currency": "EUR",
@@ -181,7 +182,7 @@
                 },
                 {
                     "id": 11,
-                    "kind": "external.income",
+                    "kind": "external_income",
                     "name": "Day Job",
                     "description": "Grinding",
                     "currency": "EUR",
@@ -199,7 +200,7 @@
                 },
                 {
                     "id": 12,
-                    "kind": "external.income",
+                    "kind": "external_income",
                     "name": "Teaching",
                     "description": "Side Hustle",
                     "currency": "EUR",
@@ -219,7 +220,7 @@
         },
         {
             "id": 13,
-            "kind": "external.expense",
+            "kind": "external_expense",
             "name": "Market",
             "description": "I need to survive",
             "currency": "EUR",
@@ -236,7 +237,7 @@
             "children": [
                 {
                     "id": 14,
-                    "kind": "external.expense",
+                    "kind": "external_expense",
                     "name": "Gardening supplies",
                     "description": "My ADHD demands to be fed dopamine",
                     "currency": "EUR",
@@ -254,7 +255,7 @@
                 },
                 {
                     "id": 15,
-                    "kind": "external.expense",
+                    "kind": "external_expense",
                     "name": "Food",
                     "description": "Fuel for my body",
                     "currency": "EUR",
@@ -272,7 +273,7 @@
                 },
                 {
                     "id": 16,
-                    "kind": "external.expense",
+                    "kind": "external_expense",
                     "name": "Fruit Shop",
                     "description": "Abs are made in the kitchen",
                     "currency": "EUR",
@@ -292,7 +293,7 @@
         },
         {
             "id": 17,
-            "kind": "external.expense",
+            "kind": "external_expense",
             "name": "Transport",
             "description": "I need to move",
             "currency": "EUR",

@@ -1,0 +1,8 @@
+{
+    "/accounts/capital/normal": "/accounts?kind=capital_normal",
+    "/accounts/capital/savings": "/accounts?kind=capital_savings",
+    "/accounts/debt/loans": "/accounts?kind_like=debt_(loan|personal)",
+    "/accounts/debt/credit": "/accounts?kind=debt_credit",
+    "/accounts/external/income": "/accounts?kind=external_income",
+    "/accounts/external/expenses": "/accounts?kind=external_expense"
+}
