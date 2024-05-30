@@ -2,7 +2,7 @@ import { Link } from "react-router-dom"
 
 import currencyAmountColor from "../../../../helpers/currencyAmountColor"
 import currencyAmountToHuman from "../../../../helpers/currencyAmountToHuman"
-import Account from "../../../../types/Account"
+import Account, { Kind as AccountKind } from "../../../../types/Account"
 
 import Progress from "./Progress"
 
@@ -35,7 +35,7 @@ export default function Loan(
                         {currencyAmountToHuman(balance, currency)}
                     </p>
                     {
-                        kind === "debt_personal" &&
+                        kind === AccountKind.DebtPersonal &&
                         (<p className="text-neutral-500">personal</p>)
                     }
                 </div>
