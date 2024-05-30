@@ -33,7 +33,36 @@ function AddButton() {
 }
 
 export default function AccountsAndGoals() {
-    const accountsQuery = useQuery({ queryKey: ['accounts'], queryFn: getAccounts })
+    const capitalNormalAccountsQuery = useQuery({
+        queryKey: ['accounts', 'capital', 'normal'],
+        queryFn: getAccounts('capital/normal')
+    })
+
+    const capitalSavingsAccountsQuery = useQuery({
+        queryKey: ['accounts', 'capital', 'savings'],
+        queryFn: getAccounts('capital/savings')
+    })
+
+    const debtLoansAccountsQuery = useQuery({
+        queryKey: ['accounts', 'debt', 'loans'],
+        queryFn: getAccounts('debt/loans')
+    })
+
+    const debtCreditLinesAccountsQuery = useQuery({
+        queryKey: ['accounts', 'debt', 'credit'],
+        queryFn: getAccounts('debt/credit')
+    })
+
+    const externalIncomeAccountsQuery = useQuery({
+        queryKey: ['accounts', 'external', 'income'],
+        queryFn: getAccounts('external/income')
+    })
+
+    const externalExpensesAccountsQuery = useQuery({
+        queryKey: ['accounts', 'external', 'expenses'],
+        queryFn: getAccounts('external/expenses')
+    })
+
     const goalsQuery = useQuery({ queryKey: ['goals'], queryFn: getGoals })
     const outlet = useOutlet()
     const [outletCache, setOutletCache] = useState(outlet)
@@ -85,8 +114,7 @@ export default function AccountsAndGoals() {
                     }
                 >
                     {
-                        accountsQuery.data?.
-                            filter((account) => account.kind === 'capital.normal')?.
+                        capitalNormalAccountsQuery.data?.
                             map((account) => (
                                 <CapitalAccountPreview
                                     key={`account:${account.id}`}
@@ -104,10 +132,8 @@ export default function AccountsAndGoals() {
                     }
                 >
                     {
-                        accountsQuery.data?.
-                            filter(
-                                (account) => ['debt.loan', 'debt.personal'].includes(account.kind)
-                            )?.map((account) => (
+                        debtLoansAccountsQuery.data?.
+                            map((account) => (
                                 <DebtLoanAccountPreview
                                     key={`account:${account.id}`}
                                     account={account}
@@ -124,8 +150,7 @@ export default function AccountsAndGoals() {
                     }
                 >
                     {
-                        accountsQuery.data?.
-                            filter((account) => account.kind === 'external.income')?.
+                        externalIncomeAccountsQuery.data?.
                             map((account) => (
                                 <ExternalAccountPreview
                                     key={`account:${account.id}`}
@@ -143,8 +168,7 @@ export default function AccountsAndGoals() {
                     }
                 >
                     {
-                        accountsQuery.data?.
-                            filter((account) => account.kind === 'capital.savings')?.
+                        capitalSavingsAccountsQuery.data?.
                             map((account) => (
                                 <CapitalAccountPreview
                                     key={`account:${account.id}`}
@@ -162,8 +186,7 @@ export default function AccountsAndGoals() {
                     }
                 >
                     {
-                        accountsQuery.data?.
-                            filter((account) => account.kind === 'debt.credit')?.
+                        debtCreditLinesAccountsQuery.data?.
                             map((account) => (
                                 <DebtCreditLineAccountPreview
                                     key={`account:${account.id}`}
@@ -181,8 +204,7 @@ export default function AccountsAndGoals() {
                     }
                 >
                     {
-                        accountsQuery.data?.
-                            filter((account) => account.kind === 'external.expense')?.
+                        externalExpensesAccountsQuery.data?.
                             map((account) => (
                                 <ExternalAccountPreview
                                     key={`account:${account.id}`}
