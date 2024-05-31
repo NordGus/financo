@@ -3,8 +3,30 @@ import { useQuery } from "@tanstack/react-query";
 
 import { queryClient, staleTimeDefault } from "../../../queyClient";
 import { getAccount } from "../../../api/accounts";
+import { Kind } from "../../../types/Account";
 
-import Throbber from "../../../components/Throbber";
+import Panel from "../../../components/Panel";
+
+function translateAccountKind(kind: Kind) {
+    switch (kind) {
+        case Kind.CapitalNormal:
+            return "Bank Account"
+        case Kind.CapitalSavings:
+            return "Savings"
+        case Kind.DebtCredit:
+            return "Credit"
+        case Kind.DebtLoan:
+            return "Loan"
+        case Kind.DebtPersonal:
+            return "Personal Loan"
+        case Kind.ExternalIncome:
+            return "Income"
+        case Kind.ExternalExpense:
+            return "Expense"
+        default:
+            throw new Error(`invalid kind: ${kind}`);
+    }
+}
 
 export async function loader({ params: { id } }: LoaderFunctionArgs) {
     return queryClient.fetchQuery({
@@ -22,29 +44,26 @@ export default function Account() {
         staleTime: staleTimeDefault
     })
 
-    if (accountQuery.isFetching) {
-        return (
-            <div className="h-[30dvh] flex justify-center items-center">
-                <Throbber variant="big" />
-            </div>
-        )
-    }
-
-    const { name } = accountQuery.data!
-
     return (
-        <>
-            <div
-                className="min-h-12 h-12 max-h-12 flex justify-between items-stretch divide-x dark:divide-neutral-800"
-            >
-                <h1 className="text-lg flex items-center flex-grow">{name}</h1>
+        <Panel
+            header={<>
+                {
+                    accountQuery.isFetched && <span className="flex items-center px-4">
+                        {translateAccountKind(accountQuery.data!.kind)}
+                    </span>
+                }
+                <span className="flex-grow content-['']"></span>
                 <Link
                     to="/accounts"
-                    className="flex items-center px-4 py-1.5"
+                    className="flex items-center px-4 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 >
                     Close
                 </Link>
-            </div>
-        </>
+            </>}
+            className="max-h-[95dvh] min-h-[30dvh]"
+            loading={accountQuery.isFetching}
+        >
+
+        </Panel>
     )
 }
