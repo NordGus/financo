@@ -1,6 +1,9 @@
 import { NavLink as RouterNavLink } from "react-router-dom"
 
-type Props = { name: string, path: string }
+interface Props {
+    name: string,
+    path: string
+}
 
 function NavLink({ name, path }: Props) {
     return (
@@ -8,7 +11,7 @@ function NavLink({ name, path }: Props) {
             to={path}
             className={({ isActive, isPending }) => [
                 "flex justify-end items-end",
-                "py-1.5 px-4 h-12",
+                "py-1 px-2 h-10",
                 "border rounded dark:border-neutral-800",
                 "bg-neutral-50 dark:bg-neutral-900",
                 "shadow duration-200",
