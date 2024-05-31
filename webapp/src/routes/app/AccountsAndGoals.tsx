@@ -70,7 +70,11 @@ export default function AccountsAndGoals() {
         queryFn: getAccounts('external/expenses'),
         staleTime: staleTimeDefault
     })
-    const goalsQuery = useQuery({ queryKey: ['goals'], queryFn: getGoals })
+    const goalsQuery = useQuery({
+        queryKey: ['goals'],
+        queryFn: getGoals,
+        staleTime: staleTimeDefault
+    })
     const outlet = useOutlet()
     const [outletCache, setOutletCache] = useState(outlet)
 
@@ -88,17 +92,17 @@ export default function AccountsAndGoals() {
             >
                 <SummaryCard
                     name="Capital"
-                    loading={summaryQuery.isLoading}
+                    loading={summaryQuery.isFetching}
                     summaries={summaryQuery?.data?.capital || []}
                 />
                 <SummaryCard
                     name="Debts"
-                    loading={summaryQuery.isLoading}
+                    loading={summaryQuery.isFetching}
                     summaries={summaryQuery?.data?.debt || []}
                 />
                 <SummaryCard
                     name="Total"
-                    loading={summaryQuery.isLoading}
+                    loading={summaryQuery.isFetching}
                     summaries={summaryQuery?.data?.total || []}
                 />
                 <Panel
@@ -109,6 +113,7 @@ export default function AccountsAndGoals() {
                         </>
                     }
                     className="row-span-3"
+                    loading={goalsQuery.isFetching}
                 >
                     {
                         goalsQuery.data?.
@@ -122,6 +127,7 @@ export default function AccountsAndGoals() {
                             <AddButton />
                         </>
                     }
+                    loading={capitalNormalAccountsQuery.isFetching}
                 >
                     {
                         capitalNormalAccountsQuery.data?.
@@ -140,6 +146,7 @@ export default function AccountsAndGoals() {
                             <AddButton />
                         </>
                     }
+                    loading={debtLoansAccountsQuery.isFetching}
                 >
                     {
                         debtLoansAccountsQuery.data?.
@@ -158,6 +165,7 @@ export default function AccountsAndGoals() {
                             <AddButton />
                         </>
                     }
+                    loading={externalIncomeAccountsQuery.isFetching}
                 >
                     {
                         externalIncomeAccountsQuery.data?.
@@ -176,6 +184,7 @@ export default function AccountsAndGoals() {
                             <AddButton />
                         </>
                     }
+                    loading={capitalSavingsAccountsQuery.isFetching}
                 >
                     {
                         capitalSavingsAccountsQuery.data?.
@@ -194,6 +203,7 @@ export default function AccountsAndGoals() {
                             <AddButton />
                         </>
                     }
+                    loading={debtCreditLinesAccountsQuery.isFetching}
                 >
                     {
                         debtCreditLinesAccountsQuery.data?.
@@ -212,6 +222,7 @@ export default function AccountsAndGoals() {
                             <AddButton />
                         </>
                     }
+                    loading={externalExpensesAccountsQuery.isFetching}
                 >
                     {
                         externalExpensesAccountsQuery.data?.
