@@ -10,13 +10,10 @@ import { getGoals } from "../../api/goals"
 import Modal from "../../components/Modal"
 import Panel from "../../components/Panel"
 import SummaryCard from "../../components/SummaryCard"
-import CapitalAccountPreview from "../../components/account/preview/capital/Account"
-import DebtLoanAccountPreview from "../../components/account/preview/debt/Loan"
-import DebtCreditLineAccountPreview from "../../components/account/preview/debt/CreditLine"
-import ExternalAccountPreview from "../../components/account/preview/external/Account"
+import AccountPreviewWithNavigation from "../../components/account/preview/WithNavigation"
 
 function PanelTitle({ title }: { title: string }) {
-    return <h2 className="flex-grow flex items-center px-4">{title}</h2>
+    return <h2 className="flex-grow flex items-center px-2">{title}</h2>
 }
 
 function AddButton() {
@@ -24,7 +21,7 @@ function AddButton() {
         <p
             className="
                 flex items-center
-                px-4
+                px-2
                 cursor-pointer
                 hover:bg-neutral-100 dark:hover:bg-neutral-800
             "
@@ -132,7 +129,7 @@ export default function AccountsAndGoals() {
                     {
                         capitalNormalAccountsQuery.data?.
                             map((account) => (
-                                <CapitalAccountPreview
+                                <AccountPreviewWithNavigation
                                     key={`account:${account.id}`}
                                     account={account}
                                 />
@@ -151,7 +148,7 @@ export default function AccountsAndGoals() {
                     {
                         debtLoansAccountsQuery.data?.
                             map((account) => (
-                                <DebtLoanAccountPreview
+                                <AccountPreviewWithNavigation
                                     key={`account:${account.id}`}
                                     account={account}
                                 />
@@ -170,7 +167,7 @@ export default function AccountsAndGoals() {
                     {
                         externalIncomeAccountsQuery.data?.
                             map((account) => (
-                                <ExternalAccountPreview
+                                <AccountPreviewWithNavigation
                                     key={`account:${account.id}`}
                                     account={account}
                                 />
@@ -189,7 +186,7 @@ export default function AccountsAndGoals() {
                     {
                         capitalSavingsAccountsQuery.data?.
                             map((account) => (
-                                <CapitalAccountPreview
+                                <AccountPreviewWithNavigation
                                     key={`account:${account.id}`}
                                     account={account}
                                 />
@@ -208,7 +205,7 @@ export default function AccountsAndGoals() {
                     {
                         debtCreditLinesAccountsQuery.data?.
                             map((account) => (
-                                <DebtCreditLineAccountPreview
+                                <AccountPreviewWithNavigation
                                     key={`account:${account.id}`}
                                     account={account}
                                 />
@@ -227,7 +224,7 @@ export default function AccountsAndGoals() {
                     {
                         externalExpensesAccountsQuery.data?.
                             map((account) => (
-                                <ExternalAccountPreview
+                                <AccountPreviewWithNavigation
                                     key={`account:${account.id}`}
                                     account={account}
                                 />
