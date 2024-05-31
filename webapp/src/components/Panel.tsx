@@ -18,12 +18,12 @@ function Panel({ header, className, loading = false, children }: PropsWithChildr
             >
                 {header}
             </div>
-            <div className="flex-grow overflow-y-auto divide-y dark:divide-neutral-800">
+            <div
+                className={`flex-grow overflow-y-auto divide-y dark:divide-neutral-800 ${loading ? "flex justify-center items-center" : ""}`}
+            >
                 {
                     loading
-                        ? (<span className="flex h-full justify-center items-center">
-                            <Throbber />
-                        </span>)
+                        ? <Throbber />
                         : children
                             ? children
                             : (
