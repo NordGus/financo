@@ -6,9 +6,9 @@ interface Props {
 
 export default function Throbber({ variant = "normal" }: Props) {
     const wrapperClassName = useMemo(() => {
-        if (variant === "small") return "block h-6 h-6"
+        if (variant === "small") return "block h-5 h-5"
         if (variant === "normal") return "block h-10 h-10"
-        return "block h-14 h-14"
+        return "block h-12 h-12"
     }, [variant])
 
     const strokeWidth = 8
