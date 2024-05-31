@@ -11,21 +11,10 @@ interface Props {
 function Panel({ header, className, loading = false, children }: PropsWithChildren<Props>) {
     return (
         <div
-            className={`
-                flex flex-col
-                bg-neutral-50 dark:bg-neutral-900
-                divide-y dark:divide-neutral-800
-                border dark:border-neutral-800 rounded
-                shadow overflow-clip
-                ${className}
-            `}
+            className={`flex flex-col bg-neutral-50 dark:bg-neutral-900 divide-y dark:divide-neutral-800 border dark:border-neutral-800 rounded shadow overflow-clip ${className}`}
         >
             <div
-                className="
-                    flex justify-between items-stretch
-                    min-h-12 h-12 max-h-12
-                    divide-x dark:divide-neutral-800
-                "
+                className="flex justify-between items-stretch min-h-10 h-10 max-h-10 divide-x dark:divide-neutral-800"
             >
                 {header}
             </div>
