@@ -45,7 +45,7 @@ export default function Modal(props: ModalProps) {
                 className="fixed inset-0 flex flex-col justify-end items-center bg-neutral-500/20 opacity-0 group-data-[open]:opacity-100 backdrop-blur-sm transition-all duration-200"
             >
                 <div
-                    className="mb-2 w-[45dvw] border dark:border-neutral-800 rounded shadow overflow-clip max-h-[90dvh] translate-y-full group-data-[open]:translate-y-0 transition-all duration-200 bg-neutral-50 dark:bg-neutral-900 text-neutral-950 dark:text-neutral-50"
+                    className="mb-1 w-[45dvw] rounded shadow overflow-clip translate-y-full group-data-[open]:translate-y-0 transition-all duration-200 bg-transparent"
                 >
                     {children}
                 </div>
