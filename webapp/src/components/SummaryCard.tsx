@@ -1,6 +1,7 @@
 import { Currency } from "dinero.js"
 import currencyAmountColor from "../helpers/currencyAmountColor"
 import currencyAmountToHuman from "../helpers/currencyAmountToHuman"
+import Throbber from "./Throbber"
 
 type Money = {
     amount: number
@@ -27,7 +28,7 @@ function SummaryCard({ name, summaries, loading }: Props) {
             <p className="flex-grow">{name}</p>
             {
                 loading
-                    ? <span className="animate-pulse">loading</span>
+                    ? <Throbber variant="small" />
                     : summaries.map(({ amount, currency }, idx) => (
                         <p
                             key={`${name.toLowerCase()}:${idx}`}
