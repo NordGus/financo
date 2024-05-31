@@ -1,11 +1,14 @@
 import { PropsWithChildren, ReactNode } from "react"
 
-type Props = {
+import Throbber from "./Throbber"
+
+interface Props {
     header: ReactNode,
-    className?: string
+    className?: string,
+    loading?: boolean
 }
 
-function Panel({ header, className, children }: PropsWithChildren<Props>) {
+function Panel({ header, className, loading = false, children }: PropsWithChildren<Props>) {
     return (
         <div
             className={`
@@ -28,13 +31,17 @@ function Panel({ header, className, children }: PropsWithChildren<Props>) {
             </div>
             <div className="flex-grow overflow-y-auto divide-y dark:divide-neutral-800">
                 {
-                    children
-                        ? children
-                        : (
-                            <div className="h-full flex flex-col justify-center items-center">
-                                <span>No children</span>
-                            </div>
-                        )
+                    loading
+                        ? (<span className="flex h-full justify-center items-center">
+                            <Throbber />
+                        </span>)
+                        : children
+                            ? children
+                            : (
+                                <div className="h-full flex flex-col justify-center items-center">
+                                    <span>No children</span>
+                                </div>
+                            )
                 }
             </div>
         </div>
