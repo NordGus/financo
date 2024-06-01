@@ -37,8 +37,13 @@ export default function SavingsPanel({ className }: SavingsPanelProps) {
 
     return (
         <Panel
-            loading={currentQuery === "active" ? activeQuery.isFetching : archivedQuery.isFetching}
             className={className}
+            loading={
+                {
+                    active: activeQuery.isFetching,
+                    archived: archivedQuery.isFetching
+                }[currentQuery] || false
+            }
             header={
                 <>
                     <Title text="Savings" grow={true} />
@@ -47,18 +52,19 @@ export default function SavingsPanel({ className }: SavingsPanelProps) {
             }
             tabs={
                 <>
-                    <ActionButton
-                        text="Active"
-                        onClick={() => setCurrentQuery("active")}
-                        grow={true}
-                        active={currentQuery === "active"}
-                    />
-                    <ActionButton
-                        text="Archived"
-                        onClick={() => setCurrentQuery("archived")}
-                        grow={true}
-                        active={currentQuery === "archived"}
-                    />
+                    {
+                        ([
+                            { text: "Active", query: "active" },
+                            { text: "Archived", query: "archived" }
+                        ] as { text: string, query: Queries }[]).map(({ text, query }) => (
+                            <ActionButton
+                                text={text}
+                                onClick={() => setCurrentQuery(query)}
+                                grow={true}
+                                active={currentQuery === query}
+                            />
+                        ))
+                    }
                 </>
             }
             contents={
@@ -70,18 +76,17 @@ export default function SavingsPanel({ className }: SavingsPanelProps) {
                 }[currentQuery] || null
             }
             noContentsMessage={
-                currentQuery === "active"
-                    ? <div className="flex flex-col justify-center items-center gap-2">
+                {
+                    active: <div className="flex flex-col justify-center items-center gap-2">
                         <p>No <span className="font-bold">Savings Accounts</span> active in the system</p>
                         <Link to={`/accounts`} className="text-sm underline">
                             Please add a new one
                         </Link>
+                    </div>,
+                    archived: <div className="flex flex-col justify-center items-center gap-2">
+                        <p>No <span className="font-bold">Savings Accounts</span> archived in the system</p>
                     </div>
-                    : currentQuery === "archived"
-                        ? <div className="flex flex-col justify-center items-center gap-2">
-                            <p>No <span className="font-bold">Savings Accounts</span> archived in the system</p>
-                        </div>
-                        : undefined
+                }[currentQuery] || undefined
             }
         />
     )
