@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode } from "react"
+import { ReactNode } from "react"
 import { Link } from "react-router-dom"
 
 import Throbber from "./Throbber"
@@ -42,13 +42,15 @@ export function ActionButton({ text, onClick, active, grow = false }: ActionButt
 
 interface PanelProps {
     header: ReactNode,
+    tabs: ReactNode
+    contents: ReactNode
     className?: string,
     loading?: boolean
-    tabs?: ReactNode
+    noContentsMessage?: ReactNode | string
 }
 
 export default function Panel(
-    { header, className, tabs, children, loading = false }: PropsWithChildren<PanelProps>
+    { header, className, tabs, contents, noContentsMessage = "Empty", loading = false }: PanelProps
 ) {
     return (
         <div
@@ -67,14 +69,14 @@ export default function Panel(
                 </div>
             }
             <div
-                className={`flex-grow overflow-y-auto divide-y dark:divide-neutral-800 ${(loading || !children) ? "flex justify-center items-center" : ""}`}
+                className={`flex-grow overflow-y-auto divide-y dark:divide-neutral-800 ${(loading || !contents) ? "flex justify-center items-center" : ""}`}
             >
                 {
                     loading
                         ? <Throbber />
-                        : children
-                            ? children
-                            : <span>No children</span>
+                        : contents
+                            ? contents
+                            : <span>{noContentsMessage}</span>
                 }
             </div>
         </div>
