@@ -57,6 +57,28 @@ export async function getArchivedCapitalSavingsAccounts(): Promise<Account[]> {
     return response.json()
 }
 
+export async function getDebtLoanAccounts(): Promise<Account[]> {
+    const response = await fetch("/api/accounts/debt/loans")
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
+}
+
+export async function getArchivedDebtLoanAccounts(): Promise<Account[]> {
+    const response = await fetch("/api/accounts/debt/loans/archived")
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
+}
+
 export function getAccounts(kindSegment: string): () => Promise<Account[]> {
     return async () => {
         const response = await fetch(`/api/accounts/${kindSegment}`)
