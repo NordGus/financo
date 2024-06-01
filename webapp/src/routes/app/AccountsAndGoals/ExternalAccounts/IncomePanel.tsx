@@ -40,8 +40,8 @@ export default function IncomePanel({ className }: IncomePanelProps) {
             className={className}
             loading={
                 {
-                    active: false,
-                    archived: false
+                    active: activeQuery.isFetching,
+                    archived: archivedQuery.isFetching
                 }[currentQuery] || false
             }
             header={
@@ -69,10 +69,10 @@ export default function IncomePanel({ className }: IncomePanelProps) {
             }
             contents={
                 {
-                    active: activeQuery.data?.
+                    active: activeQuery.data?.length === 0 ? null : activeQuery.data?.
                         map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />),
-                    archived: archivedQuery.data?.
-                        map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />),
+                    archived: archivedQuery.data?.length === 0 ? null : archivedQuery.data?.
+                        map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />)
                 }[currentQuery] || null
             }
             noContentsMessage={

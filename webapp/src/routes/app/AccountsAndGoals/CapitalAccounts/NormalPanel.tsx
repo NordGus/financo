@@ -69,9 +69,9 @@ export default function NormalPanel({ className }: NormalPanelProps) {
             }
             contents={
                 {
-                    active: activeQuery.data?.
+                    active: activeQuery.data?.length === 0 ? null : activeQuery.data?.
                         map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />),
-                    archived: archivedQuery.data?.
+                    archived: archivedQuery.data?.length === 0 ? null : archivedQuery.data?.
                         map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />)
                 }[currentQuery] || null
             }
