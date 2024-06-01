@@ -11,16 +11,11 @@ import Panel, { ActionLink, Title } from "../../../components/Panel"
 import SummaryCard from "../../../components/SummaryCard"
 import AccountPreviewWithNavigation from "../../../components/account/preview/WithNavigation"
 import GoalsPanel from "./GoalsPanel"
+import CapitalAccounts from "./CapitalAccounts"
 
 const summaryQueryOptions = {
     queryKey: ['accounts', 'summary'],
     queryFn: getSummary,
-    staleTime: staleTimeDefault
-}
-
-const activeCapitalNormalAccountsQueryOptions = {
-    queryKey: ['accounts', 'capital', 'normal', 'active'],
-    queryFn: getAccounts('capital/normal'),
     staleTime: staleTimeDefault
 }
 
@@ -56,7 +51,6 @@ const activeExternalExpensesAccountsQuery = {
 
 export default function AccountsAndGoals() {
     const summaryQuery = useQuery(summaryQueryOptions)
-    const capitalNormalAccountsQuery = useQuery(activeCapitalNormalAccountsQueryOptions)
     const capitalSavingsAccountsQuery = useQuery(activeCapitalSavingsAccountsQueryOptions)
     const debtLoansAccountsQuery = useQuery(activeDebtLoansAccountsQueryOptions)
     const debtCreditLinesAccountsQuery = useQuery(activeCreditLinesAccountsQueryOptions)
@@ -91,25 +85,7 @@ export default function AccountsAndGoals() {
                     summaries={summaryQuery?.data?.total || []}
                 />
                 <GoalsPanel className="row-span-3" />
-                <Panel
-                    header={
-                        <>
-                            <Title text="Bank Accounts" grow={true} />
-                            <ActionLink to={"/accounts"} text="Add" />
-                        </>
-                    }
-                    loading={capitalNormalAccountsQuery.isFetching}
-                >
-                    {
-                        capitalNormalAccountsQuery.data?.
-                            map((account) => (
-                                <AccountPreviewWithNavigation
-                                    key={`account:${account.id}`}
-                                    account={account}
-                                />
-                            ))
-                    }
-                </Panel>
+                <CapitalAccounts.NormalPanel />
                 <Panel
                     header={
                         <>
