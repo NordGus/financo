@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 
 import Account, { Kind } from "@/types/Account";
-import currencyAmountColor from "../../../helpers/currencyAmountColor";
-import currencyAmountToHuman from "../../../helpers/currencyAmountToHuman";
-import Progress from "../../Progress";
+import currencyAmountColor from "@helpers/currencyAmountColor";
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import Progress from "@components/Progress";
 
 interface Props {
     account: Account

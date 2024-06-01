@@ -1,6 +1,6 @@
 import { Currency } from "dinero.js"
-import currencyAmountColor from "../helpers/currencyAmountColor"
-import currencyAmountToHuman from "../helpers/currencyAmountToHuman"
+import currencyAmountColor from "@helpers/currencyAmountColor"
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman"
 import Throbber from "./Throbber"
 
 interface Money {
