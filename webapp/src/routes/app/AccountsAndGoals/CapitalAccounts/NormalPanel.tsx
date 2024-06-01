@@ -55,6 +55,7 @@ export default function NormalPanel({ className }: NormalPanelProps) {
                             { text: "Archived", query: "archived" }
                         ] as { text: string, query: Queries }[]).map(({ text, query }) => (
                             <ActionButton
+                                key={`accounts:capital:normal:tab:${query}`}
                                 text={text}
                                 onClick={() => setCurrentQuery(query)}
                                 grow={true}

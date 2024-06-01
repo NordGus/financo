@@ -55,6 +55,7 @@ export default function ExpensesPanel({ className }: ExpensesPanelProps) {
                             { text: "Archived", query: "archived" }
                         ] as { text: string, query: Queries }[]).map(({ text, query }) => (
                             <ActionButton
+                                key={`accounts:external:expenses:tab:${query}`}
                                 text={text}
                                 onClick={() => setCurrentQuery(query)}
                                 grow={true}

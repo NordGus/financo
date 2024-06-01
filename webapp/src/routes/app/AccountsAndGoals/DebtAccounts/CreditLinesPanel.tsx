@@ -55,6 +55,7 @@ export default function CreditLinesPanel({ className }: CreditLinesPanelProps) {
                             { text: "Archived", query: "archived" }
                         ] as { text: string, query: Queries }[]).map(({ text, query }) => (
                             <ActionButton
+                                key={`accounts:debt:credit:tab:${query}`}
                                 text={text}
                                 onClick={() => setCurrentQuery(query)}
                                 grow={true}

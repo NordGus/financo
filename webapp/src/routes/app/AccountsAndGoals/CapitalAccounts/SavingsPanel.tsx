@@ -55,6 +55,7 @@ export default function SavingsPanel({ className }: SavingsPanelProps) {
                             { text: "Archived", query: "archived" }
                         ] as { text: string, query: Queries }[]).map(({ text, query }) => (
                             <ActionButton
+                                key={`accounts:capital:savings:tab:${query}`}
                                 text={text}
                                 onClick={() => setCurrentQuery(query)}
                                 grow={true}

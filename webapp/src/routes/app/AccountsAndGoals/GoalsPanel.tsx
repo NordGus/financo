@@ -64,6 +64,7 @@ export default function GoalsPanel({ className }: GoalsPanelProps) {
                             { text: "Reached", query: "reached" },
                         ] as { text: string, query: Queries }[]).map(({ text, query }) => (
                             <ActionButton
+                                key={`goals:tab:${query}`}
                                 text={text}
                                 onClick={() => setCurrentQuery(query)}
                                 active={currentQuery === query}

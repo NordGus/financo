@@ -55,6 +55,7 @@ export default function IncomePanel({ className }: IncomePanelProps) {
                             { text: "Archived", query: "archived" }
                         ] as { text: string, query: Queries }[]).map(({ text, query }) => (
                             <ActionButton
+                                key={`accounts:external:income:tab:${query}`}
                                 text={text}
                                 onClick={() => setCurrentQuery(query)}
                                 grow={true}
