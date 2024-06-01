@@ -5,13 +5,12 @@ import { staleTimeDefault } from "../../../queyClient"
 
 import { getSummary } from "../../../api/summary"
 import { getAccounts } from "../../../api/accounts"
-import { getArchivedGoals, getGoals, getReachedGoals } from "../../../api/goals"
 
 import Modal from "../../../components/Modal"
-import Panel, { ActionButton, ActionLink, Title } from "../../../components/Panel"
+import Panel, { ActionLink, Title } from "../../../components/Panel"
 import SummaryCard from "../../../components/SummaryCard"
 import AccountPreviewWithNavigation from "../../../components/account/preview/WithNavigation"
-import GoalPreviewWithNavigation from "../../../components/goal/preview/WithNavigation"
+import GoalsPanel from "./GoalsPanel"
 
 const summaryQueryOptions = {
     queryKey: ['accounts', 'summary'],
@@ -55,26 +54,6 @@ const activeExternalExpensesAccountsQuery = {
     staleTime: staleTimeDefault
 }
 
-const activeGoalsQueryOptions = {
-    queryKey: ['goals', 'active'],
-    queryFn: getGoals,
-    staleTime: staleTimeDefault
-}
-
-const archivedGoalsQueryOptions = {
-    queryKey: ['goals', 'archived'],
-    queryFn: getArchivedGoals,
-    staleTime: staleTimeDefault
-}
-
-const reachedGoalsQueryOptions = {
-    queryKey: ['goals', 'reached'],
-    queryFn: getReachedGoals,
-    staleTime: staleTimeDefault
-}
-
-type GoalsQuery = "active" | "archived" | "reached"
-
 export default function AccountsAndGoals() {
     const summaryQuery = useQuery(summaryQueryOptions)
     const capitalNormalAccountsQuery = useQuery(activeCapitalNormalAccountsQueryOptions)
@@ -84,15 +63,8 @@ export default function AccountsAndGoals() {
     const externalIncomeAccountsQuery = useQuery(activeExternalIcomeAccountsQuery)
     const externalExpensesAccountsQuery = useQuery(activeExternalExpensesAccountsQuery)
 
-    // goals queries
-    const activeGoalsQuery = useQuery(activeGoalsQueryOptions)
-    const archivedGoalsQuery = useQuery(archivedGoalsQueryOptions)
-    const reachedGoalsQuery = useQuery(reachedGoalsQueryOptions)
-
     const outlet = useOutlet()
     const [outletCache, setOutletCache] = useState(outlet)
-
-    const [currentGoalsQuery, setCurrentGoalsQuery] = useState<GoalsQuery>("active")
 
     useEffect(() => {
         if (outlet && !outletCache) setOutletCache(outlet)
@@ -118,70 +90,7 @@ export default function AccountsAndGoals() {
                     loading={summaryQuery.isFetching}
                     summaries={summaryQuery?.data?.total || []}
                 />
-                <Panel
-                    header={
-                        <>
-                            <Title text="Goals" grow={true} />
-                            <ActionLink to={"/accounts"} text="Add" />
-                        </>
-                    }
-                    tabs={
-                        <>
-                            <ActionButton
-                                text="Active"
-                                onClick={() => setCurrentGoalsQuery("active")}
-                                active={currentGoalsQuery === "active"}
-                                grow={true}
-                            />
-                            <ActionButton
-                                text="Archived"
-                                onClick={() => setCurrentGoalsQuery("archived")}
-                                active={currentGoalsQuery === "archived"}
-                                grow={true}
-                            />
-                            <ActionButton
-                                text="Reached"
-                                onClick={() => setCurrentGoalsQuery("reached")}
-                                active={currentGoalsQuery === "reached"}
-                                grow={true}
-                            />
-                        </>
-                    }
-                    className="row-span-3"
-                    loading={
-                        currentGoalsQuery === "active"
-                            ? activeGoalsQuery.isFetching
-                            : currentGoalsQuery === "archived"
-                                ? archivedGoalsQuery.isFetching
-                                : reachedGoalsQuery.isFetching
-                    }
-                >
-                    {
-                        currentGoalsQuery === "active"
-                            ? activeGoalsQuery.data?.
-                                map((goal) => (
-                                    <GoalPreviewWithNavigation
-                                        key={`goal:${goal.id}`}
-                                        goal={goal}
-                                    />
-                                ))
-                            : currentGoalsQuery === "archived"
-                                ? archivedGoalsQuery.data?.
-                                    map((goal) => (
-                                        <GoalPreviewWithNavigation
-                                            key={`goal:${goal.id}`}
-                                            goal={goal}
-                                        />
-                                    ))
-                                : reachedGoalsQuery.data?.
-                                    map((goal) => (
-                                        <GoalPreviewWithNavigation
-                                            key={`goal:${goal.id}`}
-                                            goal={goal}
-                                        />
-                                    ))
-                    }
-                </Panel>
+                <GoalsPanel className="row-span-3" />
                 <Panel
                     header={
                         <>
