@@ -1,9 +1,12 @@
+import { Currency } from "dinero.js"
+
 export default interface Goal {
     id: number
     name: string
     description: string
     goal: number
-    currency: string
+    balance: number
+    currency: Currency
     position: number
     archived: boolean
     fulfilled: {

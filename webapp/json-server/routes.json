@@ -4,5 +4,8 @@
     "/accounts/debt/loans": "/accounts?kind_like=debt_(loan|personal)",
     "/accounts/debt/credit": "/accounts?kind=debt_credit",
     "/accounts/external/income": "/accounts?kind=external_income",
-    "/accounts/external/expenses": "/accounts?kind=external_expense"
+    "/accounts/external/expenses": "/accounts?kind=external_expense",
+    "/goals": "/goals?archived=false&fulfilled.reached=false&_sort=position,createdAt&_order=asc,asc",
+    "/goals/archived": "/goals?archived=true&_sort=position,updatedAt&_order=asc,asc",
+    "/goals/reached": "/goals?fulfilled.reached=true&_sort=fulfilled.at,createdAt&_order=desc,asc"
 }
