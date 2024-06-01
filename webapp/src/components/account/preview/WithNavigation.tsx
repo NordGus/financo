@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import Account, { Kind } from "../../../types/Account";
+import Account, { Kind } from "@/types/Account";
 import currencyAmountColor from "../../../helpers/currencyAmountColor";
 import currencyAmountToHuman from "../../../helpers/currencyAmountToHuman";
 import Progress from "../../Progress";

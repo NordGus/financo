@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { queryClient, staleTimeDefault } from "../../../queyClient";
 import { getAccount } from "../../../api/accounts";
-import { Kind } from "../../../types/Account";
+import { Kind } from "@/types/Account";
 
 import Panel from "@components/Panel";
 

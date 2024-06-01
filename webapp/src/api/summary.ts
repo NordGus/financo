@@ -1,4 +1,4 @@
-import Summary from "../types/Summary";
+import Summary from "@/types/Summary";
 
 export async function getSummary(): Promise<Summary> {
     const response = await fetch("/api/summary")

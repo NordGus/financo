@@ -1,4 +1,4 @@
-import Account from "../types/Account"
+import Account from "@/types/Account"
 
 export function getAccount(id: string): () => Promise<Account> {
     return async () => {

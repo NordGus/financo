@@ -1,4 +1,4 @@
-import Goal from "../types/Goal";
+import Goal from "@/types/Goal";
 
 export async function getGoals(): Promise<Goal[]> {
     const response = await fetch("/api/goals")

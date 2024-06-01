@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import Goal from "../../../types/Goal";
+import Goal from "@/types/Goal";
 import currencyAmountColor from "../../../helpers/currencyAmountColor";
 import currencyAmountToHuman from "../../../helpers/currencyAmountToHuman";
-import Progress from "../../Progress";
+import Progress from "@components/Progress";
 
 interface Props {
     goal: Goal
