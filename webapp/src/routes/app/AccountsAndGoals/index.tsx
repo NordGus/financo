@@ -4,12 +4,9 @@ import { useEffect, useState } from "react"
 import { staleTimeDefault } from "../../../queyClient"
 
 import { getSummary } from "../../../api/summary"
-import { getAccounts } from "../../../api/accounts"
 
 import Modal from "@components/Modal"
-import Panel, { ActionLink, Title } from "@components/Panel"
 import SummaryCard from "@components/SummaryCard"
-import AccountPreviewWithNavigation from "@components/account/preview/WithNavigation"
 import GoalsPanel from "./GoalsPanel"
 import CapitalAccounts from "./CapitalAccounts"
 import DebtAccounts from "./DebtAccounts"
@@ -21,23 +18,8 @@ const summaryQueryOptions = {
     staleTime: staleTimeDefault
 }
 
-const activeExternalIcomeAccountsQuery = {
-    queryKey: ['accounts', 'external', 'income', 'active'],
-    queryFn: getAccounts('external/income'),
-    staleTime: staleTimeDefault
-}
-
-const activeExternalExpensesAccountsQuery = {
-    queryKey: ['accounts', 'external', 'expenses', 'active'],
-    queryFn: getAccounts('external/expenses'),
-    staleTime: staleTimeDefault
-}
-
 export default function AccountsAndGoals() {
     const summaryQuery = useQuery(summaryQueryOptions)
-
-    const externalExpensesAccountsQuery = useQuery(activeExternalExpensesAccountsQuery)
-
     const outlet = useOutlet()
     const [outletCache, setOutletCache] = useState(outlet)
 
@@ -71,25 +53,7 @@ export default function AccountsAndGoals() {
                 <ExternalAccounts.IncomePanel />
                 <CapitalAccounts.SavingsPanel />
                 <DebtAccounts.CreditLinesPanel />
-                <Panel
-                    header={
-                        <>
-                            <Title text="Expenses" grow={true} />
-                            <ActionLink to={"/accounts"} text="Add" />
-                        </>
-                    }
-                    loading={externalExpensesAccountsQuery.isFetching}
-                >
-                    {
-                        externalExpensesAccountsQuery.data?.
-                            map((account) => (
-                                <AccountPreviewWithNavigation
-                                    key={`account:${account.id}`}
-                                    account={account}
-                                />
-                            ))
-                    }
-                </Panel>
+                <ExternalAccounts.ExpensesPanel />
             </div>
             <Modal open={!!outlet} onClose={() => setOutletCache(null)}>
                 {

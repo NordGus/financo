@@ -123,6 +123,28 @@ export async function getArchivedExternalIncomeAccounts(): Promise<Account[]> {
     return response.json()
 }
 
+export async function getExternalExpenseAccounts(): Promise<Account[]> {
+    const response = await fetch("/api/accounts/external/expenses")
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
+}
+
+export async function getArchivedExternalExpenseAccounts(): Promise<Account[]> {
+    const response = await fetch("/api/accounts/external/expenses/archived")
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
+}
+
 export function getAccounts(kindSegment: string): () => Promise<Account[]> {
     return async () => {
         const response = await fetch(`/api/accounts/${kindSegment}`)
