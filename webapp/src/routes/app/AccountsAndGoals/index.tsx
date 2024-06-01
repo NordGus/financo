@@ -1,32 +1,17 @@
 import { useQuery } from "@tanstack/react-query"
-import { Link, Outlet, useOutlet } from "react-router-dom"
+import { Outlet, useOutlet } from "react-router-dom"
 import { useEffect, useState } from "react"
-import { staleTimeDefault } from "../../queyClient"
+import { staleTimeDefault } from "../../../queyClient"
 
-import { getSummary } from "../../api/summary"
-import { getAccounts } from "../../api/accounts"
-import { getArchivedGoals, getGoals, getReachedGoals } from "../../api/goals"
+import { getSummary } from "../../../api/summary"
+import { getAccounts } from "../../../api/accounts"
+import { getArchivedGoals, getGoals, getReachedGoals } from "../../../api/goals"
 
-import Modal from "../../components/Modal"
-import Panel from "../../components/Panel"
-import SummaryCard from "../../components/SummaryCard"
-import AccountPreviewWithNavigation from "../../components/account/preview/WithNavigation"
-import GoalPreviewWithNavigation from "../../components/goal/preview/WithNavigation"
-
-function PanelTitle({ title }: { title: string }) {
-    return <h2 className="flex-grow flex items-center px-2">{title}</h2>
-}
-
-function HeaderButton(
-    {
-        onClick, to, name, active = false, grow = false
-    }: { name: string, onClick?: () => void, to?: string, active?: boolean, grow?: boolean }
-) {
-    const className = `flex items-center justify-center px-4 cursor-pointer ${active ? "bg-neutral-100 dark:bg-neutral-800" : "hover:bg-neutral-100 dark:hover:bg-neutral-800"} ${grow ? "flex-grow" : ""}`
-
-    if (!!to) return <Link to={to} className={className}>{name}</Link>
-    return <p className={className} onClick={onClick!}>{name}</p>
-}
+import Modal from "../../../components/Modal"
+import Panel, { ActionButton, ActionLink, Title } from "../../../components/Panel"
+import SummaryCard from "../../../components/SummaryCard"
+import AccountPreviewWithNavigation from "../../../components/account/preview/WithNavigation"
+import GoalPreviewWithNavigation from "../../../components/goal/preview/WithNavigation"
 
 const summaryQueryOptions = {
     queryKey: ['accounts', 'summary'],
@@ -136,26 +121,26 @@ export default function AccountsAndGoals() {
                 <Panel
                     header={
                         <>
-                            <PanelTitle title="Goals" />
-                            <HeaderButton to={"/accounts"} name="Add" />
+                            <Title text="Goals" grow={true} />
+                            <ActionLink to={"/accounts"} text="Add" />
                         </>
                     }
                     tabs={
                         <>
-                            <HeaderButton
-                                name="Active"
+                            <ActionButton
+                                text="Active"
                                 onClick={() => setCurrentGoalsQuery("active")}
                                 active={currentGoalsQuery === "active"}
                                 grow={true}
                             />
-                            <HeaderButton
-                                name="Archived"
+                            <ActionButton
+                                text="Archived"
                                 onClick={() => setCurrentGoalsQuery("archived")}
                                 active={currentGoalsQuery === "archived"}
                                 grow={true}
                             />
-                            <HeaderButton
-                                name="Reached"
+                            <ActionButton
+                                text="Reached"
                                 onClick={() => setCurrentGoalsQuery("reached")}
                                 active={currentGoalsQuery === "reached"}
                                 grow={true}
@@ -200,8 +185,8 @@ export default function AccountsAndGoals() {
                 <Panel
                     header={
                         <>
-                            <PanelTitle title="Bank Accounts" />
-                            <HeaderButton to={"/accounts"} name="Add" />
+                            <Title text="Bank Accounts" grow={true} />
+                            <ActionLink to={"/accounts"} text="Add" />
                         </>
                     }
                     loading={capitalNormalAccountsQuery.isFetching}
@@ -219,8 +204,8 @@ export default function AccountsAndGoals() {
                 <Panel
                     header={
                         <>
-                            <PanelTitle title="Loans" />
-                            <HeaderButton to={"/accounts"} name="Add" />
+                            <Title text="Loans" grow={true} />
+                            <ActionLink to={"/accounts"} text="Add" />
                         </>
                     }
                     loading={debtLoansAccountsQuery.isFetching}
@@ -238,8 +223,8 @@ export default function AccountsAndGoals() {
                 <Panel
                     header={
                         <>
-                            <PanelTitle title="Income" />
-                            <HeaderButton to={"/accounts"} name="Add" />
+                            <Title text="Income" grow={true} />
+                            <ActionLink to={"/accounts"} text="Add" />
                         </>
                     }
                     loading={externalIncomeAccountsQuery.isFetching}
@@ -257,8 +242,8 @@ export default function AccountsAndGoals() {
                 <Panel
                     header={
                         <>
-                            <PanelTitle title="Savings" />
-                            <HeaderButton to={"/accounts"} name="Add" />
+                            <Title text="Savings" grow={true} />
+                            <ActionLink to={"/accounts"} text="Add" />
                         </>
                     }
                     loading={capitalSavingsAccountsQuery.isFetching}
@@ -276,8 +261,8 @@ export default function AccountsAndGoals() {
                 <Panel
                     header={
                         <>
-                            <PanelTitle title="Credit Lines" />
-                            <HeaderButton to={"/accounts"} name="Add" />
+                            <Title text="Credit Lines" grow={true} />
+                            <ActionLink to={"/accounts"} text="Add" />
                         </>
                     }
                     loading={debtCreditLinesAccountsQuery.isFetching}
@@ -295,8 +280,8 @@ export default function AccountsAndGoals() {
                 <Panel
                     header={
                         <>
-                            <PanelTitle title="Expenses" />
-                            <HeaderButton to={"/accounts"} name="Add" />
+                            <Title text="Expenses" grow={true} />
+                            <ActionLink to={"/accounts"} text="Add" />
                         </>
                     }
                     loading={externalExpensesAccountsQuery.isFetching}
