@@ -19,12 +19,6 @@ const summaryQueryOptions = {
     staleTime: staleTimeDefault
 }
 
-const activeCapitalSavingsAccountsQueryOptions = {
-    queryKey: ['accounts', 'capital', 'savings', 'active'],
-    queryFn: getAccounts('capital/savings'),
-    staleTime: staleTimeDefault
-}
-
 const activeDebtLoansAccountsQueryOptions = {
     queryKey: ['accounts', 'debt', 'loans', 'active'],
     queryFn: getAccounts('debt/loans'),
@@ -51,7 +45,7 @@ const activeExternalExpensesAccountsQuery = {
 
 export default function AccountsAndGoals() {
     const summaryQuery = useQuery(summaryQueryOptions)
-    const capitalSavingsAccountsQuery = useQuery(activeCapitalSavingsAccountsQueryOptions)
+
     const debtLoansAccountsQuery = useQuery(activeDebtLoansAccountsQueryOptions)
     const debtCreditLinesAccountsQuery = useQuery(activeCreditLinesAccountsQueryOptions)
     const externalIncomeAccountsQuery = useQuery(activeExternalIcomeAccountsQuery)
@@ -124,25 +118,7 @@ export default function AccountsAndGoals() {
                             ))
                     }
                 </Panel>
-                <Panel
-                    header={
-                        <>
-                            <Title text="Savings" grow={true} />
-                            <ActionLink to={"/accounts"} text="Add" />
-                        </>
-                    }
-                    loading={capitalSavingsAccountsQuery.isFetching}
-                >
-                    {
-                        capitalSavingsAccountsQuery.data?.
-                            map((account) => (
-                                <AccountPreviewWithNavigation
-                                    key={`account:${account.id}`}
-                                    account={account}
-                                />
-                            ))
-                    }
-                </Panel>
+                <CapitalAccounts.SavingsPanel />
                 <Panel
                     header={
                         <>
