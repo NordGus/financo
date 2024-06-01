@@ -6,9 +6,10 @@ interface Props {
     header: ReactNode,
     className?: string,
     loading?: boolean
+    tabs?: ReactNode
 }
 
-function Panel({ header, className, loading = false, children }: PropsWithChildren<Props>) {
+function Panel({ header, className, loading = false, tabs, children }: PropsWithChildren<Props>) {
     return (
         <div
             className={`flex flex-col bg-neutral-50 dark:bg-neutral-900 divide-y dark:divide-neutral-800 border dark:border-neutral-800 rounded shadow overflow-clip text-neutral-950 dark:text-neutral-50 ${className}`}
@@ -18,6 +19,13 @@ function Panel({ header, className, loading = false, children }: PropsWithChildr
             >
                 {header}
             </div>
+            {
+                tabs && <div
+                    className="flex justify-between items-stretch min-h-10 h-10 max-h-10 divide-x dark:divide-neutral-800"
+                >
+                    {tabs}
+                </div>
+            }
             <div
                 className={`flex-grow overflow-y-auto divide-y dark:divide-neutral-800 ${(loading || !children) ? "flex justify-center items-center" : ""}`}
             >
