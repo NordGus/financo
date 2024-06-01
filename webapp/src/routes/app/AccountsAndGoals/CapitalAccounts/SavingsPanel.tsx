@@ -3,10 +3,7 @@ import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 
 import { staleTimeDefault } from "../../../../queyClient"
-import {
-    getArchivedCapitalSavingsAccounts,
-    getCapitalSavingsAccounts
-} from "../../../../api/accounts"
+import { getArchivedCapitalSavingsAccounts, getCapitalSavingsAccounts } from "@api/accounts"
 
 import Panel, { ActionButton, ActionLink, Title } from "@components/Panel"
 import WithNavigation from "@components/account/preview/WithNavigation"

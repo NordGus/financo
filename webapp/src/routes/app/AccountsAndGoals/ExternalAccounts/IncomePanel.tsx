@@ -3,10 +3,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 
 import { staleTimeDefault } from "../../../../queyClient"
-import {
-    getArchivedExternalIncomeAccounts,
-    getExternalIncomeAccounts
-} from "../../../../api/accounts"
+import { getArchivedExternalIncomeAccounts, getExternalIncomeAccounts } from "@api/accounts"
 
 import Panel, { ActionButton, ActionLink, Title } from "@components/Panel"
 import WithNavigation from "@components/account/preview/WithNavigation"

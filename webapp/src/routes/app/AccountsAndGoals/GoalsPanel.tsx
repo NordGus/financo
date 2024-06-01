@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
-import { getArchivedGoals, getGoals, getReachedGoals } from "../../../api/goals"
+import { getArchivedGoals, getGoals, getReachedGoals } from "@api/goals"
 import { staleTimeDefault } from "../../../queyClient"
 
 import Panel, { ActionButton, ActionLink, Title } from "@components/Panel"

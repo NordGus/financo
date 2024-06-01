@@ -30,6 +30,9 @@
       ],
       "@helpers/*": [
         "./src/helpers/*"
+      ],
+      "@api/*": [
+        "./src/api/*"
       ]
     }
   },

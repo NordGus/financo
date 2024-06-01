@@ -3,7 +3,7 @@ import { Outlet, useOutlet } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { staleTimeDefault } from "../../../queyClient"
 
-import { getSummary } from "../../../api/summary"
+import { getSummary } from "@api/summary"
 
 import Modal from "@components/Modal"
 import SummaryCard from "@components/SummaryCard"
