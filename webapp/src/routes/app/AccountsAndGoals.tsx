@@ -5,7 +5,7 @@ import { staleTimeDefault } from "../../queyClient"
 
 import { getSummary } from "../../api/summary"
 import { getAccounts } from "../../api/accounts"
-import { getGoals } from "../../api/goals"
+import { getArchivedGoals, getGoals, getReachedGoals } from "../../api/goals"
 
 import Modal from "../../components/Modal"
 import Panel from "../../components/Panel"
@@ -71,12 +71,24 @@ const activeExternalExpensesAccountsQuery = {
 }
 
 const activeGoalsQueryOptions = {
-    queryKey: ['goals'],
+    queryKey: ['goals', 'active'],
     queryFn: getGoals,
     staleTime: staleTimeDefault
 }
 
-type GoalsQueries = "active" | "archived" | "reached"
+const archivedGoalsQueryOptions = {
+    queryKey: ['goals', 'archived'],
+    queryFn: getArchivedGoals,
+    staleTime: staleTimeDefault
+}
+
+const reachedGoalsQueryOptions = {
+    queryKey: ['goals', 'reached'],
+    queryFn: getReachedGoals,
+    staleTime: staleTimeDefault
+}
+
+type GoalsQuery = "active" | "archived" | "reached"
 
 export default function AccountsAndGoals() {
     const summaryQuery = useQuery(summaryQueryOptions)
@@ -86,20 +98,20 @@ export default function AccountsAndGoals() {
     const debtCreditLinesAccountsQuery = useQuery(activeCreditLinesAccountsQueryOptions)
     const externalIncomeAccountsQuery = useQuery(activeExternalIcomeAccountsQuery)
     const externalExpensesAccountsQuery = useQuery(activeExternalExpensesAccountsQuery)
-    const goalsQuery = useQuery(activeGoalsQueryOptions)
+
+    // goals queries
+    const activeGoalsQuery = useQuery(activeGoalsQueryOptions)
+    const archivedGoalsQuery = useQuery(archivedGoalsQueryOptions)
+    const reachedGoalsQuery = useQuery(reachedGoalsQueryOptions)
 
     const outlet = useOutlet()
     const [outletCache, setOutletCache] = useState(outlet)
 
-    const [currentGoalsQuery, setCurrentGoalsQuery] = useState<GoalsQueries>("active")
+    const [currentGoalsQuery, setCurrentGoalsQuery] = useState<GoalsQuery>("active")
 
     useEffect(() => {
         if (outlet && !outletCache) setOutletCache(outlet)
     }, [outlet, outletCache])
-
-    useEffect(() => {
-        console.info(currentGoalsQuery)
-    }, [currentGoalsQuery])
 
     return (
         <>
@@ -151,13 +163,38 @@ export default function AccountsAndGoals() {
                         </>
                     }
                     className="row-span-3"
-                    loading={goalsQuery.isFetching}
+                    loading={
+                        currentGoalsQuery === "active"
+                            ? activeGoalsQuery.isFetching
+                            : currentGoalsQuery === "archived"
+                                ? archivedGoalsQuery.isFetching
+                                : reachedGoalsQuery.isFetching
+                    }
                 >
                     {
-                        goalsQuery.data?.
-                            map((goal) => (
-                                <GoalPreviewWithNavigation key={`goal:${goal.id}`} goal={goal} />
-                            ))
+                        currentGoalsQuery === "active"
+                            ? activeGoalsQuery.data?.
+                                map((goal) => (
+                                    <GoalPreviewWithNavigation
+                                        key={`goal:${goal.id}`}
+                                        goal={goal}
+                                    />
+                                ))
+                            : currentGoalsQuery === "archived"
+                                ? archivedGoalsQuery.data?.
+                                    map((goal) => (
+                                        <GoalPreviewWithNavigation
+                                            key={`goal:${goal.id}`}
+                                            goal={goal}
+                                        />
+                                    ))
+                                : reachedGoalsQuery.data?.
+                                    map((goal) => (
+                                        <GoalPreviewWithNavigation
+                                            key={`goal:${goal.id}`}
+                                            goal={goal}
+                                        />
+                                    ))
                     }
                 </Panel>
                 <Panel
