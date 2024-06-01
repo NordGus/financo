@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { staleTimeDefault } from "@queries/Client"
 import { getArchivedCapitalSavingsAccounts, getCapitalSavingsAccounts } from "@api/accounts"
 
-import Panel, { ActionButton, ActionLink, Title } from "@components/Panel"
+import Panel from "@components/Panel"
 import WithNavigation from "@components/account/preview/WithNavigation"
 
 type Queries = "active" | "archived"
@@ -33,7 +33,8 @@ export default function SavingsPanel({ className }: SavingsPanelProps) {
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 
     return (
-        <Panel
+        <Panel.WithTabs
+            grow={true}
             className={className}
             loading={
                 {
@@ -43,28 +44,24 @@ export default function SavingsPanel({ className }: SavingsPanelProps) {
             }
             header={
                 <>
-                    <Title text="Savings" grow={true} />
-                    <ActionLink to={"/accounts"} text="Add" />
+                    <Panel.Components.Title text="Savings" grow={true} />
+                    <Panel.Components.ActionLink to={"/accounts"} text="Add" />
                 </>
             }
-            tabs={
-                <>
-                    {
-                        ([
-                            { text: "Active", query: "active" },
-                            { text: "Archived", query: "archived" }
-                        ] as { text: string, query: Queries }[]).map(({ text, query }) => (
-                            <ActionButton
-                                key={`accounts:capital:savings:tab:${query}`}
-                                text={text}
-                                onClick={() => setCurrentQuery(query)}
-                                grow={true}
-                                active={currentQuery === query}
-                            />
-                        ))
-                    }
-                </>
-            }
+            tabs={[
+                {
+                    key: "accounts:capital:savings:tab:active",
+                    text: "Active",
+                    active: currentQuery === "active",
+                    onClick: () => setCurrentQuery("active")
+                },
+                {
+                    key: "accounts:capital:savings:tab:archived",
+                    text: "Archived",
+                    active: currentQuery === "archived",
+                    onClick: () => setCurrentQuery("archived")
+                }
+            ]}
             contents={
                 {
                     active: activeQuery.data?.length === 0 ? null : activeQuery.data?.

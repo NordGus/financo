@@ -5,7 +5,7 @@ import Root from '@routes/app/Root';
 import AccountsAndGoals from '@routes/app/AccountsAndGoals';
 import Books from '@routes/app/Books';
 
-import AccountPage, { loader as accountPageLoader } from "@routes/app/AccountsAndGoals/accounts/Account";
+import AccountPage from "@routes/app/AccountsAndGoals/accounts/Account";
 
 import ErrorPage from '@routes/ErrorPage';
 
@@ -25,7 +25,6 @@ const router = createBrowserRouter([
                 children: [
                     {
                         path: ":id",
-                        loader: accountPageLoader,
                         element: <AccountPage />
                     }
                 ]

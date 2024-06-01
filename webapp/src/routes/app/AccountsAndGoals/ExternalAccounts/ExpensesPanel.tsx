@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 import { staleTimeDefault } from "@queries/Client"
 import { getArchivedExternalExpenseAccounts, getExternalExpenseAccounts } from "@api/accounts"
 
-import Panel, { ActionButton, ActionLink, Title } from "@components/Panel"
+import Panel from "@components/Panel"
 import WithNavigation from "@components/account/preview/WithNavigation"
 
 type Queries = "active" | "archived"
@@ -33,7 +33,8 @@ export default function ExpensesPanel({ className }: ExpensesPanelProps) {
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 
     return (
-        <Panel
+        <Panel.WithTabs
+            grow={true}
             className={className}
             loading={
                 {
@@ -43,28 +44,24 @@ export default function ExpensesPanel({ className }: ExpensesPanelProps) {
             }
             header={
                 <>
-                    <Title text="Expenses" grow={true} />
-                    <ActionLink to={"/accounts"} text="Add" />
+                    <Panel.Components.Title text="Expenses" grow={true} />
+                    <Panel.Components.ActionLink to={"/accounts"} text="Add" />
                 </>
             }
-            tabs={
-                <>
-                    {
-                        ([
-                            { text: "Active", query: "active" },
-                            { text: "Archived", query: "archived" }
-                        ] as { text: string, query: Queries }[]).map(({ text, query }) => (
-                            <ActionButton
-                                key={`accounts:external:expenses:tab:${query}`}
-                                text={text}
-                                onClick={() => setCurrentQuery(query)}
-                                grow={true}
-                                active={currentQuery === query}
-                            />
-                        ))
-                    }
-                </>
-            }
+            tabs={[
+                {
+                    key: "accounts:external:expenses:tab:active",
+                    text: "Active",
+                    active: currentQuery === "active",
+                    onClick: () => setCurrentQuery("active")
+                },
+                {
+                    key: "accounts:external:expenses:tab:archived",
+                    text: "Archived",
+                    active: currentQuery === "archived",
+                    onClick: () => setCurrentQuery("archived")
+                }
+            ]}
             contents={
                 {
                     active: activeQuery.data?.length === 0 ? null : activeQuery.data?.

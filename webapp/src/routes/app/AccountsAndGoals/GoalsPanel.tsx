@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 import { getArchivedGoals, getGoals, getReachedGoals } from "@api/goals"
 import { staleTimeDefault } from "@queries/Client"
 
-import Panel, { ActionButton, ActionLink, Title } from "@components/Panel"
+import Panel from "@components/Panel"
 import WithNavigation from "@components/goal/preview/WithNavigation"
 
 type Queries = "active" | "archived" | "reached"
@@ -40,7 +40,8 @@ export default function GoalsPanel({ className }: GoalsPanelProps) {
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 
     return (
-        <Panel
+        <Panel.WithTabs
+            grow={true}
             className={className}
             loading={
                 {
@@ -51,29 +52,30 @@ export default function GoalsPanel({ className }: GoalsPanelProps) {
             }
             header={
                 <>
-                    <Title text="Goals" grow={true} />
-                    <ActionLink to={"/accounts"} text="Add" />
+                    <Panel.Components.Title text="Goals" grow={true} />
+                    <Panel.Components.ActionLink to={"/accounts"} text="Add" />
                 </>
             }
-            tabs={
-                <>
-                    {
-                        ([
-                            { text: "Active", query: "active" },
-                            { text: "Archived", query: "archived" },
-                            { text: "Reached", query: "reached" },
-                        ] as { text: string, query: Queries }[]).map(({ text, query }) => (
-                            <ActionButton
-                                key={`goals:tab:${query}`}
-                                text={text}
-                                onClick={() => setCurrentQuery(query)}
-                                active={currentQuery === query}
-                                grow={true}
-                            />
-                        ))
-                    }
-                </>
-            }
+            tabs={[
+                {
+                    key: "goals:tab:active",
+                    text: "Active",
+                    active: currentQuery === "active",
+                    onClick: () => setCurrentQuery("active")
+                },
+                {
+                    key: "goals:tab:archived",
+                    text: "Archived",
+                    active: currentQuery === "archived",
+                    onClick: () => setCurrentQuery("archived")
+                },
+                {
+                    key: "goals:tab:reached",
+                    text: "Reached",
+                    active: currentQuery === "reached",
+                    onClick: () => setCurrentQuery("reached")
+                },
+            ]}
             contents={
                 {
                     active: activeQuery.data?.length === 0 ? null : activeQuery.data?.
