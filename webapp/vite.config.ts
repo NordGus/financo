@@ -10,7 +10,8 @@ export default defineConfig({
       "@components": path.resolve(__dirname, './src/components'),
       "@helpers": path.resolve(__dirname, './src/helpers'),
       "@api": path.resolve(__dirname, './src/api'),
-      "@routes": path.resolve(__dirname, './src/routes')
+      "@routes": path.resolve(__dirname, './src/routes'),
+      "@queries": path.resolve(__dirname, './src/queries')
     }
   },
   plugins: [react()],

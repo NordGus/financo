@@ -3,7 +3,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 
 import { getArchivedCapitalNormalAccounts, getCapitalNormalAccounts } from "@api/accounts"
-import { staleTimeDefault } from "../../../../queyClient"
+import { staleTimeDefault } from "@queries/Client"
 
 import Panel, { ActionButton, ActionLink, Title } from "@components/Panel"
 import WithNavigation from "@components/account/preview/WithNavigation"

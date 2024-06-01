@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
-import { staleTimeDefault } from "../../../../queyClient"
+import { staleTimeDefault } from "@queries/Client"
 import { getArchivedExternalExpenseAccounts, getExternalExpenseAccounts } from "@api/accounts"
 
 import Panel, { ActionButton, ActionLink, Title } from "@components/Panel"

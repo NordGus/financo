@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { Outlet, useOutlet } from "react-router-dom"
 import { useEffect, useState } from "react"
-import { staleTimeDefault } from "../../../queyClient"
+import { staleTimeDefault } from "@queries/Client"
 
 import { getSummary } from "@api/summary"
 

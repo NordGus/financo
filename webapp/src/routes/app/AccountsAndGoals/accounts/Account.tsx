@@ -1,7 +1,7 @@
 import { Link, LoaderFunctionArgs, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
-import { queryClient, staleTimeDefault } from "../../../../queyClient";
+import QueryClient, { staleTimeDefault } from "@queries/Client";
 import { getAccount } from "@api/accounts";
 import { Kind } from "@/types/Account";
 
@@ -29,7 +29,7 @@ function translateAccountKind(kind: Kind) {
 }
 
 export async function loader({ params: { id } }: LoaderFunctionArgs) {
-    return queryClient.fetchQuery({
+    return QueryClient.fetchQuery({
         queryKey: ['accounts', 'details', id!],
         queryFn: getAccount(id!),
         staleTime: staleTimeDefault
