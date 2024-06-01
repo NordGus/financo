@@ -17,8 +17,12 @@ function PanelTitle({ title }: { title: string }) {
     return <h2 className="flex-grow flex items-center px-2">{title}</h2>
 }
 
-function HeaderButton({ onClick, to, name }: { onClick?: () => void, to?: string, name: string }) {
-    const className = "flex items-center px-4 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800"
+function HeaderButton(
+    {
+        onClick, to, name, active = false, grow = false
+    }: { name: string, onClick?: () => void, to?: string, active?: boolean, grow?: boolean }
+) {
+    const className = `flex items-center justify-center px-4 cursor-pointer ${active ? "bg-neutral-100 dark:bg-neutral-800" : "hover:bg-neutral-100 dark:hover:bg-neutral-800"} ${grow ? "flex-grow" : ""}`
 
     if (!!to) return <Link to={to} className={className}>{name}</Link>
     return <p className={className} onClick={onClick!}>{name}</p>
@@ -72,6 +76,8 @@ const activeGoalsQueryOptions = {
     staleTime: staleTimeDefault
 }
 
+type GoalsQueries = "active" | "archived" | "reached"
+
 export default function AccountsAndGoals() {
     const summaryQuery = useQuery(summaryQueryOptions)
     const capitalNormalAccountsQuery = useQuery(activeCapitalNormalAccountsQueryOptions)
@@ -85,9 +91,15 @@ export default function AccountsAndGoals() {
     const outlet = useOutlet()
     const [outletCache, setOutletCache] = useState(outlet)
 
+    const [currentGoalsQuery, setCurrentGoalsQuery] = useState<GoalsQueries>("active")
+
     useEffect(() => {
         if (outlet && !outletCache) setOutletCache(outlet)
     }, [outlet, outletCache])
+
+    useEffect(() => {
+        console.info(currentGoalsQuery)
+    }, [currentGoalsQuery])
 
     return (
         <>
@@ -114,6 +126,28 @@ export default function AccountsAndGoals() {
                         <>
                             <PanelTitle title="Goals" />
                             <HeaderButton to={"/accounts"} name="Add" />
+                        </>
+                    }
+                    tabs={
+                        <>
+                            <HeaderButton
+                                name="Active"
+                                onClick={() => setCurrentGoalsQuery("active")}
+                                active={currentGoalsQuery === "active"}
+                                grow={true}
+                            />
+                            <HeaderButton
+                                name="Archived"
+                                onClick={() => setCurrentGoalsQuery("archived")}
+                                active={currentGoalsQuery === "archived"}
+                                grow={true}
+                            />
+                            <HeaderButton
+                                name="Reached"
+                                onClick={() => setCurrentGoalsQuery("reached")}
+                                active={currentGoalsQuery === "reached"}
+                                grow={true}
+                            />
                         </>
                     }
                     className="row-span-3"
