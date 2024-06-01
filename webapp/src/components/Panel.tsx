@@ -1,15 +1,55 @@
 import { PropsWithChildren, ReactNode } from "react"
+import { Link } from "react-router-dom"
 
 import Throbber from "./Throbber"
 
-interface Props {
+export function Title({ text, grow = false }: { text: string, grow?: boolean }) {
+    return <p className={`flex items-center px-2 ${grow ? "flex-grow" : ""}`}>
+        {text}
+    </p>
+}
+
+interface ActionLinkProps {
+    text: string
+    to: string
+    grow?: boolean
+}
+
+export function ActionLink({ text, to, grow = false }: ActionLinkProps) {
+    return <Link
+        to={to}
+        className={`flex items-center justify-center px-4 hover:bg-neutral-100 dark:hover:bg-neutral-800 ${grow ? "flex-grow" : ""}`}
+    >
+        {text}
+    </Link>
+}
+
+interface ActionButtonProps {
+    text: string
+    onClick: () => void
+    active: boolean
+    grow?: boolean
+}
+
+export function ActionButton({ text, onClick, active, grow = false }: ActionButtonProps) {
+    return <p
+        className={`flex items-center justify-center px-4 cursor-pointer ${active ? "bg-neutral-100 dark:bg-neutral-800" : "hover:bg-neutral-100 dark:hover:bg-neutral-800"} ${grow ? "flex-grow" : ""}`}
+        onClick={onClick}
+    >
+        {text}
+    </p>
+}
+
+interface PanelProps {
     header: ReactNode,
     className?: string,
     loading?: boolean
     tabs?: ReactNode
 }
 
-function Panel({ header, className, loading = false, tabs, children }: PropsWithChildren<Props>) {
+export default function Panel(
+    { header, className, tabs, children, loading = false }: PropsWithChildren<PanelProps>
+) {
     return (
         <div
             className={`flex flex-col bg-neutral-50 dark:bg-neutral-900 divide-y dark:divide-neutral-800 border dark:border-neutral-800 rounded shadow overflow-clip text-neutral-950 dark:text-neutral-50 ${className}`}
@@ -40,5 +80,3 @@ function Panel({ header, className, loading = false, tabs, children }: PropsWith
         </div>
     )
 }
-
-export default Panel
