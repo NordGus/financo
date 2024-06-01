@@ -61,7 +61,7 @@ export default function GoalsPanel({ className }: GoalsPanelProps) {
                         ([
                             { text: "Active", query: "active" },
                             { text: "Archived", query: "archived" },
-                            { text: "Active", query: "reached" },
+                            { text: "Reached", query: "reached" },
                         ] as { text: string, query: Queries }[]).map(({ text, query }) => (
                             <ActionButton
                                 text={text}
@@ -75,11 +75,11 @@ export default function GoalsPanel({ className }: GoalsPanelProps) {
             }
             contents={
                 {
-                    active: activeQuery.data?.
+                    active: activeQuery.data?.length === 0 ? null : activeQuery.data?.
                         map((goal) => <WithNavigation key={`goal:${goal.id}`} goal={goal} />),
-                    archived: archivedQuery.data?.
+                    archived: archivedQuery.data?.length === 0 ? null : archivedQuery.data?.
                         map((goal) => <WithNavigation key={`goal:${goal.id}`} goal={goal} />),
-                    reached: reachedQuery.data?.
+                    reached: reachedQuery.data?.length === 0 ? null : reachedQuery.data?.
                         map((goal) => <WithNavigation key={`goal:${goal.id}`} goal={goal} />)
                 }[currentQuery] || null
             }
