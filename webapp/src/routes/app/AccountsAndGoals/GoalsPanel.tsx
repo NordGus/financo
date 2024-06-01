@@ -4,8 +4,8 @@ import { useState } from "react"
 import { getArchivedGoals, getGoals, getReachedGoals } from "../../../api/goals"
 import { staleTimeDefault } from "../../../queyClient"
 
-import Panel, { ActionButton, ActionLink, Title } from "../../../components/Panel"
-import WithNavigation from "../../../components/goal/preview/WithNavigation"
+import Panel, { ActionButton, ActionLink, Title } from "@components/Panel"
+import WithNavigation from "@components/goal/preview/WithNavigation"
 
 type Querie = "active" | "archived" | "reached"
 

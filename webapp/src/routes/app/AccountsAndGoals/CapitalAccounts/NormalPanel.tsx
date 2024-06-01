@@ -8,8 +8,8 @@ import {
 } from "../../../../api/accounts"
 import { staleTimeDefault } from "../../../../queyClient"
 
-import Panel, { ActionButton, ActionLink, Title } from "../../../../components/Panel"
-import WithNavigation from "../../../../components/account/preview/WithNavigation"
+import Panel, { ActionButton, ActionLink, Title } from "@components/Panel"
+import WithNavigation from "@components/account/preview/WithNavigation"
 
 type Queries = "active" | "archived"
 

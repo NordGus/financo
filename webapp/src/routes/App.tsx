@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom"
 
-import NavLink from "../components/NavLink"
+import NavLink from "@components/NavLink"
 
 export default function App() {
     return (

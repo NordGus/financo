@@ -5,7 +5,7 @@ import { queryClient, staleTimeDefault } from "../../../queyClient";
 import { getAccount } from "../../../api/accounts";
 import { Kind } from "../../../types/Account";
 
-import Panel from "../../../components/Panel";
+import Panel from "@components/Panel";
 
 function translateAccountKind(kind: Kind) {
     switch (kind) {
