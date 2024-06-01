@@ -13,6 +13,7 @@ import AccountPreviewWithNavigation from "@components/account/preview/WithNaviga
 import GoalsPanel from "./GoalsPanel"
 import CapitalAccounts from "./CapitalAccounts"
 import DebtAccounts from "./DebtAccounts"
+import ExternalAccounts from "./ExternalAccounts"
 
 const summaryQueryOptions = {
     queryKey: ['accounts', 'summary'],
@@ -35,8 +36,6 @@ const activeExternalExpensesAccountsQuery = {
 export default function AccountsAndGoals() {
     const summaryQuery = useQuery(summaryQueryOptions)
 
-
-    const externalIncomeAccountsQuery = useQuery(activeExternalIcomeAccountsQuery)
     const externalExpensesAccountsQuery = useQuery(activeExternalExpensesAccountsQuery)
 
     const outlet = useOutlet()
@@ -69,25 +68,7 @@ export default function AccountsAndGoals() {
                 <GoalsPanel className="row-span-3" />
                 <CapitalAccounts.NormalPanel />
                 <DebtAccounts.LoansPanel />
-                <Panel
-                    header={
-                        <>
-                            <Title text="Income" grow={true} />
-                            <ActionLink to={"/accounts"} text="Add" />
-                        </>
-                    }
-                    loading={externalIncomeAccountsQuery.isFetching}
-                >
-                    {
-                        externalIncomeAccountsQuery.data?.
-                            map((account) => (
-                                <AccountPreviewWithNavigation
-                                    key={`account:${account.id}`}
-                                    account={account}
-                                />
-                            ))
-                    }
-                </Panel>
+                <ExternalAccounts.IncomePanel />
                 <CapitalAccounts.SavingsPanel />
                 <DebtAccounts.CreditLinesPanel />
                 <Panel
