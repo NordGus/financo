@@ -11,6 +11,7 @@ import Modal from "../../components/Modal"
 import Panel from "../../components/Panel"
 import SummaryCard from "../../components/SummaryCard"
 import AccountPreviewWithNavigation from "../../components/account/preview/WithNavigation"
+import GoalPreviewWithNavigation from "../../components/goal/preview/WithNavigation"
 
 function PanelTitle({ title }: { title: string }) {
     return <h2 className="flex-grow flex items-center px-2">{title}</h2>
@@ -106,7 +107,9 @@ export default function AccountsAndGoals() {
                 >
                     {
                         goalsQuery.data?.
-                            map((goal) => (<p key={`goal:${goal.id}`}>{goal.name}</p>))
+                            map((goal) => (
+                                <GoalPreviewWithNavigation key={`goal:${goal.id}`} goal={goal} />
+                            ))
                     }
                 </Panel>
                 <Panel
