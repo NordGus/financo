@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
+import { Link } from "react-router-dom"
 
 import {
     getArchivedCapitalNormalAccounts,
@@ -36,6 +37,8 @@ export default function NormalPanel({ className }: NormalPanelProps) {
 
     return (
         <Panel
+            loading={currentQuery === "active" ? activeQuery.isFetching : archivedQuery.isFetching}
+            className={className}
             header={
                 <>
                     <Title text="Bank Accounts" grow={true} />
@@ -58,16 +61,28 @@ export default function NormalPanel({ className }: NormalPanelProps) {
                     />
                 </>
             }
-            loading={currentQuery === "active" ? activeQuery.isFetching : archivedQuery.isFetching}
-            className={className}
-        >
-            {
-                currentQuery === "active"
-                    ? activeQuery.data?.
+            contents={
+                {
+                    active: activeQuery.data?.
+                        map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />),
+                    archived: archivedQuery.data?.
                         map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />)
-                    : archivedQuery.data?.
-                        map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />)
+                }[currentQuery] || null
             }
-        </Panel>
+            noContentsMessage={
+                currentQuery === "active"
+                    ? <div className="flex flex-col justify-center items-center gap-2">
+                        <p>No <span className="font-bold">Bank Accounts</span> active in the system</p>
+                        <Link to={`/accounts`} className="text-sm underline">
+                            Please add a new one
+                        </Link>
+                    </div>
+                    : currentQuery === "archived"
+                        ? <div className="flex flex-col justify-center items-center gap-2">
+                            <p>No <span className="font-bold">Bank Accounts</span> archived in the system</p>
+                        </div>
+                        : undefined
+            }
+        />
     )
 }
