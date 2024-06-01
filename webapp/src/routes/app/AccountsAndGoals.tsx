@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { Outlet, useOutlet } from "react-router-dom"
+import { Link, Outlet, useOutlet } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { staleTimeDefault } from "../../queyClient"
 
@@ -17,57 +17,71 @@ function PanelTitle({ title }: { title: string }) {
     return <h2 className="flex-grow flex items-center px-2">{title}</h2>
 }
 
-function AddButton() {
-    return (
-        <p
-            className="flex items-center px-4 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800"
-        >
-            Add
-        </p>
-    )
+function HeaderButton({ onClick, to, name }: { onClick?: () => void, to?: string, name: string }) {
+    const className = "flex items-center px-4 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800"
+
+    if (!!to) return <Link to={to} className={className}>{name}</Link>
+    return <p className={className} onClick={onClick!}>{name}</p>
+}
+
+const summaryQueryOptions = {
+    queryKey: ['accounts', 'summary'],
+    queryFn: getSummary,
+    staleTime: staleTimeDefault
+}
+
+const activeCapitalNormalAccountsQueryOptions = {
+    queryKey: ['accounts', 'capital', 'normal', 'active'],
+    queryFn: getAccounts('capital/normal'),
+    staleTime: staleTimeDefault
+}
+
+const activeCapitalSavingsAccountsQueryOptions = {
+    queryKey: ['accounts', 'capital', 'savings', 'active'],
+    queryFn: getAccounts('capital/savings'),
+    staleTime: staleTimeDefault
+}
+
+const activeDebtLoansAccountsQueryOptions = {
+    queryKey: ['accounts', 'debt', 'loans', 'active'],
+    queryFn: getAccounts('debt/loans'),
+    staleTime: staleTimeDefault
+}
+
+const activeCreditLinesAccountsQueryOptions = {
+    queryKey: ['accounts', 'debt', 'credit', 'active'],
+    queryFn: getAccounts('debt/credit'),
+    staleTime: staleTimeDefault
+}
+
+const activeExternalIcomeAccountsQuery = {
+    queryKey: ['accounts', 'external', 'income', 'active'],
+    queryFn: getAccounts('external/income'),
+    staleTime: staleTimeDefault
+}
+
+const activeExternalExpensesAccountsQuery = {
+    queryKey: ['accounts', 'external', 'expnses', 'active'],
+    queryFn: getAccounts('external/expenses'),
+    staleTime: staleTimeDefault
+}
+
+const activeGoalsQueryOptions = {
+    queryKey: ['goals'],
+    queryFn: getGoals,
+    staleTime: staleTimeDefault
 }
 
 export default function AccountsAndGoals() {
-    const summaryQuery = useQuery({
-        queryKey: ['accounts', 'summary'],
-        queryFn: getSummary,
-        staleTime: staleTimeDefault
-    })
-    const capitalNormalAccountsQuery = useQuery({
-        queryKey: ['accounts', 'capital', 'normal'],
-        queryFn: getAccounts('capital/normal'),
-        staleTime: staleTimeDefault
-    })
-    const capitalSavingsAccountsQuery = useQuery({
-        queryKey: ['accounts', 'capital', 'savings'],
-        queryFn: getAccounts('capital/savings'),
-        staleTime: staleTimeDefault
-    })
-    const debtLoansAccountsQuery = useQuery({
-        queryKey: ['accounts', 'debt', 'loans'],
-        queryFn: getAccounts('debt/loans'),
-        staleTime: staleTimeDefault
-    })
-    const debtCreditLinesAccountsQuery = useQuery({
-        queryKey: ['accounts', 'debt', 'credit'],
-        queryFn: getAccounts('debt/credit'),
-        staleTime: staleTimeDefault
-    })
-    const externalIncomeAccountsQuery = useQuery({
-        queryKey: ['accounts', 'external', 'income'],
-        queryFn: getAccounts('external/income'),
-        staleTime: staleTimeDefault
-    })
-    const externalExpensesAccountsQuery = useQuery({
-        queryKey: ['accounts', 'external', 'expenses'],
-        queryFn: getAccounts('external/expenses'),
-        staleTime: staleTimeDefault
-    })
-    const goalsQuery = useQuery({
-        queryKey: ['goals'],
-        queryFn: getGoals,
-        staleTime: staleTimeDefault
-    })
+    const summaryQuery = useQuery(summaryQueryOptions)
+    const capitalNormalAccountsQuery = useQuery(activeCapitalNormalAccountsQueryOptions)
+    const capitalSavingsAccountsQuery = useQuery(activeCapitalSavingsAccountsQueryOptions)
+    const debtLoansAccountsQuery = useQuery(activeDebtLoansAccountsQueryOptions)
+    const debtCreditLinesAccountsQuery = useQuery(activeCreditLinesAccountsQueryOptions)
+    const externalIncomeAccountsQuery = useQuery(activeExternalIcomeAccountsQuery)
+    const externalExpensesAccountsQuery = useQuery(activeExternalExpensesAccountsQuery)
+    const goalsQuery = useQuery(activeGoalsQueryOptions)
+
     const outlet = useOutlet()
     const [outletCache, setOutletCache] = useState(outlet)
 
@@ -99,7 +113,7 @@ export default function AccountsAndGoals() {
                     header={
                         <>
                             <PanelTitle title="Goals" />
-                            <AddButton />
+                            <HeaderButton to={"/accounts"} name="Add" />
                         </>
                     }
                     className="row-span-3"
@@ -116,7 +130,7 @@ export default function AccountsAndGoals() {
                     header={
                         <>
                             <PanelTitle title="Bank Accounts" />
-                            <AddButton />
+                            <HeaderButton to={"/accounts"} name="Add" />
                         </>
                     }
                     loading={capitalNormalAccountsQuery.isFetching}
@@ -135,7 +149,7 @@ export default function AccountsAndGoals() {
                     header={
                         <>
                             <PanelTitle title="Loans" />
-                            <AddButton />
+                            <HeaderButton to={"/accounts"} name="Add" />
                         </>
                     }
                     loading={debtLoansAccountsQuery.isFetching}
@@ -154,7 +168,7 @@ export default function AccountsAndGoals() {
                     header={
                         <>
                             <PanelTitle title="Income" />
-                            <AddButton />
+                            <HeaderButton to={"/accounts"} name="Add" />
                         </>
                     }
                     loading={externalIncomeAccountsQuery.isFetching}
@@ -173,7 +187,7 @@ export default function AccountsAndGoals() {
                     header={
                         <>
                             <PanelTitle title="Savings" />
-                            <AddButton />
+                            <HeaderButton to={"/accounts"} name="Add" />
                         </>
                     }
                     loading={capitalSavingsAccountsQuery.isFetching}
@@ -192,7 +206,7 @@ export default function AccountsAndGoals() {
                     header={
                         <>
                             <PanelTitle title="Credit Lines" />
-                            <AddButton />
+                            <HeaderButton to={"/accounts"} name="Add" />
                         </>
                     }
                     loading={debtCreditLinesAccountsQuery.isFetching}
@@ -211,7 +225,7 @@ export default function AccountsAndGoals() {
                     header={
                         <>
                             <PanelTitle title="Expenses" />
-                            <AddButton />
+                            <HeaderButton to={"/accounts"} name="Add" />
                         </>
                     }
                     loading={externalExpensesAccountsQuery.isFetching}
