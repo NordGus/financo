@@ -1,7 +1,7 @@
 import { Link, LoaderFunctionArgs, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
-import { queryClient, staleTimeDefault } from "../../../queyClient";
+import { queryClient, staleTimeDefault } from "../../../../queyClient";
 import { getAccount } from "@api/accounts";
 import { Kind } from "@/types/Account";
 
