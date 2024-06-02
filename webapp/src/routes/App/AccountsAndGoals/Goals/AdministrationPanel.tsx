@@ -2,8 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
-import { getArchivedGoals, getGoals } from "@api/goals"
-import { staleTimeDefault } from "@queries/Client"
+import { activeGoalsQuery, archivedGoalsQuery } from "@queries/goals"
 
 import PanelComponent from "@components/Panel"
 import Preview from "@components/goal/Preview"
@@ -14,21 +13,9 @@ interface AdministrationPanelProps {
     className?: string
 }
 
-const activeQueryOptions = {
-    queryKey: ['goals', 'active'],
-    queryFn: getGoals,
-    staleTime: staleTimeDefault
-}
-
-const archivedQueryOptions = {
-    queryKey: ['goals', 'archived'],
-    queryFn: getArchivedGoals,
-    staleTime: staleTimeDefault
-}
-
 export default function AdministrationPanel({ className }: AdministrationPanelProps) {
-    const activeQuery = useQuery(activeQueryOptions)
-    const archivedQuery = useQuery(archivedQueryOptions)
+    const activeQuery = useQuery(activeGoalsQuery)
+    const archivedQuery = useQuery(archivedGoalsQuery)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 

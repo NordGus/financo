@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { getReachedGoals } from "@api/goals"
-import { staleTimeDefault } from "@queries/Client"
+import { reachedGoalsQuery } from "@queries/goals"
 
 import Panel from "@components/Panel"
 import Preview from "@/components/goal/Preview"
@@ -10,14 +9,8 @@ interface AchievementsPanelProps {
     className?: string
 }
 
-const queryOptions = {
-    queryKey: ['goals', 'reached'],
-    queryFn: getReachedGoals,
-    staleTime: staleTimeDefault
-}
-
 export default function AchievementsPanel({ className }: AchievementsPanelProps) {
-    const query = useQuery(queryOptions)
+    const query = useQuery(reachedGoalsQuery)
 
     return (
         <Panel.WithLoadingIndicator
