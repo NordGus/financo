@@ -13,7 +13,7 @@ nodes, and the Transactions are its edges.
 ```
 
 This design, I think, is flexible to maintain a ledger of the user's finances and also build
-powerful features.
+powerful features in the application.
 
 ```mermaid
   graph LR;
