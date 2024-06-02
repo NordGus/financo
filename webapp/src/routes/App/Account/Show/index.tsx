@@ -1,22 +1,14 @@
-import { getAccount } from "@api/accounts"
-import Panel from "@components/Panel"
-import kindToHuman from "@helpers/account/kindToHuman"
-import { staleTimeDefault } from "@queries/Client"
 import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { Link, useParams } from "react-router-dom"
 
-function accountQueryBuilder(id: string) {
-    return {
-        queryKey: ['accounts', 'details', id],
-        queryFn: getAccount(id),
-        staleTime: staleTimeDefault
-    }
-}
+import Panel from "@components/Panel"
+import kindToHuman from "@helpers/account/kindToHuman"
+import { accountQuery } from "@queries/accounts"
 
 export default function Show() {
     const { id: paramsID } = useParams()
-    const queryOptions = useMemo(() => accountQueryBuilder(paramsID!), [paramsID])
+    const queryOptions = useMemo(() => accountQuery(paramsID!), [paramsID])
     const query = useQuery(queryOptions)
 
     return (

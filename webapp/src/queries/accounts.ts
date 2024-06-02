@@ -1,5 +1,6 @@
 import { staleTimeDefault } from "./Client"
 import {
+    getAccount,
     getArchivedCapitalNormalAccounts,
     getArchivedCapitalSavingsAccounts,
     getArchivedDebtCreditAccounts,
@@ -89,5 +90,13 @@ export const archivedAccountsQueries = {
             queryFn: getArchivedExternalIncomeAccounts,
             staleTime: staleTimeDefault
         }
+    }
+}
+
+export function accountQuery(id: string) {
+    return {
+        queryKey: ['accounts', 'details', id],
+        queryFn: getAccount(id),
+        staleTime: staleTimeDefault
     }
 }
