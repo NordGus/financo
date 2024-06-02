@@ -1,12 +1,6 @@
 import { Currency } from "dinero.js"
 
-export interface SummaryItem {
+export default interface Summary {
     amount: number
     currency: Currency
-}
-
-export default interface Summary {
-    capital: SummaryItem[]
-    debt: SummaryItem[]
-    total: SummaryItem[]
 }

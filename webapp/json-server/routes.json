@@ -1,4 +1,7 @@
 {
+    "/summary/capital": "/capitals",
+    "/summary/debts": "/debts",
+    "/summary/total": "/totals",
     "/accounts/capital/normal": "/accounts?kind=capital_normal&archived=false",
     "/accounts/capital/normal/archived": "/accounts?kind=capital_normal&archived=true",
     "/accounts/capital/savings": "/accounts?kind=capital_savings&archived=false",
