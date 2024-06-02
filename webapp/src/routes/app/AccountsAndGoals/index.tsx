@@ -7,7 +7,7 @@ import { getSummary } from "@api/summary"
 
 import Modal from "@components/Modal"
 import SummaryCard from "@components/SummaryCard"
-import GoalsPanel from "./GoalsPanel"
+import Goals from "./Goals"
 import CapitalAccounts from "./CapitalAccounts"
 import DebtAccounts from "./DebtAccounts"
 import ExternalAccounts from "./ExternalAccounts"
@@ -47,13 +47,14 @@ export default function AccountsAndGoals() {
                     loading={summaryQuery.isFetching}
                     summaries={summaryQuery?.data?.total || []}
                 />
-                <GoalsPanel className="row-span-3" />
+                <Goals.AdministrationPanel className="row-span-2" />
                 <CapitalAccounts.NormalPanel />
                 <DebtAccounts.LoansPanel />
                 <ExternalAccounts.IncomePanel />
                 <CapitalAccounts.SavingsPanel />
                 <DebtAccounts.CreditLinesPanel />
                 <ExternalAccounts.ExpensesPanel />
+                <Goals.AchievementsPanel />
             </div>
             <Modal open={!!outlet} onClose={() => setOutletCache(null)}>
                 {

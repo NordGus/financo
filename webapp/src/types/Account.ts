@@ -21,10 +21,10 @@ export default interface Account {
     history: {
         present: boolean
         capital: number
-        at: Date
+        at: string
     }
     archived: boolean
-    createdAt: Date
-    updatedAt: Date
+    createdAt: string
+    updatedAt: string
     children: Account[]
 }

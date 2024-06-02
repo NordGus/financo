@@ -44,7 +44,7 @@ export default function Progress({ progress }: Props) {
             {progress < 1.0
                 ? (
                     <p
-                        className="leading-none absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center"
+                        className="leading-none absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center p-0 m-0"
                     >
                         {Math.floor(progress * 100)}
                     </p>

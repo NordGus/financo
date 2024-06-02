@@ -2,15 +2,15 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
-import { getArchivedGoals, getGoals, getReachedGoals } from "@api/goals"
+import { getArchivedGoals, getGoals } from "@api/goals"
 import { staleTimeDefault } from "@queries/Client"
 
-import Panel from "@components/Panel"
-import WithNavigation from "@components/goal/preview/WithNavigation"
+import PanelComponent from "@components/Panel"
+import Preview from "@components/goal/Preview"
 
-type Queries = "active" | "archived" | "reached"
+type Queries = "active" | "archived"
 
-interface GoalsPanelProps {
+interface AdministrationPanelProps {
     className?: string
 }
 
@@ -26,34 +26,26 @@ const archivedQueryOptions = {
     staleTime: staleTimeDefault
 }
 
-const reachedQueryOptions = {
-    queryKey: ['goals', 'reached'],
-    queryFn: getReachedGoals,
-    staleTime: staleTimeDefault
-}
-
-export default function GoalsPanel({ className }: GoalsPanelProps) {
+export default function AdministrationPanel({ className }: AdministrationPanelProps) {
     const activeQuery = useQuery(activeQueryOptions)
     const archivedQuery = useQuery(archivedQueryOptions)
-    const reachedQuery = useQuery(reachedQueryOptions)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 
     return (
-        <Panel.WithTabs
+        <PanelComponent.WithTabs
             grow={true}
             className={className}
             loading={
                 {
                     active: activeQuery.isFetching,
-                    archived: archivedQuery.isFetching,
-                    reached: reachedQuery.isFetching
+                    archived: archivedQuery.isFetching
                 }[currentQuery] || false
             }
             header={
                 <>
-                    <Panel.Components.Title text="Goals" grow={true} />
-                    <Panel.Components.ActionLink to={"/accounts"} text="Add" />
+                    <PanelComponent.Components.Title text="Goals" grow={true} />
+                    <PanelComponent.Components.ActionLink to={"/accounts"} text="Add" />
                 </>
             }
             tabs={[
@@ -69,21 +61,17 @@ export default function GoalsPanel({ className }: GoalsPanelProps) {
                     active: currentQuery === "archived",
                     onClick: () => setCurrentQuery("archived")
                 },
-                {
-                    key: "goals:tab:reached",
-                    text: "Reached",
-                    active: currentQuery === "reached",
-                    onClick: () => setCurrentQuery("reached")
-                },
             ]}
             contents={
                 {
                     active: activeQuery.data?.length === 0 ? null : activeQuery.data?.
-                        map((goal) => <WithNavigation key={`goal:${goal.id}`} goal={goal} />),
+                        map((goal) => <Preview.WithNavigation
+                            key={`goal:${goal.id}`}
+                            goal={goal} />),
                     archived: archivedQuery.data?.length === 0 ? null : archivedQuery.data?.
-                        map((goal) => <WithNavigation key={`goal:${goal.id}`} goal={goal} />),
-                    reached: reachedQuery.data?.length === 0 ? null : reachedQuery.data?.
-                        map((goal) => <WithNavigation key={`goal:${goal.id}`} goal={goal} />)
+                        map((goal) => <Preview.WithNavigation
+                            key={`goal:${goal.id}`}
+                            goal={goal} />)
                 }[currentQuery] || null
             }
             noContentsMessage={
@@ -96,9 +84,6 @@ export default function GoalsPanel({ className }: GoalsPanelProps) {
                     </div>,
                     archived: <div className="flex flex-col justify-center items-center gap-2">
                         <p>No <span className="font-bold">Savings Goals</span> archived in the system</p>
-                    </div>,
-                    reached: <div className="flex flex-col justify-center items-center gap-2">
-                        <p>No <span className="font-bold">Savings Goals</span> reached in the system</p>
                     </div>
                 }[currentQuery] || undefined
             }

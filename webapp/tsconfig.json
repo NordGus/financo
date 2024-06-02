@@ -22,9 +22,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
       "@components/*": [
         "./src/components/*"
       ],
@@ -39,6 +36,9 @@
       ],
       "@queries/*": [
         "./src/queries/*"
+      ],
+      "@/*": [
+        "./src/*"
       ]
     }
   },

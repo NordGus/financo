@@ -1,4 +1,5 @@
 import Base from "./Base"
+import WithLoadingIndicator from "./WithLoadingIndicator"
 import WithTabs from "./WithTabs"
 
 import { ActionButton } from "./components/ActionButton"
@@ -13,5 +14,6 @@ export default {
     },
     Base,
     WithTabs,
+    WithLoadingIndicator
 }
 

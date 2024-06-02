@@ -11,8 +11,8 @@ export default interface Goal {
     archived: boolean
     fulfilled: {
         reached: boolean
-        at: Date
+        at: string
     }
-    createdAt: Date
-    updatedAt: Date
+    createdAt: string
+    updatedAt: string
 }
