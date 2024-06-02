@@ -2,8 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
-import { staleTimeDefault } from "@queries/Client"
-import { getArchivedDebtCreditAccounts, getDebtCreditAccounts } from "@api/accounts"
+import { activeAccountsQueries, archivedAccountsQueries } from "@queries/accounts"
 
 import Panel from "@components/Panel"
 import WithNavigation from "@components/account/preview/WithNavigation"
@@ -14,21 +13,9 @@ interface CreditLinesPanelProps {
     className?: string
 }
 
-const activeQueryOptions = {
-    queryKey: ['accounts', 'debt', 'credit', 'active'],
-    queryFn: getDebtCreditAccounts,
-    staleTime: staleTimeDefault
-}
-
-const archivedQueryOptions = {
-    queryKey: ['accounts', 'debt', 'credit', 'archived'],
-    queryFn: getArchivedDebtCreditAccounts,
-    staleTime: staleTimeDefault
-}
-
 export default function CreditLinesPanel({ className }: CreditLinesPanelProps) {
-    const activeQuery = useQuery(activeQueryOptions)
-    const archivedQuery = useQuery(archivedQueryOptions)
+    const activeQuery = useQuery(activeAccountsQueries.debt.credit)
+    const archivedQuery = useQuery(archivedAccountsQueries.debt.credit)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 
