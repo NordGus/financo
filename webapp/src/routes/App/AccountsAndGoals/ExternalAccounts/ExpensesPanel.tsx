@@ -2,8 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
-import { staleTimeDefault } from "@queries/Client"
-import { getArchivedExternalExpenseAccounts, getExternalExpenseAccounts } from "@api/accounts"
+import { activeAccountsQueries, archivedAccountsQueries } from "@queries/accounts"
 
 import Panel from "@components/Panel"
 import WithNavigation from "@components/account/preview/WithNavigation"
@@ -14,21 +13,9 @@ interface ExpensesPanelProps {
     className?: string
 }
 
-const activeQueryOptions = {
-    queryKey: ['accounts', 'external', 'expenses', 'active'],
-    queryFn: getExternalExpenseAccounts,
-    staleTime: staleTimeDefault
-}
-
-const archivedQueryOptions = {
-    queryKey: ['accounts', 'external', 'expenses', 'archived'],
-    queryFn: getArchivedExternalExpenseAccounts,
-    staleTime: staleTimeDefault
-}
-
 export default function ExpensesPanel({ className }: ExpensesPanelProps) {
-    const activeQuery = useQuery(activeQueryOptions)
-    const archivedQuery = useQuery(archivedQueryOptions)
+    const activeQuery = useQuery(activeAccountsQueries.external.expenses)
+    const archivedQuery = useQuery(archivedAccountsQueries.external.expenses)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 

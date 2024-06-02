@@ -2,8 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
-import { staleTimeDefault } from "@queries/Client"
-import { getArchivedExternalIncomeAccounts, getExternalIncomeAccounts } from "@api/accounts"
+import { activeAccountsQueries, archivedAccountsQueries } from "@queries/accounts"
 
 import Panel from "@components/Panel"
 import WithNavigation from "@components/account/preview/WithNavigation"
@@ -14,21 +13,9 @@ interface IncomePanelProps {
     className?: string
 }
 
-const activeQueryOptions = {
-    queryKey: ['accounts', 'external', 'income', 'active'],
-    queryFn: getExternalIncomeAccounts,
-    staleTime: staleTimeDefault
-}
-
-const archivedQueryOptions = {
-    queryKey: ['accounts', 'external', 'income', 'archived'],
-    queryFn: getArchivedExternalIncomeAccounts,
-    staleTime: staleTimeDefault
-}
-
 export default function IncomePanel({ className }: IncomePanelProps) {
-    const activeQuery = useQuery(activeQueryOptions)
-    const archivedQuery = useQuery(archivedQueryOptions)
+    const activeQuery = useQuery(activeAccountsQueries.external.income)
+    const archivedQuery = useQuery(archivedAccountsQueries.external.income)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 
