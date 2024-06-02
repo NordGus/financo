@@ -1,5 +1,10 @@
-import { getArchivedGoals, getGoals, getReachedGoals } from "@api/goals"
 import { staleTimeDefault } from "./Client"
+import {
+    getArchivedGoals,
+    getGoal,
+    getGoals,
+    getReachedGoals
+} from "@api/goals"
 
 export const reachedGoalsQuery = {
     queryKey: ['goals', 'reached'],
@@ -17,4 +22,12 @@ export const archivedGoalsQuery = {
     queryKey: ['goals', 'archived'],
     queryFn: getArchivedGoals,
     staleTime: staleTimeDefault
+}
+
+export function goalQuery(id: string) {
+    return {
+        queryKey: ['goals', 'details', id],
+        queryFn: getGoal(id),
+        staleTime: staleTimeDefault
+    }
 }

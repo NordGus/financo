@@ -1,5 +1,18 @@
 import Goal from "@/types/Goal";
 
+export function getGoal(id: string): () => Promise<Goal> {
+    return async () => {
+        const response = await fetch(`/api/goals/${id}`)
+
+        if (!response.ok) {
+            console.error(response)
+            throw new Error('Network response was not ok')
+        }
+
+        return response.json()
+    }
+}
+
 export async function getGoals(): Promise<Goal[]> {
     const response = await fetch("/api/goals")
 
