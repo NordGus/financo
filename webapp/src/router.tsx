@@ -8,6 +8,7 @@ import Books from '@routes/app/Books';
 import Account from "@routes/app/Account";
 
 import ErrorPage from '@routes/ErrorPage';
+import Goal from "@routes/app/Goal";
 
 const router = createBrowserRouter([
     {
@@ -30,6 +31,14 @@ const router = createBrowserRouter([
                     {
                         path: "new",
                         element: <Account.New />
+                    },
+                    {
+                        path: "goals/:id",
+                        element: <Goal.Show />
+                    },
+                    {
+                        path: "goals/new",
+                        element: <Goal.New />
                     }
                 ]
             },
