@@ -8,8 +8,8 @@ import Panel from "@components/Panel"
 import kindToHuman from "@helpers/account/kindToHuman"
 
 export default function Show() {
-    const { id: paramsID } = useParams()
-    const queryOptions = useMemo(() => accountQuery(paramsID!), [paramsID])
+    const { id } = useParams()
+    const queryOptions = useMemo(() => accountQuery(id!), [id!])
     const query = useQuery(queryOptions)
 
     return (
@@ -18,18 +18,9 @@ export default function Show() {
             loading={query.isFetching}
             grow={true}
             header={<>
-                {
-                    query.isFetched && <span className="flex items-center px-4">
-                        {kindToHuman(query.data!.kind)}
-                    </span>
-                }
+                {query.isFetched && <Panel.Components.Title text={kindToHuman(query.data!.kind)} />}
                 <span className="flex-grow content-['']"></span>
-                <Link
-                    to="/accounts"
-                    className="flex items-center px-4 cursor-pointer hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                >
-                    Close
-                </Link>
+                <Panel.Components.ActionLink to="/accounts" text="Close" />
             </>}
             contents={<>
                 <span>{query.data?.name}</span>
