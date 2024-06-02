@@ -2,8 +2,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 
-import { staleTimeDefault } from "@queries/Client"
-import { getArchivedCapitalSavingsAccounts, getCapitalSavingsAccounts } from "@api/accounts"
+import { activeAccountsQueries, archivedAccountsQueries } from "@queries/accounts"
 
 import Panel from "@components/Panel"
 import WithNavigation from "@components/account/preview/WithNavigation"
@@ -14,21 +13,9 @@ interface SavingsPanelProps {
     className?: string
 }
 
-const activeQueryOptions = {
-    queryKey: ['accounts', 'capital', 'savings', 'active'],
-    queryFn: getCapitalSavingsAccounts,
-    staleTime: staleTimeDefault
-}
-
-const archivedQueryOptions = {
-    queryKey: ['accounts', 'capital', 'savings', 'archived'],
-    queryFn: getArchivedCapitalSavingsAccounts,
-    staleTime: staleTimeDefault
-}
-
 export default function SavingsPanel({ className }: SavingsPanelProps) {
-    const activeQuery = useQuery(activeQueryOptions)
-    const archivedQuery = useQuery(archivedQueryOptions)
+    const activeQuery = useQuery(activeAccountsQueries.capital.savings)
+    const archivedQuery = useQuery(archivedAccountsQueries.capital.savings)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 

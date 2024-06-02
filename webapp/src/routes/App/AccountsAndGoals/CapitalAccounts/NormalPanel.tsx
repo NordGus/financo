@@ -2,8 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
-import { getArchivedCapitalNormalAccounts, getCapitalNormalAccounts } from "@api/accounts"
-import { staleTimeDefault } from "@queries/Client"
+import { activeAccountsQueries, archivedAccountsQueries } from "@queries/accounts"
 
 import Panel from "@components/Panel"
 import WithNavigation from "@components/account/preview/WithNavigation"
@@ -14,21 +13,9 @@ interface NormalPanelProps {
     className?: string
 }
 
-const activeQueryOptions = {
-    queryKey: ['accounts', 'capital', 'normal', 'active'],
-    queryFn: getCapitalNormalAccounts,
-    staleTime: staleTimeDefault
-}
-
-const archivedQueryOptions = {
-    queryKey: ['accounts', 'capital', 'normal', 'archived'],
-    queryFn: getArchivedCapitalNormalAccounts,
-    staleTime: staleTimeDefault
-}
-
 export default function NormalPanel({ className }: NormalPanelProps) {
-    const activeQuery = useQuery(activeQueryOptions)
-    const archivedQuery = useQuery(archivedQueryOptions)
+    const activeQuery = useQuery(activeAccountsQueries.capital.normal)
+    const archivedQuery = useQuery(archivedAccountsQueries.capital.normal)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 

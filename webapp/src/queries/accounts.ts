@@ -1,9 +1,13 @@
 import { staleTimeDefault } from "./Client"
 import {
+    getArchivedCapitalNormalAccounts,
+    getArchivedCapitalSavingsAccounts,
     getArchivedDebtCreditAccounts,
     getArchivedDebtLoanAccounts,
     getArchivedExternalExpenseAccounts,
     getArchivedExternalIncomeAccounts,
+    getCapitalNormalAccounts,
+    getCapitalSavingsAccounts,
     getDebtCreditAccounts,
     getDebtLoanAccounts,
     getExternalExpenseAccounts,
@@ -11,6 +15,18 @@ import {
 } from "@api/accounts"
 
 export const activeAccountsQueries = {
+    capital: {
+        normal: {
+            queryKey: ['accounts', 'capital', 'normal', 'active'],
+            queryFn: getCapitalNormalAccounts,
+            staleTime: staleTimeDefault
+        },
+        savings: {
+            queryKey: ['accounts', 'capital', 'savings', 'active'],
+            queryFn: getCapitalSavingsAccounts,
+            staleTime: staleTimeDefault
+        }
+    },
     debt: {
         credit: {
             queryKey: ['accounts', 'debt', 'credit', 'active'],
@@ -38,6 +54,18 @@ export const activeAccountsQueries = {
 }
 
 export const archivedAccountsQueries = {
+    capital: {
+        normal: {
+            queryKey: ['accounts', 'capital', 'normal', 'archived'],
+            queryFn: getArchivedCapitalNormalAccounts,
+            staleTime: staleTimeDefault
+        },
+        savings: {
+            queryKey: ['accounts', 'capital', 'savings', 'archived'],
+            queryFn: getArchivedCapitalSavingsAccounts,
+            staleTime: staleTimeDefault
+        }
+    },
     debt: {
         credit: {
             queryKey: ['accounts', 'debt', 'credit', 'archived'],
