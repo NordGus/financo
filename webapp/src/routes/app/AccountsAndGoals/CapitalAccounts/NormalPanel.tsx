@@ -45,7 +45,7 @@ export default function NormalPanel({ className }: NormalPanelProps) {
             header={
                 <>
                     <Panel.Components.Title text="Bank Accounts" grow={true} />
-                    <Panel.Components.ActionLink to={"/accounts"} text="Add" />
+                    <Panel.Components.ActionLink to="/accounts/new" text="Add" />
                 </>
             }
             tabs={[

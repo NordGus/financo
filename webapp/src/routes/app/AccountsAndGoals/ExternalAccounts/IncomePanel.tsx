@@ -45,7 +45,7 @@ export default function IncomePanel({ className }: IncomePanelProps) {
             header={
                 <>
                     <Panel.Components.Title text="Income" grow={true} />
-                    <Panel.Components.ActionLink to={"/accounts"} text="Add" />
+                    <Panel.Components.ActionLink to="/accounts/new" text="Add" />
                 </>
             }
             tabs={[

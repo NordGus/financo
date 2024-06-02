@@ -45,7 +45,7 @@ export default function SavingsPanel({ className }: SavingsPanelProps) {
             header={
                 <>
                     <Panel.Components.Title text="Savings" grow={true} />
-                    <Panel.Components.ActionLink to={"/accounts"} text="Add" />
+                    <Panel.Components.ActionLink to="/accounts/new" text="Add" />
                 </>
             }
             tabs={[

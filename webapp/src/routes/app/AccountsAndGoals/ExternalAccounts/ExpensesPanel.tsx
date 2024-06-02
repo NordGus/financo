@@ -45,7 +45,7 @@ export default function ExpensesPanel({ className }: ExpensesPanelProps) {
             header={
                 <>
                     <Panel.Components.Title text="Expenses" grow={true} />
-                    <Panel.Components.ActionLink to={"/accounts"} text="Add" />
+                    <Panel.Components.ActionLink to="/accounts/new" text="Add" />
                 </>
             }
             tabs={[

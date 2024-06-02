@@ -45,7 +45,7 @@ export default function LoansPanel({ className }: LoansPanelProps) {
             header={
                 <>
                     <Panel.Components.Title text="Loans" grow={true} />
-                    <Panel.Components.ActionLink to={"/accounts"} text="Add" />
+                    <Panel.Components.ActionLink to="/accounts/new" text="Add" />
                 </>
             }
             tabs={[
