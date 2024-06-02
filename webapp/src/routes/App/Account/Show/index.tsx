@@ -2,9 +2,10 @@ import { useQuery } from "@tanstack/react-query"
 import { useMemo } from "react"
 import { Link, useParams } from "react-router-dom"
 
+import { accountQuery } from "@queries/accounts"
+
 import Panel from "@components/Panel"
 import kindToHuman from "@helpers/account/kindToHuman"
-import { accountQuery } from "@queries/accounts"
 
 export default function Show() {
     const { id: paramsID } = useParams()
