@@ -1,50 +1,42 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import App from "@routes/App";
-import Root from '@routes/app/Root';
-import AccountsAndGoals from '@routes/app/AccountsAndGoals';
-import Books from '@routes/app/Books';
-
-import Account from "@routes/app/Account";
-
-import ErrorPage from '@routes/ErrorPage';
-import Goal from "@routes/app/Goal";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <App />,
-        errorElement: <ErrorPage />,
+        element: <App.Layout />,
+        errorElement: <App.ErrorBoundary />,
         children: [
             {
                 path: "/",
-                element: <Root />
+                element: <App.Root />
             },
             {
                 path: "accounts",
-                element: <AccountsAndGoals />,
+                element: <App.AccountsAndGoals />,
                 children: [
                     {
                         path: ":id",
-                        element: <Account.Show />
+                        element: <App.Account.Show />
                     },
                     {
                         path: "new",
-                        element: <Account.New />
+                        element: <App.Account.New />
                     },
                     {
                         path: "goals/:id",
-                        element: <Goal.Show />
+                        element: <App.Goal.Show />
                     },
                     {
                         path: "goals/new",
-                        element: <Goal.New />
+                        element: <App.Goal.New />
                     }
                 ]
             },
             {
                 path: "books",
-                element: <Books />
+                element: <App.Books />
             }
         ]
     }
