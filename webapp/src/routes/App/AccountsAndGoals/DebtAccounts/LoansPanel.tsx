@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"
 
-import { activeAccountsQueries } from "@queries/accounts"
+import { activeAccountsQueries, archivedAccountsQueries } from "@queries/accounts"
 
 import Panel from "@components/Panel"
 import WithNavigation from "@components/account/preview/WithNavigation"
@@ -15,7 +15,7 @@ interface LoansPanelProps {
 
 export default function LoansPanel({ className }: LoansPanelProps) {
     const activeQuery = useQuery(activeAccountsQueries.debt.loans)
-    const archivedQuery = useQuery(activeAccountsQueries.debt.loans)
+    const archivedQuery = useQuery(archivedAccountsQueries.debt.loans)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 
