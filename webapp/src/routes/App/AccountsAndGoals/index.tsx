@@ -2,12 +2,12 @@ import { Outlet, useOutlet } from "react-router-dom"
 import { useEffect, useState } from "react"
 
 import Modal from "@components/Modal"
+
 import Summary from "./Summary"
 import Goals from "./Goals"
 import CapitalAccounts from "./CapitalAccounts"
 import DebtAccounts from "./DebtAccounts"
 import ExternalAccounts from "./ExternalAccounts"
-
 
 export default function AccountsAndGoals() {
     const outlet = useOutlet()
