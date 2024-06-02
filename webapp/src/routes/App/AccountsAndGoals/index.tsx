@@ -51,11 +51,11 @@ export default function AccountsAndGoals() {
                 <CapitalAccounts.NormalPanel />
                 <DebtAccounts.LoansPanel />
                 <ExternalAccounts.IncomePanel />
-                <Goals.AchievementsPanel />
+                <Goals.AdministrationPanel />
                 <CapitalAccounts.SavingsPanel />
                 <DebtAccounts.CreditLinesPanel />
                 <ExternalAccounts.ExpensesPanel />
-                <Goals.AdministrationPanel />
+                <Goals.AchievementsPanel />
             </div>
             <Modal open={!!outlet} onClose={() => setOutletCache(null)}>
                 {
