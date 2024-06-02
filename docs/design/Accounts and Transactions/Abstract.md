@@ -12,16 +12,10 @@ nodes, and the Transactions are its edges.
   A1-->T4{{Cash Back}}-->A3
 ```
 
-This design, I think, is flexible to maintain a ledger of the user's finances and also build
-powerful features in the application.
-
-```mermaid
-  graph LR;
-  A1(Account)-. Child .->A1
-  A1-. Parent .->A1
-  A1-- Debit -->T1(Transaction)
-  T1-- Credit -->A1
-```
+Even if we don't use a graph database for the data storage, this design, I think, is flexible to
+maintain a ledger of the user's finances and build powerful features in the application,
+because making the Transactions the graph's edges connecting the Accounts, that would be the graph's
+node, can become really useful thought model.
 
 ## Accounts
 
@@ -43,9 +37,29 @@ or incurred, available credit or any source of income or expense.
 | created_at  | timestamp           | not null              |
 | updated_at  | timestamp           | not null              |
 
+### Parents and children `parent_id`
+
 An Account can have a parent account vía the `parent_id`. This is a design decision made, so the
-user can define child accounts, so they can better classify their finances inside the system's
-limitations.
+user can define child accounts, so they can better classify their finances.
+
+```mermaid
+  graph LR
+  A1(Groceries)-- child -->A2(Vegetables)
+  A2-- parent -->A1
+  A1-- child -->A3(Cleaning Products)
+  A3-- parent -->A1
+  A4(Bank Account)
+  A5(Savings)-- child -->A6(Interest)
+  A6-- parent -->A5
+```
+
+The limitation in this case would be that the system will only support on level of parentage
+controlled by the user.
+
+This indicates an optional one-to-many relation between Accounts, where a `parent` has many
+`children`, and a `child` has one father.
+
+### The different `kind`s of Accounts in the system
 
 Every Account must have a `kind`, that will be treated as an enum to indicate the type of account
 stored in the system. The values should be defined as `{family}_{type}`. Where family would be
@@ -66,6 +80,8 @@ As for the types, each family would have their own:
   - `expense`
 
 This should be enforced on a database level.
+
+### What's the `currency` I'm supposed to use?
 
 All Accounts must have a `currency`, that will be treated as an enum, or at least be normalized
 to a defined list of values to indicate the `currency` stored or handled by the account stored
