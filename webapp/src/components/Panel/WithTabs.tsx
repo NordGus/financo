@@ -50,16 +50,20 @@ export default function WithTabs(
                 />)}
             </div>
             <div
-                className={`divide-y dark:divide-neutral-800 ${(loading || !contents) ? "flex justify-center items-center" : ""} ${grow ? "flex-grow overflow-y-auto" : ""}`}
+                className={`divide-y dark:divide-neutral-800 ${!contents ? "flex justify-center items-center" : ""} ${grow ? "flex-grow overflow-y-auto" : ""}`}
             >
                 {
-                    loading
-                        ? <Throbber />
-                        : contents
-                            ? contents
+                    contents
+                        ? contents
+                        : loading
+                            ? <></>
                             : <span>{noContentsMessage}</span>
                 }
             </div>
+            {loading && <div className="px-2 py-1 flex justify-end items-center gap-2">
+                <Throbber variant="small" />
+                <span className="text-sm">Fetching</span>
+            </div>}
         </Base>
     )
 }
