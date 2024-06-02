@@ -47,14 +47,15 @@ export default function AccountsAndGoals() {
                     loading={summaryQuery.isFetching}
                     summaries={summaryQuery?.data?.total || []}
                 />
-                <Goals.AdministrationPanel className="row-span-2" />
+                <div></div>
                 <CapitalAccounts.NormalPanel />
                 <DebtAccounts.LoansPanel />
                 <ExternalAccounts.IncomePanel />
+                <Goals.AchievementsPanel />
                 <CapitalAccounts.SavingsPanel />
                 <DebtAccounts.CreditLinesPanel />
                 <ExternalAccounts.ExpensesPanel />
-                <Goals.AchievementsPanel />
+                <Goals.AdministrationPanel />
             </div>
             <Modal open={!!outlet} onClose={() => setOutletCache(null)}>
                 {
