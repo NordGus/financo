@@ -18,6 +18,7 @@ export default function AdministrationPanel({ className }: AdministrationPanelPr
     const archivedQuery = useQuery(archivedGoalsQuery)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
+    const newGoalPath = "/accounts/goals/new"
 
     return (
         <Panel.WithLoadingIndicator
@@ -44,7 +45,7 @@ export default function AdministrationPanel({ className }: AdministrationPanelPr
                         }}
                         active={false}
                     />
-                    <Panel.Components.ActionLink to={"/accounts/goals/new"} text="Add" />
+                    <Panel.Components.ActionLink to={newGoalPath} text="Add" />
                 </>
             }
             contents={
@@ -63,7 +64,7 @@ export default function AdministrationPanel({ className }: AdministrationPanelPr
                 {
                     active: <div className="flex flex-col justify-center items-center gap-2">
                         <p>No <span className="font-bold">Savings Goals</span> active in the system</p>
-                        <Link to={`/accounts`} className="text-sm underline">
+                        <Link to={newGoalPath} className="text-sm underline">
                             Please add a new one
                         </Link>
                     </div>,
