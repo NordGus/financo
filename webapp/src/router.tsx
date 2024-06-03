@@ -21,7 +21,7 @@ const router = createBrowserRouter([
                         element: <App.Account.Show />
                     },
                     {
-                        path: "new",
+                        path: "new/:kind",
                         element: <App.Account.New />
                     },
                     {
