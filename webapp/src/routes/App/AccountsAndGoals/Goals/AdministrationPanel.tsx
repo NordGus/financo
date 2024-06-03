@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 
 import { activeGoalsQuery, archivedGoalsQuery } from "@queries/goals"
 
-import PanelComponent from "@components/Panel"
+import Panel from "@components/Panel"
 import Preview from "@components/goal/Preview"
 
 type Queries = "active" | "archived"
@@ -20,7 +20,7 @@ export default function AdministrationPanel({ className }: AdministrationPanelPr
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 
     return (
-        <PanelComponent.WithTabs
+        <Panel.WithLoadingIndicator
             grow={true}
             className={className}
             loading={
@@ -31,24 +31,22 @@ export default function AdministrationPanel({ className }: AdministrationPanelPr
             }
             header={
                 <>
-                    <PanelComponent.Components.Title text="Goals" grow={true} />
-                    <PanelComponent.Components.ActionLink to={"/accounts"} text="Add" />
+                    <Panel.Components.Title text="Goals" grow={true} />
+                    <Panel.Components.ActionButton
+                        text={
+                            {
+                                archived: "Active",
+                                active: "Archived"
+                            }[currentQuery] || ""
+                        }
+                        onClick={() => {
+                            setCurrentQuery(currentQuery === "active" ? "archived" : "active")
+                        }}
+                        active={false}
+                    />
+                    <Panel.Components.ActionLink to={"/accounts/goals/new"} text="Add" />
                 </>
             }
-            tabs={[
-                {
-                    key: "goals:tab:active",
-                    text: "Active",
-                    active: currentQuery === "active",
-                    onClick: () => setCurrentQuery("active")
-                },
-                {
-                    key: "goals:tab:archived",
-                    text: "Archived",
-                    active: currentQuery === "archived",
-                    onClick: () => setCurrentQuery("archived")
-                },
-            ]}
             contents={
                 {
                     active: activeQuery.data?.length === 0 ? null : activeQuery.data?.
