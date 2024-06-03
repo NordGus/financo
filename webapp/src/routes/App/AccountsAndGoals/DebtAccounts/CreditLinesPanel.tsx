@@ -18,6 +18,7 @@ export default function CreditLinesPanel({ className }: CreditLinesPanelProps) {
     const archivedQuery = useQuery(archivedAccountsQueries.debt.credit)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
+    const newAccountPath = "/accounts/new/debt_credit"
 
     return (
         <Panel.WithLoadingIndicator
@@ -44,7 +45,7 @@ export default function CreditLinesPanel({ className }: CreditLinesPanelProps) {
                         }}
                         active={false}
                     />
-                    <Panel.Components.ActionLink to="/accounts/new" text="Add" />
+                    <Panel.Components.ActionLink to={newAccountPath} text="Add" />
                 </>
             }
             contents={
@@ -59,7 +60,7 @@ export default function CreditLinesPanel({ className }: CreditLinesPanelProps) {
                 {
                     active: <div className="flex flex-col justify-center items-center gap-2">
                         <p>No <span className="font-bold">Credit Lines</span> active in the system</p>
-                        <Link to={`/accounts`} className="text-sm underline">
+                        <Link to={newAccountPath} className="text-sm underline">
                             Please add a new one
                         </Link>
                     </div>,
