@@ -35,8 +35,8 @@ export default function AdministrationPanel({ className }: AdministrationPanelPr
                     <Panel.Components.ActionButton
                         text={
                             {
-                                archived: "Active",
-                                active: "Archived"
+                                active: "Show Archived",
+                                archived: "Show Active"
                             }[currentQuery] || ""
                         }
                         onClick={() => {

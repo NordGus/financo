@@ -20,7 +20,7 @@ export default function IncomePanel({ className }: IncomePanelProps) {
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
 
     return (
-        <Panel.WithTabs
+        <Panel.WithLoadingIndicator
             grow={true}
             className={className}
             loading={
@@ -32,23 +32,21 @@ export default function IncomePanel({ className }: IncomePanelProps) {
             header={
                 <>
                     <Panel.Components.Title text="Income" grow={true} />
+                    <Panel.Components.ActionButton
+                        text={
+                            {
+                                active: "Show Archived",
+                                archived: "Show Active"
+                            }[currentQuery] || ""
+                        }
+                        onClick={() => {
+                            setCurrentQuery(currentQuery === "active" ? "archived" : "active")
+                        }}
+                        active={false}
+                    />
                     <Panel.Components.ActionLink to="/accounts/new" text="Add" />
                 </>
             }
-            tabs={[
-                {
-                    key: "accounts:external:income:tab:active",
-                    text: "Active",
-                    active: currentQuery === "active",
-                    onClick: () => setCurrentQuery("active")
-                },
-                {
-                    key: "accounts:external:income:tab:archived",
-                    text: "Archived",
-                    active: currentQuery === "archived",
-                    onClick: () => setCurrentQuery("archived")
-                }
-            ]}
             contents={
                 {
                     active: activeQuery.data?.length === 0 ? null : activeQuery.data?.
