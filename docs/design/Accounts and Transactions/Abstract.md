@@ -44,13 +44,13 @@ user can define child accounts, so they can better classify their finances.
 
 ```mermaid
   graph LR
-  A1(Groceries)-- child -->A2(Vegetables)
-  A2-- parent -->A1
-  A1-- child -->A3(Cleaning Products)
-  A3-- parent -->A1
+  A1(Groceries)-- parent -->A2(Vegetables)
+  A2-- child -->A1
+  A1-- parent -->A3(Cleaning Products)
+  A3-- child -->A1
+  A5(Savings)-- parent -->A6(Interest)
+  A6-- child -->A5
   A4(Bank Account)
-  A5(Savings)-- child -->A6(Interest)
-  A6-- parent -->A5
 ```
 
 The limitation in this case would be that the system will only support on level of parentage
