@@ -1,4 +1,5 @@
 import Base from "./Base"
+import Clean from "./Clean"
 import WithLoadingIndicator from "./WithLoadingIndicator"
 import WithTabs from "./WithTabs"
 
@@ -13,6 +14,7 @@ export default {
         Title
     },
     Base,
+    Clean,
     WithTabs,
     WithLoadingIndicator
 }
