@@ -28,7 +28,8 @@
         "bierner.markdown-preview-github-styles",
         "bierner.github-markdown-preview",
         "bierner.markdown-mermaid",
-        "mhutchie.git-graph"
+        "mhutchie.git-graph",
+        "firefox-devtools.vscode-firefox-debug"
       ],
       "settings": {
         "go.useLanguageServer": true,
