@@ -36,7 +36,7 @@ RUN apk add -q --update --progress --no-cache git make sudo openssh-client zsh n
 RUN npm install -g npm@$NPM_VERSION
 
 # installing cosmtrek/air for hot reloading
-RUN go install github.com/cosmtrek/air@$GO_AIR_VERSION
+RUN go install github.com/air-verse/air@$GO_AIR_VERSION
 
 # Setup shell
 USER $USERNAME
