@@ -27,7 +27,8 @@
         "Catppuccin.catppuccin-vsc",
         "bierner.markdown-preview-github-styles",
         "bierner.github-markdown-preview",
-        "bierner.markdown-mermaid"
+        "bierner.markdown-mermaid",
+        "mhutchie.git-graph"
       ],
       "settings": {
         "go.useLanguageServer": true,
