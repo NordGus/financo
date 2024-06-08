@@ -1,14 +1,14 @@
-import { ReactNode, useState } from "react"
+import { ReactNode } from "react"
 
 import Throbber from "@components/Throbber"
 
 import Base from "./Base"
-import { ActionButton } from "./components/ActionButton"
 
 interface WithFiltersProps {
     header: ReactNode
     contents: ReactNode
     filters: ReactNode
+    showFilters: boolean
     className?: string
     loading?: boolean
     noContentsMessage?: ReactNode | string
@@ -21,26 +21,18 @@ export default function WithFilters(
         className,
         contents,
         filters,
+        showFilters,
         noContentsMessage = "Empty",
         loading = false,
         grow = false
     }: WithFiltersProps
 ) {
-    const [showFilters, setShowFilters] = useState(false)
-
     return (
         <Base
             className={className}
-            header={<>
-                {header}
-                <ActionButton
-                    text={showFilters ? "Hide Filters" : "Show Filters"}
-                    onClick={() => setShowFilters(!showFilters)}
-                    active={showFilters}
-                />
-            </>}
+            header={header}
         >
-            <div hidden={showFilters}>
+            <div hidden={!showFilters}>
                 {filters}
             </div>
             <div
