@@ -5,6 +5,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import Goal from "./Goal";
 import Layout from "./Layout";
 import Root from "./Root";
+import Transaction from "./Transaction";
 
 export default {
     Layout,
@@ -13,5 +14,6 @@ export default {
     Books,
     Account,
     Goal,
+    Transaction,
     ErrorBoundary,
 }
