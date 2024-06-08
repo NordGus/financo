@@ -1,12 +1,13 @@
 import { ComponentPropsWithoutRef, useEffect, useRef } from "react";
 
 type ModalProps = ComponentPropsWithoutRef<"dialog"> & {
+    bodyClassName?: string
     onClose: () => void,
     variant?: "small" | "medium" | "full" // for small and medium you most provide height
 }
 
 export default function Modal(props: ModalProps) {
-    const { children, open, className, onClose, variant = "small", ...rest } = props
+    const { children, open, className, onClose, variant = "small", bodyClassName, ...rest } = props
     const ref = useRef<HTMLDialogElement>(null)
     const variants = {
         small: "sm:w-[30dvw] sm:max-w-[30dvw]",
@@ -51,7 +52,7 @@ export default function Modal(props: ModalProps) {
                 className="fixed inset-0 flex flex-col justify-end items-center bg-neutral-500/20 opacity-0 group-data-[open]:opacity-100 backdrop-blur-sm transition-all duration-200"
             >
                 <div
-                    className={`m-auto w-full max-w-[400px] sm:min-w-[400px] ${variants[variant]} translate-y-full group-data-[open]:translate-y-0 transition-transform duration-500`}
+                    className={`m-auto w-full max-w-[400px] sm:min-w-[400px] ${variants[variant]} translate-y-full group-data-[open]:translate-y-0 transition-transform duration-500 ${bodyClassName ? bodyClassName : ""}`}
                 >
                     {children}
                 </div>
