@@ -36,7 +36,17 @@ const router = createBrowserRouter([
             },
             {
                 path: "books",
-                element: <App.Books />
+                element: <App.Books />,
+                children: [
+                    {
+                        path: "transactions/:id",
+                        element: <App.Transaction.Show />
+                    },
+                    {
+                        path: "transactions/new",
+                        element: <App.Transaction.New />
+                    },
+                ]
             }
         ]
     }

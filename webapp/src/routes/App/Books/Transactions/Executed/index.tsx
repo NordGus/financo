@@ -22,7 +22,7 @@ export default function Executed({ className }: ExecutedProps) {
                 />
                 <Panel.Components.ActionLink
                     text="Add"
-                    to="/books"
+                    to="/books/transactions/new"
                 />
             </>}
             loading={false}
