@@ -1,6 +1,9 @@
+import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { TransactionsFilters, getTransactions } from "@api/transactions";
+
 import Panel from "@components/Panel";
 import Filters from "./Filters";
-import { useState } from "react";
 
 interface ExecutedProps {
     className: string
@@ -8,6 +11,12 @@ interface ExecutedProps {
 
 export default function Executed({ className }: ExecutedProps) {
     const [showFilters, setShowFilters] = useState(false)
+    const [filters, setFilters] = useState<TransactionsFilters>({})
+    const filtersMutation = useMutation({
+        mutationFn: (filters: TransactionsFilters) => getTransactions(filters)()
+    })
+
+    useEffect(() => filtersMutation.mutate(filters), [filters])
 
     return (
         <Panel.WithFilters
@@ -25,9 +34,9 @@ export default function Executed({ className }: ExecutedProps) {
                     to="/books/transactions/new"
                 />
             </>}
-            loading={false}
-            contents={<span>Transactions here</span>}
-            filters={<Filters />}
+            loading={filtersMutation.isPending}
+            contents={filtersMutation.data?.map((transaction) => (<span>{transaction.id}</span>))}
+            filters={<Filters filters={filters} setFilters={setFilters} />}
             showFilters={showFilters}
         />
     )
