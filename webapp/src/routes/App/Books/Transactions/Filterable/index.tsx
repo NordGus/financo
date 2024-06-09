@@ -5,11 +5,11 @@ import { TransactionsFilters, getTransactions } from "@api/transactions";
 import Panel from "@components/Panel";
 import Filters from "./Filters";
 
-interface ExecutedProps {
+interface FilterableProps {
     className: string
 }
 
-export default function Executed({ className }: ExecutedProps) {
+export default function Filterable({ className }: FilterableProps) {
     const [showFilters, setShowFilters] = useState(false)
     const [filters, setFilters] = useState<TransactionsFilters>({})
     const filtersMutation = useMutation({
