@@ -1,11 +1,11 @@
 import Transaction from "@/types/Transaction"
 
 export interface TransactionsFilters {
-    issuedFrom?: Date
-    issuedUntil?: Date
+    issuedFrom?: string
+    issuedUntil?: string
 
-    executedFrom?: Date
-    executedUntil?: Date
+    executedFrom?: string
+    executedUntil?: string
 
     accountIDs?: string[]
     externalAccountIDs?: string[]
