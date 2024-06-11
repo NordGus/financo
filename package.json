@@ -2,8 +2,5 @@
     "name": "financo",
     "workspaces": [
         "webapp"
-    ],
-    "devDependencies": {
-        "@types/lodash": "^4.17.5"
-    }
+    ]
 }
