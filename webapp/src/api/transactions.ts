@@ -1,3 +1,5 @@
+import { isEmpty, isNil } from "lodash"
+
 import Transaction from "@/types/Transaction"
 
 export interface TransactionsFilters {
@@ -14,7 +16,7 @@ export interface TransactionsFilters {
 export function getTransactions(filters: TransactionsFilters): () => Promise<Transaction[]> {
     return async () => {
         const params = new URLSearchParams(
-            Object.entries(filters).filter(([_, value]) => value !== null || value !== undefined)
+            Object.entries(filters).filter(([_, value]) => !isEmpty(value) || !isNil(value))
         )
         const response = await fetch(`/api/transactions?${params.toString()}`)
 
