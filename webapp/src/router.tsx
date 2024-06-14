@@ -9,7 +9,7 @@ const router = createBrowserRouter([
         errorElement: <App.ErrorBoundary />,
         children: [
             {
-                path: "/",
+                index: true,
                 element: <App.Root />
             },
             {
