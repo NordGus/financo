@@ -12,7 +12,7 @@ export default function Modal(props: ModalProps) {
     const variants = {
         small: "sm:w-[30dvw] sm:max-w-[30dvw]",
         medium: "sm:w-[60dvw] sm:max-w-[60dvw]",
-        full: "sm:w-[95dvw] sm:max-w-[95dvw] sm:h-[95dvh] sm:max-h-[95dvh]"
+        full: "sm:w-full sm:max-w-full sm:h-full sm:max-h-full"
     }
 
     useEffect(() => {
@@ -49,10 +49,10 @@ export default function Modal(props: ModalProps) {
     return (
         <dialog ref={ref} className={`group ${className}`} {...rest}>
             <div
-                className="fixed inset-0 flex flex-col justify-end items-center bg-neutral-500/20 opacity-0 group-data-[open]:opacity-100 backdrop-blur-sm transition-all duration-200"
+                className="fixed inset-0 flex justify-center items-end bg-neutral-500/20 opacity-0 group-data-[open]:opacity-100 backdrop-blur-sm transition-all duration-200 sm:p-2"
             >
                 <div
-                    className={`m-auto w-full max-w-[400px] sm:min-w-[400px] ${variants[variant]} translate-y-full group-data-[open]:translate-y-0 transition-transform duration-500 ${bodyClassName ? bodyClassName : ""}`}
+                    className={`w-full max-w-[400px] sm:min-w-[400px] ${variants[variant]} translate-y-full group-data-[open]:translate-y-0 transition-transform duration-500 ${bodyClassName ? bodyClassName : ""}`}
                 >
                     {children}
                 </div>
