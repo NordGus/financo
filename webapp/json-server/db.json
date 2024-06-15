@@ -457,7 +457,7 @@
         {
             "id": 1,
             "issuedAt": "2024-06-10",
-            "executedAt": null,
+            "executedAt": "null",
             "source": {
                 "id": 1,
                 "kind": "capital_normal",
