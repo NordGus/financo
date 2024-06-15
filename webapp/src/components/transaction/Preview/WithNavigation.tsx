@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { useMemo } from "react";
 
 import Transaction from "@/types/Transaction";
 import Base from "./Base";

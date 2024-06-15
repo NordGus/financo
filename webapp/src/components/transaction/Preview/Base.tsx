@@ -16,28 +16,16 @@ export default function Base({
         targetAmount
     }
 }: Props) {
-    const issueDate = useMemo(() => new Date(Date.parse(issuedAt)), [issuedAt])
-    const executionDate = useMemo(() => {
-        if (!executedAt) return undefined
+    const date = useMemo(() => {
+        if (!executedAt) return new Date(Date.parse(issuedAt))
         else return new Date(Date.parse(executedAt))
-    }, [executedAt])
+    }, [issuedAt, executedAt])
 
     return (
         <div className="grid grid-rows-1 grid-cols-4 gap-2">
             <span>{source.name}</span>
             <span>{
-                issueDate.toLocaleDateString(
-                    undefined,
-                    {
-                        weekday: "short",
-                        year: "numeric",
-                        month: "long",
-                        day: "2-digit"
-                    }
-                )
-            }</span>
-            <span>{
-                executionDate?.toLocaleDateString(
+                date.toLocaleDateString(
                     undefined,
                     {
                         weekday: "short",
