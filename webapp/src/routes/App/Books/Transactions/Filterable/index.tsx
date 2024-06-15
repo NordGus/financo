@@ -71,7 +71,7 @@ export default function Filterable({ className }: FilterableProps) {
                                         weekday: "long",
                                         year: "numeric",
                                         month: "long",
-                                        day: "2-digit"
+                                        day: "numeric"
                                     })}
                                 </h2>
                                 {transactions.map((transaction) => (
