@@ -2,6 +2,19 @@ import { isEmpty, isNil } from "lodash"
 
 import Transaction from "@/types/Transaction"
 
+export function getTransaction(id: string): () => Promise<Transaction> {
+    return async () => {
+        const response = await fetch(`/api/transactions/${id}`)
+
+        if (!response.ok) {
+            console.error(response)
+            throw new Error('Network response was not ok')
+        }
+
+        return response.json()
+    }
+}
+
 export interface TransactionsFilters {
     issuedFrom?: string
     issuedUntil?: string
