@@ -3,7 +3,7 @@ import Account from "./Account"
 export default interface Transaction {
     id: number
     issuedAt: string
-    executedAt?: string
+    executedAt: string | null
     source: Account
     target: Account
     sourceAmount: number
