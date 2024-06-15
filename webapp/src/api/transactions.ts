@@ -28,3 +28,14 @@ export function getTransactions(filters: TransactionsFilters): () => Promise<Tra
         return response.json()
     }
 }
+
+export async function getPendingTransactions(): Promise<Transaction[]> {
+    const response = await fetch("/api/transactions?executedAt=null")
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
+}

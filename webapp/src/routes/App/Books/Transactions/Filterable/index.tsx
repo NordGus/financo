@@ -4,6 +4,7 @@ import { TransactionsFilters, getTransactions } from "@api/transactions";
 import moment from "moment";
 
 import Panel from "@components/Panel";
+import Preview from "@components/transaction/Preview";
 import Filters from "./Filters";
 
 interface FilterableProps {
@@ -43,7 +44,16 @@ export default function Filterable({ className }: FilterableProps) {
                 />
             </>}
             loading={filtersMutation.isPending}
-            contents={filtersMutation.data?.map((transaction) => (<span>{transaction.id}</span>))}
+            contents={
+                (filtersMutation.data?.length === 0 || !filtersMutation.data)
+                    ? null
+                    : filtersMutation.data?.map((transaction) => (
+                        <Preview.WithNavigation
+                            key={`transaction:${transaction.id}`}
+                            transaction={transaction}
+                        />
+                    ))
+            }
             filters={
                 <Filters
                     filters={filters}
