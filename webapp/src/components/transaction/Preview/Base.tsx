@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 
 import Transaction from "@/types/Transaction";
 
@@ -8,33 +8,21 @@ interface Props {
 
 export default function Base({
     transaction: {
-        issuedAt,
-        executedAt,
         source,
         target,
         sourceAmount,
         targetAmount
     }
 }: Props) {
-    const date = useMemo(() => {
-        if (!executedAt) return new Date(Date.parse(issuedAt))
-        else return new Date(Date.parse(executedAt))
-    }, [issuedAt, executedAt])
+    const sameCurrency = source.currency === target.currency
 
     return (
         <div className="grid grid-rows-1 grid-cols-4 gap-2">
             <span>{source.name}</span>
-            <span>{
-                date.toLocaleDateString(
-                    undefined,
-                    {
-                        weekday: "short",
-                        year: "numeric",
-                        month: "long",
-                        day: "2-digit"
-                    }
-                )
-            }</span>
+            <span className={`${sameCurrency ? "col-span-2" : ""}`}>
+                {currencyAmountToHuman(sourceAmount, source.currency)}
+            </span>
+            {!sameCurrency && <span>{currencyAmountToHuman(targetAmount, target.currency)}</span>}
             <span>{target.name}</span>
         </div>
     )
