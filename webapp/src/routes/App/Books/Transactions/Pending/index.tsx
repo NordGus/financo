@@ -37,7 +37,7 @@ export default function Pending({ className }: PendingProps) {
                                     className="px-2 py-1.5 text-2xl text-neutral-400 dark:text-neutral-600"
                                 >
                                     {date.toLocaleDateString(undefined, {
-                                        weekday: "short",
+                                        weekday: "long",
                                         year: "numeric",
                                         month: "long",
                                         day: "2-digit"

@@ -55,7 +55,12 @@ export default function Filterable({ className }: FilterableProps) {
                         ({ executedAt }) => executedAt!
                     )). // TODO: remove filter, and change return type
                         map(([date, transactions]) => {
-                            return { date: moment(date, 'YYYY-MM-DD').toDate(), transactions }
+                            return {
+                                date: moment(date, 'YYYY-MM-DD').toDate(),
+                                transactions: transactions.sort((a, b) => {
+                                    return Date.parse(a.updatedAt) - Date.parse(b.updatedAt)
+                                })
+                            }
                         }).
                         map(({ date, transactions }) => (
                             <>
@@ -63,7 +68,7 @@ export default function Filterable({ className }: FilterableProps) {
                                     className="px-2 py-1.5 text-2xl text-neutral-400 dark:text-neutral-600"
                                 >
                                     {date.toLocaleDateString(undefined, {
-                                        weekday: "short",
+                                        weekday: "long",
                                         year: "numeric",
                                         month: "long",
                                         day: "2-digit"
