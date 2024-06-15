@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { TransactionsFilters, getTransactions } from "@api/transactions";
 import moment from "moment";
+import { groupBy } from "lodash";
 
 import Panel from "@components/Panel";
 import Preview from "@components/transaction/Preview";
@@ -47,15 +48,39 @@ export default function Filterable({ className }: FilterableProps) {
             contents={
                 (filtersMutation.data?.length === 0 || !filtersMutation.data)
                     ? null
-                    : filtersMutation.data?.map((transaction) => (
-                        <Preview.WithNavigation
-                            key={`transaction:${transaction.id}`}
-                            transaction={transaction}
-                        />
-                    ))
+                    : Object.entries(groupBy(filtersMutation.data.filter(
+                        ({ executedAt }) => executedAt !== "null" && !!executedAt
+                    ).
+                        sort((a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)),
+                        ({ executedAt }) => executedAt!
+                    )). // TODO: remove filter, and change return type
+                        map(([date, transactions]) => {
+                            return { date: moment(date, 'YYYY-MM-DD').toDate(), transactions }
+                        }).
+                        map(({ date, transactions }) => (
+                            <>
+                                <h2
+                                    className="px-2 py-1.5 text-2xl text-neutral-400 dark:text-neutral-600"
+                                >
+                                    {date.toLocaleDateString(undefined, {
+                                        weekday: "short",
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "2-digit"
+                                    })}
+                                </h2>
+                                {transactions.map((transaction) => (
+                                    <Preview.WithNavigation
+                                        key={`transaction:${transaction.id}`}
+                                        transaction={transaction}
+                                    />
+                                ))}
+
+                            </>
+                        ))
             }
             filters={
-                <Filters
+                < Filters
                     filters={filters}
                     setFilters={setFilters}
                     onClear={() => setFilters(defaultFilters())}
