@@ -15,7 +15,7 @@ export default function Show() {
 
     return (
         <div
-            className="h-full grid grid-rows-[minmax(0,_min-content)_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1fr)] grid-cols-2 gap-2"
+            className="h-full grid grid-rows-[minmax(0,_min-content)_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1fr)] grid-cols-2 gap-1"
         >
             <div className="col-span-2 flex items-stretch min-h-10 h-10 max-h-10">
                 <Link
