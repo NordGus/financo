@@ -47,6 +47,10 @@ const router = createBrowserRouter([
                         element: <App.Transaction.New />
                     },
                 ]
+            },
+            {
+                path: '*',
+                element: <App.NotFound />
             }
         ]
     }
