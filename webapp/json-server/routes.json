@@ -16,5 +16,6 @@
     "/accounts/external/expenses/archived": "/accounts?kind=external_expense&archived=true",
     "/goals": "/goals?archived=false&fulfilled.reached=false&_sort=position&_order=asc",
     "/goals/archived": "/goals?archived=true&_sort=position,updatedAt&_order=asc,asc",
-    "/goals/reached": "/goals?fulfilled.reached=true&_sort=fulfilled.at,createdAt&_order=desc,asc"
+    "/goals/reached": "/goals?fulfilled.reached=true&_sort=fulfilled.at,createdAt&_order=desc,asc",
+    "/accounts/:id/transactions": "/transactions?source.id=:id&target.id=:id&$1"
 }
