@@ -9,6 +9,7 @@ FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} as node
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION}
 ARG NPM_VERSION
 ARG GO_AIR_VERSION
+ARG GO_GOOSE_VERSION
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=1000
@@ -37,6 +38,9 @@ RUN npm install -g npm@$NPM_VERSION
 
 # installing cosmtrek/air for hot reloading
 RUN go install github.com/air-verse/air@$GO_AIR_VERSION
+
+# installing pressly/goose for handling migrations
+RUN go install github.com/pressly/goose/v3/cmd/goose@$GO_GOOSE_VERSION
 
 # Setup shell
 USER $USERNAME

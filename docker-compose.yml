@@ -11,7 +11,9 @@ services:
         NODE_VERSION: "20"
         NPM_VERSION: "latest"
         GO_AIR_VERSION: "latest"
+        GO_GOOSE_VERSION: "latest"
     user: vscode
+    env_file: .env
     volumes:
       - .:/workspace:cached
       - ${HOME}/.ssh:/home/vscode/.ssh:ro
