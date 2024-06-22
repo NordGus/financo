@@ -31,6 +31,7 @@ or incurred, available credit or any source of income or expense.
 | name        | text                | not null              |
 | description | text                |                       |
 | color       | text                | not null              |
+| icon        | text                | not null              |
 | capital     | biginteger (64 bit) | not null, default `0` |
 | archived_at | timestamp           | index                 |
 | deleted_at  | timestamp           | index                 |
