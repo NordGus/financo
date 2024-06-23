@@ -68,7 +68,7 @@ one of the following `system`, `capital`, `debt`, `external`.
 As for the types, each family would have their own:
 
 - `system`
-  - `history`
+  - `historic`
 - `capital`
   - `normal`
   - `savings`
