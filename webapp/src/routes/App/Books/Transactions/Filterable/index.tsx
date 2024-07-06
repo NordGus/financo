@@ -63,7 +63,7 @@ export default function Filterable({ className }: FilterableProps) {
                             }
                         }).
                         map(({ date, transactions }) => (
-                            <>
+                            <div>
                                 <h2
                                     className="px-2 py-1.5 text-2xl text-neutral-400 dark:text-neutral-600"
                                 >
@@ -81,7 +81,7 @@ export default function Filterable({ className }: FilterableProps) {
                                     />
                                 ))}
 
-                            </>
+                            </div>
                         ))
             }
             filters={
