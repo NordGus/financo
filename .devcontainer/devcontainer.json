@@ -30,7 +30,8 @@
         "bierner.markdown-mermaid",
         "mhutchie.git-graph",
         "firefox-devtools.vscode-firefox-debug",
-        "cweijan.vscode-database-client2"
+        "cweijan.vscode-database-client2",
+        "streetsidesoftware.code-spell-checker-spanish"
       ],
       "settings": {
         "go.useLanguageServer": true,
