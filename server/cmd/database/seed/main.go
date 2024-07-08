@@ -5,6 +5,7 @@ import (
 	"errors"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
+	"financo/server/types/records/transaction"
 	"financo/server/types/shared/currency"
 	"financo/server/types/shared/icon"
 	"fmt"
@@ -176,6 +177,7 @@ func createCapitalNormalAccounts(ctx context.Context, tx pgx.Tx, executionTime t
 		}
 
 		history.ParentID = nullable.New(account.ID)
+		history.Currency = account.Currency
 
 		err = tx.QueryRow(
 			ctx,
@@ -196,9 +198,53 @@ func createCapitalNormalAccounts(ctx context.Context, tx pgx.Tx, executionTime t
 		if err != nil {
 			return accounts, err
 		}
-
 		accounts[i].Account = account
 		accounts[i].History = history
+
+		if !accounts[i].WithHistory || accounts[i].Capital == 0 {
+			continue
+		}
+
+		tr := transaction.Record{
+			Notes:      nullable.New("This transaction was created automatically by the system. DO NOT MODIFY"),
+			IssuedAt:   accounts[i].HistoryAt,
+			ExecutedAt: nullable.New(accounts[i].HistoryAt),
+			CreatedAt:  executionTime,
+			UpdatedAt:  executionTime,
+		}
+
+		if accounts[i].Capital < 0 {
+			tr.SourceID = account.ID
+			tr.TargetID = history.ID
+			tr.SourceAmount = -accounts[i].Capital
+			tr.TargetAmount = -accounts[i].Capital
+		} else {
+			tr.SourceID = history.ID
+			tr.TargetID = account.ID
+			tr.SourceAmount = accounts[i].Capital
+			tr.TargetAmount = accounts[i].Capital
+		}
+
+		results, err := tx.Exec(
+			ctx,
+			"INSERT INTO transactions(source_id, target_id, source_amount, target_amount, notes, issued_at, executed_at, created_at, updated_at)"+
+				"VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+			tr.SourceID,
+			tr.TargetID,
+			tr.SourceAmount,
+			tr.TargetAmount,
+			tr.Notes,
+			tr.IssuedAt,
+			tr.ExecutedAt,
+			tr.CreatedAt,
+			tr.UpdatedAt,
+		)
+		if err != nil {
+			return accounts, err
+		}
+		if results.RowsAffected() == 0 {
+			return accounts, fmt.Errorf("database seed: failed to create history transaction for capital account")
+		}
 	}
 
 	return accounts, nil
