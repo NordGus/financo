@@ -34,12 +34,8 @@ export default function Base({
         <div
             className="grid grid-rows-[min-content_min-content] grid-cols-[minmax(0,_1fr)_min-content] items-center gap-1"
         >
-            <p className="text-xl">{top.name}</p>
-            <p
-                className={
-                    `text-xl text-right ${currencySourceAmountColor(source.kind, target.kind)}`
-                }
-            >
+            <p>{top.name}</p>
+            <p className={`text-right ${currencySourceAmountColor(source.kind, target.kind)}`}>
                 {currencyAmountToHuman(targetAmount, target.currency)}
             </p>
             <p className={`text-sm opacity-60 ${sameCurrency ? "col-span-2" : ""}`}>
@@ -47,7 +43,7 @@ export default function Base({
             </p>
             {
                 !sameCurrency &&
-                <p className={`text-right opacity-60 ${currencyAmountColor(0)}`}>
+                <p className={`text-sm text-right opacity-60 ${currencyAmountColor(0)}`}>
                     {currencyAmountToHuman(sourceAmount, source.currency)}
                 </p>
             }
