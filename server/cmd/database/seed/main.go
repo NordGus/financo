@@ -68,9 +68,15 @@ func main() {
 		log.Fatalf("failed to create debt loan accounts:\n\t err: %v\n", err)
 	}
 
+	debtCreditAccounts, err := createDebtCreditAccounts(ctx, tx, executedAt)
+	if err != nil {
+		log.Fatalf("failed to create debt credit accounts:\n\t err: %v\n", err)
+	}
+
 	fmt.Println(capitalNormalAccounts)
 	fmt.Println(capitalSavingsAccounts)
 	fmt.Println(debtLoanAccounts)
+	fmt.Println(debtCreditAccounts)
 
 	err = tx.Commit(ctx)
 	if err != nil {
@@ -391,6 +397,95 @@ func createDebtLoanAccounts(
 			WithHistory: true,
 			HistoryAt:   time.Date(2021, 10, 11, 0, 0, 0, 0, executionTime.Location()),
 			Capital:     -8000,
+		},
+	}
+
+	accounts, err := createAccountsWithHistory(ctx, tx, accounts...)
+	if err != nil {
+		return accounts, errors.Join(
+			fmt.Errorf("failed to seed capital savings accounts"),
+			err,
+		)
+	}
+
+	return accounts, nil
+}
+
+func createDebtCreditAccounts(
+	ctx context.Context,
+	tx pgx.Tx,
+	executionTime time.Time,
+) ([]accountWithHistory, error) {
+	accounts := []accountWithHistory{
+		{
+			Account: account.Record{
+				// Doesn't need ID because is a new record.
+				// Doesn't need ParentID because is a parent record.
+				Kind:        account.DebtCredit,
+				Currency:    currency.EUR,
+				Name:        "Credit Card",
+				Description: nullable.New("My bank's credit card"),
+				Color:       "#eb8934",
+				Icon:        icon.Base,
+				Capital:     200000,
+				// Doesn't need ArchivedAt because is not archived.
+				// Doesn't need DeletedAt because is not deleted.
+				CreatedAt: executionTime,
+				UpdatedAt: executionTime,
+			},
+			History: account.Record{
+				// Doesn't need ID because is a new record.
+				// ParentID will be added later after the creation of its corresponding account.
+				Kind:        account.SystemHistoric,
+				Currency:    currency.EUR,
+				Name:        "Credit Card (History)",
+				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
+				Color:       "#8c8c8c",
+				Icon:        icon.Base,
+				// Doesn't need Capital because is not a debt record.
+				// Doesn't need ArchivedAt because is not archived.
+				// Doesn't need DeletedAt because is not deleted.
+				CreatedAt: executionTime,
+				UpdatedAt: executionTime,
+			},
+			WithHistory: true,
+			HistoryAt:   time.Date(2023, 10, 11, 0, 0, 0, 0, executionTime.Location()),
+			Capital:     -8000,
+		},
+		{
+			Account: account.Record{
+				// Doesn't need ID because is a new record.
+				// Doesn't need ParentID because is a parent record.
+				Kind:     account.DebtCredit,
+				Currency: currency.EUR,
+				Name:     "Laptop financing Credit Line",
+				// Doesn't need Description because it won't have.
+				Color:      "#34baeb",
+				Icon:       icon.Base,
+				Capital:    250000,
+				ArchivedAt: nullable.New(executionTime),
+				// Doesn't need DeletedAt because is not deleted.
+				CreatedAt: executionTime,
+				UpdatedAt: executionTime,
+			},
+			History: account.Record{
+				// Doesn't need ID because is a new record.
+				// ParentID will be added later after the creation of its corresponding account.
+				Kind:        account.SystemHistoric,
+				Currency:    currency.EUR,
+				Name:        "Laptop financing Credit Line (History)",
+				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
+				Color:       "#8c8c8c",
+				Icon:        icon.Base,
+				// Doesn't need Capital because is not a debt record.
+				ArchivedAt: nullable.New(executionTime),
+				// Doesn't need DeletedAt because is not deleted.
+				CreatedAt: executionTime,
+				UpdatedAt: executionTime,
+			},
+			WithHistory: true,
+			HistoryAt:   time.Date(2020, 9, 15, 0, 0, 0, 0, executionTime.Location()),
+			Capital:     -123469,
 		},
 	}
 
