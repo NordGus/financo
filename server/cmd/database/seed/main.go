@@ -148,52 +148,12 @@ func createCapitalNormalAccounts(
 		},
 	}
 
-	for i := 0; i < len(accounts); i++ {
-		var (
-			acc  = accounts[i].Account
-			hist = accounts[i].History
-
-			withHistory = accounts[i].WithHistory
-			capital     = accounts[i].Capital
-			historyAt   = accounts[i].HistoryAt
+	accounts, err := createAccountsWithHistory(ctx, tx, accounts...)
+	if err != nil {
+		return accounts, errors.Join(
+			fmt.Errorf("failed to seed capital normal accounts"),
+			err,
 		)
-
-		acc, err := createAccount(ctx, tx, acc)
-		if err != nil {
-			return accounts, err
-		}
-
-		hist.ParentID = nullable.New(acc.ID)
-		hist.Currency = acc.Currency
-
-		hist, err = createAccount(ctx, tx, hist)
-		if err != nil {
-			return accounts, err
-		}
-
-		if withHistory && capital != 0 {
-			err = createTransaction(
-				ctx,
-				tx,
-				transaction.Record{
-					SourceID:     acc.ID,
-					TargetID:     hist.ID,
-					SourceAmount: capital,
-					TargetAmount: capital,
-					Notes:        nullable.New("This transaction was created automatically by the system. DO NOT MODIFY"),
-					IssuedAt:     historyAt,
-					ExecutedAt:   nullable.New(historyAt),
-					CreatedAt:    executionTime,
-					UpdatedAt:    executionTime,
-				},
-			)
-			if err != nil {
-				return accounts, errors.Join(fmt.Errorf("database seed: failed to create history transaction for capital account"), err)
-			}
-		}
-
-		accounts[i].Account = acc
-		accounts[i].History = hist
 	}
 
 	return accounts, nil
@@ -306,52 +266,12 @@ func createCapitalSavingsAccounts(
 		},
 	}
 
-	for i := 0; i < len(accounts); i++ {
-		var (
-			acc  = accounts[i].Account
-			hist = accounts[i].History
-
-			withHistory = accounts[i].WithHistory
-			capital     = accounts[i].Capital
-			historyAt   = accounts[i].HistoryAt
+	accounts, err := createAccountsWithHistory(ctx, tx, accounts...)
+	if err != nil {
+		return accounts, errors.Join(
+			fmt.Errorf("failed to seed capital savings accounts"),
+			err,
 		)
-
-		acc, err := createAccount(ctx, tx, acc)
-		if err != nil {
-			return accounts, err
-		}
-
-		hist.ParentID = nullable.New(acc.ID)
-		hist.Currency = acc.Currency
-
-		hist, err = createAccount(ctx, tx, hist)
-		if err != nil {
-			return accounts, err
-		}
-
-		if withHistory && capital != 0 {
-			err = createTransaction(
-				ctx,
-				tx,
-				transaction.Record{
-					SourceID:     acc.ID,
-					TargetID:     hist.ID,
-					SourceAmount: capital,
-					TargetAmount: capital,
-					Notes:        nullable.New("This transaction was created automatically by the system. DO NOT MODIFY"),
-					IssuedAt:     historyAt,
-					ExecutedAt:   nullable.New(historyAt),
-					CreatedAt:    executionTime,
-					UpdatedAt:    executionTime,
-				},
-			)
-			if err != nil {
-				return accounts, errors.Join(fmt.Errorf("database seed: failed to create history transaction for capital account"), err)
-			}
-		}
-
-		accounts[i].Account = acc
-		accounts[i].History = hist
 	}
 
 	return accounts, nil
@@ -403,8 +323,67 @@ func createTransaction(ctx context.Context, tx pgx.Tx, tr transaction.Record) er
 		tr.UpdatedAt,
 	)
 	if err == nil && results.RowsAffected() == 0 {
-		err = fmt.Errorf("database seed: failed to transaction")
+		err = fmt.Errorf("failed to transaction")
 	}
 
 	return err
+}
+
+func createAccountsWithHistory(
+	ctx context.Context,
+	tx pgx.Tx,
+	accounts ...accountWithHistory,
+) ([]accountWithHistory, error) {
+	for i := 0; i < len(accounts); i++ {
+		var (
+			acc  = accounts[i].Account
+			hist = accounts[i].History
+
+			withHistory = accounts[i].WithHistory
+			capital     = accounts[i].Capital
+			historyAt   = accounts[i].HistoryAt
+		)
+
+		acc, err := createAccount(ctx, tx, acc)
+		if err != nil {
+			return accounts, err
+		}
+
+		hist.ParentID = nullable.New(acc.ID)
+		hist.Currency = acc.Currency
+
+		hist, err = createAccount(ctx, tx, hist)
+		if err != nil {
+			return accounts, err
+		}
+
+		if withHistory && capital != 0 {
+			err = createTransaction(
+				ctx,
+				tx,
+				transaction.Record{
+					SourceID:     acc.ID,
+					TargetID:     hist.ID,
+					SourceAmount: capital,
+					TargetAmount: capital,
+					Notes:        nullable.New("This transaction was created automatically by the system. DO NOT MODIFY"),
+					IssuedAt:     historyAt,
+					ExecutedAt:   nullable.New(historyAt),
+					CreatedAt:    acc.CreatedAt,
+					UpdatedAt:    acc.UpdatedAt,
+				},
+			)
+			if err != nil {
+				return accounts, errors.Join(
+					fmt.Errorf("failed to create history transaction"),
+					err,
+				)
+			}
+		}
+
+		accounts[i].Account = acc
+		accounts[i].History = hist
+	}
+
+	return accounts, nil
 }
