@@ -272,6 +272,38 @@ func createCapitalSavingsAccounts(
 				UpdatedAt: executionTime,
 			},
 		},
+		{
+			Account: account.Record{
+				// Doesn't need ID because is a new record.
+				// Doesn't need ParentID because is a parent record.
+				Kind:     account.CapitalSavings,
+				Currency: currency.EUR,
+				Name:     "My German Savings Account",
+				// Doesn't need Description because it won't have.
+				Color: "#34baeb",
+				Icon:  icon.Base,
+				// Doesn't need Capital because is not a debt record.
+				// Doesn't need ArchivedAt because is not archived.
+				DeletedAt: nullable.New(executionTime),
+				CreatedAt: executionTime,
+				UpdatedAt: executionTime,
+			},
+			History: account.Record{
+				// Doesn't need ID because is a new record.
+				// ParentID will be added later after the creation of its corresponding account.
+				Kind:        account.SystemHistoric,
+				Currency:    currency.EUR,
+				Name:        "My German Account (History)",
+				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
+				Color:       "#8c8c8c",
+				Icon:        icon.Base,
+				// Doesn't need Capital because is not a debt record.
+				// Doesn't need ArchivedAt because is not archived.
+				DeletedAt: nullable.New(executionTime),
+				CreatedAt: executionTime,
+				UpdatedAt: executionTime,
+			},
+		},
 	}
 
 	for i := 0; i < len(accounts); i++ {
