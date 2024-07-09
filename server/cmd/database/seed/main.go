@@ -31,6 +31,11 @@ type accountWithHistory struct {
 	Capital     int64
 }
 
+type accountWithChildrenAndNoHistory struct {
+	Account  account.Record
+	Children []account.Record
+}
+
 func main() {
 	log.Println("seeding database")
 
@@ -500,58 +505,6 @@ func createDebtCreditAccounts(
 	return accounts, nil
 }
 
-func createAccount(ctx context.Context, tx pgx.Tx, acc account.Record) (account.Record, error) {
-	err := tx.QueryRow(
-		ctx,
-		insertQuery,
-		acc.ParentID,
-		acc.Kind,
-		acc.Currency,
-		acc.Name,
-		acc.Description,
-		acc.Color,
-		acc.Icon,
-		acc.Capital,
-		acc.ArchivedAt,
-		acc.DeletedAt,
-		acc.CreatedAt,
-		acc.UpdatedAt,
-	).Scan(&acc.ID)
-
-	return acc, err
-}
-
-func createTransaction(ctx context.Context, tx pgx.Tx, tr transaction.Record) error {
-	if tr.SourceAmount < 0 {
-		oldSourceID := tr.SourceID
-
-		tr.SourceID = tr.TargetID
-		tr.TargetID = oldSourceID
-
-		tr.SourceAmount = -tr.SourceAmount
-		tr.TargetAmount = -tr.TargetAmount
-	}
-
-	results, err := tx.Exec(
-		ctx,
-		insertHistoryTransactionQuery,
-		tr.SourceID,
-		tr.TargetID,
-		tr.SourceAmount,
-		tr.TargetAmount,
-		tr.Notes,
-		tr.IssuedAt,
-		tr.ExecutedAt,
-		tr.CreatedAt,
-		tr.UpdatedAt,
-	)
-	if err == nil && results.RowsAffected() == 0 {
-		err = fmt.Errorf("failed to transaction")
-	}
-
-	return err
-}
-
 func createAccountsWithHistory(
 	ctx context.Context,
 	tx pgx.Tx,
@@ -609,4 +562,56 @@ func createAccountsWithHistory(
 	}
 
 	return accounts, nil
+}
+
+func createAccount(ctx context.Context, tx pgx.Tx, acc account.Record) (account.Record, error) {
+	err := tx.QueryRow(
+		ctx,
+		insertQuery,
+		acc.ParentID,
+		acc.Kind,
+		acc.Currency,
+		acc.Name,
+		acc.Description,
+		acc.Color,
+		acc.Icon,
+		acc.Capital,
+		acc.ArchivedAt,
+		acc.DeletedAt,
+		acc.CreatedAt,
+		acc.UpdatedAt,
+	).Scan(&acc.ID)
+
+	return acc, err
+}
+
+func createTransaction(ctx context.Context, tx pgx.Tx, tr transaction.Record) error {
+	if tr.SourceAmount < 0 {
+		oldSourceID := tr.SourceID
+
+		tr.SourceID = tr.TargetID
+		tr.TargetID = oldSourceID
+
+		tr.SourceAmount = -tr.SourceAmount
+		tr.TargetAmount = -tr.TargetAmount
+	}
+
+	results, err := tx.Exec(
+		ctx,
+		insertHistoryTransactionQuery,
+		tr.SourceID,
+		tr.TargetID,
+		tr.SourceAmount,
+		tr.TargetAmount,
+		tr.Notes,
+		tr.IssuedAt,
+		tr.ExecutedAt,
+		tr.CreatedAt,
+		tr.UpdatedAt,
+	)
+	if err == nil && results.RowsAffected() == 0 {
+		err = fmt.Errorf("failed to transaction")
+	}
+
+	return err
 }
