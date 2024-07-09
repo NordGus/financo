@@ -62,26 +62,37 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to create capital normal accounts:\n\t err: %v\n", err)
 	}
+	log.Printf("capital normal accounts seeded, %d accounts added\n", len(capitalNormalAccounts))
 
 	capitalSavingsAccounts, err := createCapitalSavingsAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create capital savings accounts:\n\t err: %v\n", err)
 	}
+	log.Printf("capital savings accounts seeded, %d accounts added\n", len(capitalSavingsAccounts))
 
 	debtLoanAccounts, err := createDebtLoanAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create debt loan accounts:\n\t err: %v\n", err)
 	}
+	log.Printf("debt loan accounts seeded, %d accounts added\n", len(debtLoanAccounts))
 
 	debtCreditAccounts, err := createDebtCreditAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create debt credit accounts:\n\t err: %v\n", err)
 	}
+	log.Printf("debt credit accounts seeded, %d accounts added\n", len(debtCreditAccounts))
 
-	fmt.Println(capitalNormalAccounts)
-	fmt.Println(capitalSavingsAccounts)
-	fmt.Println(debtLoanAccounts)
-	fmt.Println(debtCreditAccounts)
+	incomeAccounts, err := createExternalIncomeAccounts(ctx, tx, executedAt)
+	if err != nil {
+		log.Fatalf("failed to create external income accounts:\n\t err: %v\n", err)
+	}
+	log.Printf("external income accounts seeded, %d accounts added\n", len(incomeAccounts))
+
+	expenseAccounts, err := createExternalExpenseAccounts(ctx, tx, executedAt)
+	if err != nil {
+		log.Fatalf("failed to create external expense accounts:\n\t err: %v\n", err)
+	}
+	log.Printf("external expense accounts seeded, %d accounts added\n", len(expenseAccounts))
 
 	err = tx.Commit(ctx)
 	if err != nil {
@@ -408,7 +419,7 @@ func createDebtLoanAccounts(
 	accounts, err := createAccountsWithHistory(ctx, tx, accounts...)
 	if err != nil {
 		return accounts, errors.Join(
-			fmt.Errorf("failed to seed capital savings accounts"),
+			fmt.Errorf("failed to seed debt loan accounts"),
 			err,
 		)
 	}
@@ -497,7 +508,191 @@ func createDebtCreditAccounts(
 	accounts, err := createAccountsWithHistory(ctx, tx, accounts...)
 	if err != nil {
 		return accounts, errors.Join(
-			fmt.Errorf("failed to seed capital savings accounts"),
+			fmt.Errorf("failed to seed debt credit accounts"),
+			err,
+		)
+	}
+
+	return accounts, nil
+}
+
+func createExternalIncomeAccounts(
+	ctx context.Context,
+	tx pgx.Tx,
+	executionTime time.Time,
+) ([]accountWithChildrenAndNoHistory, error) {
+	accounts := []accountWithChildrenAndNoHistory{
+		{
+			Account: account.Record{
+				// Doesn't need ID because is a new record.
+				// Doesn't need ParentID because is a parent record.
+				Kind:        account.ExternalIncome,
+				Currency:    currency.EUR,
+				Name:        "Paycheck",
+				Description: nullable.New("Where the bread comes from"),
+				Color:       "#eb8934",
+				Icon:        icon.Base,
+				// Doesn't need Capital.
+				// Doesn't need ArchivedAt because is not archived.
+				// Doesn't need DeletedAt because is not deleted.
+				CreatedAt: executionTime,
+				UpdatedAt: executionTime,
+			},
+			Children: []account.Record{
+				{
+					// Doesn't need ID because is a new record.
+					// ParentID will be added later after the creation of its corresponding account.
+					Kind:        account.ExternalIncome,
+					Currency:    currency.EUR,
+					Name:        "Freelancing",
+					Description: nullable.New("Hustling"),
+					Color:       "#eb8934",
+					Icon:        icon.Base,
+					// Doesn't need Capital.
+					ArchivedAt: nullable.New(executionTime),
+					// Doesn't need DeletedAt because is not deleted.
+					CreatedAt: executionTime,
+					UpdatedAt: executionTime,
+				},
+				{
+					// Doesn't need ID because is a new record.
+					// ParentID will be added later after the creation of its corresponding account.
+					Kind:        account.ExternalIncome,
+					Currency:    currency.EUR,
+					Name:        "Day Job",
+					Description: nullable.New("Grinding"),
+					Color:       "#eb8934",
+					Icon:        icon.Base,
+					// Doesn't need Capital.
+					// Doesn't need ArchivedAt because is not archived.
+					// Doesn't need DeletedAt because is not deleted.
+					CreatedAt: executionTime,
+					UpdatedAt: executionTime,
+				},
+				{
+					// Doesn't need ID because is a new record.
+					// ParentID will be added later after the creation of its corresponding account.
+					Kind:        account.ExternalIncome,
+					Currency:    currency.EUR,
+					Name:        "Teaching",
+					Description: nullable.New("Side Hustle"),
+					Color:       "#eb8934",
+					Icon:        icon.Base,
+					// Doesn't need Capital.
+					// Doesn't need ArchivedAt because is not archived.
+					// Doesn't need DeletedAt because is not deleted.
+					CreatedAt: executionTime,
+					UpdatedAt: executionTime,
+				},
+			},
+		},
+	}
+
+	accounts, err := createAccountWithChildrenAndNoHistory(ctx, tx, accounts...)
+	if err != nil {
+		return accounts, errors.Join(
+			fmt.Errorf("failed to seed external income accounts"),
+			err,
+		)
+	}
+
+	return accounts, nil
+}
+
+func createExternalExpenseAccounts(
+	ctx context.Context,
+	tx pgx.Tx,
+	executionTime time.Time,
+) ([]accountWithChildrenAndNoHistory, error) {
+	accounts := []accountWithChildrenAndNoHistory{
+		{
+			Account: account.Record{
+				// Doesn't need ID because is a new record.
+				// Doesn't need ParentID because is a parent record.
+				Kind:        account.ExternalExpense,
+				Currency:    currency.EUR,
+				Name:        "Market",
+				Description: nullable.New("I need to survive"),
+				Color:       "#34ebae",
+				Icon:        icon.Base,
+				// Doesn't need Capital.
+				// Doesn't need ArchivedAt because is not archived.
+				// Doesn't need DeletedAt because is not deleted.
+				CreatedAt: executionTime,
+				UpdatedAt: executionTime,
+			},
+			Children: []account.Record{
+				{
+					// Doesn't need ID because is a new record.
+					// ParentID will be added later after the creation of its corresponding account.
+					Kind:        account.ExternalExpense,
+					Currency:    currency.EUR,
+					Name:        "Gardening supplies",
+					Description: nullable.New("My ADHD demands to be fed dopamine"),
+					Color:       "#34ebae",
+					Icon:        icon.Base,
+					// Doesn't need Capital.
+					ArchivedAt: nullable.New(executionTime),
+					// Doesn't need DeletedAt because is not deleted.
+					CreatedAt: executionTime,
+					UpdatedAt: executionTime,
+				},
+				{
+					// Doesn't need ID because is a new record.
+					// ParentID will be added later after the creation of its corresponding account.
+					Kind:        account.ExternalExpense,
+					Currency:    currency.EUR,
+					Name:        "Food",
+					Description: nullable.New("Fuel for my body"),
+					Color:       "#34ebae",
+					Icon:        icon.Base,
+					// Doesn't need Capital.
+					// Doesn't need ArchivedAt because is not archived.
+					// Doesn't need DeletedAt because is not deleted.
+					CreatedAt: executionTime,
+					UpdatedAt: executionTime,
+				},
+				{
+					// Doesn't need ID because is a new record.
+					// ParentID will be added later after the creation of its corresponding account.
+					Kind:     account.ExternalExpense,
+					Currency: currency.EUR,
+					Name:     "Fruit Shop",
+					// Doesn't need Description because it won't have.
+					Color: "#34ebae",
+					Icon:  icon.Base,
+					// Doesn't need Capital.
+					// Doesn't need ArchivedAt because is not archived.
+					// Doesn't need DeletedAt because is not deleted.
+					CreatedAt: executionTime,
+					UpdatedAt: executionTime,
+				},
+			},
+		},
+		{
+			Account: account.Record{
+				// Doesn't need ID because is a new record.
+				// Doesn't need ParentID because is a parent record.
+				Kind:     account.ExternalExpense,
+				Currency: currency.EUR,
+				Name:     "Transport",
+				// Doesn't need Description because it won't have.
+				Color: "#e5eb34",
+				Icon:  icon.Base,
+				// Doesn't need Capital.
+				// Doesn't need ArchivedAt because is not archived.
+				// Doesn't need DeletedAt because is not deleted.
+				CreatedAt: executionTime,
+				UpdatedAt: executionTime,
+			},
+			Children: []account.Record{},
+		},
+	}
+
+	accounts, err := createAccountWithChildrenAndNoHistory(ctx, tx, accounts...)
+	if err != nil {
+		return accounts, errors.Join(
+			fmt.Errorf("failed to seed external income accounts"),
 			err,
 		)
 	}
@@ -559,6 +754,44 @@ func createAccountsWithHistory(
 
 		accounts[i].Account = acc
 		accounts[i].History = hist
+	}
+
+	return accounts, nil
+}
+
+func createAccountWithChildrenAndNoHistory(
+	ctx context.Context,
+	tx pgx.Tx,
+	accounts ...accountWithChildrenAndNoHistory,
+) ([]accountWithChildrenAndNoHistory, error) {
+	for i := 0; i < len(accounts); i++ {
+		var (
+			acc      = accounts[i].Account
+			children = accounts[i].Children
+		)
+
+		acc, err := createAccount(ctx, tx, acc)
+		if err != nil {
+			return accounts, err
+		}
+
+		for j := 0; j < len(children); j++ {
+			child := children[j]
+
+			child.ParentID = nullable.New(acc.ID)
+			child.Currency = acc.Currency
+			child.Color = acc.Color
+
+			child, err = createAccount(ctx, tx, child)
+			if err != nil {
+				return accounts, err
+			}
+
+			children[j] = child
+		}
+
+		accounts[i].Account = acc
+		accounts[i].Children = children
 	}
 
 	return accounts, nil
