@@ -38,9 +38,12 @@ type accountWithChildrenAndNoHistory struct {
 
 func main() {
 	log.Println("seeding database")
+	var (
+		ctx        = context.Background()
+		executedAt = time.Now()
+		start      = time.Now()
+	)
 
-	ctx := context.Background()
-	executedAt := time.Now()
 	conn, err := pgx.Connect(ctx, os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatalf("failed to connect to database:\n\t err: %v\n", err)
@@ -62,44 +65,62 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to create capital normal accounts:\n\t err: %v\n", err)
 	}
-	log.Printf("capital normal accounts seeded, %d accounts added\n", len(capitalNormalAccounts))
+
+	count := len(capitalNormalAccounts) * 2
+	log.Printf("capital normal accounts seeded, %d accounts added\n", count)
 
 	capitalSavingsAccounts, err := createCapitalSavingsAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create capital savings accounts:\n\t err: %v\n", err)
 	}
-	log.Printf("capital savings accounts seeded, %d accounts added\n", len(capitalSavingsAccounts))
+
+	count = len(capitalSavingsAccounts) * 2
+	log.Printf("capital savings accounts seeded, %d accounts added\n", count)
 
 	debtLoanAccounts, err := createDebtLoanAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create debt loan accounts:\n\t err: %v\n", err)
 	}
-	log.Printf("debt loan accounts seeded, %d accounts added\n", len(debtLoanAccounts))
+
+	count = len(debtLoanAccounts) * 2
+	log.Printf("debt loan accounts seeded, %d accounts added\n", count)
 
 	debtCreditAccounts, err := createDebtCreditAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create debt credit accounts:\n\t err: %v\n", err)
 	}
-	log.Printf("debt credit accounts seeded, %d accounts added\n", len(debtCreditAccounts))
+
+	count = len(debtCreditAccounts) * 2
+	log.Printf("debt credit accounts seeded, %d accounts added\n", count)
 
 	incomeAccounts, err := createExternalIncomeAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create external income accounts:\n\t err: %v\n", err)
 	}
-	log.Printf("external income accounts seeded, %d accounts added\n", len(incomeAccounts))
+
+	count = len(incomeAccounts)
+	for i := 0; i < len(incomeAccounts); i++ {
+		count += len(incomeAccounts[i].Children)
+	}
+	log.Printf("external income accounts seeded, %d accounts added\n", count)
 
 	expenseAccounts, err := createExternalExpenseAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create external expense accounts:\n\t err: %v\n", err)
 	}
-	log.Printf("external expense accounts seeded, %d accounts added\n", len(expenseAccounts))
+
+	count = len(expenseAccounts)
+	for i := 0; i < len(expenseAccounts); i++ {
+		count += len(expenseAccounts[i].Children)
+	}
+	log.Printf("external expense accounts seeded, %d accounts added\n", count)
 
 	err = tx.Commit(ctx)
 	if err != nil {
 		log.Fatalf("failed to commit seeding:\n\t err: %v\n", err)
 	}
 
-	log.Println("database seeded")
+	log.Printf("database seeded (took %s)\n", time.Since(start))
 }
 
 func createCapitalNormalAccounts(
