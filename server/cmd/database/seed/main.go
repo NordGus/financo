@@ -186,7 +186,7 @@ func createCapitalNormalAccounts(
 				UpdatedAt: executionTime,
 			},
 			WithHistory: true,
-			HistoryAt:   time.Date(2014, 7, 21, 0, 0, 0, 0, executionTime.Location()),
+			HistoryAt:   executionTime.AddDate(0, -1, 0),
 			Capital:     133742,
 		},
 		{
@@ -200,7 +200,7 @@ func createCapitalNormalAccounts(
 				Color:       "#34baeb",
 				Icon:        icon.Base,
 				// Doesn't need Capital because is not a debt record.
-				ArchivedAt: nullable.New(executionTime.Add(-((time.Hour * 24 * 90) + (time.Hour * 7)))),
+				ArchivedAt: nullable.New(executionTime.AddDate(0, 0, -90)),
 				// Doesn't need DeletedAt because is not deleted.
 				CreatedAt: executionTime,
 				UpdatedAt: executionTime,
@@ -215,7 +215,7 @@ func createCapitalNormalAccounts(
 				Color:       "#8c8c8c",
 				Icon:        icon.Base,
 				// Doesn't need Capital because is not a debt record.
-				ArchivedAt: nullable.New(executionTime.Add(-((time.Hour * 24 * 90) + (time.Hour * 7)))),
+				ArchivedAt: nullable.New(executionTime.AddDate(0, 0, -90)),
 				// Doesn't need DeletedAt because is not deleted.
 				CreatedAt: executionTime,
 				UpdatedAt: executionTime,
@@ -272,7 +272,7 @@ func createCapitalSavingsAccounts(
 				UpdatedAt: executionTime,
 			},
 			WithHistory: true,
-			HistoryAt:   time.Date(2020, 10, 8, 0, 0, 0, 0, executionTime.Location()),
+			HistoryAt:   executionTime.AddDate(0, -6, 0),
 			Capital:     42,
 		},
 		{
@@ -422,7 +422,7 @@ func createDebtLoanAccounts(
 				UpdatedAt: executionTime,
 			},
 			WithHistory: true,
-			HistoryAt:   time.Date(2023, 11, 5, 0, 0, 0, 0, executionTime.Location()),
+			HistoryAt:   executionTime.AddDate(-1, 0, -15),
 			Capital:     30000,
 		},
 		{
@@ -457,7 +457,7 @@ func createDebtLoanAccounts(
 				UpdatedAt: executionTime,
 			},
 			WithHistory: true,
-			HistoryAt:   time.Date(2021, 10, 11, 0, 0, 0, 0, executionTime.Location()),
+			HistoryAt:   executionTime.AddDate(0, -8, 0),
 			Capital:     -8000,
 		},
 	}
@@ -511,7 +511,7 @@ func createDebtCreditAccounts(
 				UpdatedAt: executionTime,
 			},
 			WithHistory: true,
-			HistoryAt:   time.Date(2023, 10, 11, 0, 0, 0, 0, executionTime.Location()),
+			HistoryAt:   executionTime.AddDate(0, -3, 0),
 			Capital:     -8000,
 		},
 		{
@@ -546,7 +546,7 @@ func createDebtCreditAccounts(
 				UpdatedAt: executionTime,
 			},
 			WithHistory: true,
-			HistoryAt:   time.Date(2020, 9, 15, 0, 0, 0, 0, executionTime.Location()),
+			HistoryAt:   executionTime.AddDate(-3, -6, -7),
 			Capital:     -123469,
 		},
 	}
