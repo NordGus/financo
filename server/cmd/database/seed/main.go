@@ -632,6 +632,23 @@ func createExternalIncomeAccounts(
 				},
 			},
 		},
+		{
+			Account: account.Record{
+				// Doesn't need ID because is a new record.
+				// Doesn't need ParentID because is a parent record.
+				Kind:     account.ExternalIncome,
+				Currency: currency.EUR,
+				Name:     "Allowance",
+				// Doesn't need Description, because it doesn't have one.
+				Color: "#eb8934",
+				Icon:  icon.Base,
+				// Doesn't need Capital.
+				// Doesn't need ArchivedAt because is not archived.
+				DeletedAt: nullable.New(executionTime.AddDate(0, 0, -1)),
+				CreatedAt: executionTime,
+				UpdatedAt: executionTime,
+			},
+		},
 	}
 
 	accounts, err := createAccountWithChildrenAndNoHistory(ctx, tx, accounts...)
