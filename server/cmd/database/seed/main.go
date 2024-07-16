@@ -775,7 +775,7 @@ func createAccountsWithHistory(
 		}
 
 		if withHistory && capital != 0 {
-			err = createTransaction(
+			_, err = createTransaction(
 				ctx,
 				tx,
 				transaction.Record{
@@ -786,8 +786,9 @@ func createAccountsWithHistory(
 					Notes:        nullable.New("This transaction was created automatically by the system. DO NOT MODIFY"),
 					IssuedAt:     historyAt,
 					ExecutedAt:   nullable.New(historyAt),
-					CreatedAt:    acc.CreatedAt,
-					UpdatedAt:    acc.UpdatedAt,
+					// Doesn't need DeletedAt, because is not deleted.
+					CreatedAt: acc.CreatedAt,
+					UpdatedAt: acc.UpdatedAt,
 				},
 			)
 			if err != nil {
