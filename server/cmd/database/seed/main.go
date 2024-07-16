@@ -131,6 +131,7 @@ func main() {
 			incomeAccounts,
 			expenseAccounts,
 		),
+		executedAt,
 	)
 	if err != nil {
 		log.Fatalf("failed to create transactions:\n\t err: %v\n", err)
@@ -938,6 +939,7 @@ func createAllTransactions(
 	ctx context.Context,
 	tx pgx.Tx,
 	accounts map[string]mappedAccount,
+	executionTime time.Time,
 ) ([]transaction.Record, error) {
 	transactions := []transaction.Record{}
 
