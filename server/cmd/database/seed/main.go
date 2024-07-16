@@ -19,7 +19,7 @@ import (
 const (
 	insertQuery = "INSERT INTO accounts(parent_id, kind, currency, name, description, color, icon, capital, archived_at, deleted_at, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id"
 
-	insertHistoryTransactionQuery = "INSERT INTO transactions(source_id, target_id, source_amount, target_amount, notes, issued_at, executed_at, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)"
+	insertHistoryTransactionQuery = "INSERT INTO transactions(source_id, target_id, source_amount, target_amount, notes, issued_at, executed_at, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id"
 )
 
 type accountWithHistory struct {
@@ -939,7 +939,20 @@ func createAllTransactions(
 	tx pgx.Tx,
 	accounts map[string]mappedAccount,
 ) ([]transaction.Record, error) {
-	return nil, nil
+	transactions := []transaction.Record{}
+
+	for i := 0; i < len(transactions); i++ {
+		tr := transactions[i]
+
+		tr, err := createTransaction(ctx, tx, tr)
+		if err != nil {
+			return transactions, err
+		}
+
+		transactions[i] = tr
+	}
+
+	return transactions, nil
 }
 
 func createAccount(ctx context.Context, tx pgx.Tx, acc account.Record) (account.Record, error) {
@@ -963,7 +976,11 @@ func createAccount(ctx context.Context, tx pgx.Tx, acc account.Record) (account.
 	return acc, err
 }
 
-func createTransaction(ctx context.Context, tx pgx.Tx, tr transaction.Record) error {
+func createTransaction(
+	ctx context.Context,
+	tx pgx.Tx,
+	tr transaction.Record,
+) (transaction.Record, error) {
 	if tr.SourceAmount < 0 {
 		oldSourceID := tr.SourceID
 
@@ -974,7 +991,7 @@ func createTransaction(ctx context.Context, tx pgx.Tx, tr transaction.Record) er
 		tr.TargetAmount = -tr.TargetAmount
 	}
 
-	results, err := tx.Exec(
+	err := tx.QueryRow(
 		ctx,
 		insertHistoryTransactionQuery,
 		tr.SourceID,
@@ -986,10 +1003,7 @@ func createTransaction(ctx context.Context, tx pgx.Tx, tr transaction.Record) er
 		tr.ExecutedAt,
 		tr.CreatedAt,
 		tr.UpdatedAt,
-	)
-	if err == nil && results.RowsAffected() == 0 {
-		err = fmt.Errorf("failed to transaction")
-	}
+	).Scan(&tr.ID)
 
-	return err
+	return tr, err
 }
