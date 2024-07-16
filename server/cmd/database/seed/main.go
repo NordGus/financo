@@ -36,6 +36,11 @@ type accountWithChildrenAndNoHistory struct {
 	Children []account.Record
 }
 
+type mappedAccount struct {
+	Account  account.Record
+	Children map[string]account.Record
+}
+
 func main() {
 	log.Println("seeding database")
 	var (
@@ -61,36 +66,36 @@ func main() {
 	}
 	defer tx.Rollback(context.TODO())
 
-	capitalNormalAccounts, err := createCapitalNormalAccounts(ctx, tx, executedAt)
+	normalAccounts, err := createCapitalNormalAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create capital normal accounts:\n\t err: %v\n", err)
 	}
 
-	count := len(capitalNormalAccounts) * 2
+	count := len(normalAccounts) * 2
 	log.Printf("capital normal accounts seeded, %d accounts added\n", count)
 
-	capitalSavingsAccounts, err := createCapitalSavingsAccounts(ctx, tx, executedAt)
+	savingsAccounts, err := createCapitalSavingsAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create capital savings accounts:\n\t err: %v\n", err)
 	}
 
-	count = len(capitalSavingsAccounts) * 2
+	count = len(savingsAccounts) * 2
 	log.Printf("capital savings accounts seeded, %d accounts added\n", count)
 
-	debtLoanAccounts, err := createDebtLoanAccounts(ctx, tx, executedAt)
+	loanAccounts, err := createDebtLoanAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create debt loan accounts:\n\t err: %v\n", err)
 	}
 
-	count = len(debtLoanAccounts) * 2
+	count = len(loanAccounts) * 2
 	log.Printf("debt loan accounts seeded, %d accounts added\n", count)
 
-	debtCreditAccounts, err := createDebtCreditAccounts(ctx, tx, executedAt)
+	creditAccounts, err := createDebtCreditAccounts(ctx, tx, executedAt)
 	if err != nil {
 		log.Fatalf("failed to create debt credit accounts:\n\t err: %v\n", err)
 	}
 
-	count = len(debtCreditAccounts) * 2
+	count = len(creditAccounts) * 2
 	log.Printf("debt credit accounts seeded, %d accounts added\n", count)
 
 	incomeAccounts, err := createExternalIncomeAccounts(ctx, tx, executedAt)
@@ -113,6 +118,25 @@ func main() {
 	for i := 0; i < len(expenseAccounts); i++ {
 		count += len(expenseAccounts[i].Children)
 	}
+	log.Printf("external expense accounts seeded, %d accounts added\n", count)
+
+	transactions, err := createAllTransactions(
+		ctx,
+		tx,
+		mapAccounts(
+			normalAccounts,
+			savingsAccounts,
+			loanAccounts,
+			creditAccounts,
+			incomeAccounts,
+			expenseAccounts,
+		),
+	)
+	if err != nil {
+		log.Fatalf("failed to create transactions:\n\t err: %v\n", err)
+	}
+
+	count = len(transactions)
 	log.Printf("external expense accounts seeded, %d accounts added\n", count)
 
 	err = tx.Commit(ctx)
@@ -816,6 +840,106 @@ func createAccountWithChildrenAndNoHistory(
 	}
 
 	return accounts, nil
+}
+
+func mapAccounts(
+	normalAccounts []accountWithHistory,
+	savingsAccounts []accountWithHistory,
+	loanAccounts []accountWithHistory,
+	creditAccounts []accountWithHistory,
+	incomeAccounts []accountWithChildrenAndNoHistory,
+	expenseAccounts []accountWithChildrenAndNoHistory,
+) map[string]mappedAccount {
+	return map[string]mappedAccount{
+		"bank account": {
+			Account: normalAccounts[0].Account,
+			Children: map[string]account.Record{
+				"history": normalAccounts[0].History,
+			},
+		},
+		"freelance bank account": {
+			Account: normalAccounts[1].Account,
+			Children: map[string]account.Record{
+				"history": normalAccounts[1].History,
+			},
+		},
+		"savings account": {
+			Account: savingsAccounts[0].Account,
+			Children: map[string]account.Record{
+				"history": savingsAccounts[0].History,
+			},
+		},
+		"us savings account": {
+			Account: savingsAccounts[1].Account,
+			Children: map[string]account.Record{
+				"history": savingsAccounts[1].History,
+			},
+		},
+		"german savings account": {
+			Account: savingsAccounts[2].Account,
+			Children: map[string]account.Record{
+				"history": savingsAccounts[2].History,
+			},
+		},
+		"car loan": {
+			Account: loanAccounts[0].Account,
+			Children: map[string]account.Record{
+				"history": loanAccounts[0].History,
+			},
+		},
+		"morgan loan": {
+			Account: loanAccounts[1].Account,
+			Children: map[string]account.Record{
+				"history": loanAccounts[1].History,
+			},
+		},
+		"carlos loan": {
+			Account: loanAccounts[2].Account,
+			Children: map[string]account.Record{
+				"history": loanAccounts[2].History,
+			},
+		},
+		"credit card": {
+			Account: creditAccounts[0].Account,
+			Children: map[string]account.Record{
+				"history": creditAccounts[0].History,
+			},
+		},
+		"laptop credit": {
+			Account: creditAccounts[1].Account,
+			Children: map[string]account.Record{
+				"history": creditAccounts[1].History,
+			},
+		},
+		"paycheck income": {
+			Account: incomeAccounts[0].Account,
+			Children: map[string]account.Record{
+				"freelancing": incomeAccounts[0].Children[0],
+				"day job":     incomeAccounts[0].Children[1],
+				"teaching":    incomeAccounts[0].Children[2],
+			},
+		},
+		"market expense": {
+			Account: expenseAccounts[0].Account,
+			Children: map[string]account.Record{
+				"gardening supplies": expenseAccounts[0].Children[0],
+				"food":               expenseAccounts[0].Children[1],
+				"fruit shop":         expenseAccounts[0].Children[2],
+			},
+		},
+		"transport expense": {
+			Account:  expenseAccounts[1].Account,
+			Children: map[string]account.Record{},
+		},
+	}
+}
+
+func createAllTransactions(
+	ctx context.Context,
+	tx pgx.Tx,
+	accounts map[string]mappedAccount,
+) ([]transaction.Record, error) {
+	return nil, nil
 }
 
 func createAccount(ctx context.Context, tx pgx.Tx, acc account.Record) (account.Record, error) {
