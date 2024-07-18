@@ -187,7 +187,7 @@ func createCapitalNormalAccounts(
 			},
 			WithHistory: true,
 			HistoryAt:   executionTime.AddDate(0, -1, 0),
-			Capital:     133742,
+			Capital:     1_337_42,
 		},
 		{
 			Account: account.Record{
@@ -368,7 +368,7 @@ func createDebtLoanAccounts(
 				Description: nullable.New("My japanese shit-box"),
 				Color:       "#eb8934",
 				Icon:        icon.Base,
-				Capital:     500000,
+				Capital:     5_000_00,
 				// Doesn't need ArchivedAt because is not archived.
 				// Doesn't need DeletedAt because is not deleted.
 				CreatedAt: executionTime,
@@ -391,7 +391,7 @@ func createDebtLoanAccounts(
 			},
 			WithHistory: true,
 			HistoryAt:   executionTime.AddDate(-1, 0, 0),
-			Capital:     -150000,
+			Capital:     -1_500_00,
 		},
 		{
 			Account: account.Record{
@@ -403,7 +403,7 @@ func createDebtLoanAccounts(
 				Description: nullable.New("I helped Morgan with their rent"),
 				Color:       "#34baeb",
 				Icon:        icon.Base,
-				Capital:     -50000,
+				Capital:     -500_00,
 				// Doesn't need ArchivedAt because is not archived.
 				// Doesn't need DeletedAt because is not deleted.
 				CreatedAt: executionTime,
@@ -426,7 +426,7 @@ func createDebtLoanAccounts(
 			},
 			WithHistory: true,
 			HistoryAt:   executionTime.AddDate(-1, 0, -15),
-			Capital:     30000,
+			Capital:     300_00,
 		},
 		{
 			Account: account.Record{
@@ -438,7 +438,7 @@ func createDebtLoanAccounts(
 				Description: nullable.New("Carlos' catch up lunch"),
 				Color:       "#34baeb",
 				Icon:        icon.Base,
-				Capital:     -8000,
+				Capital:     -80_00,
 				ArchivedAt:  nullable.New(executionTime),
 				// Doesn't need DeletedAt because is not archived.
 				CreatedAt: executionTime,
@@ -461,7 +461,7 @@ func createDebtLoanAccounts(
 			},
 			WithHistory: true,
 			HistoryAt:   executionTime.AddDate(0, -8, 0),
-			Capital:     8000,
+			Capital:     80_00,
 		},
 	}
 
@@ -492,7 +492,7 @@ func createDebtCreditAccounts(
 				Description: nullable.New("My bank's credit card"),
 				Color:       "#eb8934",
 				Icon:        icon.Base,
-				Capital:     200000,
+				Capital:     2_000_00,
 				// Doesn't need ArchivedAt because is not archived.
 				// Doesn't need DeletedAt because is not deleted.
 				CreatedAt: executionTime,
@@ -515,7 +515,7 @@ func createDebtCreditAccounts(
 			},
 			WithHistory: true,
 			HistoryAt:   executionTime.AddDate(0, -3, 0),
-			Capital:     -8000,
+			Capital:     -800_00,
 		},
 		{
 			Account: account.Record{
@@ -527,7 +527,7 @@ func createDebtCreditAccounts(
 				// Doesn't need Description because it won't have.
 				Color:      "#34baeb",
 				Icon:       icon.Base,
-				Capital:    250000,
+				Capital:    2_500_00,
 				ArchivedAt: nullable.New(executionTime),
 				// Doesn't need DeletedAt because is not deleted.
 				CreatedAt: executionTime,
@@ -550,7 +550,7 @@ func createDebtCreditAccounts(
 			},
 			WithHistory: true,
 			HistoryAt:   executionTime.AddDate(-3, -6, -7),
-			Capital:     -123469,
+			Capital:     -1_234_69,
 		},
 	}
 
@@ -1199,6 +1199,18 @@ func createAllTransactions(
 			// Doesn't have any notes
 			IssuedAt:   executionTime.AddDate(0, -6, 0),
 			ExecutedAt: nullable.New(executionTime.AddDate(0, -6, 0)),
+			// Is not deleted
+			CreatedAt: executionTime,
+			UpdatedAt: executionTime,
+		},
+		{
+			SourceID:     accounts["bank account"].Account.ID,
+			TargetID:     accounts["laptop credit"].Account.ID,
+			SourceAmount: 1_234_69,
+			TargetAmount: 1_234_69,
+			// Doesn't have any notes
+			IssuedAt:   executionTime.AddDate(-1, -6, 0),
+			ExecutedAt: nullable.New(executionTime.AddDate(-1, -6, 0)),
 			// Is not deleted
 			CreatedAt: executionTime,
 			UpdatedAt: executionTime,
