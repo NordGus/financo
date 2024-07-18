@@ -112,6 +112,7 @@ func List(w http.ResponseWriter, r *http.Request) {
 		)
 		return
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		acc := Account{Children: make([]Account, 0)}
