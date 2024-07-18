@@ -389,6 +389,9 @@ func createDebtLoanAccounts(
 				CreatedAt: executionTime,
 				UpdatedAt: executionTime,
 			},
+			WithHistory: true,
+			HistoryAt:   executionTime.AddDate(-1, 0, 0),
+			Capital:     -150000,
 		},
 		{
 			Account: account.Record{
@@ -458,7 +461,7 @@ func createDebtLoanAccounts(
 			},
 			WithHistory: true,
 			HistoryAt:   executionTime.AddDate(0, -8, 0),
-			Capital:     -8000,
+			Capital:     8000,
 		},
 	}
 
@@ -1184,6 +1187,18 @@ func createAllTransactions(
 			// Doesn't have any notes
 			IssuedAt: executionTime.AddDate(0, 0, -1),
 			// It doesn't have ExecutedAt because it have not been processed by the bank.
+			// Is not deleted
+			CreatedAt: executionTime,
+			UpdatedAt: executionTime,
+		},
+		{
+			SourceID:     accounts["carlos loan"].Account.ID,
+			TargetID:     accounts["bank account"].Account.ID,
+			SourceAmount: 80_00,
+			TargetAmount: 80_00,
+			// Doesn't have any notes
+			IssuedAt:   executionTime.AddDate(0, -6, 0),
+			ExecutedAt: nullable.New(executionTime.AddDate(0, -6, 0)),
 			// Is not deleted
 			CreatedAt: executionTime,
 			UpdatedAt: executionTime,
