@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"financo/server/accounts"
+	"financo/server/summary"
 	"financo/server/types/generic/context_key"
 	"fmt"
 	"log"
@@ -42,6 +43,7 @@ func main() {
 	router.Use(DatabaseCtx(dbConn))
 
 	router.Route("/accounts", accounts.Routes)
+	router.Route("/summary", summary.Routes)
 
 	http.ListenAndServe(":3000", router)
 }
