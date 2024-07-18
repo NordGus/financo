@@ -40,7 +40,7 @@ export function getTransactions(filters: ExecutedTransactionsFilters): () => Pro
 }
 
 export async function getPendingTransactions(): Promise<Transaction[]> {
-    const response = await fetch("/api/transactions?executedAt=null")
+    const response = await fetch("/api/transactions/pending")
 
     if (!response.ok) {
         console.error(response)
