@@ -4,6 +4,7 @@ import (
 	"context"
 	"financo/server/accounts"
 	"financo/server/summary"
+	"financo/server/transactions"
 	"financo/server/types/generic/context_key"
 	"fmt"
 	"log"
@@ -44,6 +45,7 @@ func main() {
 
 	router.Route("/accounts", accounts.Routes)
 	router.Route("/summary", summary.Routes)
+	router.Route("/transactions", transactions.Routes)
 
 	http.ListenAndServe(":3000", router)
 }
