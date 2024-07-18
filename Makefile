@@ -1,7 +1,7 @@
 WEBAPP_WORKSPACE=webapp
 SERVER_CMD = server/cmd
 
-.PHONY: webapp webapp-server webapp-lint db-setup db-migrate db-rollback db-reset db-validate-migrations db-seed
+.PHONY: webapp webapp-server webapp-lint db-setup db-migrate db-rollback db-reset db-validate-migrations db-seed server
 
 # Webapp targets
 webapp:
@@ -25,3 +25,7 @@ db-reset:
 db-seed:
 	@echo "running database seeds"
 	@go run ${SERVER_CMD}/database/seed/main.go
+
+# Server targets
+server:
+	@air
