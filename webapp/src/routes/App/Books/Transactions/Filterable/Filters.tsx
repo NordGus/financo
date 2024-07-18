@@ -1,13 +1,13 @@
 import { PropsWithChildren, useMemo } from "react"
 import { isEqual } from "lodash";
 
-import { TransactionsFilters } from "@api/transactions"
+import { ExecutedTransactionsFilters } from "@api/transactions"
 
 import Panel from "@components/Panel";
 
 interface FiltersProps {
-    filters: TransactionsFilters
-    setFilters: (filters: TransactionsFilters) => void
+    filters: ExecutedTransactionsFilters
+    setFilters: (filters: ExecutedTransactionsFilters) => void
     onClear: () => void
 }
 

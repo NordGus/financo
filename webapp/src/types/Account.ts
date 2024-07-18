@@ -10,6 +10,10 @@ export enum Kind {
     ExternalExpense = "external_expense",
 }
 
+export enum Icon {
+    Base = "base"
+}
+
 export default interface Account {
     id: number
     kind: Kind
@@ -23,6 +27,8 @@ export default interface Account {
         capital: number
         at: string
     }
+    color: string
+    icon: Icon
     archived: boolean
     createdAt: string
     updatedAt: string

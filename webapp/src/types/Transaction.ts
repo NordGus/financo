@@ -1,4 +1,16 @@
-import Account from "./Account"
+import { Currency } from "dinero.js"
+import { Icon, Kind } from "./Account"
+
+interface Account {
+    id: number
+    kind: Kind
+    name: string
+    currency: Currency
+    color: string
+    icon: Icon
+    createdAt: string
+    updatedAt: string
+}
 
 export default interface Transaction {
     id: number
