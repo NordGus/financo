@@ -19,8 +19,8 @@ export default function Books() {
         <>
             <div className="grid grid-rows-4 h-full grid-cols-3 gap-1">
                 <Transactions.Filterable className="row-span-4" />
-                <Transactions.Pending className="row-span-2" />
                 <Filters className="row-span-2" />
+                <Transactions.Pending className="row-span-2" />
                 <Chart className="col-span-2 row-span-2" />
             </div>
             <Modal
