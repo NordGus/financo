@@ -1,6 +1,7 @@
 import { Currency } from "dinero.js"
 
 export enum Kind {
+    SystemHistoric = "system_historic",
     CapitalNormal = "capital_normal",
     CapitalSavings = "capital_savings",
     DebtLoan = "debt_loan",
