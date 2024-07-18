@@ -14,7 +14,7 @@ export function getAccount(id: string): () => Promise<Account> {
 }
 
 export async function getCapitalNormalAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/capital/normal")
+    const response = await fetch("/api/accounts?kind=capital_normal")
 
     if (!response.ok) {
         console.error(response)
@@ -25,7 +25,7 @@ export async function getCapitalNormalAccounts(): Promise<Account[]> {
 }
 
 export async function getArchivedCapitalNormalAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/capital/normal/archived")
+    const response = await fetch("/api/accounts?kind=capital_normal&archived=true")
 
     if (!response.ok) {
         console.error(response)
@@ -36,7 +36,7 @@ export async function getArchivedCapitalNormalAccounts(): Promise<Account[]> {
 }
 
 export async function getCapitalSavingsAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/capital/savings")
+    const response = await fetch("/api/accounts?kind=capital_savings")
 
     if (!response.ok) {
         console.error(response)
@@ -47,7 +47,7 @@ export async function getCapitalSavingsAccounts(): Promise<Account[]> {
 }
 
 export async function getArchivedCapitalSavingsAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/capital/savings/archived")
+    const response = await fetch("/api/accounts?kind=capital_savings&archived=true")
 
     if (!response.ok) {
         console.error(response)
@@ -58,7 +58,7 @@ export async function getArchivedCapitalSavingsAccounts(): Promise<Account[]> {
 }
 
 export async function getDebtLoanAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/debt/loans")
+    const response = await fetch("/api/accounts?kind=debt_loan,debt_personal")
 
     if (!response.ok) {
         console.error(response)
@@ -69,7 +69,7 @@ export async function getDebtLoanAccounts(): Promise<Account[]> {
 }
 
 export async function getArchivedDebtLoanAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/debt/loans/archived")
+    const response = await fetch("/api/accounts?kind=debt_loan,debt_personal&archived=true")
 
     if (!response.ok) {
         console.error(response)
@@ -80,7 +80,7 @@ export async function getArchivedDebtLoanAccounts(): Promise<Account[]> {
 }
 
 export async function getDebtCreditAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/debt/credit")
+    const response = await fetch("/api/accounts?kind=debt_credit")
 
     if (!response.ok) {
         console.error(response)
@@ -91,7 +91,7 @@ export async function getDebtCreditAccounts(): Promise<Account[]> {
 }
 
 export async function getArchivedDebtCreditAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/debt/credit/archived")
+    const response = await fetch("/api/accounts?kind=debt_credit&archived=true")
 
     if (!response.ok) {
         console.error(response)
@@ -102,7 +102,7 @@ export async function getArchivedDebtCreditAccounts(): Promise<Account[]> {
 }
 
 export async function getExternalIncomeAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/external/income")
+    const response = await fetch("/api/accounts?kind=external_income")
 
     if (!response.ok) {
         console.error(response)
@@ -113,7 +113,7 @@ export async function getExternalIncomeAccounts(): Promise<Account[]> {
 }
 
 export async function getArchivedExternalIncomeAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/external/income/archived")
+    const response = await fetch("/api/accounts?kind=external_income&archived=true")
 
     if (!response.ok) {
         console.error(response)
@@ -124,7 +124,7 @@ export async function getArchivedExternalIncomeAccounts(): Promise<Account[]> {
 }
 
 export async function getExternalExpenseAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/external/expenses")
+    const response = await fetch("/api/accounts?kind=external_expense&archived")
 
     if (!response.ok) {
         console.error(response)
@@ -135,7 +135,7 @@ export async function getExternalExpenseAccounts(): Promise<Account[]> {
 }
 
 export async function getArchivedExternalExpenseAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts/external/expenses/archived")
+    const response = await fetch("/api/accounts?kind=external_expense&archived=true")
 
     if (!response.ok) {
         console.error(response)
