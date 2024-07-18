@@ -22,7 +22,7 @@ const (
 
 	historyAccountsWithQuery = "history_accounts (parent_id, has_history, amount, history_at) AS (SELECT acc.parent_id, COUNT(tr.id) > 0 AS has_history, MAX(CASE WHEN tr.source_id = acc.id THEN tr.target_amount ELSE - tr.source_amount END) as amount, MAX(tr.executed_at) AS history_at FROM accounts acc LEFT JOIN active_transactions tr ON tr.source_id = acc.id OR tr.target_id = acc.id WHERE acc.parent_id IS NOT NULL AND acc.kind = $1 GROUP BY acc.parent_id)"
 
-	listQuery = "SELECT acc.id, acc.kind, acc.currency, acc.name, acc.description, acc.capital, acc.color, acc.icon, SUM(CASE WHEN blc.target_id = acc.id THEN blc.target_amount ELSE - blc.source_amount END) AS balance, bool_and(hist.has_history) AS has_history, MAX(hist.amount) AS history_amount, MAX(hist.history_at) AS history_at, acc.archived_at, acc.created_at, acc.updated_at FROM accounts acc LEFT JOIN history_accounts hist ON hist.parent_id = acc.id LEFT JOIN active_transactions blc ON blc.source_id = acc.id OR blc.target_id = acc.id WHERE acc.kind = ANY ($2) AND acc.archived_at %s AND acc.deleted_at IS NULL GROUP BY acc.id"
+	listQuery = "SELECT acc.id, acc.kind, acc.currency, acc.name, acc.description, acc.capital, acc.color, acc.icon, SUM(COALESCE(CASE WHEN blc.target_id = acc.id THEN blc.target_amount ELSE - blc.source_amount END, 0)) AS balance, bool_and(COALESCE(hist.has_history, FALSE)) AS has_history, MAX(hist.amount) AS history_amount, MAX(hist.history_at) AS history_at, acc.archived_at, acc.created_at, acc.updated_at FROM accounts acc LEFT JOIN history_accounts hist ON hist.parent_id = acc.id LEFT JOIN active_transactions blc ON blc.source_id = acc.id OR blc.target_id = acc.id WHERE acc.kind = ANY ($2) AND acc.parent_id IS NULL AND acc.archived_at %s AND acc.deleted_at IS NULL GROUP BY acc.id"
 )
 
 type ListFilter struct {
@@ -50,6 +50,7 @@ type Account struct {
 	ArchivedAt  nullable.Type[time.Time] `json:"archivedAt"`
 	CreatedAt   time.Time                `json:"createdAt"`
 	UpdatedAt   time.Time                `json:"updatedAt"`
+	Children    []Account                `json:"children"`
 }
 
 func List(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +114,7 @@ func List(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for rows.Next() {
-		acc := Account{}
+		acc := Account{Children: make([]Account, 0)}
 
 		err = rows.Scan(
 			&acc.ID,
