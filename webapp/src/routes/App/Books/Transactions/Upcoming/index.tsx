@@ -48,15 +48,14 @@ export default function Upcoming({ className }: FilterableProps) {
             contents={
                 (filtersMutation.data?.length === 0 || !filtersMutation.data)
                     ? null
-                    : Object.entries(groupBy(filtersMutation.data.filter(
-                        ({ executedAt }) => executedAt !== "null" && !!executedAt
-                    ).
-                        sort((a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)),
-                        ({ executedAt }) => executedAt!
-                    )). // TODO: remove filter, and change return type
+                    : Object.entries(
+                        groupBy(filtersMutation.data.
+                            sort((a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)),
+                            ({ executedAt }) => executedAt
+                        )).
                         map(([date, transactions]) => {
                             return {
-                                date: moment(date, 'YYYY-MM-DD').toDate(),
+                                date: moment(date).toDate(),
                                 transactions: transactions.sort((a, b) => {
                                     return Date.parse(a.updatedAt) - Date.parse(b.updatedAt)
                                 })

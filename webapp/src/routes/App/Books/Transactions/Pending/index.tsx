@@ -21,13 +21,11 @@ export default function Pending({ className }: PendingProps) {
             contents={
                 (query.data?.length === 0 || !query.data)
                     ? null
-                    : Object.entries(groupBy(query.data.map((transaction) => { // TODO: remove
-                        if (transaction.executedAt === "null") transaction.executedAt = null
-
-                        return transaction
-                    }).sort((a, b) => Date.parse(a.issuedAt!) - Date.parse(b.issuedAt!)),
-                        ({ issuedAt }) => issuedAt!
-                    )). // TODO: remove filter, and change return type
+                    : Object.entries(
+                        groupBy(query.data.
+                            sort((a, b) => Date.parse(a.issuedAt) - Date.parse(b.issuedAt)),
+                            ({ issuedAt }) => issuedAt
+                        )).
                         map(([date, transactions]) => {
                             return { date: moment(date, 'YYYY-MM-DD').toDate(), transactions }
                         }).
