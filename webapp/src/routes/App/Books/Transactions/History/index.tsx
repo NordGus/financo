@@ -19,7 +19,7 @@ function defaultFilters(): ExecutedTransactionsFilters {
     }
 }
 
-export default function Filterable({ className }: FilterableProps) {
+export default function History({ className }: FilterableProps) {
     const [showFilters, setShowFilters] = useState(false)
     const [filters, setFilters] = useState<ExecutedTransactionsFilters>(defaultFilters())
     const filtersMutation = useMutation({

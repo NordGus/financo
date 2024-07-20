@@ -4,6 +4,7 @@ import { isEqual } from "lodash";
 import { ExecutedTransactionsFilters } from "@api/transactions"
 
 import Panel from "@components/Panel";
+import moment from "moment";
 
 interface FiltersProps {
     filters: ExecutedTransactionsFilters
@@ -47,7 +48,7 @@ export default function Filters({ filters, setFilters, onClear }: FiltersProps) 
                 <Panel.Components.ActionButton
                     text="Change Filter"
                     active={false}
-                    onClick={() => setFilters({ ...filters, executedFrom: undefined })}
+                    onClick={() => setFilters({ ...filters, executedUntil: moment().format('YYYY-MM-DD'), executedFrom: undefined, account: ['1'] })}
                 />
             </Line>
         </div>
