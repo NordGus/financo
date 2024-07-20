@@ -1,14 +1,14 @@
 import { PropsWithChildren, useMemo } from "react"
 import { isEqual } from "lodash";
 
-import { ExecutedTransactionsFilters } from "@api/transactions"
+import { ListFilters } from "@api/transactions"
 
 import Panel from "@components/Panel";
 import moment from "moment";
 
 interface FiltersProps {
-    filters: ExecutedTransactionsFilters
-    setFilters: (filters: ExecutedTransactionsFilters) => void
+    filters: ListFilters
+    setFilters: (filters: ListFilters) => void
     onClear: () => void
 }
 

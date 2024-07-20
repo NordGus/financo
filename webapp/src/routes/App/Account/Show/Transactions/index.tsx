@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query"
 import { groupBy } from "lodash"
 import moment from "moment"
 
-import { ExecutedTransactionsFilters, getTransactionsForAccount } from "@api/transactions"
+import { ListFilters, getTransactionsForAccount } from "@api/transactions"
 
 import Panel from "@components/Panel"
 import Preview from "@components/transaction/Preview"
@@ -14,7 +14,7 @@ interface Props {
     className?: string
 }
 
-function defaultFilters(): ExecutedTransactionsFilters {
+function defaultFilters(): ListFilters {
     return {
         executedFrom: moment().subtract({ months: 1 }).format('YYYY-MM-DD'),
         executedUntil: moment().format('YYYY-MM-DD')
@@ -23,10 +23,10 @@ function defaultFilters(): ExecutedTransactionsFilters {
 
 export default function Transactions({ accountId, className }: Props) {
     const [showFilters, setShowFilters] = useState(false)
-    const [filters, setFilters] = useState<ExecutedTransactionsFilters>(defaultFilters())
+    const [filters, setFilters] = useState<ListFilters>(defaultFilters())
     const filtersMutation = useMutation({
         mutationFn:
-            (filters: ExecutedTransactionsFilters) => getTransactionsForAccount(accountId, filters)()
+            (filters: ListFilters) => getTransactionsForAccount(accountId, filters)()
     })
 
     useEffect(() => filtersMutation.mutate(filters), [filters])

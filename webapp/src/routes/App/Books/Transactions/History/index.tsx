@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ExecutedTransactionsFilters, getTransactions } from "@api/transactions";
+import { ListFilters, getTransactions } from "@api/transactions";
 import moment from "moment";
 import { groupBy } from "lodash";
 
@@ -12,7 +12,7 @@ interface FilterableProps {
     className: string
 }
 
-function defaultFilters(): ExecutedTransactionsFilters {
+function defaultFilters(): ListFilters {
     return {
         executedFrom: moment().subtract({ months: 1 }).format('YYYY-MM-DD'),
         executedUntil: moment().format('YYYY-MM-DD')
@@ -21,9 +21,9 @@ function defaultFilters(): ExecutedTransactionsFilters {
 
 export default function History({ className }: FilterableProps) {
     const [showFilters, setShowFilters] = useState(false)
-    const [filters, setFilters] = useState<ExecutedTransactionsFilters>(defaultFilters())
+    const [filters, setFilters] = useState<ListFilters>(defaultFilters())
     const filtersMutation = useMutation({
-        mutationFn: (filters: ExecutedTransactionsFilters) => getTransactions(filters)()
+        mutationFn: (filters: ListFilters) => getTransactions(filters)()
     })
 
     useEffect(() => filtersMutation.mutate(filters), [filters])

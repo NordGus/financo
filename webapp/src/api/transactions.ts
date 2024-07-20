@@ -15,14 +15,14 @@ export function getTransaction(id: string): () => Promise<Transaction> {
     }
 }
 
-export interface ExecutedTransactionsFilters {
+export interface ListFilters {
     executedFrom?: string
     executedUntil?: string
 
     account?: string[]
 }
 
-export function getTransactions(filters: ExecutedTransactionsFilters): () => Promise<Transaction[]> {
+export function getTransactions(filters: ListFilters): () => Promise<Transaction[]> {
     return async () => {
         const params = new URLSearchParams(
             Object.entries(filters).filter(([_, value]) => !isEmpty(value) || !isNil(value))
@@ -51,7 +51,7 @@ export async function getPendingTransactions(): Promise<Transaction[]> {
 
 export function getTransactionsForAccount(
     accountId: string,
-    filters: ExecutedTransactionsFilters
+    filters: ListFilters
 ): () => Promise<Transaction[]> {
     return async () => {
         const params = new URLSearchParams(
