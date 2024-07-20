@@ -391,7 +391,7 @@ func createDebtLoanAccounts(
 			},
 			WithHistory: true,
 			HistoryAt:   executionTime.AddDate(-1, 0, 0),
-			Capital:     -1_500_00,
+			Capital:     -3_000_00,
 		},
 		{
 			Account: account.Record{
@@ -1211,6 +1211,54 @@ func createAllTransactions(
 			// Doesn't have any notes
 			IssuedAt:   executionTime.AddDate(-1, -6, 0),
 			ExecutedAt: nullable.New(executionTime.AddDate(-1, -6, 0)),
+			// Is not deleted
+			CreatedAt: executionTime,
+			UpdatedAt: executionTime,
+		},
+		{ // Next Credit Card Payment
+			SourceID:     accounts["bank account"].Account.ID,
+			TargetID:     accounts["credit card"].Account.ID,
+			SourceAmount: 150_00,
+			TargetAmount: 150_00,
+			// Doesn't have any notes
+			IssuedAt: time.Date(
+				executionTime.Year(),
+				executionTime.Month(),
+				4, 0, 0, 0, 0,
+				executionTime.Location(),
+			).AddDate(0, 1, 0),
+			ExecutedAt: nullable.New(
+				time.Date(
+					executionTime.Year(),
+					executionTime.Month(),
+					4, 0, 0, 0, 0,
+					executionTime.Location(),
+				).AddDate(0, 1, 0),
+			),
+			// Is not deleted
+			CreatedAt: executionTime,
+			UpdatedAt: executionTime,
+		},
+		{ // Next Car Payment
+			SourceID:     accounts["bank account"].Account.ID,
+			TargetID:     accounts["car loan"].Account.ID,
+			SourceAmount: 100_00,
+			TargetAmount: 100_00,
+			// Doesn't have any notes
+			IssuedAt: time.Date(
+				executionTime.Year(),
+				executionTime.Month(),
+				7, 0, 0, 0, 0,
+				executionTime.Location(),
+			).AddDate(0, 1, 0),
+			ExecutedAt: nullable.New(
+				time.Date(
+					executionTime.Year(),
+					executionTime.Month(),
+					7, 0, 0, 0, 0,
+					executionTime.Location(),
+				).AddDate(0, 1, 0),
+			),
 			// Is not deleted
 			CreatedAt: executionTime,
 			UpdatedAt: executionTime,
