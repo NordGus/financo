@@ -7,6 +7,7 @@ import { getTransactions, ListFilters } from "@api/transactions";
 
 import Modal from "@components/Modal";
 import Transactions from "./Transactions";
+import Filters from "./Filters";
 import Chart from "./Chart";
 
 type ModalStyles = "outlet" | "history" | "upcoming" | "none";
@@ -27,7 +28,10 @@ export default function Books() {
     const [historyFilters, setHistoryFilters] = useState<ListFilters>(defaultHistoryFilters())
 
     const historyMutation = useMutation({
-        mutationFn: (filters: ListFilters) => getTransactions(filters)()
+        mutationFn: (filters: ListFilters) => {
+            setShowHistoryFilters(false);
+            return getTransactions(filters)();
+        }
     })
 
     useEffect(() => {
@@ -35,14 +39,9 @@ export default function Books() {
     }, [outlet, outletCache])
 
     useEffect(() => {
-        if (outlet && modalFor !== "outlet")
-            setModalFor("outlet")
-        else if (showHistoryFilters && modalFor !== "history")
-            setModalFor("history")
-        else if (showUpcomingFilters && modalFor !== "upcoming")
-            setModalFor("upcoming")
-        else if (!outlet && !showHistoryFilters && !showUpcomingFilters && modalFor !== "none")
-            setModalFor("none")
+        if (outlet && modalFor !== "outlet") setModalFor("outlet")
+        if (showHistoryFilters && modalFor !== "history") setModalFor("history")
+        if (showUpcomingFilters && modalFor !== "upcoming") setModalFor("upcoming")
     }, [outlet, showHistoryFilters, showUpcomingFilters])
 
     useEffect(() => historyMutation.mutate(historyFilters), [historyFilters])
@@ -61,9 +60,10 @@ export default function Books() {
                 <Chart className="col-span-2" />
             </div>
             <Modal
-                open={modalFor !== "none"}
+                open={!!outlet || showHistoryFilters || showUpcomingFilters}
                 onClose={() => {
-                    setOutletCache(null)
+                    setOutletCache(null);
+                    setModalFor("none");
                 }}
                 variant="small"
                 bodyClassName="h-[75dvh]"
@@ -73,7 +73,11 @@ export default function Books() {
                 }
                 {
                     modalFor === "history" && (
-                        <h1 className="text-2xl text-neutral-50">History Modal Filters</h1>
+                        <Filters.History
+                            filters={historyFilters}
+                            setFilters={setHistoryFilters}
+                            onCloseClick={() => historyMutation.mutate(historyFilters)}
+                        />
                     )
                 }
                 {
