@@ -9,4 +9,5 @@ import (
 func Routes(r chi.Router) {
 	r.Get("/", handlers.List)
 	r.Get("/pending", handlers.Pending)
+	r.Get("/upcoming", handlers.Upcoming)
 }
