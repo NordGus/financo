@@ -3,8 +3,11 @@ package handlers
 import (
 	"encoding/json"
 	"financo/server/types/generic/context_key"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -45,12 +48,19 @@ WHERE
     AND trg.deleted_at IS NULL
 	AND tr.executed_at IS NOT NULL
 	`
+
+	executedFromKey  = "executedFrom"
+	executedUntilKey = "executedUntil"
+	accountKey       = "account"
 )
 
 func List(w http.ResponseWriter, r *http.Request) {
 	var (
-		ctx     = r.Context()
-		results = make([]Transaction, 0, 50)
+		ctx         = r.Context()
+		results     = make([]Transaction, 0, 50)
+		query       = transactionsQuery
+		filters     = make([]any, 0, 3)
+		filterCount = 1
 	)
 	db, ok := ctx.Value(context_key.DB).(*pgxpool.Conn)
 	if !ok {
@@ -63,7 +73,58 @@ func List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := db.Query(ctx, transactionsQuery)
+	if r.URL.Query().Has(executedFromKey) && r.URL.Query().Has(executedUntilKey) {
+		filters = append(
+			filters,
+			r.URL.Query().Get(executedFromKey),
+			r.URL.Query().Get(executedUntilKey),
+		)
+
+		query += " AND (tr.executed_at BETWEEN $1 AND $2)"
+		filterCount += 2
+	} else if r.URL.Query().Has(executedFromKey) {
+		filters = append(filters, r.URL.Query().Get(executedFromKey))
+
+		query += " AND tr.executed_at >= $1"
+		filterCount++
+	} else if r.URL.Query().Has(executedUntilKey) {
+		filters = append(filters, r.URL.Query().Get(executedUntilKey))
+
+		query += " AND tr.executed_at <= $1"
+		filterCount++
+	}
+
+	if r.URL.Query().Has(accountKey) {
+		var (
+			err error
+			raw = strings.Split(r.URL.Query().Get(accountKey), ",")
+			ids = make([]int64, len(raw))
+		)
+
+		for i := 0; i < len(raw); i++ {
+			ids[i], err = strconv.ParseInt(raw[i], 10, 64)
+			if err != nil {
+				log.Println("failed to parsed id", err)
+				http.Error(
+					w,
+					http.StatusText(http.StatusInternalServerError),
+					http.StatusInternalServerError,
+				)
+				return
+			}
+		}
+
+		filters = append(filters, ids)
+
+		query += fmt.Sprintf(
+			" AND (tr.source_id = ANY ($%d) OR tr.target_id = ANY ($%d))",
+			filterCount,
+			filterCount,
+		)
+		filterCount++
+	}
+
+	rows, err := db.Query(ctx, query, filters...)
 	if err != nil {
 		log.Println("failed query", err)
 		http.Error(

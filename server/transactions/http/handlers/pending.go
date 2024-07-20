@@ -49,7 +49,7 @@ WHERE
     tr.deleted_at IS NULL
     AND src.deleted_at IS NULL
     AND trg.deleted_at IS NULL
-	AND tr.executed_at IS NULL
+	AND (tr.executed_at IS NULL OR tr.executed_at BETWEEN NOW() AND (NOW() + INTERVAL '1 month'))
 	`
 )
 
