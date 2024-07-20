@@ -38,6 +38,28 @@ export function getTransactions(filters: ListFilters): () => Promise<Transaction
     }
 }
 
+export interface UpcomingFilters {
+    executedUntil?: string
+
+    account?: string[]
+}
+
+export function getUpcomingTransactions(filters: UpcomingFilters): () => Promise<Transaction[]> {
+    return async () => {
+        const params = new URLSearchParams(
+            Object.entries(filters).filter(([_, value]) => !isEmpty(value) || !isNil(value))
+        )
+        const response = await fetch(`/api/transactions/upcoming?${params.toString()}`)
+
+        if (!response.ok) {
+            console.error(response)
+            throw new Error('Network response was not ok')
+        }
+
+        return response.json()
+    }
+}
+
 export async function getPendingTransactions(): Promise<Transaction[]> {
     const response = await fetch("/api/transactions/pending")
 

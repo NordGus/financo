@@ -1,14 +1,14 @@
 import { PropsWithChildren, useMemo } from "react"
 import { isEqual } from "lodash";
 
-import { ExecutedTransactionsFilters } from "@api/transactions"
+import { UpcomingFilters } from "@api/transactions"
 
 import Panel from "@components/Panel";
 import moment from "moment";
 
 interface FiltersProps {
-    filters: ExecutedTransactionsFilters
-    setFilters: (filters: ExecutedTransactionsFilters) => void
+    filters: UpcomingFilters
+    setFilters: (filters: UpcomingFilters) => void
     onClear: () => void
 }
 
@@ -48,7 +48,7 @@ export default function Filters({ filters, setFilters, onClear }: FiltersProps) 
                 <Panel.Components.ActionButton
                     text="Change Filter"
                     active={false}
-                    onClick={() => setFilters({ ...filters, executedUntil: moment().format('YYYY-MM-DD'), executedFrom: undefined, account: ['1'] })}
+                    onClick={() => setFilters({ ...filters, executedUntil: moment().format('YYYY-MM-DD'), account: ['1'] })}
                 />
             </Line>
         </div>

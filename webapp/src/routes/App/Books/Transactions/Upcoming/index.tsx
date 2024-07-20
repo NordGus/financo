@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ExecutedTransactionsFilters, getTransactions } from "@api/transactions";
+import { UpcomingFilters, getUpcomingTransactions } from "@api/transactions";
 import moment from "moment";
 import { groupBy } from "lodash";
 
@@ -12,18 +12,17 @@ interface FilterableProps {
     className?: string
 }
 
-function defaultFilters(): ExecutedTransactionsFilters {
+function defaultFilters(): UpcomingFilters {
     return {
-        executedFrom: moment().subtract({ months: 1 }).format('YYYY-MM-DD'),
-        executedUntil: moment().format('YYYY-MM-DD')
+        executedUntil: moment().add({ months: 1 }).format('YYYY-MM-DD')
     }
 }
 
 export default function Upcoming({ className }: FilterableProps) {
     const [showFilters, setShowFilters] = useState(false)
-    const [filters, setFilters] = useState<ExecutedTransactionsFilters>(defaultFilters())
+    const [filters, setFilters] = useState<UpcomingFilters>(defaultFilters())
     const filtersMutation = useMutation({
-        mutationFn: (filters: ExecutedTransactionsFilters) => getTransactions(filters)()
+        mutationFn: (filters: UpcomingFilters) => getUpcomingTransactions(filters)()
     })
 
     useEffect(() => filtersMutation.mutate(filters), [filters])
