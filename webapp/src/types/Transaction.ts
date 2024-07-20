@@ -10,6 +10,7 @@ interface Account {
     icon: Icon
     createdAt: string
     updatedAt: string
+    parent?: Account | null
 }
 
 export default interface Transaction {
