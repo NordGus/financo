@@ -30,7 +30,7 @@ export default function Pending({ className }: PendingProps) {
                             return { date: moment(date, 'YYYY-MM-DD').toDate(), transactions }
                         }).
                         map(({ date, transactions }) => (
-                            <div>
+                            <div key={`history:${date.toISOString()}`}>
                                 <h2
                                     className="px-2 py-1.5 text-2xl text-neutral-400 dark:text-neutral-600"
                                 >
