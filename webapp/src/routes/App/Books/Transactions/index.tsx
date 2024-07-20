@@ -1,7 +1,9 @@
-import Filterable from "./Filterable";
+import History from "./History";
 import Pending from "./Pending";
+import Upcoming from "./Upcoming";
 
 export default {
-    Filterable,
-    Pending
+    History,
+    Pending,
+    Upcoming
 }
