@@ -203,13 +203,8 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if srcParent.ID.Present {
-			tr.Source.Parent = buildParent(srcParent)
-		}
-
-		if trgParent.ID.Present {
-			tr.Target.Parent = buildParent(trgParent)
-		}
+		tr.Source.Parent = buildParent(srcParent)
+		tr.Target.Parent = buildParent(trgParent)
 
 		results = append(results, tr)
 	}
@@ -240,7 +235,7 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 }
 
 func buildParent(data NullableAccount) nullable.Type[Parent] {
-	if data.ID.Present {
+	if data.ID.Valid {
 		return nullable.New(Parent{
 			ID:        data.ID.Val,
 			Kind:      account.Kind(data.Kind.Val),

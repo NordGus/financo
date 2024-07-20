@@ -224,13 +224,8 @@ func List(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if srcParent.ID.Present {
-			tr.Source.Parent = buildParent(srcParent)
-		}
-
-		if trgParent.ID.Present {
-			tr.Target.Parent = buildParent(trgParent)
-		}
+		tr.Source.Parent = buildParent(srcParent)
+		tr.Target.Parent = buildParent(trgParent)
 
 		results = append(results, tr)
 	}
