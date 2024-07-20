@@ -33,6 +33,14 @@ SELECT
     src.icon,
     src.created_at,
     src.updated_at,
+    src_p.id,
+    src_p.kind,
+    src_p.currency,
+    src_p.name,
+    src_p.color,
+    src_p.icon,
+    src_p.created_at,
+    src_p.updated_at,
     trg.id,
     trg.kind,
     trg.currency,
@@ -40,11 +48,21 @@ SELECT
     trg.color,
     trg.icon,
     trg.created_at,
-    trg.updated_at
+    trg.updated_at,
+    trgp.id,
+    trgp.kind,
+    trgp.currency,
+    trgp.name,
+    trgp.color,
+    trgp.icon,
+    trgp.created_at,
+    trgp.updated_at
 FROM
     transactions tr
     INNER JOIN accounts src ON src.id = tr.source_id
+    LEFT JOIN accounts src_p ON src_p.id = src.parent_id
     INNER JOIN accounts trg ON trg.id = tr.target_id
+    LEFT JOIN accounts trgp ON trgp.id = trg.parent_id
 WHERE
     tr.deleted_at IS NULL
     AND src.deleted_at IS NULL
@@ -53,7 +71,7 @@ WHERE
 	`
 )
 
-type Account struct {
+type Parent struct {
 	ID        int64         `json:"id"`
 	Kind      account.Kind  `json:"kind"`
 	Currency  currency.Type `json:"currency"`
@@ -62,6 +80,18 @@ type Account struct {
 	Icon      icon.Type     `json:"icon"`
 	CreatedAt time.Time     `json:"createdAt"`
 	UpdatedAt time.Time     `json:"updatedAt"`
+}
+
+type Account struct {
+	ID        int64                 `json:"id"`
+	Kind      account.Kind          `json:"kind"`
+	Currency  currency.Type         `json:"currency"`
+	Name      string                `json:"name"`
+	Color     color.Type            `json:"color"`
+	Icon      icon.Type             `json:"icon"`
+	CreatedAt time.Time             `json:"createdAt"`
+	UpdatedAt time.Time             `json:"updatedAt"`
+	Parent    nullable.Type[Parent] `json:"parent"`
 }
 
 type Transaction struct {
@@ -74,6 +104,17 @@ type Transaction struct {
 	TargetAmount int64                    `json:"targetAmount"`
 	CreatedAt    time.Time                `json:"createdAt"`
 	UpdatedAt    time.Time                `json:"updatedAt"`
+}
+
+type NullableAccount struct {
+	ID        nullable.Type[int64]     `json:"id"`
+	Kind      nullable.Type[string]    `json:"kind"`
+	Currency  nullable.Type[string]    `json:"currency"`
+	Name      nullable.Type[string]    `json:"name"`
+	Color     nullable.Type[string]    `json:"color"`
+	Icon      nullable.Type[string]    `json:"icon"`
+	CreatedAt nullable.Type[time.Time] `json:"createdAt"`
+	UpdatedAt nullable.Type[time.Time] `json:"updatedAt"`
 }
 
 func Pending(w http.ResponseWriter, r *http.Request) {
@@ -105,7 +146,11 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var tr Transaction
+		var (
+			tr        Transaction
+			srcParent NullableAccount
+			trgParent NullableAccount
+		)
 
 		err = rows.Scan(
 			&tr.ID,
@@ -123,6 +168,14 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 			&tr.Source.Icon,
 			&tr.Source.CreatedAt,
 			&tr.Source.UpdatedAt,
+			&srcParent.ID,
+			&srcParent.Kind,
+			&srcParent.Currency,
+			&srcParent.Name,
+			&srcParent.Color,
+			&srcParent.Icon,
+			&srcParent.CreatedAt,
+			&srcParent.UpdatedAt,
 			&tr.Target.ID,
 			&tr.Target.Kind,
 			&tr.Target.Currency,
@@ -131,6 +184,14 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 			&tr.Target.Icon,
 			&tr.Target.CreatedAt,
 			&tr.Target.UpdatedAt,
+			&trgParent.ID,
+			&trgParent.Kind,
+			&trgParent.Currency,
+			&trgParent.Name,
+			&trgParent.Color,
+			&trgParent.Icon,
+			&trgParent.CreatedAt,
+			&trgParent.UpdatedAt,
 		)
 		if err != nil {
 			log.Println("failed scan", err)
@@ -140,6 +201,14 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 				http.StatusInternalServerError,
 			)
 			return
+		}
+
+		if srcParent.ID.Present {
+			tr.Source.Parent = buildParent(srcParent)
+		}
+
+		if trgParent.ID.Present {
+			tr.Target.Parent = buildParent(trgParent)
 		}
 
 		results = append(results, tr)
@@ -168,4 +237,21 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Add("Content-Type", "application/json")
+}
+
+func buildParent(data NullableAccount) nullable.Type[Parent] {
+	if data.ID.Present {
+		return nullable.New(Parent{
+			ID:        data.ID.Val,
+			Kind:      account.Kind(data.Kind.Val),
+			Currency:  currency.Type(data.Currency.Val),
+			Name:      data.Name.Val,
+			Color:     color.Type(data.Color.Val),
+			Icon:      icon.Type(data.Icon.Val),
+			CreatedAt: data.CreatedAt.Val,
+			UpdatedAt: data.UpdatedAt.Val,
+		})
+	}
+
+	return nullable.Type[Parent]{}
 }
