@@ -12,6 +12,7 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -41,6 +42,8 @@ func main() {
 		log.Println("database connections closed")
 	}()
 
+	router.Use(middleware.RequestID)
+	router.Use(middleware.Logger)
 	router.Use(DatabaseCtx(dbConn))
 
 	router.Route("/accounts", accounts.Routes)
