@@ -18,11 +18,76 @@ import (
 )
 
 const (
-	transactionsWithQuery = "active_transactions (id, source_id, target_id, issued_at, executed_at, source_amount, target_amount) AS (SELECT id, source_id, target_id, issued_at, executed_at, source_amount, target_amount FROM transactions WHERE deleted_at IS NULL)"
+	listQuery = `
+WITH active_transactions (
+		id, source_id, target_id, issued_at, executed_at, source_amount, target_amount
+	) AS (
+		SELECT
+			id,
+			source_id,
+			target_id,
+			issued_at,
+			executed_at,
+			source_amount,
+			target_amount
+		FROM transactions
+		WHERE
+			deleted_at IS NULL
+			AND (executed_at IS NULL OR executed_at <= NOW())
+			AND issued_at <= NOW()
+	), history_accounts (
+		parent_id, has_history, amount, history_at
+	) AS (
+		SELECT
+			acc.parent_id,
+			COUNT(tr.id) > 0 AS has_history,
+			MAX(
+				CASE
+					WHEN tr.source_id = acc.id THEN tr.target_amount
+					ELSE - tr.source_amount
+				END
+			) as amount,
+			MAX(tr.executed_at) AS history_at
+		FROM accounts acc
+			LEFT JOIN active_transactions tr ON tr.source_id = acc.id OR tr.target_id = acc.id
+		WHERE
+			acc.parent_id IS NOT NULL
+			AND acc.kind = $1
+		GROUP BY acc.parent_id
+	)
+SELECT
+	acc.id,
+	acc.kind,
+	acc.currency,
+	acc.name,
+	acc.description,
+	acc.capital,
+	acc.color,
+	acc.icon,
+	SUM(
+		COALESCE(
+			CASE WHEN blc.target_id = acc.id THEN blc.target_amount
+			ELSE - blc.source_amount END,
+			0
+		)
+	) AS balance,
+	bool_and(COALESCE(hist.has_history, FALSE)) AS has_history,
+	MAX(hist.amount) AS history_amount,
+	MAX(hist.history_at) AS history_at,
+	acc.archived_at,
+	acc.created_at,
+	acc.updated_at
+FROM accounts acc
+	LEFT JOIN history_accounts hist ON hist.parent_id = acc.id
+	LEFT JOIN active_transactions blc ON blc.source_id = acc.id OR blc.target_id = acc.id
+WHERE
+	acc.kind = ANY ($2)
+	AND acc.parent_id IS NULL
+	AND acc.deleted_at IS NULL
+	`
 
-	historyAccountsWithQuery = "history_accounts (parent_id, has_history, amount, history_at) AS (SELECT acc.parent_id, COUNT(tr.id) > 0 AS has_history, MAX(CASE WHEN tr.source_id = acc.id THEN tr.target_amount ELSE - tr.source_amount END) as amount, MAX(tr.executed_at) AS history_at FROM accounts acc LEFT JOIN active_transactions tr ON tr.source_id = acc.id OR tr.target_id = acc.id WHERE acc.parent_id IS NOT NULL AND acc.kind = $1 GROUP BY acc.parent_id)"
-
-	listQuery = "SELECT acc.id, acc.kind, acc.currency, acc.name, acc.description, acc.capital, acc.color, acc.icon, SUM(COALESCE(CASE WHEN blc.target_id = acc.id THEN blc.target_amount ELSE - blc.source_amount END, 0)) AS balance, bool_and(COALESCE(hist.has_history, FALSE)) AS has_history, MAX(hist.amount) AS history_amount, MAX(hist.history_at) AS history_at, acc.archived_at, acc.created_at, acc.updated_at FROM accounts acc LEFT JOIN history_accounts hist ON hist.parent_id = acc.id LEFT JOIN active_transactions blc ON blc.source_id = acc.id OR blc.target_id = acc.id WHERE acc.kind = ANY ($2) AND acc.parent_id IS NULL AND acc.archived_at %s AND acc.deleted_at IS NULL GROUP BY acc.id"
+	archivedKey = "archived"
+	kindKey     = "kind"
 )
 
 type ListFilter struct {
@@ -56,11 +121,9 @@ type Account struct {
 func List(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx     = r.Context()
-		filters = ListFilter{
-			Kinds:    make([]account.Kind, 0, 7),
-			Archived: "IS NULL",
-		}
+		kinds   = make([]account.Kind, 0, 7)
 		results = make([]Account, 0, 10)
+		query   = listQuery
 	)
 	db, ok := ctx.Value(context_key.DB).(*pgxpool.Conn)
 	if !ok {
@@ -73,36 +136,44 @@ func List(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, k := range strings.Split(r.URL.Query().Get("kind"), ",") {
-		kind := account.Kind(k)
+	if r.URL.Query().Has(kindKey) {
+		for _, k := range strings.Split(r.URL.Query().Get(kindKey), ",") {
+			kind := account.Kind(k)
 
-		if err := kindsValidation(kind); err != nil {
-			log.Println(err)
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-			return
+			if err := kindsValidation(kind); err != nil {
+				log.Println(err)
+				http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+				return
+			}
+
+			kinds = append(kinds, kind)
 		}
-
-		filters.Kinds = append(filters.Kinds, kind)
+	} else {
+		kinds = append(
+			kinds,
+			account.CapitalNormal,
+			account.CapitalSavings,
+			account.DebtCredit,
+			account.DebtLoan,
+			account.DebtPersonal,
+			account.ExternalExpense,
+			account.ExternalIncome,
+		)
 	}
 
-	archived := r.URL.Query().Get("archived")
-
-	if archived != "" && archived != "true" {
+	if r.URL.Query().Has(archivedKey) && r.URL.Query().Get(archivedKey) == "true" {
+		query += " AND acc.archived_at IS NOT NULL"
+	} else if r.URL.Query().Has(archivedKey) {
 		log.Println("invalid value for archived")
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
-	} else if archived != "" {
-		filters.Archived = "IS NOT NULL"
+	} else {
+		query += " AND acc.archived_at IS NULL"
 	}
 
-	query := fmt.Sprintf(
-		"WITH %s, %s %s",
-		transactionsWithQuery,
-		historyAccountsWithQuery,
-		fmt.Sprintf(listQuery, filters.Archived),
-	)
+	query += " GROUP BY acc.id"
 
-	rows, err := db.Query(ctx, query, account.SystemHistoric, filters.Kinds)
+	rows, err := db.Query(ctx, query, account.SystemHistoric, kinds)
 	if err != nil {
 		log.Println("failed query", err)
 		http.Error(

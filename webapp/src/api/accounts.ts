@@ -124,7 +124,7 @@ export async function getArchivedExternalIncomeAccounts(): Promise<Account[]> {
 }
 
 export async function getExternalExpenseAccounts(): Promise<Account[]> {
-    const response = await fetch("/api/accounts?kind=external_expense&archived")
+    const response = await fetch("/api/accounts?kind=external_expense")
 
     if (!response.ok) {
         console.error(response)
