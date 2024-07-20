@@ -1,41 +1,35 @@
-import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { ListFilters, getTransactions } from "@api/transactions";
+import { UseMutationResult } from "@tanstack/react-query";
 import moment from "moment";
 import { groupBy } from "lodash";
 
+import Transaction from "@/types/Transaction";
+
+import { ListFilters } from "@api/transactions";
+
 import Panel from "@components/Panel";
 import Preview from "@components/transaction/Preview";
-import Filters from "./Filters";
 
 interface FilterableProps {
-    className: string
+    showFilters: boolean,
+    setShowFilters: React.Dispatch<React.SetStateAction<boolean>>,
+    filters: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
+    className?: string
 }
 
-function defaultFilters(): ListFilters {
-    return {
-        executedFrom: moment().subtract({ months: 1 }).format('YYYY-MM-DD'),
-        executedUntil: moment().format('YYYY-MM-DD')
-    }
-}
-
-export default function History({ className }: FilterableProps) {
-    const [showFilters, setShowFilters] = useState(false)
-    const [filters, setFilters] = useState<ListFilters>(defaultFilters())
-    const filtersMutation = useMutation({
-        mutationFn: (filters: ListFilters) => getTransactions(filters)()
-    })
-
-    useEffect(() => filtersMutation.mutate(filters), [filters])
-
+export default function History({
+    showFilters,
+    setShowFilters,
+    filters,
+    className
+}: FilterableProps) {
     return (
-        <Panel.WithFilters
+        <Panel.WithLoadingIndicator
             grow={true}
             className={className}
             header={<>
                 <Panel.Components.Title grow={true} text="Transactions" />
                 <Panel.Components.ActionButton
-                    text={showFilters ? "Hide Filters" : "Show Filters"}
+                    text={"Filter"}
                     onClick={() => setShowFilters(!showFilters)}
                     active={showFilters}
                 />
@@ -44,12 +38,12 @@ export default function History({ className }: FilterableProps) {
                     to="/books/transactions/new"
                 />
             </>}
-            loading={filtersMutation.isPending}
+            loading={filters.isPending}
             contents={
-                (filtersMutation.data?.length === 0 || !filtersMutation.data)
+                (filters.data?.length === 0 || !filters.data)
                     ? null
                     : Object.entries(
-                        groupBy(filtersMutation.data.
+                        groupBy(filters.data.
                             sort((a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)),
                             ({ executedAt }) => executedAt!
                         )).
@@ -83,14 +77,6 @@ export default function History({ className }: FilterableProps) {
                             </div>
                         ))
             }
-            filters={
-                < Filters
-                    filters={filters}
-                    setFilters={setFilters}
-                    onClear={() => setFilters(defaultFilters())}
-                />
-            }
-            showFilters={showFilters}
         />
     )
 }
