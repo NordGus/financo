@@ -19,8 +19,7 @@ export interface ExecutedTransactionsFilters {
     executedFrom?: string
     executedUntil?: string
 
-    accountIDs?: string[]
-    externalAccountIDs?: string[]
+    account?: string[]
 }
 
 export function getTransactions(filters: ExecutedTransactionsFilters): () => Promise<Transaction[]> {
