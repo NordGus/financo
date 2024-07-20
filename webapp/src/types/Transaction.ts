@@ -1,7 +1,7 @@
 import { Currency } from "dinero.js"
 import { Icon, Kind } from "./Account"
 
-interface Account {
+export interface Account {
     id: number
     kind: Kind
     name: string

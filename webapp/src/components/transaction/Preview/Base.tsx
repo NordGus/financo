@@ -1,11 +1,12 @@
-import Transaction from "@/types/Transaction";
-import Account, { Kind } from "@/types/Account";
+import Transaction, { Account } from "@/types/Transaction";
+import { Kind } from "@/types/Account";
 
 import isDebtAccount from "@helpers/account/isDebtAccount";
 import isCapitalAccount from "@helpers/account/isCapitalAccount";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import currencySourceAmountColor from "@helpers/transaction/currencySourceAmountColor";
+import accountNameText from "@helpers/transaction/accountNameText";
 
 interface Props {
     transaction: Transaction
@@ -34,12 +35,12 @@ export default function Base({
         <div
             className="grid grid-rows-[min-content_min-content] grid-cols-[minmax(0,_1fr)_min-content] items-center gap-1"
         >
-            <p>{top.name}</p>
+            <p>{accountNameText(top)}</p>
             <p className={`text-right ${currencySourceAmountColor(source.kind, target.kind)}`}>
                 {currencyAmountToHuman(targetAmount, target.currency)}
             </p>
             <p className={`text-sm opacity-60 ${sameCurrency ? "col-span-2" : ""}`}>
-                {bottom.name}
+                {accountNameText(bottom)}
             </p>
             {
                 !sameCurrency &&
