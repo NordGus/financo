@@ -1,14 +1,6 @@
-import { isEmpty, isNaN, isNil } from "lodash"
-
 import Transaction from "@/types/Transaction"
 
-function isEmptyParam(param: any): boolean {
-    if (isEmpty(param)) return true
-    if (isNil(param)) return true
-    if (isNaN(param)) return true
-
-    return !param
-}
+import isEmptyParam from "@helpers/isEmptyParam"
 
 export function getTransaction(id: string): () => Promise<Transaction> {
     return async () => {
@@ -85,7 +77,7 @@ export function getTransactionsForAccount(
 ): () => Promise<Transaction[]> {
     return async () => {
         const params = new URLSearchParams(
-            Object.entries(filters).filter(([_, value]) => !isEmpty(value) || !isNil(value))
+            Object.entries(filters).filter(([_, value]) => !isEmptyParam(value))
         )
         const response = await fetch(`/api/accounts/${accountId}/transactions?${params.toString()}`)
 
