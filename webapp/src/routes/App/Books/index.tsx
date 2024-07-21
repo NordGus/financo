@@ -127,7 +127,20 @@ export default function Books() {
                         <Filters.Upcoming
                             filters={upcomingFilters}
                             setFilters={setUpcomingFilters}
-                            onCloseClick={() => upcomingMutation.mutate(upcomingFilters)}
+                            onClose={() => {
+                                setUpcomingFilters(previousUpcomingFilters)
+                                setShowUpcomingFilters(false)
+                            }}
+                            onApplyFilters={() => {
+                                setPreviousUpcomingFilters(upcomingFilters)
+                                upcomingMutation.mutate(upcomingFilters)
+                            }}
+                            onClearFilters={() => {
+                                setUpcomingFilters(defaultUpcomingFilters())
+                                setPreviousUpcomingFilters(defaultUpcomingFilters())
+
+                                upcomingMutation.mutate(upcomingFilters)
+                            }}
                         />
                     )
                 }
