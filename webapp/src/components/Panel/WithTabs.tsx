@@ -39,7 +39,7 @@ export default function WithTabs(
             header={header}
         >
             <div
-                className="flex justify-between items-stretch min-h-10 h-10 max-h-10 divide-x dark:divide-neutral-800"
+                className="flex justify-between items-stretch min-h-10 h-10 max-h-10"
             >
                 {tabs.map(({ key, text, onClick, active }) => <ActionButton
                     key={key}
