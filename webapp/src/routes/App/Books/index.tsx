@@ -105,7 +105,11 @@ export default function Books() {
                 }
                 {
                     modalFor === "upcoming" && (
-                        <h1 className="text-2xl text-neutral-50">Upcoming Modal Filters</h1>
+                        <Filters.Upcoming
+                            filters={upcomingFilters}
+                            setFilters={setUpcomingFilters}
+                            onCloseClick={() => upcomingMutation.mutate(upcomingFilters)}
+                        />
                     )
                 }
             </Modal>
