@@ -175,7 +175,7 @@ func createCapitalNormalAccounts(
 				// ParentID will be added later after the creation of its corresponding account.
 				Kind:        account.SystemHistoric,
 				Currency:    currency.EUR,
-				Name:        "My Personal Bank Account (History)",
+				Name:        "History",
 				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 				Color:       "#8c8c8c",
 				Icon:        icon.Base,
@@ -210,7 +210,7 @@ func createCapitalNormalAccounts(
 				// ParentID will be added later after the creation of its corresponding account.
 				Kind:        account.SystemHistoric,
 				Currency:    currency.EUR,
-				Name:        "Freelance bank account (History)",
+				Name:        "History",
 				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 				Color:       "#8c8c8c",
 				Icon:        icon.Base,
@@ -261,7 +261,7 @@ func createCapitalSavingsAccounts(
 				// ParentID will be added later after the creation of its corresponding account.
 				Kind:        account.SystemHistoric,
 				Currency:    currency.EUR,
-				Name:        "My Savings Account (History)",
+				Name:        "History",
 				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 				Color:       "#8c8c8c",
 				Icon:        icon.Base,
@@ -296,7 +296,7 @@ func createCapitalSavingsAccounts(
 				// ParentID will be added later after the creation of its corresponding account.
 				Kind:        account.SystemHistoric,
 				Currency:    currency.USD,
-				Name:        "My US Savings Account (History)",
+				Name:        "History",
 				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 				Color:       "#8c8c8c",
 				Icon:        icon.Base,
@@ -328,7 +328,7 @@ func createCapitalSavingsAccounts(
 				// ParentID will be added later after the creation of its corresponding account.
 				Kind:        account.SystemHistoric,
 				Currency:    currency.EUR,
-				Name:        "My German Account (History)",
+				Name:        "History",
 				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 				Color:       "#8c8c8c",
 				Icon:        icon.Base,
@@ -379,7 +379,7 @@ func createDebtLoanAccounts(
 				// ParentID will be added later after the creation of its corresponding account.
 				Kind:        account.SystemHistoric,
 				Currency:    currency.EUR,
-				Name:        "Car loan (History)",
+				Name:        "History",
 				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 				Color:       "#8c8c8c",
 				Icon:        icon.Base,
@@ -414,7 +414,7 @@ func createDebtLoanAccounts(
 				// ParentID will be added later after the creation of its corresponding account.
 				Kind:        account.SystemHistoric,
 				Currency:    currency.EUR,
-				Name:        "Morgan's Loan (History)",
+				Name:        "History",
 				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 				Color:       "#8c8c8c",
 				Icon:        icon.Base,
@@ -449,7 +449,7 @@ func createDebtLoanAccounts(
 				// ParentID will be added later after the creation of its corresponding account.
 				Kind:        account.SystemHistoric,
 				Currency:    currency.EUR,
-				Name:        "Carlos' Lunch (History)",
+				Name:        "History",
 				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 				Color:       "#8c8c8c",
 				Icon:        icon.Base,
@@ -503,7 +503,7 @@ func createDebtCreditAccounts(
 				// ParentID will be added later after the creation of its corresponding account.
 				Kind:        account.SystemHistoric,
 				Currency:    currency.EUR,
-				Name:        "Credit Card (History)",
+				Name:        "History",
 				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 				Color:       "#8c8c8c",
 				Icon:        icon.Base,
@@ -538,7 +538,7 @@ func createDebtCreditAccounts(
 				// ParentID will be added later after the creation of its corresponding account.
 				Kind:        account.SystemHistoric,
 				Currency:    currency.EUR,
-				Name:        "Laptop financing Credit Line (History)",
+				Name:        "History",
 				Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 				Color:       "#8c8c8c",
 				Icon:        icon.Base,
