@@ -32,10 +32,6 @@ export default function Upcoming({
                     onClick={() => setShowFilters(!showFilters)}
                     active={showFilters}
                 />
-                <Panel.Components.ActionLink
-                    text="Add"
-                    to="/books/transactions/new"
-                />
             </>}
             loading={filters.isPending}
             contents={
