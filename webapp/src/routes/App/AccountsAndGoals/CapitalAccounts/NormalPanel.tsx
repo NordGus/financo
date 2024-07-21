@@ -35,16 +35,11 @@ export default function NormalPanel({ className }: NormalPanelProps) {
                 <>
                     <Panel.Components.Title text="Bank Accounts" grow={true} />
                     <Panel.Components.ActionButton
-                        text={
-                            {
-                                active: "Show Archived",
-                                archived: "Show Active"
-                            }[currentQuery] || ""
-                        }
+                        text="Archived"
                         onClick={() => {
                             setCurrentQuery(currentQuery === "active" ? "archived" : "active")
                         }}
-                        active={false}
+                        active={currentQuery === "archived"}
                     />
                     <Panel.Components.ActionLink to={newAccountPath} text="Add" />
                 </>
@@ -59,7 +54,7 @@ export default function NormalPanel({ className }: NormalPanelProps) {
                         />),
                     archived: isEmpty(archivedQuery.data) || isNil(archivedQuery.data)
                         ? null
-                        : archivedQuery.data?.map((acc) => <WithNavigation
+                        : archivedQuery.data.map((acc) => <WithNavigation
                             key={`account:${acc.id}`}
                             account={acc}
                         />)
