@@ -80,9 +80,9 @@ export default function History({
                         type="date"
                         name="executed_at[from]"
                         id="executed_at_from"
-                        value={filters.executedFrom}
-                        onChange={(event) => {
-                            setFilters({ ...filters, executedFrom: event.target.value })
+                        value={filters.executedFrom || ""}
+                        onChange={({ target: { value } }) => {
+                            setFilters({ ...filters, executedFrom: value })
                         }}
                     />
                 </div>
@@ -92,9 +92,9 @@ export default function History({
                         type="date"
                         name="executed_at[to]"
                         id="executed_at_to"
-                        value={filters.executedUntil}
-                        onChange={(event) => {
-                            setFilters({ ...filters, executedUntil: event.target.value })
+                        value={filters.executedUntil || ""}
+                        onChange={({ target: { value } }) => {
+                            setFilters({ ...filters, executedUntil: value })
                         }}
                     />
                 </div>

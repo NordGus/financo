@@ -80,9 +80,9 @@ export default function Upcoming({
                         type="date"
                         name="executed_at[to]"
                         id="executed_at_to"
-                        value={filters.executedUntil}
-                        onChange={(event) => {
-                            setFilters({ ...filters, executedUntil: event.target.value })
+                        value={filters.executedUntil || ""}
+                        onChange={({ target: { value } }) => {
+                            setFilters({ ...filters, executedUntil: value })
                         }}
                     />
                 </div>
