@@ -2,6 +2,13 @@ import { isEmpty, isNil } from "lodash"
 
 import Transaction from "@/types/Transaction"
 
+function isEmptyParam(param: any): boolean {
+    if (isEmpty(param)) return true
+    if (isNil(param)) return true
+
+    return !param
+}
+
 export function getTransaction(id: string): () => Promise<Transaction> {
     return async () => {
         const response = await fetch(`/api/transactions/${id}`)
@@ -25,7 +32,7 @@ export interface ListFilters {
 export function getTransactions(filters: ListFilters): () => Promise<Transaction[]> {
     return async () => {
         const params = new URLSearchParams(
-            Object.entries(filters).filter(([_, value]) => !isEmpty(value) || !isNil(value))
+            Object.entries(filters).filter(([_, value]) => !isEmptyParam(value))
         )
         const response = await fetch(`/api/transactions?${params.toString()}`)
 
@@ -47,7 +54,7 @@ export interface UpcomingFilters {
 export function getUpcomingTransactions(filters: UpcomingFilters): () => Promise<Transaction[]> {
     return async () => {
         const params = new URLSearchParams(
-            Object.entries(filters).filter(([_, value]) => !isEmpty(value) || !isNil(value))
+            Object.entries(filters).filter(([_, value]) => !isEmptyParam(value))
         )
         const response = await fetch(`/api/transactions/upcoming?${params.toString()}`)
 
