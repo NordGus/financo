@@ -19,71 +19,117 @@ import (
 
 const (
 	listQuery = `
-WITH active_transactions (
-		id, source_id, target_id, issued_at, executed_at, source_amount, target_amount
-	) AS (
-		SELECT
-			id,
-			source_id,
-			target_id,
-			issued_at,
-			executed_at,
-			source_amount,
-			target_amount
-		FROM transactions
-		WHERE
-			deleted_at IS NULL
-			AND (executed_at IS NULL OR executed_at <= NOW())
-			AND issued_at <= NOW()
-	), history_accounts (
-		parent_id, has_history, amount, history_at
-	) AS (
-		SELECT
-			acc.parent_id,
-			COUNT(tr.id) > 0 AS has_history,
-			MAX(
-				CASE
-					WHEN tr.source_id = acc.id THEN tr.target_amount
-					ELSE - tr.source_amount
-				END
-			) as amount,
-			MAX(tr.executed_at) AS history_at
-		FROM accounts acc
-			LEFT JOIN active_transactions tr ON tr.source_id = acc.id OR tr.target_id = acc.id
-		WHERE
-			acc.parent_id IS NOT NULL
-			AND acc.kind = $1
-		GROUP BY acc.parent_id
-	)
+WITH
+    active_transactions (
+        id,
+        source_id,
+        target_id,
+        issued_at,
+        executed_at,
+        source_amount,
+        target_amount
+    ) AS (
+        SELECT
+            id,
+            source_id,
+            target_id,
+            issued_at,
+            executed_at,
+            source_amount,
+            target_amount
+        FROM transactions
+        WHERE
+            deleted_at IS NULL
+            AND executed_at IS NOT NULL
+            AND executed_at <= NOW()
+    ),
+    children (
+        id,
+        parent_id,
+        kind,
+        currency,
+        name,
+        description,
+        balance,
+        capital,
+        color,
+        icon,
+        archived_at,
+        created_at,
+        updated_at
+    ) AS (
+        SELECT
+            acc.id,
+            acc.parent_id,
+            acc.kind,
+            acc.currency,
+            acc.name,
+            acc.description,
+            SUM(
+                CASE
+                    WHEN tr.source_id = acc.id THEN - tr.source_amount
+					WHEN tr.target_id = acc.id THEN tr.target_amount
+                    ELSE 0
+                END
+            ) AS balance,
+            acc.capital,
+            acc.color,
+            acc.icon,
+            acc.archived_at,
+            acc.created_at,
+            acc.updated_at
+        FROM
+            accounts acc
+            LEFT JOIN active_transactions tr ON tr.source_id = acc.id
+            OR tr.target_id = acc.id
+        WHERE
+            acc.parent_id IS NOT NULL
+			AND acc.deleted_at IS NULL
+            AND acc.archived_at IS NULL
+            AND acc.kind != $1
+        GROUP BY
+            acc.id
+    )
 SELECT
-	acc.id,
-	acc.kind,
-	acc.currency,
-	acc.name,
-	acc.description,
-	acc.capital,
-	acc.color,
-	acc.icon,
-	SUM(
-		COALESCE(
-			CASE WHEN blc.target_id = acc.id THEN blc.target_amount
-			ELSE - blc.source_amount END,
-			0
-		)
-	) AS balance,
-	bool_and(COALESCE(hist.has_history, FALSE)) AS has_history,
-	MAX(hist.amount) AS history_amount,
-	MAX(hist.history_at) AS history_at,
-	acc.archived_at,
-	acc.created_at,
-	acc.updated_at
-FROM accounts acc
-	LEFT JOIN history_accounts hist ON hist.parent_id = acc.id
-	LEFT JOIN active_transactions blc ON blc.source_id = acc.id OR blc.target_id = acc.id
+    acc.id,
+    acc.kind,
+    acc.currency,
+    acc.name,
+    acc.description,
+    SUM(
+        CASE
+			WHEN blc.source_id = acc.id THEN - blc.source_amount
+			WHEN blc.target_id = acc.id THEN blc.target_amount
+			ELSE 0
+		END
+    ) AS balance,
+    acc.capital,
+    acc.color,
+    acc.icon,
+    acc.archived_at,
+    acc.created_at,
+    acc.updated_at,
+    child.id,
+    MAX(child.kind) AS child_kind,
+    MAX(child.currency) AS child_currency,
+    MAX(child.name) AS child_name,
+    MAX(child.description) AS child_description,
+    MAX(child.balance)::bigint AS child_balance,
+    MAX(child.capital) AS child_capital,
+    MAX(child.color) AS child_color,
+    MAX(child.icon) AS child_icon,
+    MAX(child.archived_at) AS child_archived_at,
+    MAX(child.created_at) AS child_created_at,
+    MAX(child.updated_at) AS child_updated_at
+FROM
+    accounts acc
+    LEFT JOIN children child ON child.parent_id = acc.id
+    LEFT JOIN active_transactions blc ON blc.source_id = acc.id
+    OR blc.target_id = acc.id
 WHERE
-	acc.kind = ANY ($2)
-	AND acc.parent_id IS NULL
-	AND acc.deleted_at IS NULL
+    acc.kind = ANY ($2)
+    AND acc.parent_id IS NULL
+    AND acc.deleted_at IS NULL
 	`
 
 	archivedKey = "archived"
@@ -95,35 +141,44 @@ type ListFilter struct {
 	Archived string
 }
 
-type History struct {
-	Present bool                     `json:"present"`
-	Amount  nullable.Type[int64]     `json:"amount"`
-	At      nullable.Type[time.Time] `json:"at"`
-}
-
-type Account struct {
+type Preview struct {
 	ID          int64                    `json:"id"`
 	Kind        account.Kind             `json:"kind"`
 	Currency    currency.Type            `json:"currency"`
 	Name        string                   `json:"name"`
 	Description nullable.Type[string]    `json:"description"`
+	Balance     int64                    `json:"balance"`
 	Capital     int64                    `json:"capital"`
 	Color       color.Type               `json:"color"`
 	Icon        icon.Type                `json:"icon"`
-	Balance     int64                    `json:"balance"`
-	History     History                  `json:"history"`
 	ArchivedAt  nullable.Type[time.Time] `json:"archivedAt"`
 	CreatedAt   time.Time                `json:"createdAt"`
 	UpdatedAt   time.Time                `json:"updatedAt"`
-	Children    []Account                `json:"children"`
+	Children    []Preview                `json:"children"`
+}
+
+type Child struct {
+	ID          nullable.Type[int64]
+	Kind        nullable.Type[string]
+	Currency    nullable.Type[string]
+	Name        nullable.Type[string]
+	Description nullable.Type[string]
+	Balance     nullable.Type[int64]
+	Capital     nullable.Type[int64]
+	Color       nullable.Type[string]
+	Icon        nullable.Type[string]
+	ArchivedAt  nullable.Type[time.Time]
+	CreatedAt   nullable.Type[time.Time]
+	UpdatedAt   nullable.Type[time.Time]
 }
 
 func List(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx     = r.Context()
 		kinds   = make([]account.Kind, 0, 7)
-		results = make([]Account, 0, 10)
+		results = make([]Preview, 0, 10)
 		query   = listQuery
+		idx     = 0
 	)
 	db, ok := ctx.Value(context_key.DB).(*pgxpool.Conn)
 	if !ok {
@@ -163,15 +218,11 @@ func List(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Query().Has(archivedKey) && r.URL.Query().Get(archivedKey) == "true" {
 		query += " AND acc.archived_at IS NOT NULL"
-	} else if r.URL.Query().Has(archivedKey) {
-		log.Println("invalid value for archived")
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
 	} else {
 		query += " AND acc.archived_at IS NULL"
 	}
 
-	query += " GROUP BY acc.id"
+	query += " GROUP BY child.id, acc.id"
 
 	rows, err := db.Query(ctx, query, account.SystemHistoric, kinds)
 	if err != nil {
@@ -186,7 +237,10 @@ func List(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	for rows.Next() {
-		acc := Account{Children: make([]Account, 0)}
+		var (
+			acc   Preview
+			child Child
+		)
 
 		err = rows.Scan(
 			&acc.ID,
@@ -194,16 +248,25 @@ func List(w http.ResponseWriter, r *http.Request) {
 			&acc.Currency,
 			&acc.Name,
 			&acc.Description,
+			&acc.Balance,
 			&acc.Capital,
 			&acc.Color,
 			&acc.Icon,
-			&acc.Balance,
-			&acc.History.Present,
-			&acc.History.Amount,
-			&acc.History.At,
 			&acc.ArchivedAt,
 			&acc.CreatedAt,
 			&acc.UpdatedAt,
+			&child.ID,
+			&child.Kind,
+			&child.Currency,
+			&child.Name,
+			&child.Description,
+			&child.Balance,
+			&child.Capital,
+			&child.Color,
+			&child.Icon,
+			&child.ArchivedAt,
+			&child.CreatedAt,
+			&child.UpdatedAt,
 		)
 		if err != nil {
 			log.Println("failed scan", err)
@@ -215,7 +278,18 @@ func List(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		results = append(results, acc)
+		if len(results) == 0 {
+			results = append(results, acc)
+			results[idx].Children = make([]Preview, 0, 5)
+		} else if results[idx].ID != acc.ID {
+			idx++
+			results = append(results, acc)
+			results[idx].Children = make([]Preview, 0, 5)
+		}
+
+		if child.ID.Valid {
+			results[idx].Children = append(results[idx].Children, buildChild(child))
+		}
 	}
 
 	response, err := json.Marshal(results)
@@ -259,4 +333,21 @@ func kindsValidation(k account.Kind) error {
 	}
 
 	return nil
+}
+
+func buildChild(child Child) Preview {
+	return Preview{
+		ID:          child.ID.Val,
+		Kind:        account.Kind(child.Kind.Val),
+		Currency:    currency.Type(child.Currency.Val),
+		Name:        child.Name.Val,
+		Description: child.Description,
+		Balance:     child.Balance.Val,
+		Capital:     child.Capital.Val,
+		Color:       color.Type(child.Color.Val),
+		Icon:        icon.Type(child.Icon.Val),
+		ArchivedAt:  child.ArchivedAt,
+		CreatedAt:   child.CreatedAt.Val,
+		UpdatedAt:   child.CreatedAt.Val,
+	}
 }
