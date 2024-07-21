@@ -80,6 +80,12 @@ export const archivedAccountsQueries = {
     }
 }
 
+export const accountsForOtherContext = {
+    queryKey: ['accounts', 'all', 'outside'],
+    queryFn: getAccounts({ kind: [] }),
+    staleTime: staleTimeDefault
+}
+
 export function accountQuery(id: string) {
     return {
         queryKey: ['accounts', 'details', id],

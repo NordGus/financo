@@ -20,13 +20,15 @@ type ModalStyles = "outlet" | "history" | "upcoming" | "none";
 function defaultHistoryFilters(): ListFilters {
     return {
         executedFrom: moment().subtract({ months: 1 }).format('YYYY-MM-DD'),
-        executedUntil: moment().format('YYYY-MM-DD')
+        executedUntil: moment().format('YYYY-MM-DD'),
+        account: []
     }
 }
 
 function defaultUpcomingFilters(): UpcomingFilters {
     return {
-        executedUntil: moment().add({ months: 1 }).format('YYYY-MM-DD')
+        executedUntil: moment().add({ months: 1 }).format('YYYY-MM-DD'),
+        account: []
     }
 }
 

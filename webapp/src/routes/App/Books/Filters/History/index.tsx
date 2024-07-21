@@ -1,8 +1,16 @@
+import { useQuery } from "@tanstack/react-query";
+import { isEmpty, isNil, sortBy } from "lodash";
+
+import { Preview } from "@/types/Account";
+
 import { ListFilters } from "@api/transactions";
+import { accountsForOtherContext } from "@queries/accounts";
 
 import Action from "@components/Action";
 import Control from "@components/Control";
 import Input from "@components/Input";
+import Throbber from "@components/Throbber";
+import ForFilters from "@components/Account/Preview/ForFilters";
 
 interface HistoryFiltersProps {
     filters: ListFilters,
@@ -12,6 +20,35 @@ interface HistoryFiltersProps {
     onClearFilters: () => void
 }
 
+function Accounts({
+    filters: { executedFrom, executedUntil, account: selected = [] }, setFilters, data
+}: {
+    filters: ListFilters,
+    setFilters: React.Dispatch<React.SetStateAction<ListFilters>>,
+    data: Preview[] | null | undefined
+}) {
+    if (isEmpty(data) || isNil(data)) return null
+
+    const accounts = sortBy(data, [({ kind }) => kind])
+
+    return accounts.map((account) => <ForFilters
+        key={`account:filter:${account.id}`}
+        account={account}
+        active={selected.includes(account.id)}
+        onClick={() => {
+            if (selected.includes(account.id)) {
+                setFilters({
+                    executedFrom,
+                    executedUntil,
+                    account: [...selected.filter((id) => id !== account.id)]
+                })
+            } else {
+                setFilters({ executedFrom, executedUntil, account: [...selected, account.id] })
+            }
+        }}
+    />)
+}
+
 export default function History({
     filters,
     setFilters,
@@ -19,6 +56,8 @@ export default function History({
     onApplyFilters,
     onClearFilters
 }: HistoryFiltersProps) {
+    const accountsQuery = useQuery(accountsForOtherContext)
+
     return (
         <div
             className="h-full grid grid-rows-[minmax(0,_min-content)_minmax(0,_1fr)] gap-2"
@@ -98,8 +137,21 @@ export default function History({
                         }}
                     />
                 </div>
-                <div className="flex flex-col gap-2 justify-center">
-                    <span>Account</span>
+                <div className="flex justify-center items-center">
+                    <div className="flex gap-2 justify-start flex-wrap">
+                        {
+                            accountsQuery.isFetching
+                                ? <div className="flex gap-1 items-center justify-center">
+                                    <Throbber variant="small" />
+                                    <p>Fetching</p>
+                                </div>
+                                : <Accounts
+                                    data={accountsQuery.data}
+                                    filters={filters}
+                                    setFilters={setFilters}
+                                />
+                        }
+                    </div>
                 </div>
             </div>
         </div>

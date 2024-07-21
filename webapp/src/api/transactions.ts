@@ -19,7 +19,7 @@ export interface ListFilters {
     executedFrom?: string
     executedUntil?: string
 
-    account?: string[]
+    account?: number[]
 }
 
 export function getTransactions(filters: ListFilters): () => Promise<Transaction[]> {
@@ -41,7 +41,7 @@ export function getTransactions(filters: ListFilters): () => Promise<Transaction
 export interface UpcomingFilters {
     executedUntil?: string
 
-    account?: string[]
+    account?: number[]
 }
 
 export function getUpcomingTransactions(filters: UpcomingFilters): () => Promise<Transaction[]> {
