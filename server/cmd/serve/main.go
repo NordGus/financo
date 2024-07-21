@@ -50,7 +50,10 @@ func main() {
 	router.Route("/summary", summary.Routes)
 	router.Route("/transactions", transactions.Routes)
 
-	http.ListenAndServe(":3000", router)
+	err = http.ListenAndServe(":3000", router)
+	if err != nil {
+		log.Fatalln("web service err", err)
+	}
 }
 
 func DatabaseCtx(pool *pgxpool.Pool) func(next http.Handler) http.Handler {
