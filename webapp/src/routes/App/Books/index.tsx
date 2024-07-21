@@ -75,7 +75,7 @@ export default function Books() {
 
     return (
         <>
-            <div className="grid grid-rows-[60dvh,_minmax(0,_1fr)] h-full grid-cols-3 gap-1">
+            <div className="grid grid-rows-[60dvh,_minmax(0,_1fr)] h-full grid-cols-3 gap-2">
                 <Transactions.History
                     showFilters={showHistoryFilters}
                     setShowFilters={setShowHistoryFilters}
@@ -119,7 +119,7 @@ export default function Books() {
                                 setHistoryFilters(defaultHistoryFilters())
                                 setPreviousHistoryFilters(defaultHistoryFilters())
 
-                                historyMutation.mutate(historyFilters)
+                                historyMutation.mutate(defaultHistoryFilters())
                             }}
                         />
                     )
@@ -141,7 +141,7 @@ export default function Books() {
                                 setUpcomingFilters(defaultUpcomingFilters())
                                 setPreviousUpcomingFilters(defaultUpcomingFilters())
 
-                                upcomingMutation.mutate(upcomingFilters)
+                                upcomingMutation.mutate(defaultUpcomingFilters())
                             }}
                         />
                     )

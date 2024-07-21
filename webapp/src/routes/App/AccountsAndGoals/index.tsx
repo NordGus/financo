@@ -20,7 +20,7 @@ export default function AccountsAndGoals() {
     return (
         <>
             <div
-                className="grid grid-cols-4 grid-rows-[min-content_minmax(0,_1fr)_minmax(0,_1fr)] gap-1 h-full"
+                className="grid grid-cols-4 grid-rows-[min-content_minmax(0,_1fr)_minmax(0,_1fr)] gap-2 h-full"
             >
                 <Summary.Capital />
                 <Summary.Debts />
