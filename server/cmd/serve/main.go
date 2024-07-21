@@ -29,12 +29,14 @@ func main() {
 		),
 	)
 	if err != nil {
-		log.Fatalln("failed to parsed db config", err)
+		log.Println("failed to parsed db config", err)
+		return
 	}
 
 	dbConn, err := pgxpool.NewWithConfig(ctx, dbConfig)
 	if err != nil {
-		log.Fatalln("failed to start db connection pool", err)
+		log.Println("failed to start db connection pool", err)
+		return
 	}
 	defer func() {
 		log.Println("closing database connections")
@@ -52,7 +54,8 @@ func main() {
 
 	err = http.ListenAndServe(":3000", router)
 	if err != nil {
-		log.Fatalln("web service err", err)
+		log.Println("web service err", err)
+		return
 	}
 }
 
