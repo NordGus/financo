@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
+import { isEmpty, isNil } from "lodash"
 
 import { activeGoalsQuery, archivedGoalsQuery } from "@queries/goals"
 
@@ -34,30 +35,29 @@ export default function AdministrationPanel({ className }: AdministrationPanelPr
                 <>
                     <Panel.Components.Title text="Goals" grow={true} />
                     <Panel.Components.ActionButton
-                        text={
-                            {
-                                active: "Show Archived",
-                                archived: "Show Active"
-                            }[currentQuery] || ""
-                        }
+                        text="Archived"
                         onClick={() => {
                             setCurrentQuery(currentQuery === "active" ? "archived" : "active")
                         }}
-                        active={false}
+                        active={currentQuery === "archived"}
                     />
                     <Panel.Components.ActionLink to={newGoalPath} text="Add" />
                 </>
             }
             contents={
                 {
-                    active: activeQuery.data?.length === 0 ? null : activeQuery.data?.
-                        map((goal) => <Preview.WithNavigation
+                    active: isEmpty(activeQuery.data) || isNil(activeQuery.data)
+                        ? null
+                        : activeQuery.data.map((goal) => <Preview.WithNavigation
                             key={`goal:${goal.id}`}
-                            goal={goal} />),
-                    archived: archivedQuery.data?.length === 0 ? null : archivedQuery.data?.
-                        map((goal) => <Preview.WithNavigation
+                            goal={goal}
+                        />),
+                    archived: isEmpty(archivedQuery.data) || isNil(archivedQuery.data)
+                        ? null
+                        : archivedQuery.data.map((goal) => <Preview.WithNavigation
                             key={`goal:${goal.id}`}
-                            goal={goal} />)
+                            goal={goal}
+                        />)
                 }[currentQuery] || null
             }
             noContentsMessage={

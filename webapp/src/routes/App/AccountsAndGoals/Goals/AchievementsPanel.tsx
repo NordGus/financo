@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
+import { isEmpty, isNil } from "lodash"
 
 import { reachedGoalsQuery } from "@queries/goals"
 
@@ -19,11 +20,12 @@ export default function AchievementsPanel({ className }: AchievementsPanelProps)
             loading={query.isFetching}
             header={<Panel.Components.Title text="Savings Achievements" grow={true} />}
             contents={
-                query.data?.length === 0
+                isEmpty(query.data) || isNil(query.data)
                     ? null
-                    : query.data?.map((goal) => <Preview.ForList
+                    : query.data.map((goal) => <Preview.ForList
                         key={`goal:${goal.id}`}
-                        goal={goal} />)
+                        goal={goal}
+                    />)
             }
             noContentsMessage={
                 <div className="flex flex-col justify-center items-center gap-2">
