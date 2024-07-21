@@ -3,7 +3,12 @@ import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import moment from "moment";
 
-import { getTransactions, ListFilters } from "@api/transactions";
+import {
+    getTransactions,
+    getUpcomingTransactions,
+    ListFilters,
+    UpcomingFilters
+} from "@api/transactions";
 
 import Modal from "@components/Modal";
 import Transactions from "./Transactions";
@@ -19,6 +24,12 @@ function defaultHistoryFilters(): ListFilters {
     }
 }
 
+function defaultUpcomingFilters(): UpcomingFilters {
+    return {
+        executedUntil: moment().add({ months: 1 }).format('YYYY-MM-DD')
+    }
+}
+
 export default function Books() {
     const outlet = useOutlet()
     const [outletCache, setOutletCache] = useState(outlet)
@@ -26,11 +37,18 @@ export default function Books() {
     const [showHistoryFilters, setShowHistoryFilters] = useState(false)
     const [showUpcomingFilters, setShowUpcomingFilters] = useState(false)
     const [historyFilters, setHistoryFilters] = useState<ListFilters>(defaultHistoryFilters())
+    const [upcomingFilters, setUpcomingFilters] = useState<UpcomingFilters>(defaultUpcomingFilters())
 
     const historyMutation = useMutation({
         mutationFn: (filters: ListFilters) => {
             setShowHistoryFilters(false);
             return getTransactions(filters)();
+        }
+    })
+    const upcomingMutation = useMutation({
+        mutationFn: (filters: UpcomingFilters) => {
+            setShowUpcomingFilters(false);
+            return getUpcomingTransactions(filters)();
         }
     })
 
@@ -45,6 +63,7 @@ export default function Books() {
     }, [outlet, showHistoryFilters, showUpcomingFilters])
 
     useEffect(() => historyMutation.mutate(historyFilters), [historyFilters])
+    useEffect(() => upcomingMutation.mutate(upcomingFilters), [upcomingFilters])
 
     return (
         <>
@@ -55,7 +74,11 @@ export default function Books() {
                     filters={historyMutation}
                     className="row-span-2"
                 />
-                <Transactions.Upcoming className="" />
+                <Transactions.Upcoming
+                    showFilters={showUpcomingFilters}
+                    setShowFilters={setShowUpcomingFilters}
+                    filters={upcomingMutation}
+                />
                 <Transactions.Pending className="" />
                 <Chart className="col-span-2" />
             </div>
@@ -67,7 +90,9 @@ export default function Books() {
                 }}
             >
                 {
-                    modalFor === "outlet" && (outlet ? <Outlet /> : (outletCache))
+                    modalFor === "outlet" && (
+                        outlet ? <Outlet /> : (outletCache)
+                    )
                 }
                 {
                     modalFor === "history" && (

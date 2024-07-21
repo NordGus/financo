@@ -1,40 +1,34 @@
-import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { UpcomingFilters, getUpcomingTransactions } from "@api/transactions";
+import { UseMutationResult } from "@tanstack/react-query";
+import { UpcomingFilters } from "@api/transactions";
 import moment from "moment";
 import { groupBy } from "lodash";
 
+import Transaction from "@/types/Transaction";
+
 import Panel from "@components/Panel";
 import Preview from "@components/transaction/Preview";
-import Filters from "./Filters";
 
-interface FilterableProps {
+interface UpcomingProps {
+    showFilters: boolean,
+    setShowFilters: React.Dispatch<React.SetStateAction<boolean>>,
+    filters: UseMutationResult<Transaction[], Error, UpcomingFilters, unknown>,
     className?: string
 }
 
-function defaultFilters(): UpcomingFilters {
-    return {
-        executedUntil: moment().add({ months: 1 }).format('YYYY-MM-DD')
-    }
-}
-
-export default function Upcoming({ className }: FilterableProps) {
-    const [showFilters, setShowFilters] = useState(false)
-    const [filters, setFilters] = useState<UpcomingFilters>(defaultFilters())
-    const filtersMutation = useMutation({
-        mutationFn: (filters: UpcomingFilters) => getUpcomingTransactions(filters)()
-    })
-
-    useEffect(() => filtersMutation.mutate(filters), [filters])
-
+export default function Upcoming({
+    showFilters,
+    setShowFilters,
+    filters,
+    className
+}: UpcomingProps) {
     return (
-        <Panel.WithFilters
+        <Panel.WithLoadingIndicator
             grow={true}
             className={className}
             header={<>
                 <Panel.Components.Title grow={true} text="Upcoming Transactions" />
                 <Panel.Components.ActionButton
-                    text={showFilters ? "Hide Filters" : "Show Filters"}
+                    text={"Filter"}
                     onClick={() => setShowFilters(!showFilters)}
                     active={showFilters}
                 />
@@ -43,13 +37,13 @@ export default function Upcoming({ className }: FilterableProps) {
                     to="/books/transactions/new"
                 />
             </>}
-            loading={filtersMutation.isPending}
+            loading={filters.isPending}
             contents={
-                (filtersMutation.data?.length === 0 || !filtersMutation.data)
+                (filters.data?.length === 0 || !filters.data)
                     ? null
                     : Object.entries(
-                        groupBy(filtersMutation.data.
-                            sort((a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)),
+                        groupBy(filters.data.
+                            sort((a, b) => Date.parse(a.executedAt!) - Date.parse(b.executedAt!)),
                             ({ executedAt }) => executedAt
                         )).
                         map(([date, transactions]) => {
@@ -82,14 +76,6 @@ export default function Upcoming({ className }: FilterableProps) {
                             </div>
                         ))
             }
-            filters={
-                < Filters
-                    filters={filters}
-                    setFilters={setFilters}
-                    onClear={() => setFilters(defaultFilters())}
-                />
-            }
-            showFilters={showFilters}
         />
     )
 }
