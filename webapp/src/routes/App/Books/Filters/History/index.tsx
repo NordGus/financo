@@ -2,6 +2,7 @@ import { ListFilters } from "@api/transactions";
 
 import Action from "@components/Action";
 import Control from "@components/Control";
+import Input from "@components/Input";
 
 interface HistoryFiltersProps {
     filters: ListFilters,
@@ -9,25 +10,6 @@ interface HistoryFiltersProps {
     onClose: React.MouseEventHandler<HTMLSpanElement>,
     onApplyFilters: () => void,
     onClearFilters: () => void
-}
-
-interface InputDateProps extends React.DetailedHTMLProps<
-    React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement
-> {
-    id: string,
-    name: string,
-    onChange: React.ChangeEventHandler<HTMLInputElement>
-}
-
-function InputDate({ name, id, value, onChange }: InputDateProps) {
-    return <input
-        type="date"
-        name={name}
-        id={id}
-        value={value}
-        onChange={onChange}
-        className="px-2 py-1.5 bg-neutral-50 dark:bg-neutral-900 border dark:border-neutral-800 rounded shadow"
-    />
 }
 
 export default function History({
@@ -94,7 +76,8 @@ export default function History({
                 </div>
                 <div className="flex flex-col gap-2 justify-center">
                     <label htmlFor="executed_at_from">From</label>
-                    <InputDate
+                    <Input.Base
+                        type="date"
                         name="executed_at[from]"
                         id="executed_at_from"
                         value={filters.executedFrom}
@@ -105,7 +88,8 @@ export default function History({
                 </div>
                 <div className="flex flex-col gap-2 justify-center">
                     <label htmlFor="executed_at_to">To</label>
-                    <InputDate
+                    <Input.Base
+                        type="date"
                         name="executed_at[to]"
                         id="executed_at_to"
                         value={filters.executedUntil}
