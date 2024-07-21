@@ -1,13 +1,22 @@
 import { transactionsQueries } from "@queries/transactions";
 import { useQuery } from "@tanstack/react-query";
-import { groupBy } from "lodash";
+import { groupBy, isEmpty, isNil } from "lodash";
 import moment from "moment";
+
+import Transaction from "@/types/Transaction";
 
 import Panel from "@components/Panel";
 import Preview from "@components/transaction/Preview";
 
 interface PendingProps {
     className: string
+}
+
+function sortAndGroup(transactions: Transaction[]) {
+    return groupBy(
+        transactions.sort((a, b) => Date.parse(a.issuedAt) - Date.parse(b.issuedAt)),
+        ({ issuedAt }) => issuedAt
+    );
 }
 
 export default function Pending({ className }: PendingProps) {
@@ -19,15 +28,16 @@ export default function Pending({ className }: PendingProps) {
             loading={query.isFetching}
             header={<Panel.Components.Title grow={true} text="Pending Transactions" />}
             contents={
-                (query.data?.length === 0 || !query.data)
+                (isEmpty(query.data) || isNil(query.data))
                     ? null
-                    : Object.entries(
-                        groupBy(query.data.
-                            sort((a, b) => Date.parse(a.issuedAt) - Date.parse(b.issuedAt)),
-                            ({ issuedAt }) => issuedAt
-                        )).
+                    : Object.entries(sortAndGroup(query.data)).
                         map(([date, transactions]) => {
-                            return { date: moment(date, 'YYYY-MM-DD').toDate(), transactions }
+                            return {
+                                date: moment(date, 'YYYY-MM-DD').toDate(),
+                                transactions: transactions.sort((a, b) => {
+                                    return Date.parse(a.updatedAt) - Date.parse(b.updatedAt)
+                                })
+                            }
                         }).
                         map(({ date, transactions }) => (
                             <div key={`history:${date.toISOString()}`}>

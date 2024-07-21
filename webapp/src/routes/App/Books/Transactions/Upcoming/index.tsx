@@ -1,7 +1,7 @@
 import { UseMutationResult } from "@tanstack/react-query";
 import { UpcomingFilters } from "@api/transactions";
+import { groupBy, isEmpty, isNil } from "lodash";
 import moment from "moment";
-import { groupBy } from "lodash";
 
 import Transaction from "@/types/Transaction";
 
@@ -13,6 +13,13 @@ interface UpcomingProps {
     setShowFilters: React.Dispatch<React.SetStateAction<boolean>>,
     filters: UseMutationResult<Transaction[], Error, UpcomingFilters, unknown>,
     className?: string
+}
+
+function sortAndGroup(transactions: Transaction[]) {
+    return groupBy(
+        transactions.sort((a, b) => Date.parse(a.executedAt!) - Date.parse(b.executedAt!)),
+        ({ executedAt }) => executedAt
+    );
 }
 
 export default function Upcoming({
@@ -35,13 +42,9 @@ export default function Upcoming({
             </>}
             loading={filters.isPending}
             contents={
-                (filters.data?.length === 0 || !filters.data)
+                (isEmpty(filters.data) || isNil(filters.data))
                     ? null
-                    : Object.entries(
-                        groupBy(filters.data.
-                            sort((a, b) => Date.parse(a.executedAt!) - Date.parse(b.executedAt!)),
-                            ({ executedAt }) => executedAt
-                        )).
+                    : Object.entries(sortAndGroup(filters.data)).
                         map(([date, transactions]) => {
                             return {
                                 date: moment(date).toDate(),

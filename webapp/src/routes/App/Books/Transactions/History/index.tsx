@@ -1,6 +1,6 @@
 import { UseMutationResult } from "@tanstack/react-query";
+import { groupBy, isEmpty, isNil } from "lodash";
 import moment from "moment";
-import { groupBy } from "lodash";
 
 import Transaction from "@/types/Transaction";
 
@@ -14,6 +14,13 @@ interface FilterableProps {
     setShowFilters: React.Dispatch<React.SetStateAction<boolean>>,
     filters: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
     className?: string
+}
+
+function sortAndGroup(transactions: Transaction[]) {
+    return groupBy(
+        transactions.sort((a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)),
+        ({ executedAt }) => executedAt!
+    );
 }
 
 export default function History({
@@ -40,13 +47,9 @@ export default function History({
             </>}
             loading={filters.isPending}
             contents={
-                (filters.data?.length === 0 || !filters.data)
+                (isEmpty(filters.data) || isNil(filters.data))
                     ? null
-                    : Object.entries(
-                        groupBy(filters.data.
-                            sort((a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)),
-                            ({ executedAt }) => executedAt!
-                        )).
+                    : Object.entries(sortAndGroup(filters.data)).
                         map(([date, transactions]) => {
                             return {
                                 date: moment(date, 'YYYY-MM-DD').toDate(),
