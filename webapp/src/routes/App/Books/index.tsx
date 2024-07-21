@@ -1,6 +1,6 @@
 import { Outlet, useOutlet } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
 
 import {
@@ -104,15 +104,15 @@ export default function Books() {
                     modalFor === "history" && (
                         <Filters.History
                             filters={historyFilters}
-                            setFilters={(value) => {
-                                setPreviousHistoryFilters(historyFilters)
-                                setHistoryFilters(value)
-                            }}
+                            setFilters={setHistoryFilters}
                             onClose={() => {
                                 setHistoryFilters(previousHistoryFilters)
                                 setShowHistoryFilters(false)
                             }}
-                            onApplyFilters={() => historyMutation.mutate(historyFilters)}
+                            onApplyFilters={() => {
+                                setPreviousHistoryFilters(historyFilters)
+                                historyMutation.mutate(historyFilters)
+                            }}
                             onClearFilters={() => {
                                 setHistoryFilters(defaultHistoryFilters())
                                 setPreviousHistoryFilters(defaultHistoryFilters())
