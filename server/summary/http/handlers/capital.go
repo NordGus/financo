@@ -7,7 +7,6 @@ import (
 	"financo/server/types/shared/currency"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -22,7 +21,7 @@ WHERE
     AND tr.deleted_at IS NULL
     AND acc.deleted_at IS NULL
     AND tr.executed_at IS NOT NULL
-    AND tr.executed_at <= $2
+    AND tr.executed_at <= NOW()
 GROUP BY
     acc.currency
 ORDER BY acc.currency
@@ -35,11 +34,11 @@ WHERE
     acc.kind = ANY ($1)
     AND tr.deleted_at IS NULL
     AND acc.deleted_at IS NULL
-    AND tr.issued_at <= $2
+    AND tr.issued_at <= NOW()
 GROUP BY
     acc.currency
 ORDER BY acc.currency
-`
+	`
 )
 
 type Balance struct {
@@ -50,7 +49,6 @@ type Balance struct {
 func Capital(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx     = r.Context()
-		now     = time.Now()
 		kinds   = []account.Kind{account.CapitalNormal, account.CapitalSavings}
 		results = make([]Balance, 0, 10)
 	)
@@ -65,7 +63,7 @@ func Capital(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	credits, err := db.Query(ctx, creditsQuery, kinds, now)
+	credits, err := db.Query(ctx, creditsQuery, kinds)
 	if err != nil {
 		log.Println("failed query", err)
 		http.Error(
@@ -95,7 +93,7 @@ func Capital(w http.ResponseWriter, r *http.Request) {
 	}
 	credits.Close()
 
-	debits, err := db.Query(ctx, debitsQuery, kinds, now)
+	debits, err := db.Query(ctx, debitsQuery, kinds)
 	if err != nil {
 		log.Println("failed query", err)
 		http.Error(

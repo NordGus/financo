@@ -6,7 +6,6 @@ import (
 	"financo/server/types/records/account"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -14,7 +13,6 @@ import (
 func Total(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx   = r.Context()
-		now   = time.Now()
 		kinds = []account.Kind{
 			account.CapitalNormal,
 			account.CapitalSavings,
@@ -35,7 +33,7 @@ func Total(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	credits, err := db.Query(ctx, creditsQuery, kinds, now)
+	credits, err := db.Query(ctx, creditsQuery, kinds)
 	if err != nil {
 		log.Println("failed query", err)
 		http.Error(
@@ -65,7 +63,7 @@ func Total(w http.ResponseWriter, r *http.Request) {
 	}
 	credits.Close()
 
-	debits, err := db.Query(ctx, debitsQuery, kinds, now)
+	debits, err := db.Query(ctx, debitsQuery, kinds)
 	if err != nil {
 		log.Println("failed query", err)
 		http.Error(
