@@ -15,6 +15,22 @@ export enum Icon {
     Base = "base"
 }
 
+export interface Preview {
+    id: number
+    kind: Kind
+    currency: Currency
+    name: string
+    description: string
+    balance: number
+    capital: number
+    color: string
+    icon: Icon
+    archivedAt: string | null
+    createdAt: string
+    updatedAt: string
+    children?: Preview[] | null
+}
+
 export default interface Account {
     id: number
     kind: Kind
