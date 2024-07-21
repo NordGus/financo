@@ -1,54 +1,41 @@
 import { staleTimeDefault } from "./Client"
-import {
-    getAccount,
-    getArchivedCapitalNormalAccounts,
-    getArchivedCapitalSavingsAccounts,
-    getArchivedDebtCreditAccounts,
-    getArchivedDebtLoanAccounts,
-    getArchivedExternalExpenseAccounts,
-    getArchivedExternalIncomeAccounts,
-    getCapitalNormalAccounts,
-    getCapitalSavingsAccounts,
-    getDebtCreditAccounts,
-    getDebtLoanAccounts,
-    getExternalExpenseAccounts,
-    getExternalIncomeAccounts
-} from "@api/accounts"
+import { Kind } from "@/types/Account"
+import { getAccount, getAccounts } from "@api/accounts"
 
 export const activeAccountsQueries = {
     capital: {
         normal: {
             queryKey: ['accounts', 'capital', 'normal', 'active'],
-            queryFn: getCapitalNormalAccounts,
+            queryFn: getAccounts({ kind: [Kind.CapitalNormal] }),
             staleTime: staleTimeDefault
         },
         savings: {
             queryKey: ['accounts', 'capital', 'savings', 'active'],
-            queryFn: getCapitalSavingsAccounts,
+            queryFn: getAccounts({ kind: [Kind.CapitalSavings] }),
             staleTime: staleTimeDefault
         }
     },
     debt: {
         credit: {
             queryKey: ['accounts', 'debt', 'credit', 'active'],
-            queryFn: getDebtCreditAccounts,
+            queryFn: getAccounts({ kind: [Kind.DebtCredit] }),
             staleTime: staleTimeDefault
         },
         loans: {
             queryKey: ['accounts', 'debt', 'loans', 'active'],
-            queryFn: getDebtLoanAccounts,
+            queryFn: getAccounts({ kind: [Kind.DebtLoan, Kind.DebtPersonal] }),
             staleTime: staleTimeDefault
         }
     },
     external: {
         expenses: {
             queryKey: ['accounts', 'external', 'expenses', 'active'],
-            queryFn: getExternalExpenseAccounts,
+            queryFn: getAccounts({ kind: [Kind.ExternalExpense] }),
             staleTime: staleTimeDefault
         },
         income: {
             queryKey: ['accounts', 'external', 'income', 'active'],
-            queryFn: getExternalIncomeAccounts,
+            queryFn: getAccounts({ kind: [Kind.ExternalIncome] }),
             staleTime: staleTimeDefault
         }
     }
@@ -58,36 +45,36 @@ export const archivedAccountsQueries = {
     capital: {
         normal: {
             queryKey: ['accounts', 'capital', 'normal', 'archived'],
-            queryFn: getArchivedCapitalNormalAccounts,
+            queryFn: getAccounts({ kind: [Kind.CapitalNormal], archived: true }),
             staleTime: staleTimeDefault
         },
         savings: {
             queryKey: ['accounts', 'capital', 'savings', 'archived'],
-            queryFn: getArchivedCapitalSavingsAccounts,
+            queryFn: getAccounts({ kind: [Kind.CapitalSavings], archived: true }),
             staleTime: staleTimeDefault
         }
     },
     debt: {
         credit: {
             queryKey: ['accounts', 'debt', 'credit', 'archived'],
-            queryFn: getArchivedDebtCreditAccounts,
+            queryFn: getAccounts({ kind: [Kind.DebtCredit], archived: true }),
             staleTime: staleTimeDefault
         },
         loans: {
             queryKey: ['accounts', 'debt', 'loans', 'archived'],
-            queryFn: getArchivedDebtLoanAccounts,
+            queryFn: getAccounts({ kind: [Kind.DebtLoan, Kind.DebtPersonal], archived: true }),
             staleTime: staleTimeDefault
         }
     },
     external: {
         expenses: {
             queryKey: ['accounts', 'external', 'expenses', 'archived'],
-            queryFn: getArchivedExternalExpenseAccounts,
+            queryFn: getAccounts({ kind: [Kind.ExternalExpense], archived: true }),
             staleTime: staleTimeDefault
         },
         income: {
             queryKey: ['accounts', 'external', 'income', 'archived'],
-            queryFn: getArchivedExternalIncomeAccounts,
+            queryFn: getAccounts({ kind: [Kind.ExternalIncome], archived: true }),
             staleTime: staleTimeDefault
         }
     }
