@@ -5,7 +5,7 @@ import { Link } from "react-router-dom"
 import { activeAccountsQueries, archivedAccountsQueries } from "@queries/accounts"
 
 import Panel from "@components/Panel"
-import WithNavigation from "@components/account/preview/WithNavigation"
+import WithNavigation from "@components/Account/Preview/WithNavigation"
 
 type Queries = "active" | "archived"
 

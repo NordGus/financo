@@ -1,11 +1,12 @@
+import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { isEmpty, isNil } from "lodash"
 
 import { activeAccountsQueries, archivedAccountsQueries } from "@queries/accounts"
 
 import Panel from "@components/Panel"
-import WithNavigation from "@components/account/preview/WithNavigation"
+import WithNavigation from "@components/Account/Preview/WithNavigation"
 
 type Queries = "active" | "archived"
 
@@ -50,10 +51,18 @@ export default function NormalPanel({ className }: NormalPanelProps) {
             }
             contents={
                 {
-                    active: activeQuery.data?.length === 0 ? null : activeQuery.data?.
-                        map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />),
-                    archived: archivedQuery.data?.length === 0 ? null : archivedQuery.data?.
-                        map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />)
+                    active: isEmpty(activeQuery.data) || isNil(activeQuery.data)
+                        ? null
+                        : activeQuery.data.map((acc) => <WithNavigation
+                            key={`account:${acc.id}`}
+                            account={acc}
+                        />),
+                    archived: isEmpty(archivedQuery.data) || isNil(archivedQuery.data)
+                        ? null
+                        : archivedQuery.data?.map((acc) => <WithNavigation
+                            key={`account:${acc.id}`}
+                            account={acc}
+                        />)
                 }[currentQuery] || null
             }
             noContentsMessage={
