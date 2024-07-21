@@ -1,10 +1,11 @@
-import { isEmpty, isNil } from "lodash"
+import { isEmpty, isNaN, isNil } from "lodash"
 
 import Transaction from "@/types/Transaction"
 
 function isEmptyParam(param: any): boolean {
     if (isEmpty(param)) return true
     if (isNil(param)) return true
+    if (isNaN(param)) return true
 
     return !param
 }
