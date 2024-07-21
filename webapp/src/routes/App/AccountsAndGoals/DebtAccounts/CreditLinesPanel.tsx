@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import { Link } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
+import { isEmpty, isNil } from "lodash"
 
 import { activeAccountsQueries, archivedAccountsQueries } from "@queries/accounts"
 
@@ -34,26 +35,29 @@ export default function CreditLinesPanel({ className }: CreditLinesPanelProps) {
                 <>
                     <Panel.Components.Title text="Credit Lines" grow={true} />
                     <Panel.Components.ActionButton
-                        text={
-                            {
-                                active: "Show Archived",
-                                archived: "Show Active"
-                            }[currentQuery] || ""
-                        }
+                        text="Archived"
                         onClick={() => {
                             setCurrentQuery(currentQuery === "active" ? "archived" : "active")
                         }}
-                        active={false}
+                        active={currentQuery === "archived"}
                     />
                     <Panel.Components.ActionLink to={newAccountPath} text="Add" />
                 </>
             }
             contents={
                 {
-                    active: activeQuery.data?.length === 0 ? null : activeQuery.data?.
-                        map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />),
-                    archived: archivedQuery.data?.length === 0 ? null : archivedQuery.data?.
-                        map((acc) => <WithNavigation key={`account:${acc.id}`} account={acc} />)
+                    active: isEmpty(activeQuery.data) || isNil(activeQuery.data)
+                        ? null
+                        : activeQuery.data.map((acc) => <WithNavigation
+                            key={`account:${acc.id}`}
+                            account={acc}
+                        />),
+                    archived: isEmpty(archivedQuery.data) || isNil(archivedQuery.data)
+                        ? null
+                        : archivedQuery.data.map((acc) => <WithNavigation
+                            key={`account:${acc.id}`}
+                            account={acc}
+                        />)
                 }[currentQuery] || null
             }
             noContentsMessage={
