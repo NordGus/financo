@@ -1,6 +1,6 @@
 import { Outlet, useOutlet } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import moment from "moment";
 
 import {
@@ -36,8 +36,14 @@ export default function Books() {
     const [modalFor, setModalFor] = useState<ModalStyles>("none")
     const [showHistoryFilters, setShowHistoryFilters] = useState(false)
     const [showUpcomingFilters, setShowUpcomingFilters] = useState(false)
-    const [historyFilters, setHistoryFilters] = useState<ListFilters>(defaultHistoryFilters())
-    const [upcomingFilters, setUpcomingFilters] = useState<UpcomingFilters>(defaultUpcomingFilters())
+    const [historyFilters, setHistoryFilters] =
+        useState<ListFilters>(defaultHistoryFilters())
+    const [previousHistoryFilters, setPreviousHistoryFilters] =
+        useState<ListFilters>(defaultHistoryFilters())
+    const [upcomingFilters, setUpcomingFilters] =
+        useState<UpcomingFilters>(defaultUpcomingFilters())
+    const [previousUpcomingFilters, setPreviousUpcomingFilters] =
+        useState<UpcomingFilters>(defaultUpcomingFilters())
 
     const historyMutation = useMutation({
         mutationFn: (filters: ListFilters) => {
@@ -62,8 +68,8 @@ export default function Books() {
         if (showUpcomingFilters && modalFor !== "upcoming") setModalFor("upcoming")
     }, [outlet, showHistoryFilters, showUpcomingFilters])
 
-    useEffect(() => historyMutation.mutate(historyFilters), [historyFilters])
-    useEffect(() => upcomingMutation.mutate(upcomingFilters), [upcomingFilters])
+    useEffect(() => historyMutation.mutate(historyFilters), [])
+    useEffect(() => upcomingMutation.mutate(upcomingFilters), [])
 
     return (
         <>
@@ -98,8 +104,21 @@ export default function Books() {
                     modalFor === "history" && (
                         <Filters.History
                             filters={historyFilters}
-                            setFilters={setHistoryFilters}
-                            onCloseClick={() => historyMutation.mutate(historyFilters)}
+                            setFilters={(value) => {
+                                setPreviousHistoryFilters(historyFilters)
+                                setHistoryFilters(value)
+                            }}
+                            onClose={() => {
+                                setHistoryFilters(previousHistoryFilters)
+                                setShowHistoryFilters(false)
+                            }}
+                            onApplyFilters={() => historyMutation.mutate(historyFilters)}
+                            onClearFilters={() => {
+                                setHistoryFilters(defaultHistoryFilters())
+                                setPreviousHistoryFilters(defaultHistoryFilters())
+
+                                historyMutation.mutate(historyFilters)
+                            }}
                         />
                     )
                 }
