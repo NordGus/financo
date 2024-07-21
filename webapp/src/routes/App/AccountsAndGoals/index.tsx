@@ -35,7 +35,7 @@ export default function AccountsAndGoals() {
                 <ExternalAccounts.ExpensesPanel />
                 <Goals.AchievementsPanel />
             </div>
-            <Modal open={!!outlet} onClose={() => setOutletCache(null)} variant="full">
+            <Modal open={!!outlet} onClose={() => setOutletCache(null)}>
                 {
                     outlet
                         ? <Outlet />

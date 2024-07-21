@@ -65,8 +65,6 @@ export default function Books() {
                     setOutletCache(null);
                     setModalFor("none");
                 }}
-                variant="small"
-                bodyClassName="h-[75dvh]"
             >
                 {
                     modalFor === "outlet" && (outlet ? <Outlet /> : (outletCache))
