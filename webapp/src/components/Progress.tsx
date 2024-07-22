@@ -1,15 +1,16 @@
 type Props = {
-    progress: number
+    progress: number,
+    color?: string
 }
 
-export default function Progress({ progress }: Props) {
+export default function Progress({ progress, color }: Props) {
     const dasharray = 300
     const fillStrokeWidth = 6
     const baseStrokeWidth = 2
     const checkMarkSize = 18
 
     return (
-        <div className="m-auto w-10 h-10 relative">
+        <div className="m-auto w-10 h-10 relative" style={{ color: color }}>
             <span
                 className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center"
             >

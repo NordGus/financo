@@ -20,6 +20,7 @@ export default function WithNavigation(
             balance,
             capital,
             currency,
+            color,
             children
         }
     }: Props
@@ -39,7 +40,7 @@ export default function WithNavigation(
             >
                 <Link
                     to={navigationPath}
-                    className={`py-1 ${isChildless ? "px-2 col-span-2" : "pl-2"} ${isDebt ? "grid grid-cols-[minmax(0,_1fr)_min-content] gap-1" : "block"}`}
+                    className={`py-1 ${isChildless ? "px-2 col-span-2" : "pl-2"} ${isDebt ? "grid grid-cols-[minmax(0,_1fr)_min-content] gap-2" : "block"}`}
                 >
                     <div className="flex flex-col justify-center min-h-16 leading-snug">
                         <p>{name}</p>
@@ -60,13 +61,17 @@ export default function WithNavigation(
                         </div>
                         <p className={`text-xs ${currencyAmountColor(0)}`}>{description}</p>
                     </div>
-                    {isDebt && <Progress progress={Math.abs(remaining / capital)} />}
+                    {isDebt && <Progress progress={Math.abs(remaining / capital)} color={color} />}
                 </Link>
                 {
                     !isChildless && (
-                        <div className="px-2 py-1 flex justify-center items-center">
+                        <div
+                            className="px-2 py-1 flex justify-center items-center"
+                            style={{ color }}
+                        >
                             <span
-                                className="p-1.5 border rounded-full dark:border-neutral-50 border-neutral-950 cursor-pointer"
+                                className="p-1.5 border rounded-full cursor-pointer"
+                                style={{ borderColor: color }}
                             >
                                 <svg
                                     className="rotate-0 transform transition-all duration-200 opener"
