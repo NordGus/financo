@@ -1,5 +1,5 @@
 import { QueryClient, useSuspenseQuery } from "@tanstack/react-query"
-import { Link, LoaderFunctionArgs, useLoaderData, useOutletContext } from "react-router-dom"
+import { LoaderFunctionArgs, useLoaderData, useOutletContext } from "react-router-dom"
 
 import { accountQuery } from "@queries/accounts"
 
