@@ -34,12 +34,12 @@ export interface Preview {
 export default interface Detailed {
     id: number
     kind: Kind
+    currency: Currency
     name: string
     description: string | null
-    currency: Currency
     balance: number
     capital: number
-    history: { capital: number, at: string } | null
+    history: { balance: number, at: string } | null
     color: string
     icon: Icon
     archivedAt: string | null
