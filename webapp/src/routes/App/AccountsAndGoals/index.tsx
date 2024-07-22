@@ -1,4 +1,4 @@
-import { Outlet, useOutlet } from "react-router-dom"
+import { Outlet, useNavigate, useOutlet } from "react-router-dom"
 import { useEffect, useState } from "react"
 
 import Modal from "@components/Modal"
@@ -11,11 +11,12 @@ import ExternalAccounts from "./ExternalAccounts"
 
 export default function AccountsAndGoals() {
     const outlet = useOutlet()
-    const [outletCache, setOutletCache] = useState(outlet)
+    const navigate = useNavigate()
+    const [openModal, setOpenModal] = useState(false)
 
     useEffect(() => {
-        if (outlet && !outletCache) setOutletCache(outlet)
-    }, [outlet, outletCache])
+        if (!!outlet !== openModal && !openModal) setOpenModal(true)
+    }, [!!outlet])
 
     return (
         <>
@@ -35,12 +36,11 @@ export default function AccountsAndGoals() {
                 <ExternalAccounts.ExpensesPanel />
                 <Goals.AchievementsPanel />
             </div>
-            <Modal open={!!outlet} onClose={() => setOutletCache(null)}>
-                {
-                    outlet
-                        ? <Outlet />
-                        : (outletCache)
-                }
+            <Modal
+                open={openModal}
+                onClose={() => navigate("/accounts")}
+            >
+                <Outlet context={{ setOpenModal }} />
             </Modal>
         </>
     )

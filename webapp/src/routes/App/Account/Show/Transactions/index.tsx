@@ -1,58 +1,36 @@
-import { useEffect, useState } from "react"
-import { useMutation } from "@tanstack/react-query"
-import { groupBy } from "lodash"
+import { useQuery } from "@tanstack/react-query"
+import { groupBy, isEmpty, isNil } from "lodash"
 import moment from "moment"
 
-import { ListFilters, getTransactionsForAccount } from "@api/transactions"
+import Detailed from "@/types/Account"
+
+import { currentMonthsTransactionsForAccountQuery } from "@queries/transactions"
 
 import Panel from "@components/Panel"
 import Preview from "@components/transaction/Preview"
-import Filters from "./Filters"
 
 interface Props {
-    accountId: string
+    account: Detailed
     className?: string
 }
 
-function defaultFilters(): ListFilters {
-    return {
-        executedFrom: moment().subtract({ months: 1 }).format('YYYY-MM-DD'),
-        executedUntil: moment().format('YYYY-MM-DD')
-    }
-}
-
-export default function Transactions({ accountId, className }: Props) {
-    const [showFilters, setShowFilters] = useState(false)
-    const [filters, setFilters] = useState<ListFilters>(defaultFilters())
-    const filtersMutation = useMutation({
-        mutationFn:
-            (filters: ListFilters) => getTransactionsForAccount(accountId, filters)()
-    })
-
-    useEffect(() => filtersMutation.mutate(filters), [filters])
+export default function Transactions({ account, className }: Props) {
+    const query = useQuery(currentMonthsTransactionsForAccountQuery(account.id))
 
     return (
-        <Panel.WithFilters
+        <Panel.WithLoadingIndicator
             grow={true}
             className={className}
-            header={<>
-                <Panel.Components.Title grow={true} text="Transactions" />
-                <Panel.Components.ActionButton
-                    text={showFilters ? "Hide Filters" : "Show Filters"}
-                    onClick={() => setShowFilters(!showFilters)}
-                    active={showFilters}
-                />
-            </>}
-            loading={filtersMutation.isPending}
+            header={<Panel.Components.Title grow={true} text="This Month's Transactions" />}
+            loading={query.isFetching}
             contents={
-                (filtersMutation.data?.length === 0 || !filtersMutation.data)
+                (isEmpty(query.data) || isNil(query.data))
                     ? null
-                    : Object.entries(groupBy(filtersMutation.data.filter(
-                        ({ executedAt }) => executedAt !== "null" && !!executedAt
-                    ).
-                        sort((a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)),
-                        ({ executedAt }) => executedAt!
-                    )). // TODO: remove filter, and change return type
+                    : Object.entries(
+                        groupBy(query.data.
+                            sort((a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)),
+                            ({ executedAt }) => executedAt!
+                        )).
                         map(([date, transactions]) => {
                             return {
                                 date: moment(date, 'YYYY-MM-DD').toDate(),
@@ -62,7 +40,7 @@ export default function Transactions({ accountId, className }: Props) {
                             }
                         }).
                         map(({ date, transactions }) => (
-                            <div>
+                            <div key={`transactions:${date.toISOString()}`}>
                                 <h2
                                     className="px-2 py-1.5 text-2xl text-neutral-400 dark:text-neutral-600"
                                 >
@@ -83,14 +61,16 @@ export default function Transactions({ accountId, className }: Props) {
                             </div>
                         ))
             }
-            filters={
-                <Filters
-                    filters={filters}
-                    setFilters={setFilters}
-                    onClear={() => setFilters(defaultFilters())}
-                />
+            noContentsMessage={
+                <div className="flex flex-col justify-center items-center gap-2">
+                    <p>
+                        <span className="font-bold">{account.name}</span>
+                        doesn't have
+                        <span className="font-bold">Transactions</span>
+                        for this month
+                    </p>
+                </div>
             }
-            showFilters={showFilters}
         />
     )
 }

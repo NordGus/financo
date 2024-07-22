@@ -1,6 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 
 import App from "@routes/App";
+import { loader as accountLoader } from "@routes/App/Account/Show";
+import Client from "@queries/Client";
 
 const router = createBrowserRouter([
     {
@@ -18,6 +20,7 @@ const router = createBrowserRouter([
                 children: [
                     {
                         path: ":id",
+                        loader: accountLoader(Client),
                         element: <App.Account.Show />
                     },
                     {

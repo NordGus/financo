@@ -1,29 +1,44 @@
-import { useQuery } from "@tanstack/react-query"
-import { useMemo } from "react"
-import { Link, useParams } from "react-router-dom"
+import { QueryClient, useSuspenseQuery } from "@tanstack/react-query"
+import { Link, LoaderFunctionArgs, useLoaderData, useOutletContext } from "react-router-dom"
 
 import { accountQuery } from "@queries/accounts"
 
 import Throbber from "@components/Throbber"
 import Panel from "@components/Panel"
 import Transactions from "./Transactions"
+import Action from "@components/Action"
+
+export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
+    if (!params.id) {
+        throw new Error('No account ID provided')
+    }
+
+    await queryClient.ensureQueryData(accountQuery(params.id))
+
+    return { id: params.id }
+}
+
+interface OutletContext {
+    setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
+}
 
 export default function Show() {
-    const { id } = useParams()
-    const queryOptions = useMemo(() => accountQuery(id!), [id!])
-    const query = useQuery(queryOptions)
+    const { setOpenModal } = useOutletContext<OutletContext>()
+    const { id } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
+    const query = useSuspenseQuery(accountQuery(id))
+
+    if (query.error) {
+        throw query.error
+    }
 
     return (
         <div
             className="h-full grid grid-rows-[minmax(0,_min-content)_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1fr)] grid-cols-2 gap-1"
         >
             <div className="col-span-2 flex items-stretch min-h-10 h-10 max-h-10">
-                <Link
-                    to="/accounts"
-                    className="flex items-center justify-center px-4 bg-neutral-50 dark:bg-neutral-900 border dark:border-neutral-800 rounded shadow overflow-clip text-neutral-950 dark:text-neutral-50  hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                >
+                <Action.Default onClick={() => setOpenModal(false)}>
                     Close
-                </Link>
+                </Action.Default>
             </div>
             <Panel.Base
                 header={<>
@@ -46,7 +61,7 @@ export default function Show() {
             <Panel.Clean className="">a graphic goes here</Panel.Clean>
             <Transactions
                 className="row-span-2"
-                accountId={id!}
+                account={query.data}
             />
         </div >
     )
