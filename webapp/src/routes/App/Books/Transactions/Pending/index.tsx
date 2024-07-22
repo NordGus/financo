@@ -24,6 +24,7 @@ export default function Pending({ className }: PendingProps) {
 
     return (
         <Panel.WithLoadingIndicator
+            grow={true}
             className={className}
             loading={query.isFetching}
             header={<Panel.Components.Title grow={true} text="Pending Transactions" />}
