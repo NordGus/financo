@@ -1,5 +1,6 @@
 import { UseMutationResult } from "@tanstack/react-query";
 import { groupBy, isEmpty, isNil } from "lodash";
+import { Link } from "react-router-dom";
 import moment from "moment";
 
 import Transaction from "@/types/Transaction";
@@ -29,6 +30,8 @@ export default function History({
     filters,
     className
 }: FilterableProps) {
+    const newTransactionPath = "/books/transactions/new"
+
     return (
         <Panel.WithLoadingIndicator
             grow={true}
@@ -42,7 +45,7 @@ export default function History({
                 />
                 <Panel.Components.ActionLink
                     text="Add"
-                    to="/books/transactions/new"
+                    to={newTransactionPath}
                 />
             </>}
             loading={filters.isPending}
@@ -79,6 +82,16 @@ export default function History({
 
                             </div>
                         ))
+            }
+            noContentsMessage={
+                <div className="flex flex-col justify-center items-center gap-2">
+                    <p>
+                        There's no <span className="font-bold">Transactions</span> for the given filters
+                    </p>
+                    <Link to={newTransactionPath} className="text-sm underline">
+                        You can add more
+                    </Link>
+                </div>
             }
         />
     )

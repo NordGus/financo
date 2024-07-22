@@ -75,6 +75,13 @@ export default function Upcoming({
                             </div>
                         ))
             }
+            noContentsMessage={
+                <div className="flex flex-col justify-center items-center gap-2">
+                    <p>
+                        There's no upcoming <span className="font-bold">Transactions</span> for the given filters
+                    </p>
+                </div>
+            }
         />
     )
 }

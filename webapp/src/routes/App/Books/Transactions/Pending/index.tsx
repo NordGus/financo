@@ -61,6 +61,13 @@ export default function Pending({ className }: PendingProps) {
                             </div>
                         ))
             }
+            noContentsMessage={
+                <div className="flex flex-col justify-center items-center gap-2">
+                    <p>
+                        There's no <span className="font-bold">Transactions</span> pending in the system
+                    </p>
+                </div>
+            }
         />
     )
 }
