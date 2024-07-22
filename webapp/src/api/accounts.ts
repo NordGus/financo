@@ -1,7 +1,7 @@
-import Account, { Kind, Preview } from "@/types/Account"
+import Detailed, { Kind, Preview } from "@/types/Account"
 import isEmptyParam from "@helpers/isEmptyParam"
 
-export function getAccount(id: string): () => Promise<Account> {
+export function getAccount(id: string): () => Promise<Detailed> {
     return async () => {
         const response = await fetch(`/api/accounts/${id}`)
 

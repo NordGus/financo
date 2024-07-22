@@ -88,7 +88,7 @@ export const accountsForOtherContext = {
 
 export function accountQuery(id: string) {
     return {
-        queryKey: ['accounts', 'details', id],
+        queryKey: ['accounts', 'account', id],
         queryFn: getAccount(id),
         staleTime: staleTimeDefault
     }

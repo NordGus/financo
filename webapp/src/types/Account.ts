@@ -20,7 +20,7 @@ export interface Preview {
     kind: Kind
     currency: Currency
     name: string
-    description: string
+    description: string | null
     balance: number
     capital: number
     color: string
@@ -31,23 +31,19 @@ export interface Preview {
     children?: Preview[] | null
 }
 
-export default interface Account {
+export default interface Detailed {
     id: number
     kind: Kind
     name: string
-    description: string
+    description: string | null
     currency: Currency
     balance: number
     capital: number
-    history: {
-        present: boolean
-        capital: number
-        at: string
-    }
+    history: { capital: number, at: string } | null
     color: string
     icon: Icon
-    archived: boolean
+    archivedAt: string | null
     createdAt: string
     updatedAt: string
-    children: Account[]
+    children?: Detailed[] | null
 }
