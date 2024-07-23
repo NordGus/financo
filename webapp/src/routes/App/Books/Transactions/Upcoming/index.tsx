@@ -1,17 +1,15 @@
-import { UseMutationResult } from "@tanstack/react-query";
-import { UpcomingFilters } from "@api/transactions";
+import { useQuery } from "@tanstack/react-query";
 import { groupBy, isEmpty, isNil } from "lodash";
 import moment from "moment";
 
 import Transaction from "@/types/Transaction";
 
+import { transactionsQueries } from "@queries/transactions";
+
 import Panel from "@components/Panel";
 import Preview from "@components/transaction/Preview";
 
-interface UpcomingProps {
-    showFilters: boolean,
-    setShowFilters: React.Dispatch<React.SetStateAction<boolean>>,
-    filters: UseMutationResult<Transaction[], Error, UpcomingFilters, unknown>,
+interface Props {
     className?: string
 }
 
@@ -22,31 +20,19 @@ function sortAndGroup(transactions: Transaction[]) {
     );
 }
 
-export default function Upcoming({
-    showFilters,
-    setShowFilters,
-    filters,
-    className
-}: UpcomingProps) {
+export default function Upcoming({ className }: Props) {
+    const query = useQuery(transactionsQueries.upcoming)
+
     return (
         <Panel.WithLoadingIndicator
             grow={true}
             className={className}
-            header={<>
-                <Panel.Components.Title grow={true} text="Upcoming Transactions" />
-                <Panel.Components.ActionButton
-                    text={
-                        <span className="material-symbols-rounded">filter_list</span>
-                    }
-                    onClick={() => setShowFilters(!showFilters)}
-                    active={showFilters}
-                />
-            </>}
-            loading={filters.isPending}
+            header={<Panel.Components.Title grow={true} text="Upcoming Transactions" />}
+            loading={query.isPending}
             contents={
-                (isEmpty(filters.data) || isNil(filters.data))
+                (isEmpty(query.data) || isNil(query.data))
                     ? null
-                    : Object.entries(sortAndGroup(filters.data)).
+                    : Object.entries(sortAndGroup(query.data)).
                         map(([date, transactions]) => {
                             return {
                                 date: moment(date).toDate(),

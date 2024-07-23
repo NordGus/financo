@@ -1,11 +1,18 @@
 import moment from "moment";
 import { staleTimeDefault } from "./Client";
-import { getPendingTransactions, getTransaction, getTransactions } from "@api/transactions";
+import { getPendingTransactions, getTransaction, getTransactions, getUpcomingTransactions } from "@api/transactions";
 
 export const transactionsQueries = {
     pending: {
         queryKey: ['transactions', 'pending'],
         queryFn: getPendingTransactions({}),
+        staleTime: staleTimeDefault
+    },
+    upcoming: {
+        queryKey: ['transactions', 'upcoming'],
+        queryFn: getUpcomingTransactions({
+            executedUntil: moment().add({ month: 1 }).format('YYYY-MM-DD')
+        }),
         staleTime: staleTimeDefault
     }
 }
@@ -33,8 +40,7 @@ export function monthsTransactionsForAccountQuery(accountID: number) {
 export function monthsUpcomingTransactionsForAccountQuery(accountID: number) {
     return {
         queryKey: ['account', accountID, 'transactions', 'upcoming'],
-        queryFn: getTransactions({
-            executedFrom: moment().add({ day: 1 }).format('YYYY-MM-DD'),
+        queryFn: getUpcomingTransactions({
             executedUntil: moment().add({ month: 1 }).format('YYYY-MM-DD'),
             account: [accountID]
         }),
