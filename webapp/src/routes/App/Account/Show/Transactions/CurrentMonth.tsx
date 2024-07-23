@@ -4,7 +4,7 @@ import moment from "moment"
 
 import Detailed from "@/types/Account"
 
-import { currentMonthsTransactionsForAccountQuery } from "@queries/transactions"
+import { monthsTransactionsForAccountQuery } from "@queries/transactions"
 
 import Panel from "@components/Panel"
 import Preview from "@components/transaction/Preview"
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default function CurrentMonth({ account, className }: Props) {
-    const query = useQuery(currentMonthsTransactionsForAccountQuery(account.id))
+    const query = useQuery(monthsTransactionsForAccountQuery(account.id))
 
     return (
         <Panel.WithLoadingIndicator
