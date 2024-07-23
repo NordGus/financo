@@ -1,14 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 
 import { transactionQuery } from "@queries/transactions";
 
 import Panel from "@components/Panel";
 import Throbber from "@components/Throbber";
 
+interface OutletContext {
+    setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 export default function Show() {
     const { id } = useParams()
+    const { setOpenModal } = useOutletContext<OutletContext>()
     const queryOptions = useMemo(() => transactionQuery(id!), [id!])
     const { data: transaction, isFetching } = useQuery(queryOptions)
 
@@ -25,7 +30,11 @@ export default function Show() {
                     </div>
                 }
                 <span className="flex-grow content-['']"></span>
-                <Panel.Components.ActionLink to="/books" text="Close" />
+                <Panel.Components.ActionButton
+                    onClick={() => setOpenModal(false)}
+                    text="Close"
+                    active={false}
+                />
             </>}
         >
             <span className="flex-grow flex justify-center items-center">{transaction?.id}</span>

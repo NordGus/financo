@@ -1,7 +1,15 @@
+import { useOutletContext } from "react-router-dom";
+
 import Panel from "@components/Panel";
 import Throbber from "@components/Throbber";
 
+interface OutletContext {
+    setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 export default function New() {
+    const { setOpenModal } = useOutletContext<OutletContext>()
+
     return (
         <Panel.Base
             className="h-full"
@@ -14,7 +22,11 @@ export default function New() {
                     </div>
                 }
                 <Panel.Components.Title text="New Transaction" grow={true} />
-                <Panel.Components.ActionLink to="/books" text="Close" />
+                <Panel.Components.ActionButton
+                    onClick={() => setOpenModal(false)}
+                    text="Close"
+                    active={false}
+                />
             </>}
         >
             <span className="flex-grow flex justify-center items-center">New Transaction</span>
