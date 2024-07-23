@@ -58,15 +58,7 @@ export default function Show() {
                     Account Form goes here
                 </div>
             </Panel.Base>
-            <Transactions.CurrentMonth
-                className="row-span-2"
-                account={query.data}
-            />
-            <Transactions.Upcoming
-                className="row-span-2"
-                account={query.data}
-            />
-            <Transactions.Pending
+            <Transactions
                 className="row-span-2"
                 account={query.data}
             />

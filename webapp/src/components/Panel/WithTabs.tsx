@@ -19,7 +19,7 @@ interface TabProps {
     key: string
     text: string
     active: boolean
-    onClick: () => void
+    onClick: React.MouseEventHandler<HTMLSpanElement>
 }
 
 export default function WithTabs(
@@ -57,7 +57,7 @@ export default function WithTabs(
                         ? contents
                         : loading
                             ? <></>
-                            : <span>{noContentsMessage}</span>
+                            : <>{noContentsMessage}</>
                 }
             </div>
             {loading && <div className="px-2 py-1 flex justify-end items-center gap-2">
