@@ -24,7 +24,7 @@ export default function ForFilters({
     onClick
 }: ForFiltersProps) {
     const clr = useMemo(() => { return new Color(color) }, [color])
-    const activeClr = clr.to("HSL").set({ l: (l) => l >= 50 ? (l / 2) - 10 : (l * 2) - 10 }) // WTF
+    const activeClr = clr.to("HSL").set({ l: (l) => l >= 50 ? 1 : 100 }) // WTF
     const toStringConfig = { precision: 3, format: "rgb" }
 
     return (
