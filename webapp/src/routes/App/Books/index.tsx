@@ -1,23 +1,18 @@
-import { Outlet, useOutlet } from "react-router-dom";
+import { Outlet, useNavigate, useOutlet } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import moment from "moment";
 
-import {
-    getTransactions,
-    getUpcomingTransactions,
-    ListFilters,
-    UpcomingFilters
-} from "@api/transactions";
+import { getTransactions, ListFilters } from "@api/transactions";
 
 import Modal from "@components/Modal";
 import Transactions from "./Transactions";
 import Filters from "./Filters";
 import Chart from "./Chart";
 
-type ModalStyles = "outlet" | "history" | "upcoming" | "none";
+type Modals = "outlet" | "filter" | "none";
 
-function defaultHistoryFilters(): ListFilters {
+function defaultFilters(): ListFilters {
     return {
         executedFrom: moment().subtract({ months: 1 }).format('YYYY-MM-DD'),
         executedUntil: moment().format('YYYY-MM-DD'),
@@ -25,126 +20,76 @@ function defaultHistoryFilters(): ListFilters {
     }
 }
 
-function defaultUpcomingFilters(): UpcomingFilters {
-    return {
-        executedUntil: moment().add({ months: 1 }).format('YYYY-MM-DD'),
-        account: []
-    }
-}
-
 export default function Books() {
     const outlet = useOutlet()
-    const [outletCache, setOutletCache] = useState(outlet)
-    const [modalFor, setModalFor] = useState<ModalStyles>("none")
-    const [showHistoryFilters, setShowHistoryFilters] = useState(false)
-    const [showUpcomingFilters, setShowUpcomingFilters] = useState(false)
-    const [historyFilters, setHistoryFilters] =
-        useState<ListFilters>(defaultHistoryFilters())
-    const [previousHistoryFilters, setPreviousHistoryFilters] =
-        useState<ListFilters>(defaultHistoryFilters())
-    const [upcomingFilters, setUpcomingFilters] =
-        useState<UpcomingFilters>(defaultUpcomingFilters())
-    const [previousUpcomingFilters, setPreviousUpcomingFilters] =
-        useState<UpcomingFilters>(defaultUpcomingFilters())
+    const navigate = useNavigate()
+    const [openModal, setOpenModal] = useState(false)
+    const [filters, setFilters] = useState<ListFilters>(defaultFilters())
+    const [previousFilters, setPreviousFilters] = useState<ListFilters>(defaultFilters())
+    const [modal, setModal] = useState<Modals>("none")
 
-    const historyMutation = useMutation({
+    const transactionHistory = useMutation({
         mutationFn: (filters: ListFilters) => {
-            setShowHistoryFilters(false);
+            setOpenModal(false)
+
             return getTransactions(filters)();
         }
     })
-    const upcomingMutation = useMutation({
-        mutationFn: (filters: UpcomingFilters) => {
-            setShowUpcomingFilters(false);
-            return getUpcomingTransactions(filters)();
+
+    useEffect(() => {
+        if (!!outlet) {
+            setModal("outlet")
+            setOpenModal(true)
         }
-    })
+    }, [!!outlet])
 
-    useEffect(() => {
-        if (outlet && !outletCache) setOutletCache(outlet)
-    }, [outlet, outletCache])
+    useEffect(() => { if (!outlet && openModal) setModal("filter") }, [openModal])
 
-    useEffect(() => {
-        if (outlet && modalFor !== "outlet") setModalFor("outlet")
-        if (showHistoryFilters && modalFor !== "history") setModalFor("history")
-        if (showUpcomingFilters && modalFor !== "upcoming") setModalFor("upcoming")
-    }, [outlet, showHistoryFilters, showUpcomingFilters])
-
-    useEffect(() => historyMutation.mutate(historyFilters), [])
-    useEffect(() => upcomingMutation.mutate(upcomingFilters), [])
+    useEffect(() => transactionHistory.mutate(filters), [])
 
     return (
         <>
             <div className="grid grid-rows-[60dvh,_minmax(0,_1fr)] h-full grid-cols-3 gap-2">
                 <Transactions.History
-                    showFilters={showHistoryFilters}
-                    setShowFilters={setShowHistoryFilters}
-                    filters={historyMutation}
+                    showFilters={openModal}
+                    setShowFilters={setOpenModal}
+                    transactions={transactionHistory}
                     className="row-span-2"
                 />
-                <Transactions.Upcoming
-                    showFilters={showUpcomingFilters}
-                    setShowFilters={setShowUpcomingFilters}
-                    filters={upcomingMutation}
-                />
-                <Transactions.Pending className="" />
+                <Transactions.Upcoming />
+                <Transactions.Pending />
                 <Chart className="col-span-2" />
             </div>
             <Modal
-                open={!!outlet || showHistoryFilters || showUpcomingFilters}
+                open={openModal}
                 onClose={() => {
-                    setOutletCache(null);
-                    setModalFor("none");
+                    setModal("none")
+                    if (!!outlet) navigate("/books")
                 }}
             >
                 {
-                    modalFor === "outlet" && (
-                        outlet ? <Outlet /> : (outletCache)
-                    )
-                }
-                {
-                    modalFor === "history" && (
-                        <Filters.History
-                            filters={historyFilters}
-                            setFilters={setHistoryFilters}
+                    {
+                        ["outlet"]: <Outlet context={{ setOpenModal }} />,
+                        ["filter"]: <Filters
+                            filters={filters}
+                            setFilters={setFilters}
                             onClose={() => {
-                                setHistoryFilters(previousHistoryFilters)
-                                setShowHistoryFilters(false)
+                                setFilters(previousFilters)
+                                setOpenModal(false)
                             }}
                             onApplyFilters={() => {
-                                setPreviousHistoryFilters(historyFilters)
-                                historyMutation.mutate(historyFilters)
+                                setPreviousFilters(filters)
+                                transactionHistory.mutate(filters)
                             }}
                             onClearFilters={() => {
-                                setHistoryFilters(defaultHistoryFilters())
-                                setPreviousHistoryFilters(defaultHistoryFilters())
+                                setFilters(defaultFilters())
+                                setPreviousFilters(defaultFilters())
 
-                                historyMutation.mutate(defaultHistoryFilters())
+                                transactionHistory.mutate(defaultFilters())
                             }}
-                        />
-                    )
-                }
-                {
-                    modalFor === "upcoming" && (
-                        <Filters.Upcoming
-                            filters={upcomingFilters}
-                            setFilters={setUpcomingFilters}
-                            onClose={() => {
-                                setUpcomingFilters(previousUpcomingFilters)
-                                setShowUpcomingFilters(false)
-                            }}
-                            onApplyFilters={() => {
-                                setPreviousUpcomingFilters(upcomingFilters)
-                                upcomingMutation.mutate(upcomingFilters)
-                            }}
-                            onClearFilters={() => {
-                                setUpcomingFilters(defaultUpcomingFilters())
-                                setPreviousUpcomingFilters(defaultUpcomingFilters())
-
-                                upcomingMutation.mutate(defaultUpcomingFilters())
-                            }}
-                        />
-                    )
+                        />,
+                        ["none"]: null
+                    }[modal]
                 }
             </Modal>
         </>
