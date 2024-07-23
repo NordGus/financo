@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 
 import { Kind } from "@/types/Account";
 
@@ -6,8 +6,13 @@ import kindToHuman from "@helpers/account/kindToHuman";
 import Panel from "@components/Panel";
 import Throbber from "@components/Throbber";
 
+interface OutletContext {
+    setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 export default function New() {
     const { kind } = useParams()
+    const { setOpenModal } = useOutletContext<OutletContext>()
 
     return (
         <Panel.Base
@@ -23,7 +28,10 @@ export default function New() {
                 }
                 <Panel.Components.Title text={`New ${kindToHuman(kind! as Kind)}`} />
                 <span className="flex-grow content-['']"></span>
-                <Panel.Components.ActionLink to="/accounts" text="Close" />
+                <Panel.Components.ActionButton
+                    active={false}
+                    onClick={() => setOpenModal(false)}
+                    text="Close" />
             </>}
         >
             <div className="flex-grow grid grid-cols-2 grid-rows-3">
