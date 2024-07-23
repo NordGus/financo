@@ -10,10 +10,10 @@ import { ListFilters } from "@api/transactions";
 import Panel from "@components/Panel";
 import Preview from "@components/transaction/Preview";
 
-interface FilterableProps {
+interface Props {
     showFilters: boolean,
     setShowFilters: React.Dispatch<React.SetStateAction<boolean>>,
-    filters: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
+    transactions: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
     className?: string
 }
 
@@ -27,9 +27,9 @@ function sortAndGroup(transactions: Transaction[]) {
 export default function History({
     showFilters,
     setShowFilters,
-    filters,
+    transactions: tr,
     className
-}: FilterableProps) {
+}: Props) {
     const newTransactionPath = "/books/transactions/new"
 
     return (
@@ -52,11 +52,11 @@ export default function History({
                     to={newTransactionPath}
                 />
             </>}
-            loading={filters.isPending}
+            loading={tr.isPending}
             contents={
-                (isEmpty(filters.data) || isNil(filters.data))
+                (isEmpty(tr.data) || isNil(tr.data))
                     ? null
-                    : Object.entries(sortAndGroup(filters.data)).
+                    : Object.entries(sortAndGroup(tr.data)).
                         map(([date, transactions]) => {
                             return {
                                 date: moment(date, 'YYYY-MM-DD').toDate(),

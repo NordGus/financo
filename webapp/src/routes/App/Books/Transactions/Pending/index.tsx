@@ -8,8 +8,8 @@ import Transaction from "@/types/Transaction";
 import Panel from "@components/Panel";
 import Preview from "@components/transaction/Preview";
 
-interface PendingProps {
-    className: string
+interface Props {
+    className?: string
 }
 
 function sortAndGroup(transactions: Transaction[]) {
@@ -19,7 +19,7 @@ function sortAndGroup(transactions: Transaction[]) {
     );
 }
 
-export default function Pending({ className }: PendingProps) {
+export default function Pending({ className }: Props) {
     const query = useQuery(transactionsQueries.pending)
 
     return (
