@@ -1,30 +1,30 @@
-import { useQuery } from "@tanstack/react-query"
-import { isEmpty, isNil, sortBy } from "lodash"
+import { useQuery } from "@tanstack/react-query";
+import { isEmpty, isNil, sortBy } from "lodash";
 
-import { Preview } from "@/types/Account"
+import { Preview } from "@/types/Account";
 
-import { UpcomingFilters } from "@api/transactions"
-import { accountsForOtherContext } from "@queries/accounts"
+import { ListFilters } from "@api/transactions";
+import { accountsForOtherContext } from "@queries/accounts";
 
-import Action from "@components/Action"
-import Control from "@components/Control"
-import Input from "@components/Input"
-import Throbber from "@components/Throbber"
-import ForFilters from "@components/Account/Preview/ForFilters"
+import Action from "@components/Action";
+import Control from "@components/Control";
+import Input from "@components/Input";
+import Throbber from "@components/Throbber";
+import ForFilters from "@components/Account/Preview/ForFilters";
 
-interface UpcomingFiltersProps {
-    filters: UpcomingFilters,
-    setFilters: React.Dispatch<React.SetStateAction<UpcomingFilters>>,
+interface Props {
+    filters: ListFilters,
+    setFilters: React.Dispatch<React.SetStateAction<ListFilters>>,
     onClose: React.MouseEventHandler<HTMLSpanElement>,
     onApplyFilters: () => void,
     onClearFilters: () => void
 }
 
 function Accounts({
-    filters: { executedUntil, account: selected = [] }, setFilters, data
+    filters: { executedFrom, executedUntil, account: selected = [] }, setFilters, data
 }: {
-    filters: UpcomingFilters,
-    setFilters: React.Dispatch<React.SetStateAction<UpcomingFilters>>,
+    filters: ListFilters,
+    setFilters: React.Dispatch<React.SetStateAction<ListFilters>>,
     data: Preview[] | null | undefined
 }) {
     if (isEmpty(data) || isNil(data)) return null
@@ -38,22 +38,24 @@ function Accounts({
         onClick={() => {
             if (selected.includes(account.id)) {
                 setFilters({
-                    executedUntil, account: [...selected.filter((id) => id !== account.id)]
+                    executedFrom,
+                    executedUntil,
+                    account: [...selected.filter((id) => id !== account.id)]
                 })
             } else {
-                setFilters({ executedUntil, account: [...selected, account.id] })
+                setFilters({ executedFrom, executedUntil, account: [...selected, account.id] })
             }
         }}
     />)
 }
 
-export default function Upcoming({
+export default function Filters({
     filters,
     setFilters,
     onClose,
     onApplyFilters,
     onClearFilters
-}: UpcomingFiltersProps) {
+}: Props) {
     const accountsQuery = useQuery(accountsForOtherContext)
 
     return (
@@ -111,7 +113,19 @@ export default function Upcoming({
                         <p>Month</p>
                     </Control>
                 </div>
-                <div className="flex flex-col gap-2 justify-center col-span-2">
+                <div className="flex flex-col gap-2 justify-center">
+                    <label htmlFor="executed_at_from">From</label>
+                    <Input.Base
+                        type="date"
+                        name="executed_at[from]"
+                        id="executed_at_from"
+                        value={filters.executedFrom || ""}
+                        onChange={({ target: { value } }) => {
+                            setFilters({ ...filters, executedFrom: value })
+                        }}
+                    />
+                </div>
+                <div className="flex flex-col gap-2 justify-center">
                     <label htmlFor="executed_at_to">To</label>
                     <Input.Base
                         type="date"
