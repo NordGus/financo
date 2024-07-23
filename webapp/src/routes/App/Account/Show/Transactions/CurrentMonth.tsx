@@ -14,7 +14,7 @@ interface Props {
     className?: string
 }
 
-export default function Transactions({ account, className }: Props) {
+export default function CurrentMonth({ account, className }: Props) {
     const query = useQuery(currentMonthsTransactionsForAccountQuery(account.id))
 
     return (
