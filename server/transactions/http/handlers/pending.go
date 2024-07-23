@@ -161,10 +161,22 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 
 		filters = append(filters, ids)
 
+		direct := fmt.Sprintf(
+			"(tr.source_id = ANY ($%d) OR tr.target_id = ANY ($%d))",
+			filterCount,
+			filterCount,
+		)
+
+		indirect := fmt.Sprintf(
+			"(src.parent_id = ANY ($%d) OR trg.parent_id = ANY ($%d))",
+			filterCount,
+			filterCount,
+		)
+
 		query += fmt.Sprintf(
-			" AND (tr.target_id = ANY ($%d) OR trg.parent_id = ANY ($%d))",
-			filterCount,
-			filterCount,
+			" AND (%s OR %s)",
+			direct,
+			indirect,
 		)
 		filterCount++
 	}
