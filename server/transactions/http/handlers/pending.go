@@ -8,8 +8,11 @@ import (
 	"financo/server/types/shared/color"
 	"financo/server/types/shared/currency"
 	"financo/server/types/shared/icon"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -119,8 +122,11 @@ type NullableAccount struct {
 
 func Pending(w http.ResponseWriter, r *http.Request) {
 	var (
-		ctx     = r.Context()
-		results = make([]Transaction, 0, 50)
+		ctx         = r.Context()
+		results     = make([]Transaction, 0, 50)
+		query       = pendingTransactionsQuery
+		filters     = make([]any, 0, 1)
+		filterCount = 1
 	)
 	db, ok := ctx.Value(context_key.DB).(*pgxpool.Conn)
 	if !ok {
@@ -133,7 +139,37 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := db.Query(ctx, pendingTransactionsQuery)
+	if r.URL.Query().Has(accountKey) {
+		var (
+			err error
+			raw = strings.Split(r.URL.Query().Get(accountKey), ",")
+			ids = make([]int64, len(raw))
+		)
+
+		for i := 0; i < len(raw); i++ {
+			ids[i], err = strconv.ParseInt(raw[i], 10, 64)
+			if err != nil {
+				log.Println("failed to parsed id", err)
+				http.Error(
+					w,
+					http.StatusText(http.StatusInternalServerError),
+					http.StatusInternalServerError,
+				)
+				return
+			}
+		}
+
+		filters = append(filters, ids)
+
+		query += fmt.Sprintf(
+			" AND (tr.target_id = ANY ($%d) OR trg.parent_id = ANY ($%d))",
+			filterCount,
+			filterCount,
+		)
+		filterCount++
+	}
+
+	rows, err := db.Query(ctx, query, filters...)
 	if err != nil {
 		log.Println("failed query", err)
 		http.Error(

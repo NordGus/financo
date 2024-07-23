@@ -60,15 +60,24 @@ export function getUpcomingTransactions(filters: UpcomingFilters): () => Promise
     }
 }
 
-export async function getPendingTransactions(): Promise<Transaction[]> {
-    const response = await fetch("/api/transactions/pending")
+export interface PendingFilters {
+    account?: number[]
+}
 
-    if (!response.ok) {
-        console.error(response)
-        throw new Error('Network response was not ok')
+export function getPendingTransactions(filters: PendingFilters): () => Promise<Transaction[]> {
+    return async () => {
+        const params = new URLSearchParams(
+            Object.entries(filters).filter(([_, value]) => !isEmptyParam(value))
+        )
+        const response = await fetch(`/api/transactions/pending?${params.toString()}`)
+
+        if (!response.ok) {
+            console.error(response)
+            throw new Error('Network response was not ok')
+        }
+
+        return response.json()
     }
-
-    return response.json()
 }
 
 export function getTransactionsForAccount(

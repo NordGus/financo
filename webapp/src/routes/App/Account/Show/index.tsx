@@ -33,9 +33,9 @@ export default function Show() {
 
     return (
         <div
-            className="h-full grid grid-rows-[minmax(0,_min-content)_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1fr)] grid-cols-2 gap-1"
+            className="h-full grid grid-rows-[minmax(0,_min-content)_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1fr)] grid-cols-4 gap-1"
         >
-            <div className="col-span-2 flex items-stretch min-h-10 h-10 max-h-10">
+            <div className="col-span-4 flex items-stretch min-h-10 h-10 max-h-10">
                 <Action.Default onClick={() => setOpenModal(false)}>
                     Close
                 </Action.Default>
@@ -58,11 +58,19 @@ export default function Show() {
                     Account Form goes here
                 </div>
             </Panel.Base>
-            <Panel.Clean className="">a graphic goes here</Panel.Clean>
-            <Transactions
+            <Transactions.CurrentMonth
                 className="row-span-2"
                 account={query.data}
             />
+            <Transactions.Upcoming
+                className="row-span-2"
+                account={query.data}
+            />
+            <Transactions.Pending
+                className="row-span-2"
+                account={query.data}
+            />
+            <Panel.Clean className="col-span-3">a graphic goes here</Panel.Clean>
         </div >
     )
 }
