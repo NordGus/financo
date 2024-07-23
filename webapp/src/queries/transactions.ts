@@ -22,7 +22,7 @@ export function currentMonthsTransactionsForAccountQuery(accountID: number) {
     return {
         queryKey: ['account', accountID, 'transactions'],
         queryFn: getTransactions({
-            executedFrom: moment().startOf('month').format('YYYY-MM-DD'),
+            executedFrom: moment().format('YYYY-MM-DD'),
             executedUntil: moment().endOf('month').format('YYYY-MM-DD'),
             account: [accountID]
         }),
