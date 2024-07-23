@@ -1,7 +1,7 @@
-import AchievementsPanel from "./AchievementsPanel";
-import AdministrationPanel from "./AdministrationPanel";
+import Achievements from "./Achievements";
+import Administration from "./Administration";
 
 export default {
-    AdministrationPanel,
-    AchievementsPanel
+    Administration,
+    Achievements
 }

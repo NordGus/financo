@@ -39,12 +39,16 @@ export default function History({
             header={<>
                 <Panel.Components.Title grow={true} text="Transactions" />
                 <Panel.Components.ActionButton
-                    text={"Filter"}
+                    text={
+                        <span className="material-symbols-rounded">filter_list</span>
+                    }
                     onClick={() => setShowFilters(!showFilters)}
                     active={showFilters}
                 />
                 <Panel.Components.ActionLink
-                    text="Add"
+                    text={
+                        <span className="material-symbols-rounded">add</span>
+                    }
                     to={newTransactionPath}
                 />
             </>}

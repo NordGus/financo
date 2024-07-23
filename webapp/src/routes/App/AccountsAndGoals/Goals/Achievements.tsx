@@ -6,11 +6,11 @@ import { reachedGoalsQuery } from "@queries/goals"
 import Panel from "@components/Panel"
 import Preview from "@/components/goal/Preview"
 
-interface AchievementsPanelProps {
+interface Props {
     className?: string
 }
 
-export default function AchievementsPanel({ className }: AchievementsPanelProps) {
+export default function Achievements({ className }: Props) {
     const query = useQuery(reachedGoalsQuery)
 
     return (

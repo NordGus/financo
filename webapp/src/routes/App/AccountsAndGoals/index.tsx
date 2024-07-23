@@ -27,14 +27,14 @@ export default function AccountsAndGoals() {
                 <Summary.Debts />
                 <Summary.Total />
                 <div></div>
-                <CapitalAccounts.NormalPanel />
-                <DebtAccounts.LoansPanel />
-                <ExternalAccounts.IncomePanel />
-                <Goals.AdministrationPanel />
-                <CapitalAccounts.SavingsPanel />
-                <DebtAccounts.CreditLinesPanel />
-                <ExternalAccounts.ExpensesPanel />
-                <Goals.AchievementsPanel />
+                <CapitalAccounts.Normal />
+                <DebtAccounts.Loan />
+                <ExternalAccounts.Income />
+                <Goals.Administration />
+                <CapitalAccounts.Savings />
+                <DebtAccounts.CreditLine />
+                <ExternalAccounts.Expense />
+                <Goals.Achievements />
             </div>
             <Modal
                 open={openModal}

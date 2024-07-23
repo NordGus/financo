@@ -35,7 +35,9 @@ export default function Upcoming({
             header={<>
                 <Panel.Components.Title grow={true} text="Upcoming Transactions" />
                 <Panel.Components.ActionButton
-                    text={"Filter"}
+                    text={
+                        <span className="material-symbols-rounded">filter_list</span>
+                    }
                     onClick={() => setShowFilters(!showFilters)}
                     active={showFilters}
                 />

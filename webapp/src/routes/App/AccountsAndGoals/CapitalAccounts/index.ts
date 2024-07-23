@@ -1,7 +1,7 @@
-import NormalPanel from "./NormalPanel";
-import SavingsPanel from "./SavingsPanel";
+import Normal from "./Normal";
+import Savings from "./Savings";
 
 export default {
-    NormalPanel,
-    SavingsPanel
+    Normal,
+    Savings
 }

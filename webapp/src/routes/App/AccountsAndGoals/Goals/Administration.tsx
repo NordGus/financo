@@ -3,23 +3,23 @@ import { Link } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import { isEmpty, isNil } from "lodash"
 
-import { activeAccountsQueries, archivedAccountsQueries } from "@queries/accounts"
+import { activeGoalsQuery, archivedGoalsQuery } from "@queries/goals"
 
 import Panel from "@components/Panel"
-import WithNavigation from "@components/Account/Preview/WithNavigation"
+import Preview from "@components/goal/Preview"
 
 type Queries = "active" | "archived"
 
-interface ExpensesPanelProps {
+interface Props {
     className?: string
 }
 
-export default function ExpensesPanel({ className }: ExpensesPanelProps) {
-    const activeQuery = useQuery(activeAccountsQueries.external.expenses)
-    const archivedQuery = useQuery(archivedAccountsQueries.external.expenses)
+export default function Administration({ className }: Props) {
+    const activeQuery = useQuery(activeGoalsQuery)
+    const archivedQuery = useQuery(archivedGoalsQuery)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
-    const newAccountPath = "/accounts/new/external_expense"
+    const newGoalPath = "/accounts/goals/new"
 
     return (
         <Panel.WithLoadingIndicator
@@ -33,43 +33,46 @@ export default function ExpensesPanel({ className }: ExpensesPanelProps) {
             }
             header={
                 <>
-                    <Panel.Components.Title text="Expenses" grow={true} />
+                    <Panel.Components.Title text="Goals" grow={true} />
                     <Panel.Components.ActionButton
-                        text="Archived"
+                        text={<span className="material-symbols-rounded">home_storage</span>}
                         onClick={() => {
                             setCurrentQuery(currentQuery === "active" ? "archived" : "active")
                         }}
                         active={currentQuery === "archived"}
                     />
-                    <Panel.Components.ActionLink to={newAccountPath} text="Add" />
+                    <Panel.Components.ActionLink
+                        to={newGoalPath}
+                        text={<span className="material-symbols-rounded">add</span>}
+                    />
                 </>
             }
             contents={
                 {
                     active: isEmpty(activeQuery.data) || isNil(activeQuery.data)
                         ? null
-                        : activeQuery.data.map((acc) => <WithNavigation
-                            key={`account:${acc.id}`}
-                            account={acc}
+                        : activeQuery.data.map((goal) => <Preview.WithNavigation
+                            key={`goal:${goal.id}`}
+                            goal={goal}
                         />),
                     archived: isEmpty(archivedQuery.data) || isNil(archivedQuery.data)
                         ? null
-                        : archivedQuery.data.map((acc) => <WithNavigation
-                            key={`account:${acc.id}`}
-                            account={acc}
+                        : archivedQuery.data.map((goal) => <Preview.WithNavigation
+                            key={`goal:${goal.id}`}
+                            goal={goal}
                         />)
                 }[currentQuery] || null
             }
             noContentsMessage={
                 {
                     active: <div className="flex flex-col justify-center items-center gap-2">
-                        <p>No <span className="font-bold">Expense Sources</span> active in the system</p>
-                        <Link to={newAccountPath} className="text-sm underline">
+                        <p>No <span className="font-bold">Savings Goals</span> active in the system</p>
+                        <Link to={newGoalPath} className="text-sm underline">
                             Please add a new one
                         </Link>
                     </div>,
                     archived: <div className="flex flex-col justify-center items-center gap-2">
-                        <p>No <span className="font-bold">Expense Sources</span> archived in the system</p>
+                        <p>No <span className="font-bold">Savings Goals</span> archived in the system</p>
                     </div>
                 }[currentQuery] || undefined
             }

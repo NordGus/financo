@@ -1,7 +1,7 @@
-import CreditLinesPanel from "./CreditLinesPanel";
-import LoansPanel from "./LoansPanel";
+import CreditLine from "./CreditLine";
+import Loan from "./Loan";
 
 export default {
-    LoansPanel,
-    CreditLinesPanel
+    Loan,
+    CreditLine
 }

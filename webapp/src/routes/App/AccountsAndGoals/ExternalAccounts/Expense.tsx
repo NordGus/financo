@@ -10,16 +10,16 @@ import WithNavigation from "@components/Account/Preview/WithNavigation"
 
 type Queries = "active" | "archived"
 
-interface LoansPanelProps {
+interface Props {
     className?: string
 }
 
-export default function LoansPanel({ className }: LoansPanelProps) {
-    const activeQuery = useQuery(activeAccountsQueries.debt.loans)
-    const archivedQuery = useQuery(archivedAccountsQueries.debt.loans)
+export default function Expense({ className }: Props) {
+    const activeQuery = useQuery(activeAccountsQueries.external.expenses)
+    const archivedQuery = useQuery(archivedAccountsQueries.external.expenses)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
-    const newAccountPath = "/accounts/new/debt_loan"
+    const newAccountPath = "/accounts/new/external_expense"
 
     return (
         <Panel.WithLoadingIndicator
@@ -33,15 +33,18 @@ export default function LoansPanel({ className }: LoansPanelProps) {
             }
             header={
                 <>
-                    <Panel.Components.Title text="Loans" grow={true} />
+                    <Panel.Components.Title text="Expenses" grow={true} />
                     <Panel.Components.ActionButton
-                        text="Archived"
+                        text={<span className="material-symbols-rounded">home_storage</span>}
                         onClick={() => {
                             setCurrentQuery(currentQuery === "active" ? "archived" : "active")
                         }}
                         active={currentQuery === "archived"}
                     />
-                    <Panel.Components.ActionLink to={newAccountPath} text="Add" />
+                    <Panel.Components.ActionLink
+                        to={newAccountPath}
+                        text={<span className="material-symbols-rounded">add</span>}
+                    />
                 </>
             }
             contents={
@@ -63,13 +66,13 @@ export default function LoansPanel({ className }: LoansPanelProps) {
             noContentsMessage={
                 {
                     active: <div className="flex flex-col justify-center items-center gap-2">
-                        <p>No <span className="font-bold">Loans</span> active in the system</p>
+                        <p>No <span className="font-bold">Expense Sources</span> active in the system</p>
                         <Link to={newAccountPath} className="text-sm underline">
                             Please add a new one
                         </Link>
                     </div>,
                     archived: <div className="flex flex-col justify-center items-center gap-2">
-                        <p>No <span className="font-bold">Loans</span> archived in the system</p>
+                        <p>No <span className="font-bold">Expense Sources</span> archived in the system</p>
                     </div>
                 }[currentQuery] || undefined
             }

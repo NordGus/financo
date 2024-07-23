@@ -1,7 +1,7 @@
-import ExpensesPanel from "./ExpensesPanel";
-import IncomePanel from "./IncomePanel";
+import Expense from "./Expense";
+import Income from "./Income";
 
 export default {
-    IncomePanel,
-    ExpensesPanel
+    Income,
+    Expense
 }

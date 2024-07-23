@@ -1,5 +1,5 @@
-import { useState } from "react"
 import { Link } from "react-router-dom"
+import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { isEmpty, isNil } from "lodash"
 
@@ -10,16 +10,16 @@ import WithNavigation from "@components/Account/Preview/WithNavigation"
 
 type Queries = "active" | "archived"
 
-interface IncomePanelProps {
+interface Props {
     className?: string
 }
 
-export default function IncomePanel({ className }: IncomePanelProps) {
-    const activeQuery = useQuery(activeAccountsQueries.external.income)
-    const archivedQuery = useQuery(archivedAccountsQueries.external.income)
+export default function Savings({ className }: Props) {
+    const activeQuery = useQuery(activeAccountsQueries.capital.savings)
+    const archivedQuery = useQuery(archivedAccountsQueries.capital.savings)
 
     const [currentQuery, setCurrentQuery] = useState<Queries>("active")
-    const newAccountPath = "/accounts/new/external_income"
+    const newAccountPath = "/accounts/new/capital_savings"
 
     return (
         <Panel.WithLoadingIndicator
@@ -33,26 +33,29 @@ export default function IncomePanel({ className }: IncomePanelProps) {
             }
             header={
                 <>
-                    <Panel.Components.Title text="Income" grow={true} />
+                    <Panel.Components.Title text="Savings" grow={true} />
                     <Panel.Components.ActionButton
-                        text="Archived"
+                        text={<span className="material-symbols-rounded">home_storage</span>}
                         onClick={() => {
                             setCurrentQuery(currentQuery === "active" ? "archived" : "active")
                         }}
                         active={currentQuery === "archived"}
                     />
-                    <Panel.Components.ActionLink to={newAccountPath} text="Add" />
+                    <Panel.Components.ActionLink
+                        to={newAccountPath}
+                        text={<span className="material-symbols-rounded">add</span>}
+                    />
                 </>
             }
             contents={
                 {
-                    active: isEmpty(activeQuery.data) || isNil(activeQuery.data)
+                    active: (isEmpty(activeQuery.data) || isNil(activeQuery.data))
                         ? null
                         : activeQuery.data.map((acc) => <WithNavigation
                             key={`account:${acc.id}`}
                             account={acc}
                         />),
-                    archived: isEmpty(archivedQuery.data) || isNil(archivedQuery.data)
+                    archived: (isEmpty(archivedQuery.data) || isNil(archivedQuery.data))
                         ? null
                         : archivedQuery.data.map((acc) => <WithNavigation
                             key={`account:${acc.id}`}
@@ -63,13 +66,13 @@ export default function IncomePanel({ className }: IncomePanelProps) {
             noContentsMessage={
                 {
                     active: <div className="flex flex-col justify-center items-center gap-2">
-                        <p>No <span className="font-bold">Income Sources</span> active in the system</p>
+                        <p>No <span className="font-bold">Savings Accounts</span> active in the system</p>
                         <Link to={newAccountPath} className="text-sm underline">
                             Please add a new one
                         </Link>
                     </div>,
                     archived: <div className="flex flex-col justify-center items-center gap-2">
-                        <p>No <span className="font-bold">Income Sources</span> archived in the system</p>
+                        <p>No <span className="font-bold">Savings Accounts</span> archived in the system</p>
                     </div>
                 }[currentQuery] || undefined
             }
