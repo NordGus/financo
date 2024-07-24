@@ -11,15 +11,23 @@
     "dummy:server": "json-server --watch json-server/db.json --routes json-server/routes.json --port 3000 --host 0.0.0.0"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.1.0",
     "@tanstack/react-query": "^5.39.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "colorjs.io": "^0.5.2",
+    "date-fns": "^3.6.0",
     "dinero.js": "^1.9.1",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.414.0",
     "material-symbols": "^0.21.2",
     "moment": "^2.30.1",
     "react": "^18.2.0",
+    "react-day-picker": "^8.10.1",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.1"
+    "react-router-dom": "^6.23.1",
+    "tailwind-merge": "^2.4.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.35.6",
