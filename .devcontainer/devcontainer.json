@@ -31,11 +31,12 @@
         "mhutchie.git-graph",
         "firefox-devtools.vscode-firefox-debug",
         "cweijan.vscode-database-client2",
-        "streetsidesoftware.code-spell-checker-spanish"
+        "streetsidesoftware.code-spell-checker-spanish",
+        "enkia.tokyo-night"
       ],
       "settings": {
         "go.useLanguageServer": true,
-        "workbench.colorTheme": "Catppuccin Mocha",
+        "workbench.colorTheme": "Tokyo Night",
         "workbench.iconTheme": "catppuccin-mocha",
         "editor.rulers": [
           100
