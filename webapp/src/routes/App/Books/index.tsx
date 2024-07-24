@@ -29,11 +29,7 @@ export default function Books() {
     const [modal, setModal] = useState<Modals>("none")
 
     const transactionHistory = useMutation({
-        mutationFn: (filters: ListFilters) => {
-            setOpenModal(false)
-
-            return getTransactions(filters)();
-        }
+        mutationFn: (filters: ListFilters) => getTransactions(filters)()
     })
 
     useEffect(() => {
@@ -80,12 +76,13 @@ export default function Books() {
                             onApplyFilters={() => {
                                 setPreviousFilters(filters)
                                 transactionHistory.mutate(filters)
+                                setOpenModal(false)
                             }}
                             onClearFilters={() => {
                                 setFilters(defaultFilters())
                                 setPreviousFilters(defaultFilters())
-
                                 transactionHistory.mutate(defaultFilters())
+                                setOpenModal(false)
                             }}
                         />,
                         ["none"]: null
