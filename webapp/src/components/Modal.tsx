@@ -43,7 +43,7 @@ export default function Modal(props: ModalProps) {
     return (
         <dialog ref={ref} className={`group ${className ? className : ""}`} {...rest}>
             <div
-                className="fixed inset-0 flex justify-center items-end bg-neutral-50/50 dark:bg-neutral-950/50 opacity-0 group-data-[open]:opacity-100 backdrop-blur-sm transition-all duration-400 sm:p-2"
+                className="fixed inset-0 flex justify-center items-end bg-zinc-50/50 dark:bg-zinc-950/50 opacity-0 group-data-[open]:opacity-100 backdrop-blur-sm transition-all duration-400 sm:p-2"
             >
                 <div
                     className={`w-full max-w-[400px] sm:min-w-[400px] sm:w-full sm:max-w-full sm:h-full sm:max-h-full translate-y-full group-data-[open]:translate-y-0 transition-transform duration-400 ${bodyClassName ? bodyClassName : ""}`}

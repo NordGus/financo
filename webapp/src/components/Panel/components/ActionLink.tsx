@@ -10,7 +10,7 @@ interface ActionLinkProps {
 export function ActionLink({ text, to, grow = false }: ActionLinkProps) {
     return <Link
         to={to}
-        className={`flex items-center justify-center px-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 ${grow ? "flex-grow" : ""}`}
+        className={`flex items-center justify-center px-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 ${grow ? "flex-grow" : ""}`}
     >
         {text}
     </Link>

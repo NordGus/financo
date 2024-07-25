@@ -13,7 +13,7 @@ function NavLink({ name, path }: Props) {
                 "flex justify-end items-end",
                 "py-1 px-2 h-10",
                 "rounded",
-                "bg-neutral-50 dark:bg-neutral-900",
+                "bg-zinc-50 dark:bg-zinc-900",
                 "shadow duration-200",
                 isActive
                     ? "w-full font-bold"

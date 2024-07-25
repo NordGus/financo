@@ -7,7 +7,7 @@ interface ActionButtonProps {
 
 export function ActionButton({ text, onClick, active, grow = false }: ActionButtonProps) {
     return <span
-        className={`flex items-center justify-center px-2 cursor-pointer select-none ${active ? "bg-neutral-100 dark:bg-neutral-800" : "hover:bg-neutral-100 dark:hover:bg-neutral-800"} ${grow ? "flex-grow" : ""}`}
+        className={`flex items-center justify-center px-2 cursor-pointer select-none ${active ? "bg-zinc-100 dark:bg-zinc-800" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"} ${grow ? "flex-grow" : ""}`}
         onClick={onClick}
     >
         {text}

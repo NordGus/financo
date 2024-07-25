@@ -17,7 +17,7 @@ interface Props {
 function SummaryCard({ name, summaries, loading }: Props) {
     return (
         <div
-            className="flex items-center justify-between gap-2 px-2 py-1 h-10 rounded bg-neutral-50 dark:bg-neutral-900 shadow"
+            className="flex items-center justify-between gap-2 px-2 py-1 h-10 rounded bg-zinc-50 dark:bg-zinc-900 shadow"
         >
             <p className="flex-grow">{name}</p>
             {

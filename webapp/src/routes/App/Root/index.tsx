@@ -4,8 +4,8 @@ export default function Root() {
             className="p-1.5
             flex flex-col justify-center items-center gap-1
             h-full
-            border rounded dark:border-neutral-800
-            bg-neutral-50 dark:bg-neutral-900
+            border rounded dark:border-zinc-800
+            bg-zinc-50 dark:bg-zinc-900
             shadow"
         >
             <h1 className="text-4xl">Welcome to financo</h1>

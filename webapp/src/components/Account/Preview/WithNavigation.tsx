@@ -33,10 +33,10 @@ export default function WithNavigation(
 
     return (
         <details
-            className={`divide-y dark:divide-neutral-800 ${!isChildless && "[&_.opener]:open:-rotate-180"}`}
+            className={`divide-y dark:divide-zinc-800 ${!isChildless && "[&_.opener]:open:-rotate-180"}`}
         >
             <summary
-                className="grid grid-cols-[minmax(0,_1fr)_min-content] gap-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 items-center"
+                className="grid grid-cols-[minmax(0,_1fr)_min-content] gap-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 items-center"
             >
                 <Link
                     to={navigationPath}
@@ -97,7 +97,7 @@ export default function WithNavigation(
                     <Link
                         to={navigationPath}
                         key={`account:${child.id}`}
-                        className="block pl-4 pr-2 py-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="block pl-4 pr-2 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                     >
                         <div className="flex flex-col justify-center min-h-16 leading-snug">
                             <p>{child.name}</p>

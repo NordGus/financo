@@ -7,7 +7,7 @@ interface ControlProps {
 
 export default function Control({ children, onClick, className }: PropsWithChildren<ControlProps>) {
     return <span
-        className={`px-4 py-2 flex items-center justify-center bg-neutral-50 dark:bg-neutral-900 rounded shadow overflow-clip text-neutral-950 dark:text-neutral-50 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer ${className ? className : ""}`}
+        className={`px-4 py-2 flex items-center justify-center bg-zinc-50 dark:bg-zinc-900 rounded shadow overflow-clip text-zinc-950 dark:text-zinc-50 hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${className ? className : ""}`}
         onClick={onClick}
     >
         {children}

@@ -68,7 +68,7 @@ export default function History({
                         map(({ date, transactions }) => (
                             <div key={`history:${date.toISOString()}`}>
                                 <h2
-                                    className="px-2 py-1.5 text-2xl text-neutral-400 dark:text-neutral-600"
+                                    className="px-2 py-1.5 text-2xl text-zinc-400 dark:text-zinc-600"
                                 >
                                     {date.toLocaleDateString(undefined, {
                                         weekday: "long",

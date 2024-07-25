@@ -32,13 +32,13 @@ export default function Show() {
             }
         >
             <div className="flex-grow grid grid-cols-2 grid-rows-3">
-                <div className="row-span-3 overflow-y-auto border-r dark:border-neutral-800">
+                <div className="row-span-3 overflow-y-auto border-r dark:border-zinc-800">
                     Goal Form goes here
                 </div>
                 <div>
                     a graphic goes here
                 </div>
-                <div className="row-span-2 border-t dark:border-neutral-800">
+                <div className="row-span-2 border-t dark:border-zinc-800">
                     other goals go here
                 </div>
             </div>

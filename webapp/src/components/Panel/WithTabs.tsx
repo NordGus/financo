@@ -50,7 +50,7 @@ export default function WithTabs(
                 />)}
             </div>
             <div
-                className={`divide-y dark:divide-neutral-800 ${!contents ? "flex justify-center items-center" : ""} ${grow ? "flex-grow overflow-y-auto" : ""}`}
+                className={`divide-y dark:divide-zinc-800 ${!contents ? "flex justify-center items-center" : ""} ${grow ? "flex-grow overflow-y-auto" : ""}`}
             >
                 {
                     contents

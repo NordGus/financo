@@ -9,7 +9,7 @@ interface Props {
 
 export default function WithNavigation({ transaction }: Props) {
     return (<Link
-        className="block px-2 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+        className="block px-2 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
         to={`/books/transactions/${transaction.id}`}
     >
         <Base transaction={transaction} />

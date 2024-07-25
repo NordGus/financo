@@ -7,7 +7,7 @@ interface Props {
 
 export default function ForList({ transaction }: Props) {
     return (<div
-        className="block px-2 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+        className="block px-2 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800"
     >
         <Base transaction={transaction} />
     </div>)

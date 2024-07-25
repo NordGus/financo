@@ -4,7 +4,7 @@ import { ActionProps } from ".";
 
 export default function Default({ children, onClick, className }: PropsWithChildren<ActionProps>) {
     return <span
-        className={`flex items-center justify-center px-8 bg-neutral-50 dark:bg-neutral-900 border dark:border-neutral-800 rounded shadow overflow-clip text-neutral-950 dark:text-neutral-50  hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer ${className ? className : ""}`}
+        className={`flex items-center justify-center px-8 bg-zinc-50 dark:bg-zinc-900 border dark:border-zinc-800 rounded shadow overflow-clip text-zinc-950 dark:text-zinc-50  hover:bg-zinc-100 dark:hover:bg-zinc-800 cursor-pointer ${className ? className : ""}`}
         onClick={onClick}
     >
         {children}

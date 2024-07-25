@@ -4,7 +4,7 @@ import NavLink from "@components/NavLink";
 
 export default function Layout() {
     return (
-        <div className='w-full h-[100dvh] grid grid-cols-[10dvw_minmax(0,_1fr)] gap-2 p-2 bg-neutral-100 text-neutral-950 dark:bg-neutral-950 dark:text-neutral-50'
+        <div className='w-full h-[100dvh] grid grid-cols-[10dvw_minmax(0,_1fr)] gap-2 p-2 dark:bg-zinc-950'
         >
             <nav className='flex flex-col gap-2 h-full p-0 m-0'>
                 <NavLink name="Accounts & Goals" path="accounts" />

@@ -7,7 +7,7 @@ interface CleanProps {
 export default function Base({ className, children }: PropsWithChildren<CleanProps>) {
     return (
         <div
-            className={`bg-neutral-50 dark:bg-neutral-900 rounded shadow overflow-clip text-neutral-950 dark:text-neutral-50 ${className}`}
+            className={`bg-zinc-50 dark:bg-zinc-900 rounded shadow overflow-clip text-zinc-950 dark:text-zinc-50 ${className}`}
         >
             {children}
         </div>
