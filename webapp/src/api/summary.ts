@@ -32,3 +32,14 @@ export async function getNetWorthSummary(): Promise<Summary[]> {
 
     return response.json()
 }
+
+export async function getAvailableCreditSummary(): Promise<Summary[]> {
+    const response = await fetch("/api/summary/net_worth")
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
+}

@@ -9,5 +9,6 @@ import (
 func Routes(r chi.Router) {
 	r.Get("/capital", handlers.Capital)
 	r.Get("/debts", handlers.Debts)
-	r.Get("/total", handlers.NetWorth)
+	r.Get("/net_worth", handlers.NetWorth)
+	r.Get("/available_credit", handlers.AvailableCredit)
 }
