@@ -22,8 +22,8 @@ export async function getDebtsSummary(): Promise<Summary[]> {
     return response.json()
 }
 
-export async function getTotalSummary(): Promise<Summary[]> {
-    const response = await fetch("/api/summary/total")
+export async function getNetWorthSummary(): Promise<Summary[]> {
+    const response = await fetch("/api/summary/net_worth")
 
     if (!response.ok) {
         console.error(response)

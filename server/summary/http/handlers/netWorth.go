@@ -10,7 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func Total(w http.ResponseWriter, r *http.Request) {
+func NetWorth(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx   = r.Context()
 		kinds = []account.Kind{

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { staleTimeDefault } from "@queries/Client";
-import { getCapitalSummary, getDebtsSummary, getTotalSummary } from "@api/summary";
+import { getCapitalSummary, getDebtsSummary, getNetWorthSummary } from "@api/summary";
 
 import { CardSummary } from "@components/card";
 
@@ -34,7 +34,7 @@ export function SummaryDebt() {
 export function SummaryNetWorth() {
     const { data: balances, isFetching, isError, error } = useQuery({
         queryKey: ['summary', 'net_worth'],
-        queryFn: getTotalSummary,
+        queryFn: getNetWorthSummary,
         staleTime: staleTimeDefault
     })
 
@@ -47,7 +47,7 @@ export function SummaryNetWorth() {
 export function SummaryAvailableCredit() {
     const { data: balances, isFetching, isError, error } = useQuery({
         queryKey: ['summary', 'net_worth'],
-        queryFn: getTotalSummary,
+        queryFn: getNetWorthSummary,
         staleTime: staleTimeDefault
     })
 
