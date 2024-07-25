@@ -5,12 +5,12 @@ import ErrorBoundary from "./ErrorBoundary";
 import Goal from "./Goal";
 import Layout from "./Layout";
 import NotFound from "./NotFound";
-import Root from "./Root";
+import Dashboard from "./Dashboard";
 import Transaction from "./Transaction";
 
 export default {
     Layout,
-    Root,
+    Dashboard,
     AccountsAndGoals,
     Books,
     Account,

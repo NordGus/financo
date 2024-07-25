@@ -1,4 +1,4 @@
-export default function Root() {
+export default function Dashboard() {
     return (
         <div
             className="p-1.5
