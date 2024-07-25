@@ -5,7 +5,7 @@ export default function Root() {
             flex flex-col justify-center items-center gap-1
             h-full
             border rounded dark:border-zinc-800
-            bg-zinc-50 dark:bg-zinc-900
+            bg-zinc-50 dark:bg-zinc-950
             shadow"
         >
             <h1 className="text-4xl">Welcome to financo</h1>
