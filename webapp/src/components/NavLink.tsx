@@ -20,29 +20,24 @@ const linkVariants = cva(
     },
 )
 
-type Variants = "active" | "pending" | "default"
-
 interface Props {
     name: string
     icon: ReactNode
-    path: string,
-    variant?: Variants
+    path: string
 }
 
-function NavLink({ icon, name, path, variant }: Props) {
+function NavLink({ icon, name, path }: Props) {
     return (
         <Tooltip delayDuration={0}>
             <TooltipTrigger>
                 <RouterNavLink
                     to={path}
                     className={({ isActive, isPending }) => cn(linkVariants({
-                        variant: variant
-                            ? variant
-                            : isActive
-                                ? "active"
-                                : isPending
-                                    ? "pending"
-                                    : undefined
+                        variant: isActive
+                            ? "active"
+                            : isPending
+                                ? "pending"
+                                : undefined
                     }))
                     }
                 >
