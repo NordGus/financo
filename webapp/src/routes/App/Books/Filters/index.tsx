@@ -115,7 +115,7 @@ export default function Filters({
                 className="mt-auto grid grid-rows-[minmax(0,_min-content)_minmax(0,_1fr)] gap-2"
             >
                 <div className="flex items-stretch min-h-10 h-10 max-h-10 gap-2">
-                    <Button variant='destructive' onClick={onClose}>
+                    <Button variant='secondary' onClick={onClose}>
                         Close
                     </Button>
                     <span className="contents-[''] flex-grow"></span>
@@ -129,6 +129,7 @@ export default function Filters({
                 <div className="grid grid-cols-[min-content_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1fr)] items-stretch gap-2">
                     <div className="flex flex-col items-center gap-2">
                         <div className="flex gap-2">
+                            {/* TODO(#1): implement date picker period shortcut */}
                             <Button variant="link">
                                 Today
                             </Button>
