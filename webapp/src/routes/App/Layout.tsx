@@ -1,20 +1,31 @@
 import { Outlet } from "react-router-dom";
+import {
+    BookMarkedIcon,
+    ChartCandlestickIcon,
+    NotebookTabsIcon,
+    RouteIcon,
+    SettingsIcon,
+    TrophyIcon,
+    VaultIcon
+} from "lucide-react";
 
 import NavLink from "@components/NavLink";
 
 export default function Layout() {
     return (
-        <div className='w-full h-[100dvh] grid grid-cols-[10dvw_minmax(0,_1fr)] gap-2 p-2 dark:bg-zinc-950'
+        <div className='w-full h-[100dvh] grid grid-cols-[min-content_minmax(0,_1fr)] gap-2 dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50'
         >
-            <nav className='flex flex-col gap-2 h-full p-0 m-0'>
-                <NavLink name="Accounts & Goals" path="accounts" />
-                <NavLink name="Books" path="books" />
-                <NavLink name="Budgets" path="budgets" />
-                <NavLink name="Payment Plans" path="plans" />
-                <NavLink name="Summary" path="summary" />
-                <NavLink name="Intelligence" path="intelligence" />
+            <nav className='flex flex-col gap-2 p-2 h-full m-0 border-r border-zinc-200 dark:border-zinc-800 bg-transparent shadow-sm'>
+                <NavLink name="Dashboard" path="" icon={<ChartCandlestickIcon />} variant="active" />
+                <NavLink name="Accounts" path="accounts" icon={<VaultIcon />} />
+                <NavLink name="Ledger" path="books" icon={<BookMarkedIcon />} />
+                <NavLink name="Budgets" path="budgets" icon={<NotebookTabsIcon />} />
+                <NavLink name="Payment Plans" path="plans" icon={<RouteIcon />} />
+                <span className="grow contents-['']"></span>
+                <NavLink name="Achievements" path="achievements" icon={<TrophyIcon />} />
+                <NavLink name="Configuration" path="settings" icon={<SettingsIcon />} />
             </nav>
-            <div className='block h-full overflow-y-auto'>
+            <div className='block min-h-full overflow-y-auto'>
                 <Outlet />
             </div>
         </div>
