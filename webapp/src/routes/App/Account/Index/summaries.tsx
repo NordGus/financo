@@ -51,7 +51,7 @@ export function SummaryNetWorth() {
 
 export function SummaryAvailableCredit() {
     const { data: balances, isFetching, isError, error } = useQuery({
-        queryKey: ['summary', 'net_worth'],
+        queryKey: ['summary', 'available_credit'],
         queryFn: getAvailableCreditSummary,
         staleTime: staleTimeDefault
     })

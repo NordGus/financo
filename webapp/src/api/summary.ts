@@ -34,7 +34,7 @@ export async function getNetWorthSummary(): Promise<Summary[]> {
 }
 
 export async function getAvailableCreditSummary(): Promise<Summary[]> {
-    const response = await fetch("/api/summary/net_worth")
+    const response = await fetch("/api/summary/available_credit")
 
     if (!response.ok) {
         console.error(response)
