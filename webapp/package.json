@@ -11,6 +11,9 @@
     "dummy:server": "json-server --watch json-server/db.json --routes json-server/routes.json --port 3000 --host 0.0.0.0"
   },
   "dependencies": {
+    "@radix-ui/react-checkbox": "^1.1.1",
+    "@radix-ui/react-scroll-area": "^1.1.0",
+    "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@tanstack/react-query": "^5.39.0",
     "class-variance-authority": "^0.7.0",
