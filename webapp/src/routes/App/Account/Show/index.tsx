@@ -1,12 +1,11 @@
 import { QueryClient, useSuspenseQuery } from "@tanstack/react-query"
-import { LoaderFunctionArgs, useLoaderData, useOutletContext } from "react-router-dom"
+import { LoaderFunctionArgs, useLoaderData } from "react-router-dom"
 
 import { accountQuery } from "@queries/accounts"
 
 import Throbber from "@components/Throbber"
 import Panel from "@components/Panel"
 import Transactions from "./Transactions"
-import Action from "@components/Action"
 
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
     if (!params.id) {
@@ -15,15 +14,10 @@ export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFun
 
     await queryClient.ensureQueryData(accountQuery(params.id))
 
-    return { id: params.id }
-}
-
-interface OutletContext {
-    setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
+    return { id: params.id, breadcrumb: "Edit Account" }
 }
 
 export default function Show() {
-    const { setOpenModal } = useOutletContext<OutletContext>()
     const { id } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
     const query = useSuspenseQuery(accountQuery(id))
 
@@ -36,9 +30,6 @@ export default function Show() {
             className="h-full grid grid-rows-[minmax(0,_min-content)_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1fr)] grid-cols-4 gap-1"
         >
             <div className="col-span-4 flex items-stretch min-h-10 h-10 max-h-10">
-                <Action.Default onClick={() => setOpenModal(false)}>
-                    Close
-                </Action.Default>
             </div>
             <Panel.Base
                 header={<>
