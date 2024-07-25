@@ -1,8 +1,10 @@
 import { QueryClient } from "@tanstack/react-query";
-import { LoaderFunction, LoaderFunctionArgs } from "react-router-dom";
+import { Link, LoaderFunction, LoaderFunctionArgs } from "react-router-dom";
 import { SummaryAvailableCredit, SummaryCapital, SummaryDebt, SummaryNetWorth } from "./summaries";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
+import { Button } from "@components/ui/button";
+import { Plus } from "lucide-react";
 
 export function loader(_queryClient: QueryClient): LoaderFunction {
     return async (_props: LoaderFunctionArgs) => {
@@ -27,7 +29,13 @@ export default function Index() {
                         <TabsTrigger value="income">Income</TabsTrigger>
                         <TabsTrigger value="expenses">Expenses</TabsTrigger>
                     </TabsList>
-                    <span className="contents-['']"></span>
+                    <span className="grow contents-['']"></span>
+                    <Button className="gap-1" asChild={true}>
+                        <Link to="/accounts/new">
+                            <Plus className="h-4 w-4" />
+                            <span className="sr-only sm:not-sr-only">New</span>
+                        </Link>
+                    </Button>
                 </div>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
