@@ -8,11 +8,14 @@ import 'material-symbols/rounded.css'
 
 import QueryClient from "@queries/Client"
 import router from './router'
+import { TooltipProvider } from '@components/ui/tooltip'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={QueryClient}>
-      <RouterProvider router={router} />
+      <TooltipProvider>
+        <RouterProvider router={router} />
+      </TooltipProvider>
     </QueryClientProvider>
   </React.StrictMode>,
 )
