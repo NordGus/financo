@@ -1,30 +1,56 @@
+import { ReactNode } from "react"
 import { NavLink as RouterNavLink } from "react-router-dom"
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
+import { cva } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+
+const linkVariants = cva(
+    "flex h-9 w-10 items-center justify-center rounded-lg transition-colors md:h-10 md:w-10",
+    {
+        variants: {
+            variant: {
+                active: "bg-zinc-950 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-950",
+                pending: "bg-zinc-950 dark:bg-zinc-50 text-zinc-950 dark:text-zinc-50 animate-pulse",
+                default: "text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50"
+            }
+        },
+        defaultVariants: {
+            variant: "default",
+        }
+    },
+)
+
+type Variants = "active" | "pending" | "default"
 
 interface Props {
-    name: string,
-    path: string
+    name: string
+    icon: ReactNode
+    path: string,
+    variant?: Variants
 }
 
-function NavLink({ name, path }: Props) {
+function NavLink({ icon, name, path, variant }: Props) {
     return (
-        <RouterNavLink
-            to={path}
-            className={({ isActive, isPending }) => [
-                "flex justify-end items-end",
-                "py-1 px-2 h-10",
-                "rounded",
-                "bg-zinc-50 dark:bg-zinc-950",
-                "shadow duration-200",
-                isActive
-                    ? "w-full font-bold"
-                    : isPending
-                        ? "w-full animate-pulse"
-                        : "w-[85%] hover:w-full",
-            ].join(" ")
-            }
-        >
-            {name}
-        </RouterNavLink>
+        <Tooltip delayDuration={0}>
+            <TooltipTrigger>
+                <RouterNavLink
+                    to={path}
+                    className={({ isActive, isPending }) => cn(linkVariants({
+                        variant: variant
+                            ? variant
+                            : isActive
+                                ? "active"
+                                : isPending
+                                    ? "pending"
+                                    : undefined
+                    }))
+                    }
+                >
+                    {icon}
+                </RouterNavLink>
+            </TooltipTrigger>
+            <TooltipContent side="right">{name}</TooltipContent>
+        </Tooltip>
     )
 }
 
