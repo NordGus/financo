@@ -4,7 +4,7 @@ interface Props {
     variant?: "small" | "normal" | "big"
 }
 
-export default function Throbber({ variant = "normal" }: Props) {
+export function Throbber({ variant = "normal" }: Props) {
     const wrapperClassName = useMemo(() => {
         if (variant === "small") return "block h-5 h-5"
         if (variant === "normal") return "block h-10 h-10"

@@ -8,7 +8,7 @@ interface Props {
     icon?: ReactNode
 }
 
-export default function Progress({ progress, color, icon }: Props) {
+export function Progress({ progress, color, icon }: Props) {
     const dasharray = 300
     const fillStrokeWidth = 6
     const baseStrokeWidth = 2
