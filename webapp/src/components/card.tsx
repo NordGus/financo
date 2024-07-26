@@ -4,9 +4,13 @@ import { cn } from "@/lib/utils";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 
-export function CardSummary({ title, balances }: { title: string, balances: Summary[] }) {
+export function CardSummary({
+    title,
+    balances,
+    className
+}: { title: string, balances: Summary[], className?: string }) {
     return (
-        <Card>
+        <Card className={className}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{title}</CardTitle>
             </CardHeader>
