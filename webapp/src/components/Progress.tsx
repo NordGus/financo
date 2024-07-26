@@ -1,9 +1,13 @@
-type Props = {
-    progress: number,
+import { isNil } from "lodash"
+import { ReactNode } from "react"
+
+interface Props {
+    progress: number
     color?: string
+    icon?: ReactNode
 }
 
-export default function Progress({ progress, color }: Props) {
+export default function Progress({ progress, color, icon }: Props) {
     const dasharray = 300
     const fillStrokeWidth = 6
     const baseStrokeWidth = 2
@@ -53,20 +57,24 @@ export default function Progress({ progress, color }: Props) {
                     <span
                         className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center"
                     >
-                        <svg
-                            fill="none"
-                            height={checkMarkSize}
-                            width={checkMarkSize}
-                            stroke="currentColor"
-                            viewBox="60 60 60 60"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={fillStrokeWidth}
-                        >
-                            <polyline
-                                points="65 90 85 110 115 70"
-                            ></polyline>
-                        </svg>
+                        {
+                            isNil(icon)
+                                ? <svg
+                                    fill="none"
+                                    height={checkMarkSize}
+                                    width={checkMarkSize}
+                                    stroke="currentColor"
+                                    viewBox="60 60 60 60"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={fillStrokeWidth}
+                                >
+                                    <polyline
+                                        points="65 90 85 110 115 70"
+                                    ></polyline>
+                                </svg>
+                                : icon
+                        }
                     </span>
                 )
             }
