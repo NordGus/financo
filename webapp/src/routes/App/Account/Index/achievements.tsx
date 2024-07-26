@@ -79,7 +79,7 @@ export function AchievementsTracker() {
                                         </TableRow>
                                         : goals.map((goal) => {
                                             const progress = goal.balance / goal.goal
-                                            const color = progress < 1 ? "#14b8a6" : "#22c55e"
+                                            const color = "#22c55e"
 
                                             return <TableRow>
                                                 <TableCell>{goal.name}</TableCell>
