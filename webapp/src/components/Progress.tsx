@@ -10,8 +10,8 @@ interface Props {
 
 export function Progress({ progress, color, icon }: Props) {
     const dasharray = 300
-    const fillStrokeWidth = 6
-    const baseStrokeWidth = 2
+    const fillStrokeWidth = 10
+    const baseStrokeWidth = 3
 
     return (
         <div className="m-auto w-10 h-10 relative" style={{ color: color }}>
