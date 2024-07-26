@@ -39,10 +39,7 @@ export default function Index() {
                         </TabsList>
                         <span className="grow contents-['']"></span>
                         <Button className="gap-1" asChild={true}>
-                            <Link to="/accounts/new">
-                                <Plus className="h-4 w-4" />
-                                <span className="sr-only sm:not-sr-only">New</span>
-                            </Link>
+                            <Link to="/accounts/new">New</Link>
                         </Button>
                     </div>
                     <TabsContent value="capital" className="m-0">
