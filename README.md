@@ -22,10 +22,17 @@ A simple personal finances application to bring order to the chaos of your perso
   - [x] Migrate Account lists endpoint from `json-server` to server.
   - [x] Migrate Transactions lists endpoint from `json-server` to server.
   - [x] Migrate Pending Transactions lists endpoint from `json-server` to server.
-- [ ] Develop initial implementation of Transactions History filters.
+- [x] Develop initial implementation of Transactions History filters.
   - [ ] Make design in `drawio` board.
-  - [ ] Refactor Account list endpoint to return a simplified.
+  - [x] Refactor Account list endpoint to return a simplified.
 - [ ] Develop initial implementation of Transactions Upcoming filters.
   - [ ] Make design in `drawio` board.
   - [ ] Develop initial implementation of Upcoming Transactions API endpoint.
 - [ ] Migrate elements from this list to a Notion project.
+- [ ] Migrate to `shadcn/ui` for ui
+  - [x] Layout
+  - [ ] Accounts
+    - [x] Redesign index
+    - [ ] Redesign flow
+    - [ ] Redesign show
+    - [ ] redesign index
