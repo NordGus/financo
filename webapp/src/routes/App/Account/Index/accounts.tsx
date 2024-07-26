@@ -385,8 +385,6 @@ function ExternalRow({
 }
 
 export function IncomeAccountsTable({ }) {
-    // TODO: Implement children account usage
-
     const navigate = useNavigate()
     const {
         data: active,
