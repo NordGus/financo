@@ -1,11 +1,17 @@
-import { QueryClient } from "@tanstack/react-query";
 import { Link, LoaderFunction, LoaderFunctionArgs } from "react-router-dom";
-import { SummaryAvailableCredit, SummaryCapital, SummaryDebt, SummaryNetWorth } from "./summaries";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
-import { Button } from "@components/ui/button";
+import { QueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
+
+import { Button } from "@components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
+import { SummaryAvailableCredit, SummaryCapital, SummaryDebt, SummaryNetWorth } from "./summaries";
 import { AchievementsTracker } from "./achievements";
+import {
+    CapitalAccountsTable,
+    DebtAccountsTable,
+    ExpenseAccountsTable,
+    IncomeAccountsTable
+} from "./accounts";
 
 export function loader(_queryClient: QueryClient): LoaderFunction {
     return async (_props: LoaderFunctionArgs) => {
@@ -23,7 +29,7 @@ export default function Index() {
                 <SummaryAvailableCredit />
             </div>
             <div className="grid grid-cols-3 gap-2 items-start">
-                <Tabs defaultValue={"capital"} className="flex flex-col gap-2 col-span-2">
+                <Tabs defaultValue={"capital"} className="flex flex-col gap-2 col-span-2 m-0">
                     <div className="flex">
                         <TabsList>
                             <TabsTrigger value="capital">Capital</TabsTrigger>
@@ -39,48 +45,18 @@ export default function Index() {
                             </Link>
                         </Button>
                     </div>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <TabsContent value="capital">
-                                <CardTitle>Capital</CardTitle>
-                                <CardDescription>
-                                    Recent orders from your store.
-                                </CardDescription>
-                            </TabsContent>
-                            <TabsContent value="debt">
-                                <CardTitle>Debts and Credit Lines</CardTitle>
-                                <CardDescription>
-                                    Recent orders from your store.
-                                </CardDescription>
-                            </TabsContent>
-                            <TabsContent value="income">
-                                <CardTitle>Income Sources</CardTitle>
-                                <CardDescription>
-                                    Recent orders from your store.
-                                </CardDescription>
-                            </TabsContent>
-                            <TabsContent value="expenses">
-                                <CardTitle>Expenses</CardTitle>
-                                <CardDescription>
-                                    Recent orders from your store.
-                                </CardDescription>
-                            </TabsContent>
-                        </CardHeader>
-                        <CardContent>
-                            <TabsContent value="capital">
-                                <h1>capital</h1>
-                            </TabsContent>
-                            <TabsContent value="debt">
-                                <h1>debt</h1>
-                            </TabsContent>
-                            <TabsContent value="income">
-                                <h1>income</h1>
-                            </TabsContent>
-                            <TabsContent value="expenses">
-                                <h1>expenses</h1>
-                            </TabsContent>
-                        </CardContent>
-                    </Card>
+                    <TabsContent value="capital" className="m-0">
+                        <CapitalAccountsTable />
+                    </TabsContent>
+                    <TabsContent value="debt" className="m-0">
+                        <DebtAccountsTable />
+                    </TabsContent>
+                    <TabsContent value="income" className="m-0">
+                        <IncomeAccountsTable />
+                    </TabsContent>
+                    <TabsContent value="expenses" className="m-0">
+                        <ExpenseAccountsTable />
+                    </TabsContent>
                 </Tabs>
                 <AchievementsTracker />
             </div>
