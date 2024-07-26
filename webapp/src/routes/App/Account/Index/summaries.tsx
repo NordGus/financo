@@ -10,7 +10,7 @@ import {
 
 import { CardSummary } from "@components/card";
 
-export function SummaryCapital() {
+export function SummaryCapital({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
         queryKey: ['summary', 'capital'],
         queryFn: getCapitalSummary,
@@ -20,10 +20,10 @@ export function SummaryCapital() {
     if (isError) throw error
     if (isFetching) return null
 
-    return <CardSummary title="Capital" balances={balances || []} />
+    return <CardSummary className={className} title="Capital" balances={balances || []} />
 }
 
-export function SummaryDebt() {
+export function SummaryDebt({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
         queryKey: ['summary', 'debts'],
         queryFn: getDebtsSummary,
@@ -33,10 +33,10 @@ export function SummaryDebt() {
     if (isError) throw error
     if (isFetching) return null
 
-    return <CardSummary title="Debt" balances={balances || []} />
+    return <CardSummary className={className} title="Debt" balances={balances || []} />
 }
 
-export function SummaryNetWorth() {
+export function SummaryNetWorth({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
         queryKey: ['summary', 'net_worth'],
         queryFn: getNetWorthSummary,
@@ -46,10 +46,10 @@ export function SummaryNetWorth() {
     if (isError) throw error
     if (isFetching) return null
 
-    return <CardSummary title="Net Worth" balances={balances || []} />
+    return <CardSummary className={className} title="Net Worth" balances={balances || []} />
 }
 
-export function SummaryAvailableCredit() {
+export function SummaryAvailableCredit({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
         queryKey: ['summary', 'available_credit'],
         queryFn: getAvailableCreditSummary,
@@ -59,5 +59,5 @@ export function SummaryAvailableCredit() {
     if (isError) throw error
     if (isFetching) return null
 
-    return <CardSummary title="Available Credit" balances={balances || []} />
+    return <CardSummary className={className} title="Available Credit" balances={balances || []} />
 }
