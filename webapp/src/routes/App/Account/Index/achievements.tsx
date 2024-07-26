@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@comp
 import { Table, TableBody, TableCell, TableRow } from "@components/ui/table";
 import { TrophyIcon } from "lucide-react";
 
-export function AchievementsTracker() {
+export function AchievementsTracker({ className }: { className?: string }) {
     // [ ] TODO: Implement goals/achievements endpoints
 
     // const query = useQuery({
@@ -54,7 +54,7 @@ export function AchievementsTracker() {
     ]
 
     return (
-        <Card>
+        <Card className={className}>
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                 <div>
                     <CardTitle>Achievements</CardTitle>
