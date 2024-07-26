@@ -37,7 +37,6 @@ import {
 
 export function CapitalAccountsTable({ }) {
     const navigate = useNavigate()
-
     const {
         data: active,
         isFetching: activeIsFetching,
@@ -48,7 +47,6 @@ export function CapitalAccountsTable({ }) {
         queryFn: getAccounts({ kind: [Kind.CapitalNormal, Kind.CapitalSavings] }),
         staleTime: staleTimeDefault
     })
-
     const {
         data: archived,
         isFetching: archivedIsFetching,
@@ -127,72 +125,76 @@ export function CapitalAccountsTable({ }) {
                             </Table>
                         </div>
                 }
-                <Accordion type="single" collapsible={true}>
-                    <AccordionItem value="archived">
-                        <AccordionTrigger>Archive</AccordionTrigger>
-                        <AccordionContent>
-                            {
-                                isNil(archived) || isEmpty(archived)
-                                    ? <div></div>
-                                    : <div className="rounded-md border dark:border-zinc-800">
-                                        <Table>
-                                            <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>Name</TableHead>
-                                                    <TableHead>Description</TableHead>
-                                                    <TableHead>Kind</TableHead>
-                                                    <TableHead>Balance</TableHead>
-                                                </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {
-                                                    archived.map(({
-                                                        id, kind, name, description, balance, currency, color
-                                                    }) => {
-                                                        const clr = new Color(color)
-                                                            .to("HSL")
-                                                            .set({ l: (l) => l >= 50 ? 1 : 100 })
-                                                            .toString({ precision: 3, format: "rgb" })
-
-                                                        return <TableRow
-                                                            className="cursor-pointer"
-                                                            onClick={() => navigate(`/accounts/${id}`)}
-                                                        >
-                                                            <TableCell>
-                                                                {name}
-                                                            </TableCell>
-                                                            <TableCell>{description}</TableCell>
-                                                            <TableCell>
-                                                                <span
-                                                                    className="px-2 py-1 rounded-md text-xs"
-                                                                    style={{
-                                                                        backgroundColor: color,
-                                                                        color: clr
-                                                                    }}
-                                                                >
-                                                                    {kindToHuman(kind)}
-                                                                </span>
-                                                            </TableCell>
-                                                            <TableCell
-                                                                className={currencyAmountColor(balance)}
-                                                            >
-                                                                {
-                                                                    currencyAmountToHuman(
-                                                                        balance,
-                                                                        currency
-                                                                    )
-                                                                }
-                                                            </TableCell>
+                {
+                    isEmpty(archived) || isNil(archived)
+                        ? null
+                        : <Accordion type="single" collapsible={true}>
+                            <AccordionItem value="archived">
+                                <AccordionTrigger>Archive</AccordionTrigger>
+                                <AccordionContent>
+                                    {
+                                        isNil(archived) || isEmpty(archived)
+                                            ? <div></div>
+                                            : <div className="rounded-md border dark:border-zinc-800">
+                                                <Table>
+                                                    <TableHeader>
+                                                        <TableRow>
+                                                            <TableHead>Name</TableHead>
+                                                            <TableHead>Description</TableHead>
+                                                            <TableHead>Kind</TableHead>
+                                                            <TableHead>Balance</TableHead>
                                                         </TableRow>
-                                                    })
-                                                }
-                                            </TableBody>
-                                        </Table>
-                                    </div>
-                            }
-                        </AccordionContent>
-                    </AccordionItem>
-                </Accordion>
+                                                    </TableHeader>
+                                                    <TableBody>
+                                                        {
+                                                            archived.map(({
+                                                                id, kind, name, description, balance, currency, color
+                                                            }) => {
+                                                                const clr = new Color(color)
+                                                                    .to("HSL")
+                                                                    .set({ l: (l) => l >= 50 ? 1 : 100 })
+                                                                    .toString({ precision: 3, format: "rgb" })
+
+                                                                return <TableRow
+                                                                    className="cursor-pointer"
+                                                                    onClick={() => navigate(`/accounts/${id}`)}
+                                                                >
+                                                                    <TableCell>
+                                                                        {name}
+                                                                    </TableCell>
+                                                                    <TableCell>{description}</TableCell>
+                                                                    <TableCell>
+                                                                        <span
+                                                                            className="px-2 py-1 rounded-md text-xs"
+                                                                            style={{
+                                                                                backgroundColor: color,
+                                                                                color: clr
+                                                                            }}
+                                                                        >
+                                                                            {kindToHuman(kind)}
+                                                                        </span>
+                                                                    </TableCell>
+                                                                    <TableCell
+                                                                        className={currencyAmountColor(balance)}
+                                                                    >
+                                                                        {
+                                                                            currencyAmountToHuman(
+                                                                                balance,
+                                                                                currency
+                                                                            )
+                                                                        }
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            })
+                                                        }
+                                                    </TableBody>
+                                                </Table>
+                                            </div>
+                                    }
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                }
             </CardContent>
         </Card >
     )
@@ -232,13 +234,30 @@ export function DebtAccountsTable({ }) {
 }
 
 export function IncomeAccountsTable({ }) {
-    const { data: accounts, isFetching, isError, error } = useQuery({
+    const navigate = useNavigate()
+    const {
+        data: active,
+        isFetching: activeIsFetching,
+        isError: activeIsError,
+        error: activeError
+    } = useQuery({
         queryKey: ["accounts", "income", "list"],
         queryFn: getAccounts({ kind: [Kind.ExternalIncome] }),
         staleTime: staleTimeDefault
     })
+    const {
+        data: archived,
+        isFetching: archivedIsFetching,
+        isError: archivedIsError,
+        error: archivedError
+    } = useQuery({
+        queryKey: ["accounts", "income", "list", "archived"],
+        queryFn: getAccounts({ kind: [Kind.ExternalIncome] }),
+        staleTime: staleTimeDefault
+    })
 
-    if (isError) throw error
+    if (activeIsError) throw activeError
+    if (archivedIsError) throw archivedError
 
     return (
         <Card>
@@ -249,11 +268,11 @@ export function IncomeAccountsTable({ }) {
                         Recent orders from your store.
                     </CardDescription>
                 </div>
-                {isFetching && <Throbber variant="small" />}
+                {activeIsFetching && archivedIsFetching && <Throbber variant="small" />}
             </CardHeader>
             <CardContent>
                 {
-                    isNil(accounts) || isEmpty(accounts)
+                    isNil(active) || isEmpty(active)
                         ? <div></div>
                         : <Table>
 
