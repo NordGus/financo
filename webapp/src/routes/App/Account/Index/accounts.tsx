@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Color from "colorjs.io";
 import { isEmpty, isNil } from "lodash";
+import { MinusIcon, PlusIcon } from "lucide-react";
 
 import { Kind, Preview } from "@/types/Account";
 
 import kindToHuman from "@helpers/account/kindToHuman";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import { cn } from "@/lib/utils";
 
 import { staleTimeDefault } from "@queries/Client";
 import { getAccounts } from "@api/accounts";
@@ -35,7 +38,6 @@ import {
     AccordionTrigger
 } from "@components/ui/accordion";
 import { Progress } from "@components/Progress";
-import { cn } from "@/lib/utils";
 
 function CapitalTable({ accounts, navigate }: { accounts: Preview[], navigate: NavigateFunction }) {
     return (
@@ -301,6 +303,76 @@ export function DebtAccountsTable({ }) {
     )
 }
 
+function ExternalTable({
+    accounts, navigate
+}: { accounts: Preview[], navigate: NavigateFunction }) {
+    return <Table className="table-fixed">
+        <TableHeader>
+            <TableRow>
+                <TableHead className="w-[3rem]"></TableHead>
+                <TableHead className="w-[20rem]">Name</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="w-[8rem]">Currency</TableHead>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+            {
+                accounts.map((account) => <ExternalRow account={account} navigate={navigate} />)
+            }
+        </TableBody>
+    </Table>
+}
+
+function ExternalRow({
+    account: { id, name, description, currency, children }, navigate
+}: { account: Preview, navigate: NavigateFunction }) {
+    const [showChildren, setShowChildren] = useState(false)
+    const isChildless = isEmpty(children) || isNil(children)
+
+    return (
+        <>
+            <TableRow
+                key={`account:${id}`}
+                className="cursor-pointer"
+            >
+                {
+                    isChildless
+                        ? <TableCell onClick={() => navigate(`/accounts/${id}`)}></TableCell>
+                        : <TableCell
+                            onClick={() => setShowChildren(!showChildren)}
+                            className="text-center"
+                        >
+                            {
+                                showChildren
+                                    ? <MinusIcon className="inline-block" />
+                                    : <PlusIcon className="inline-block" />
+                            }
+                        </TableCell>
+                }
+                <TableCell onClick={() => navigate(`/accounts/${id}`)}>{name}</TableCell>
+                <TableCell onClick={() => navigate(`/accounts/${id}`)}>{description}</TableCell>
+                <TableCell onClick={() => navigate(`/accounts/${id}`)}>{currency}</TableCell>
+            </TableRow>
+            {
+                isChildless
+                    ? null
+                    : showChildren
+                        ? children.map((child) => <TableRow
+                            key={`account:${id}`}
+                            className="cursor-pointer"
+                            onClick={() => navigate(`/accounts/${child.id}`)}
+                        >
+                            <TableCell></TableCell>
+                            <TableCell>{name} ({child.name})</TableCell>
+                            <TableCell>{child.description}</TableCell>
+                            <TableCell>{child.currency}</TableCell>
+                        </TableRow>)
+                        : null
+            }
+        </>
+    )
+}
+
 export function IncomeAccountsTable({ }) {
     // TODO: Implement children account usage
 
@@ -345,32 +417,7 @@ export function IncomeAccountsTable({ }) {
                     isNil(active) || isEmpty(active)
                         ? <div></div>
                         : <div className="rounded-md border dark:border-zinc-800">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Name</TableHead>
-                                        <TableHead>Description</TableHead>
-                                        <TableHead>Currency</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {
-                                        active.map(({
-                                            id, name, description, currency
-                                        }) => {
-                                            return <TableRow
-                                                key={`account:${id}`}
-                                                className="cursor-pointer"
-                                                onClick={() => navigate(`/accounts/${id}`)}
-                                            >
-                                                <TableCell>{name}</TableCell>
-                                                <TableCell>{description}</TableCell>
-                                                <TableCell>{currency}</TableCell>
-                                            </TableRow>
-                                        })
-                                    }
-                                </TableBody>
-                            </Table>
+                            <ExternalTable accounts={active} navigate={navigate} />
                         </div>
                 }
                 {
@@ -381,32 +428,7 @@ export function IncomeAccountsTable({ }) {
                                 <AccordionTrigger>Archive</AccordionTrigger>
                                 <AccordionContent>
                                     <div className="rounded-md border dark:border-zinc-800">
-                                        <Table>
-                                            <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>Name</TableHead>
-                                                    <TableHead>Description</TableHead>
-                                                    <TableHead>Currency</TableHead>
-                                                </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {
-                                                    archived.map(({
-                                                        id, name, description, currency
-                                                    }) => {
-                                                        return <TableRow
-                                                            key={`account:${id}`}
-                                                            className="cursor-pointer"
-                                                            onClick={() => navigate(`/accounts/${id}`)}
-                                                        >
-                                                            <TableCell>{name}</TableCell>
-                                                            <TableCell>{description}</TableCell>
-                                                            <TableCell>{currency}</TableCell>
-                                                        </TableRow>
-                                                    })
-                                                }
-                                            </TableBody>
-                                        </Table>
+                                        <ExternalTable accounts={archived} navigate={navigate} />
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>
@@ -461,32 +483,7 @@ export function ExpenseAccountsTable({ }) {
                     isNil(active) || isEmpty(active)
                         ? <div></div>
                         : <div className="rounded-md border dark:border-zinc-800">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Name</TableHead>
-                                        <TableHead>Description</TableHead>
-                                        <TableHead>Currency</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {
-                                        active.map(({
-                                            id, name, description, currency
-                                        }) => {
-                                            return <TableRow
-                                                key={`account:${id}`}
-                                                className="cursor-pointer"
-                                                onClick={() => navigate(`/accounts/${id}`)}
-                                            >
-                                                <TableCell>{name}</TableCell>
-                                                <TableCell>{description}</TableCell>
-                                                <TableCell>{currency}</TableCell>
-                                            </TableRow>
-                                        })
-                                    }
-                                </TableBody>
-                            </Table>
+                            <ExternalTable accounts={active} navigate={navigate} />
                         </div>
                 }
                 {
@@ -497,32 +494,7 @@ export function ExpenseAccountsTable({ }) {
                                 <AccordionTrigger>Archive</AccordionTrigger>
                                 <AccordionContent>
                                     <div className="rounded-md border dark:border-zinc-800">
-                                        <Table>
-                                            <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>Name</TableHead>
-                                                    <TableHead>Description</TableHead>
-                                                    <TableHead>Currency</TableHead>
-                                                </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {
-                                                    archived.map(({
-                                                        id, name, description, currency
-                                                    }) => {
-                                                        return <TableRow
-                                                            key={`account:${id}`}
-                                                            className="cursor-pointer"
-                                                            onClick={() => navigate(`/accounts/${id}`)}
-                                                        >
-                                                            <TableCell>{name}</TableCell>
-                                                            <TableCell>{description}</TableCell>
-                                                            <TableCell>{currency}</TableCell>
-                                                        </TableRow>
-                                                    })
-                                                }
-                                            </TableBody>
-                                        </Table>
+                                        <ExternalTable accounts={archived} navigate={navigate} />
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>
