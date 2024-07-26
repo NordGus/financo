@@ -78,7 +78,7 @@ export function CapitalAccountsTable({ }) {
                 {
                     isNil(active) || isEmpty(active)
                         ? <div></div>
-                        : <div className="rounded-md border">
+                        : <div className="rounded-md border dark:border-zinc-800">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -134,7 +134,7 @@ export function CapitalAccountsTable({ }) {
                             {
                                 isNil(archived) || isEmpty(archived)
                                     ? <div></div>
-                                    : <div className="rounded-md border">
+                                    : <div className="rounded-md border dark:border-zinc-800">
                                         <Table>
                                             <TableHeader>
                                                 <TableRow>
