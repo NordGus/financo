@@ -1,4 +1,5 @@
 import { isNil } from "lodash"
+import { CheckIcon } from "lucide-react"
 import { ReactNode } from "react"
 
 interface Props {
@@ -11,7 +12,6 @@ export default function Progress({ progress, color, icon }: Props) {
     const dasharray = 300
     const fillStrokeWidth = 6
     const baseStrokeWidth = 2
-    const checkMarkSize = 18
 
     return (
         <div className="m-auto w-10 h-10 relative" style={{ color: color }}>
@@ -59,20 +59,7 @@ export default function Progress({ progress, color, icon }: Props) {
                     >
                         {
                             isNil(icon)
-                                ? <svg
-                                    fill="none"
-                                    height={checkMarkSize}
-                                    width={checkMarkSize}
-                                    stroke="currentColor"
-                                    viewBox="60 60 60 60"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={fillStrokeWidth}
-                                >
-                                    <polyline
-                                        points="65 90 85 110 115 70"
-                                    ></polyline>
-                                </svg>
+                                ? <CheckIcon size={20} />
                                 : icon
                         }
                     </span>
