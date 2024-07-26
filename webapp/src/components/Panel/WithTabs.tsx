@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
 
-import Throbber from "@components/Throbber"
+import { Throbber } from "@components/Throbber"
 
 import { ActionButton } from "./components/ActionButton"
 import Base from "./Base"

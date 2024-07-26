@@ -1,7 +1,7 @@
 import { useOutletContext } from "react-router-dom";
 
 import Panel from "@components/Panel";
-import Throbber from "@components/Throbber";
+import { Throbber } from "@components/Throbber";
 
 interface OutletContext {
     setOpenModal: React.Dispatch<React.SetStateAction<boolean>>

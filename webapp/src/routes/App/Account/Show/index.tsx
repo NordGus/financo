@@ -3,7 +3,7 @@ import { LoaderFunctionArgs, useLoaderData } from "react-router-dom"
 
 import { accountQuery } from "@queries/accounts"
 
-import Throbber from "@components/Throbber"
+import { Throbber } from "@components/Throbber"
 import Panel from "@components/Panel"
 import Transactions from "./Transactions"
 

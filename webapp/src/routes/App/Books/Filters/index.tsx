@@ -12,7 +12,7 @@ import isDebtAccount from "@helpers/account/isDebtAccount";
 import { ListFilters } from "@api/transactions";
 import { accountsForOtherContext } from "@queries/accounts";
 
-import Throbber from "@components/Throbber";
+import { Throbber } from "@components/Throbber";
 import { Calendar } from "@components/ui/calendar";
 import { Button } from "@components/ui/button";
 import { Card } from "@components/ui/card";
@@ -129,7 +129,7 @@ export default function Filters({
                 <div className="grid grid-cols-[min-content_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1fr)] items-stretch gap-2">
                     <div className="flex flex-col items-center gap-2">
                         <div className="flex gap-2">
-                            {/* TODO(#1): implement date picker period shortcut */}
+                            {/* [ ] TODO: implement date picker period shortcut */}
                             <Button variant="link">
                                 Today
                             </Button>

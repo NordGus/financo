@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom"
 import { goalQuery } from "@queries/goals"
 
 import Panel from "@components/Panel"
-import Throbber from "@components/Throbber"
+import { Throbber } from "@components/Throbber"
 
 export default function Show() {
     const { id } = useParams()
