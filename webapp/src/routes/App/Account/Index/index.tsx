@@ -1,6 +1,5 @@
 import { Link, LoaderFunction, LoaderFunctionArgs } from "react-router-dom";
 import { QueryClient } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
 
 import { Button } from "@components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
