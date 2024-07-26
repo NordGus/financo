@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { Link, NavigateFunction, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Color from "colorjs.io";
 import { isEmpty, isNil } from "lodash";
@@ -38,6 +38,7 @@ import {
     AccordionTrigger
 } from "@components/ui/accordion";
 import { Progress } from "@components/Progress";
+import { Button } from "@components/ui/button";
 
 function CapitalTable({ accounts, navigate }: { accounts: Preview[], navigate: NavigateFunction }) {
     return (
@@ -131,7 +132,12 @@ export function CapitalAccountsTable({ }) {
             <CardContent className="mt-4 space-y-4">
                 {
                     isNil(active) || isEmpty(active)
-                        ? <div></div>
+                        ? <>
+                            <p>You have no active capital accounts</p>
+                            <Button variant="outline" asChild={true}>
+                                <Link to="/accounts/new">Create New Account</Link>
+                            </Button>
+                        </>
                         : <div className="rounded-md border dark:border-zinc-800">
                             <CapitalTable accounts={active} navigate={navigate} />
                         </div>
@@ -279,7 +285,12 @@ export function DebtAccountsTable({ }) {
             <CardContent className="mt-4 space-y-4">
                 {
                     isNil(active) || isEmpty(active)
-                        ? <div></div>
+                        ? <>
+                            <p>You have no active debts</p>
+                            <Button variant="outline" asChild={true}>
+                                <Link to="/accounts/new">Create New Account</Link>
+                            </Button>
+                        </>
                         : <div className="rounded-md border dark:border-zinc-800">
                             <DebtTable accounts={active} navigate={navigate} />
                         </div>
@@ -360,7 +371,7 @@ function ExternalRow({
                         ? children.map((child) => <TableRow
                             key={`account:${id}`}
                             className="cursor-pointer"
-                            onClick={() => navigate(`/accounts/${child.id}`)}
+                            onClick={() => navigate(`/accounts/${id}`)}
                         >
                             <TableCell></TableCell>
                             <TableCell>{name} ({child.name})</TableCell>
@@ -415,7 +426,12 @@ export function IncomeAccountsTable({ }) {
             <CardContent className="mt-4 space-y-4">
                 {
                     isNil(active) || isEmpty(active)
-                        ? <div></div>
+                        ? <>
+                            <p>You have no active income sources</p>
+                            <Button variant="outline" asChild={true}>
+                                <Link to="/accounts/new">Create New Account</Link>
+                            </Button>
+                        </>
                         : <div className="rounded-md border dark:border-zinc-800">
                             <ExternalTable accounts={active} navigate={navigate} />
                         </div>
@@ -440,8 +456,6 @@ export function IncomeAccountsTable({ }) {
 }
 
 export function ExpenseAccountsTable({ }) {
-    // TODO: Implement children account usage
-
     const navigate = useNavigate()
     const {
         data: active,
@@ -481,7 +495,12 @@ export function ExpenseAccountsTable({ }) {
             <CardContent className="mt-4 space-y-4">
                 {
                     isNil(active) || isEmpty(active)
-                        ? <div></div>
+                        ? <>
+                            <p>You have no active expense sources</p>
+                            <Button variant="outline" asChild={true}>
+                                <Link to="/accounts/new">Create New Account</Link>
+                            </Button>
+                        </>
                         : <div className="rounded-md border dark:border-zinc-800">
                             <ExternalTable accounts={active} navigate={navigate} />
                         </div>
