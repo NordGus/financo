@@ -20,14 +20,14 @@ export function loader(_queryClient: QueryClient): LoaderFunction {
 
 export default function Index() {
     return (
-        <div className="space-y-2">
-            <div className="grid gap-2 grid-cols-4">
+        <div className="space-y-4">
+            <div className="grid gap-4 grid-cols-4">
                 <SummaryCapital />
                 <SummaryDebt />
                 <SummaryNetWorth />
                 <SummaryAvailableCredit />
             </div>
-            <div className="grid grid-cols-3 gap-2 items-start">
+            <div className="grid grid-cols-3 gap-4 items-start">
                 <Tabs defaultValue={"capital"} className="flex flex-col gap-2 col-span-2 m-0">
                     <div className="flex">
                         <TabsList>
