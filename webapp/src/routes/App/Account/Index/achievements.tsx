@@ -15,7 +15,8 @@ import { Table, TableBody, TableCell, TableRow } from "@components/ui/table";
 import { TrophyIcon } from "lucide-react";
 
 export function AchievementsTracker() {
-    // TODO: Implement goals/achievements endpoints
+    // [ ] TODO: Implement goals/achievements endpoints
+
     // const query = useQuery({
     //     queryKey: ['goals', 'tracker'],
     //     queryFn: getGoals,
