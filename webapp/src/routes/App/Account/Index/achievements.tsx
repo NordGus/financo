@@ -1,16 +1,18 @@
+import { useQuery } from "@tanstack/react-query";
+import { isEmpty, isNil } from "lodash";
+import moment from "moment";
+
 import Goal from "@/types/Goal";
+
+import { staleTimeDefault } from "@queries/Client";
 import { getGoals } from "@api/goals";
-import Progress from "@components/Progress";
-import Throbber from "@components/Throbber";
+
+import { Progress } from "@components/Progress";
+import { Throbber } from "@components/Throbber";
 import { Button } from "@components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@components/ui/table";
-import { staleTimeDefault } from "@queries/Client";
-import { TabsContent } from "@radix-ui/react-tabs";
-import { useQuery } from "@tanstack/react-query";
-import { isEmpty, isNil } from "lodash";
 import { TrophyIcon } from "lucide-react";
-import moment from "moment";
 
 export function AchievementsTracker() {
     // TODO: Implement goals/achievements endpoints
