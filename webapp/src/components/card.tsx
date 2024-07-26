@@ -17,9 +17,9 @@ export function CardSummary({
             <CardContent>
                 {
                     balances.map(({ amount, currency }) => <div
-                        className={cn("text-2xl font-bold", currencyAmountColor(amount))}
+                        className={cn("text-2xl font-bold", currencyAmountColor(amount, false))}
                     >
-                        {currencyAmountToHuman(amount, currency)}
+                        {currencyAmountToHuman(Math.abs(amount), currency)}
                     </div>)
                 }
             </CardContent>
