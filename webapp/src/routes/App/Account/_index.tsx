@@ -2,8 +2,13 @@ import { QueryClient } from "@tanstack/react-query";
 import { LoaderFunction, LoaderFunctionArgs, Outlet } from "react-router-dom";
 
 import Breadcrumbs from "@components/breadcrumbs";
-import { AchievementsTracker } from "./Index/achievements";
-import { SummaryCapital, SummaryDebt, SummaryNetWorth, SummaryAvailableCredit } from "./Index/summaries";
+import { AchievementsTracker } from "@components/widgets/achievements";
+import {
+    SummaryCapital,
+    SummaryDebt,
+    SummaryNetWorth,
+    SummaryAvailableCredit
+} from "@components/widgets/summaries";
 
 export function loader(_queryClient: QueryClient): LoaderFunction {
     return async (_props: LoaderFunctionArgs) => {
@@ -13,7 +18,7 @@ export function loader(_queryClient: QueryClient): LoaderFunction {
 
 export default function Layout() {
     return (
-        <main className="space-y-4">
+        <div className="space-y-4">
             <div className="h-10 md:h-9 flex items-center">
                 <Breadcrumbs />
             </div>
@@ -29,6 +34,6 @@ export default function Layout() {
                     <Outlet />
                 </div>
             </div>
-        </main>
+        </div>
     )
 }
