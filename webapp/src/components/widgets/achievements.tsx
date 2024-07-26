@@ -133,7 +133,7 @@ export function AchievementsTracker({ className }: { className?: string }) {
             <CardContent>
                 {
                     isNil(goals) || isEmpty(goals)
-                        ? <div className="mt-4 space-y-2">
+                        ? <div className="mt-4 space-y-4">
                             <p>You have no active savings goals</p>
                             <Button variant="outline" className="">Create New Goal</Button>
                         </div>
