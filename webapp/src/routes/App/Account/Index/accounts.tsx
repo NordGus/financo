@@ -68,7 +68,7 @@ export function CapitalAccountsTable({ }) {
                 <div className="space-y-2">
                     <CardTitle>Capital</CardTitle>
                     <CardDescription>
-                        Recent orders from your store.
+                        Represents your bank account, cash or savings accounts
                     </CardDescription>
                 </div>
                 {activeIsFetching || archivedIsFetching && <Throbber variant="small" />}
@@ -232,7 +232,7 @@ export function DebtAccountsTable({ }) {
                 <div className="space-y-2">
                     <CardTitle>Debts and Credit Lines</CardTitle>
                     <CardDescription>
-                        Recent orders from your store.
+                        Represent loans of any kind, debts between you and your friends or any kind of credit line, like credit cards
                     </CardDescription>
                 </div>
                 {activeIsFetching || archivedIsFetching && <Throbber variant="small" />}
@@ -432,7 +432,7 @@ export function IncomeAccountsTable({ }) {
                 <div className="space-y-2">
                     <CardTitle>Income Sources and Incoming Transactions</CardTitle>
                     <CardDescription>
-                        Recent orders from your store.
+                        Represent any possible incoming source of currency
                     </CardDescription>
                 </div>
                 {activeIsFetching && archivedIsFetching && <Throbber variant="small" />}
@@ -548,7 +548,7 @@ export function ExpenseAccountsTable({ }) {
                 <div className="space-y-2">
                     <CardTitle>Expenses and Outgoing Transactions</CardTitle>
                     <CardDescription>
-                        Recent orders from your store.
+                        Represent any possible expense or outgoing source of currency
                     </CardDescription>
                 </div>
                 {activeIsFetching || archivedIsFetching && <Throbber variant="small" />}
