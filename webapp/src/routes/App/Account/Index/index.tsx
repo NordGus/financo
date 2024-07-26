@@ -3,8 +3,6 @@ import { QueryClient } from "@tanstack/react-query";
 
 import { Button } from "@components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
-import { SummaryAvailableCredit, SummaryCapital, SummaryDebt, SummaryNetWorth } from "./summaries";
-import { AchievementsTracker } from "./achievements";
 import {
     CapitalAccountsTable,
     DebtAccountsTable,
