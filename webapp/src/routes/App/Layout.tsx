@@ -25,9 +25,9 @@ export default function Layout() {
                 <NavLink name="Achievements" path="achievements" icon={<TrophyIcon />} />
                 <NavLink name="Configuration" path="settings" icon={<SettingsIcon />} />
             </nav>
-            <div className='block min-h-full overflow-y-auto p-2'>
+            <main className='block min-h-full overflow-y-auto p-2'>
                 <Outlet />
-            </div>
+            </main>
         </div>
     )
 }
