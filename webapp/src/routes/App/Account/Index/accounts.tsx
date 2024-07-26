@@ -97,6 +97,7 @@ export function CapitalAccountsTable({ }) {
                                                 .toString({ precision: 3, format: "rgb" })
 
                                             return <TableRow
+                                                key={`account:${id}`}
                                                 className="cursor-pointer"
                                                 onClick={() => navigate(`/accounts/${id}`)}
                                             >
@@ -234,6 +235,8 @@ export function DebtAccountsTable({ }) {
 }
 
 export function IncomeAccountsTable({ }) {
+    // TODO: Implement children account usage
+
     const navigate = useNavigate()
     const {
         data: active,
@@ -252,7 +255,7 @@ export function IncomeAccountsTable({ }) {
         error: archivedError
     } = useQuery({
         queryKey: ["accounts", "income", "list", "archived"],
-        queryFn: getAccounts({ kind: [Kind.ExternalIncome] }),
+        queryFn: getAccounts({ kind: [Kind.ExternalIncome], archived: true }),
         staleTime: staleTimeDefault
     })
 
@@ -270,13 +273,129 @@ export function IncomeAccountsTable({ }) {
                 </div>
                 {activeIsFetching && archivedIsFetching && <Throbber variant="small" />}
             </CardHeader>
-            <CardContent>
+            <CardContent className="mt-4 space-y-4">
                 {
                     isNil(active) || isEmpty(active)
                         ? <div></div>
-                        : <Table>
+                        : <div className="rounded-md border dark:border-zinc-800">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Description</TableHead>
+                                        <TableHead>Kind</TableHead>
+                                        <TableHead>Balance</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {
+                                        active.map(({
+                                            id, kind, name, description, balance, currency, color
+                                        }) => {
+                                            const clr = new Color(color)
+                                                .to("HSL")
+                                                .set({ l: (l) => l >= 50 ? 1 : 100 })
+                                                .toString({ precision: 3, format: "rgb" })
 
-                        </Table>
+                                            return <TableRow
+                                                key={`account:${id}`}
+                                                className="cursor-pointer"
+                                                onClick={() => navigate(`/accounts/${id}`)}
+                                            >
+                                                <TableCell>
+                                                    {name}
+                                                </TableCell>
+                                                <TableCell>{description}</TableCell>
+                                                <TableCell>
+                                                    <span
+                                                        className="px-2 py-1 rounded-md text-xs"
+                                                        style={{
+                                                            backgroundColor: color,
+                                                            color: clr
+                                                        }}
+                                                    >
+                                                        {kindToHuman(kind)}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell className={currencyAmountColor(balance)}>
+                                                    {currencyAmountToHuman(balance, currency)}
+                                                </TableCell>
+                                            </TableRow>
+                                        })
+                                    }
+                                </TableBody>
+                            </Table>
+                        </div>
+                }
+                {
+                    isEmpty(archived) || isNil(archived)
+                        ? null
+                        : <Accordion type="single" collapsible={true}>
+                            <AccordionItem value="archived">
+                                <AccordionTrigger>Archive</AccordionTrigger>
+                                <AccordionContent>
+                                    {
+                                        isNil(archived) || isEmpty(archived)
+                                            ? <div></div>
+                                            : <div className="rounded-md border dark:border-zinc-800">
+                                                <Table>
+                                                    <TableHeader>
+                                                        <TableRow>
+                                                            <TableHead>Name</TableHead>
+                                                            <TableHead>Description</TableHead>
+                                                            <TableHead>Kind</TableHead>
+                                                            <TableHead>Balance</TableHead>
+                                                        </TableRow>
+                                                    </TableHeader>
+                                                    <TableBody>
+                                                        {
+                                                            archived.map(({
+                                                                id, kind, name, description, balance, currency, color
+                                                            }) => {
+                                                                const clr = new Color(color)
+                                                                    .to("HSL")
+                                                                    .set({ l: (l) => l >= 50 ? 1 : 100 })
+                                                                    .toString({ precision: 3, format: "rgb" })
+
+                                                                return <TableRow
+                                                                    className="cursor-pointer"
+                                                                    onClick={() => navigate(`/accounts/${id}`)}
+                                                                >
+                                                                    <TableCell>
+                                                                        {name}
+                                                                    </TableCell>
+                                                                    <TableCell>{description}</TableCell>
+                                                                    <TableCell>
+                                                                        <span
+                                                                            className="px-2 py-1 rounded-md text-xs"
+                                                                            style={{
+                                                                                backgroundColor: color,
+                                                                                color: clr
+                                                                            }}
+                                                                        >
+                                                                            {kindToHuman(kind)}
+                                                                        </span>
+                                                                    </TableCell>
+                                                                    <TableCell
+                                                                        className={currencyAmountColor(balance)}
+                                                                    >
+                                                                        {
+                                                                            currencyAmountToHuman(
+                                                                                balance,
+                                                                                currency
+                                                                            )
+                                                                        }
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            })
+                                                        }
+                                                    </TableBody>
+                                                </Table>
+                                            </div>
+                                    }
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
                 }
             </CardContent>
         </Card>
