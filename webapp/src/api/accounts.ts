@@ -34,3 +34,20 @@ export function getAccounts(filters: ListFilters): () => Promise<Preview[]> {
         return response.json()
     }
 }
+
+export async function updateAccount(account: Detailed): Promise<Detailed[]> {
+    const response = await fetch(`/api/accounts/${account.id}`, {
+        method: "PATCH",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(account)
+    })
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
+}
