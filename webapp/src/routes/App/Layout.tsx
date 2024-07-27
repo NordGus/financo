@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import {
     BookMarkedIcon,
     ChartCandlestickIcon,
+    GoalIcon,
     NotebookTabsIcon,
     RouteIcon,
     SettingsIcon,
@@ -21,6 +22,7 @@ export default function Layout() {
                 <NavLink name="Ledger" path="books" icon={<BookMarkedIcon />} />
                 <NavLink name="Budgets" path="budgets" icon={<NotebookTabsIcon />} />
                 <NavLink name="Payment Plans" path="plans" icon={<RouteIcon />} />
+                <NavLink name="Savings Goals" path="goals" icon={<GoalIcon />} />
                 <span className="grow contents-['']"></span>
                 <NavLink name="Achievements" path="achievements" icon={<TrophyIcon />} />
                 <NavLink name="Configuration" path="settings" icon={<SettingsIcon />} />
