@@ -20,6 +20,8 @@ import {
     CardTitle
 } from "@components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@components/ui/table";
+import { Button } from "@components/ui/button";
+import { Link } from "react-router-dom";
 
 export function PendingTransactions({
     accountID, className
@@ -100,7 +102,7 @@ export function UpcomingTransactions({
     )
 }
 
-export function CurrentMonthTransactions({
+export function TransactionHistory({
     accountID, className
 }: { accountID: number, className?: string }) {
     const { data: transactions, isFetching, isError, error } = useQuery({
@@ -114,7 +116,6 @@ export function CurrentMonthTransactions({
     })
 
     if (isError) throw error
-    if (isEmpty(transactions) || isNil(transactions)) return null
 
     return (
         <Card className={className}>
@@ -122,18 +123,27 @@ export function CurrentMonthTransactions({
                 <div>
                     <CardTitle>Transactions</CardTitle>
                     <CardDescription>
-                        Transactions effective this month so far
+                        Account's transaction history
                     </CardDescription>
                 </div>
                 {isFetching && <Throbber variant="small" />}
             </CardHeader>
             <CardContent className="space-y-4">
-                <TransactionsTable
-                    accountID={accountID}
-                    transactions={transactions}
-                    sortByFn={(a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)}
-                    groupByFn={({ executedAt }) => executedAt!}
-                />
+                {
+                    (isEmpty(transactions) || isNil(transactions))
+                        ? <>
+                            <p>This account doesn't have any transactions</p>
+                            <Button variant="outline" asChild={true}>
+                                <Link to="/accounts/new">Create New Transaction</Link>
+                            </Button>
+                        </>
+                        : <TransactionsTable
+                            accountID={accountID}
+                            transactions={transactions}
+                            sortByFn={(a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)}
+                            groupByFn={({ executedAt }) => executedAt!}
+                        />
+                }
             </CardContent>
         </Card>
     )
