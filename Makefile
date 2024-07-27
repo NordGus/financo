@@ -6,10 +6,9 @@ SERVER_CMD = server/cmd
 # Webapp targets
 webapp:
 	@npm run -w ${WEBAPP_WORKSPACE} dev
-webapp-server:
-	@npm run -w ${WEBAPP_WORKSPACE} dummy:server
 webapp-lint:
 	@npm run -w ${WEBAPP_WORKSPACE} lint
+
 
 # Database targets
 db-setup: db-reset db-migrate db-seed
