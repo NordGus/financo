@@ -5,5 +5,5 @@ export default function currencyAmountToHuman(
     currency: Currency,
     precision: number = 2
 ): string {
-    return DineroFactory({ amount, currency, precision }).toFormat()
+    return DineroFactory({ amount: Math.abs(amount), currency, precision }).toFormat()
 }
