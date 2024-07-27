@@ -1,5 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { groupBy, isEmpty, isNil } from "lodash";
+import { DateRange } from "react-day-picker";
 import moment from "moment";
 
 import Transaction from "@/types/Transaction";
@@ -8,7 +10,7 @@ import currencyAmountColor from "@helpers/currencyAmountColor";
 import { cn } from "@/lib/utils";
 
 import { staleTimeDefault } from "@queries/Client";
-import { getPendingTransactions, getTransactions } from "@api/transactions";
+import { getPendingTransactions, getTransactions, ListFilters } from "@api/transactions";
 
 import { Throbber } from "@components/Throbber";
 import {
@@ -21,7 +23,11 @@ import {
 } from "@components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@components/ui/table";
 import { Button } from "@components/ui/button";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar } from "@components/ui/calendar";
 
 export function PendingTransactions({
     accountID, className
@@ -105,20 +111,93 @@ export function UpcomingTransactions({
 export function TransactionHistory({
     accountID, className
 }: { accountID: number, className?: string }) {
-    const { data: transactions, isFetching, isError, error } = useQuery({
-        queryKey: ["transactions", "account", accountID],
-        queryFn: getTransactions({
+    const defaultFilters: () => ListFilters = () => {
+        return {
             executedFrom: moment().startOf('month').toISOString(),
             executedUntil: moment().toISOString(),
             account: [accountID]
-        }),
-        staleTime: staleTimeDefault
+        }
+    }
+    const defaultDateRange: () => DateRange = () => {
+        return {
+            from: moment().startOf('month').toDate(),
+            to: moment().toDate()
+        }
+    }
+
+    const [filters, setFilters] = useState<ListFilters>(defaultFilters())
+    const [date, setDate] = useState<DateRange | undefined>(defaultDateRange())
+    const [clearable, setClearable] = useState(false)
+    const { data: transactions, isPending, isError, error, mutate } = useMutation({
+        mutationKey: ["transactions", "account", accountID],
+        mutationFn: (filters: ListFilters) => getTransactions(filters)()
     })
+
+    useEffect(() => mutate(filters), [filters])
+    useEffect(() => {
+        setFilters({
+            account: [accountID],
+            executedFrom: date?.from?.toISOString(),
+            executedUntil: date?.to?.toISOString(),
+        })
+    }, [date])
 
     if (isError) throw error
 
-    return (
-        <Card className={className}>
+    return (<div className={cn("flex flex-col gap-4", className)}>
+        <div className={cn("flex justify-between")}>
+            <Popover>
+                <PopoverTrigger asChild={true}>
+                    <Button
+                        id="date"
+                        variant="outline"
+                        className={cn(
+                            "min-w-[10rem] justify-start text-left font-normal",
+                            !date && "text-zinc-500"
+                        )}
+                    >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date?.from ? (
+                            date.to ? (
+                                <>
+                                    {format(date.from, "LLL dd, y")} -{" "}
+                                    {format(date.to, "LLL dd, y")}
+                                </>
+                            ) : (
+                                format(date.from, "LLL dd, y")
+                            )
+                        ) : (
+                            <span>Pick a date</span>
+                        )}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                        initialFocus={true}
+                        mode="range"
+                        defaultMonth={date?.from}
+                        selected={date}
+                        onSelect={(value) => {
+                            setDate(value)
+                            setClearable(true)
+                        }}
+                        numberOfMonths={2}
+                    />
+                </PopoverContent>
+            </Popover>
+            {
+                clearable && <Button
+                    variant="link"
+                    onClick={() => {
+                        setDate(defaultDateRange())
+                        setClearable(false)
+                    }}
+                >
+                    Clear
+                </Button>
+            }
+        </div>
+        <Card>
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
                 <div>
                     <CardTitle>Transactions</CardTitle>
@@ -126,13 +205,13 @@ export function TransactionHistory({
                         Account's transaction history
                     </CardDescription>
                 </div>
-                {isFetching && <Throbber variant="small" />}
+                {isPending && <Throbber variant="small" />}
             </CardHeader>
             <CardContent className="space-y-4">
                 {
                     (isEmpty(transactions) || isNil(transactions))
                         ? <>
-                            <p>This account doesn't have any transactions</p>
+                            <p>This account doesn't have any transactions for the period</p>
                             <Button variant="outline" asChild={true}>
                                 <Link to="/accounts/new">Create New Transaction</Link>
                             </Button>
@@ -140,13 +219,15 @@ export function TransactionHistory({
                         : <TransactionsTable
                             accountID={accountID}
                             transactions={transactions}
-                            sortByFn={(a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)}
+                            sortByFn={
+                                (a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)
+                            }
                             groupByFn={({ executedAt }) => executedAt!}
                         />
                 }
             </CardContent>
         </Card>
-    )
+    </div>)
 }
 
 function TransactionsTable({
