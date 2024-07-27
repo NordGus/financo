@@ -5,6 +5,7 @@ import { DateRange } from "react-day-picker";
 import moment from "moment";
 
 import Transaction from "@/types/Transaction";
+
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import { cn } from "@/lib/utils";
@@ -30,8 +31,8 @@ import { format } from "date-fns";
 import { Calendar } from "@components/ui/calendar";
 
 export function PendingTransactions({
-    accountID, className
-}: { accountID: number, className?: string }) {
+    account: { id: accountID }, className
+}: { account: { id: number }, className?: string }) {
     const { data: transactions, isFetching, isError, error } = useQuery({
         queryKey: ["transactions", "pending", "account", accountID],
         queryFn: getPendingTransactions({ account: [accountID] }),
@@ -70,8 +71,8 @@ export function PendingTransactions({
 }
 
 export function UpcomingTransactions({
-    accountID, className
-}: { accountID: number, className?: string }) {
+    account: { id: accountID }, className
+}: { account: { id: number }, className?: string }) {
     const { data: transactions, isFetching, isError, error } = useQuery({
         queryKey: ["transactions", "upcoming", "account", accountID],
         queryFn: getTransactions({
@@ -109,8 +110,8 @@ export function UpcomingTransactions({
 }
 
 export function TransactionHistory({
-    accountID, className
-}: { accountID: number, className?: string }) {
+    account: { id: accountID, updatedAt }, className
+}: { account: { id: number, updatedAt: string }, className?: string }) {
     const defaultFilters: () => ListFilters = () => {
         return {
             executedFrom: moment().startOf('month').toISOString(),
@@ -133,7 +134,7 @@ export function TransactionHistory({
         mutationFn: (filters: ListFilters) => getTransactions(filters)()
     })
 
-    useEffect(() => mutate(filters), [filters])
+    useEffect(() => mutate(filters), [filters, updatedAt])
     useEffect(() => {
         setFilters({
             account: [accountID],

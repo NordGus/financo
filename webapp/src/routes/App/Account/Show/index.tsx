@@ -1,8 +1,12 @@
 import { QueryClient, useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import { LoaderFunctionArgs, useLoaderData } from "react-router-dom"
+import { Currency } from "dinero.js"
+import { isNil } from "lodash"
+import validateCurrencyCode from "validate-currency-code"
 import { z } from "zod"
 
 import Detailed, { Icon, Kind } from "@/types/Account"
+
 import Client from "@queries/Client"
 import { accountQuery } from "@queries/accounts"
 
@@ -11,9 +15,6 @@ import { updateAccount } from "@api/accounts"
 import { CardSummary } from "@components/card"
 import { TransactionHistory, PendingTransactions, UpcomingTransactions } from "./transactions"
 import { AccountBaseDetails } from "./account"
-import { Currency } from "dinero.js"
-import validateCurrencyCode from "validate-currency-code"
-import { isNil } from "lodash"
 
 const formSchema = z.object({
     kind: z.enum(
@@ -118,32 +119,19 @@ export default function Show() {
         onSuccess: (_data, _variables, _context) => {
             Client.invalidateQueries({ queryKey: ["accounts"] })
             Client.invalidateQueries({ queryKey: ["transactions"] })
-        },
-        onError: (error, _variable, _context) => { throw error }
+        }
     })
 
     if (isError) throw error
 
-    console.log(formSchema.parse({
-        kind: account.kind,
-        currency: account.currency,
-        name: account.name,
-        description: account.description,
-        capital: account.capital,
-        history: {
-            present: false,
-            balance: 0,
-            at: account.archivedAt
-        },
-        color: account.color,
-        icon: account.icon,
-        archive: !isNil(account.archivedAt),
-    }))
-
     return (
         <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-4">
-                <AccountBaseDetails isFetching={isFetching} account={account} mutation={mutation} />
+                <AccountBaseDetails
+                    isFetching={isFetching}
+                    account={account}
+                    mutation={mutation}
+                />
             </div>
             <div className="flex flex-col gap-4">
                 <div className="flex gap-4 items-stretch">
@@ -160,9 +148,9 @@ export default function Show() {
                         className="grow"
                     />
                 </div>
-                <UpcomingTransactions accountID={account.id} />
-                <PendingTransactions accountID={account.id} />
-                <TransactionHistory accountID={account.id} />
+                <UpcomingTransactions account={account} />
+                <PendingTransactions account={account} />
+                <TransactionHistory account={account} />
             </div>
         </div >
     )
