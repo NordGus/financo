@@ -17,7 +17,7 @@ export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFun
     return { id: params.id, breadcrumb: "Edit Account" }
 }
 
-// TODO: read about actions to implement account persistance.
+// [ ] TODO: read about actions to implement account persistance.
 export const action = () => { }
 
 export default function Show() {
