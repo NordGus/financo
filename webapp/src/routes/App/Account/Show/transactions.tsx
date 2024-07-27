@@ -108,8 +108,8 @@ export function TransactionHistory({
     const { data: transactions, isFetching, isError, error } = useQuery({
         queryKey: ["transactions", "account", accountID],
         queryFn: getTransactions({
-            executedFrom: moment().startOf('month').format('YYYY-MM-DD'),
-            executedUntil: moment().format('YYYY-MM-DD'),
+            executedFrom: moment().startOf('month').toISOString(),
+            executedUntil: moment().toISOString(),
             account: [accountID]
         }),
         staleTime: staleTimeDefault
@@ -160,7 +160,7 @@ function TransactionsTable({
     return Object.entries(groupBy(transactions.sort(sortByFn), groupByFn))
         .map(([date, tr]) => {
             return {
-                date: moment(date, 'YYYY-MM-DD').toDate(),
+                date: moment(date).toDate(),
                 transactions: tr.sort((a, b) => Date.parse(a.updatedAt) - Date.parse(b.updatedAt))
             }
         })
