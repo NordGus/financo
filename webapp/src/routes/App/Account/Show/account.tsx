@@ -1,17 +1,13 @@
-import { UseMutationResult } from "@tanstack/react-query";
-
 import Detailed from "@/types/Account";
 
 import { Throbber } from "@components/Throbber";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
-import { Button } from "@components/ui/button";
 
-export function AccountBaseDetails({
-    account, isFetching, mutation
+function AccountBaseDetails({
+    account, loading
 }: {
     account: Detailed,
-    isFetching: boolean,
-    mutation: UseMutationResult<Detailed[], Error, Detailed, unknown>
+    loading: boolean
 }) {
     return <Card>
         <CardHeader className="flex flex-row justify-between items-start">
@@ -21,15 +17,18 @@ export function AccountBaseDetails({
                     Account information and configuration
                 </CardDescription>
             </div>
-            {isFetching || mutation.isPending && <Throbber variant="small" />}
-            {
-                !mutation.isPending && <Button onClick={() => mutation.mutate(account)}>
-                    Save
-                </Button>
-            }
+            {loading && <Throbber variant="small" />}
         </CardHeader>
         <CardContent>
             <p>{account.name}</p>
         </CardContent>
     </Card>
+}
+
+export function AccountDetails({ account, loading }: { account: Detailed, loading: boolean }) {
+    return (
+        <>
+            <AccountBaseDetails account={account} loading={loading} />
+        </>
+    )
 }
