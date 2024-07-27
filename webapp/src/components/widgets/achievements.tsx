@@ -144,7 +144,7 @@ export function AchievementsTracker({ className }: { className?: string }) {
                                         const progress = goal.balance / goal.goal
                                         const color = "#22c55e"
 
-                                        return <TableRow>
+                                        return <TableRow key={`goal:${goal.id}`}>
                                             <TableCell>{goal.name}</TableCell>
                                             <TableCell>
                                                 {!isNil(goal.description) && (
