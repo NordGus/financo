@@ -44,7 +44,7 @@ export function PendingTransactions({
                 </div>
                 {isFetching && <Throbber variant="small" />}
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
                 <TransactionsTable
                     accountID={accountID}
                     transactions={transactions}
@@ -88,11 +88,50 @@ export function UpcomingTransactions({
                 </div>
                 {isFetching && <Throbber variant="small" />}
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
                 <TransactionsTable
                     accountID={accountID}
                     transactions={transactions}
                     sortByFn={(a, b) => Date.parse(a.executedAt!) - Date.parse(b.executedAt!)}
+                    groupByFn={({ executedAt }) => executedAt!}
+                />
+            </CardContent>
+        </Card>
+    )
+}
+
+export function CurrentMonthTransactions({
+    accountID, className
+}: { accountID: number, className?: string }) {
+    const { data: transactions, isFetching, isError, error } = useQuery({
+        queryKey: ["transactions", "account", accountID],
+        queryFn: getTransactions({
+            executedFrom: moment().startOf('month').format('YYYY-MM-DD'),
+            executedUntil: moment().format('YYYY-MM-DD'),
+            account: [accountID]
+        }),
+        staleTime: staleTimeDefault
+    })
+
+    if (isError) throw error
+    if (isEmpty(transactions) || isNil(transactions)) return null
+
+    return (
+        <Card className={className}>
+            <CardHeader className="flex flex-row items-start justify-between space-y-0">
+                <div>
+                    <CardTitle>Transactions</CardTitle>
+                    <CardDescription>
+                        Transactions effective this month so far
+                    </CardDescription>
+                </div>
+                {isFetching && <Throbber variant="small" />}
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <TransactionsTable
+                    accountID={accountID}
+                    transactions={transactions}
+                    sortByFn={(a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)}
                     groupByFn={({ executedAt }) => executedAt!}
                 />
             </CardContent>

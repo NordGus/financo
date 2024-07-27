@@ -8,7 +8,7 @@ import Panel from "@components/Panel"
 import { CardSummary } from "@components/card"
 import { Card, CardContent } from "@components/ui/card"
 import { Tabs } from "@components/ui/tabs"
-import { PendingTransactions, UpcomingTransactions } from "./transactions"
+import { CurrentMonthTransactions, PendingTransactions, UpcomingTransactions } from "./transactions"
 
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
     if (!params.id) {
@@ -50,6 +50,7 @@ export default function Show() {
                 </div>
                 <UpcomingTransactions accountID={account.id} />
                 <PendingTransactions accountID={account.id} />
+                <CurrentMonthTransactions accountID={account.id} />
             </div>
         </div >
     )
