@@ -1,4 +1,4 @@
-import { AchievementsTracker } from "@components/widgets/achievements";
+import { GoalsTracker } from "@components/widgets/goals";
 import {
     SummaryAvailableCredit,
     SummaryCapital,
@@ -20,7 +20,7 @@ export default function Dashboard() {
                 <SummaryDebt className="self-stretch col-span-3" />
                 <SummaryNetWorth className="self-stretch col-span-3" />
                 <SummaryAvailableCredit className="self-stretch col-span-3" />
-                <AchievementsTracker className="col-span-3 row-span-3" />
+                <GoalsTracker className="col-span-3 row-span-3" />
             </div>
         </div>
     )

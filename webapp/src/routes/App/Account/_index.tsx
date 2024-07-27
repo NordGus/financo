@@ -2,7 +2,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { LoaderFunction, LoaderFunctionArgs, Outlet } from "react-router-dom";
 
 import Breadcrumbs from "@components/breadcrumbs";
-import { AchievementsTracker } from "@components/widgets/achievements";
+import { GoalsTracker } from "@components/widgets/goals";
 import {
     SummaryCapital,
     SummaryDebt,
@@ -28,7 +28,7 @@ export default function Layout() {
                     <SummaryDebt />
                     <SummaryNetWorth />
                     <SummaryAvailableCredit />
-                    <AchievementsTracker className="col-span-2" />
+                    <GoalsTracker className="col-span-2" />
                 </div>
                 <div className="col-span-2">
                     <Outlet />

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { isEmpty, isNil } from "lodash";
-import { CircleHelpIcon, TrophyIcon } from "lucide-react";
+import { InfoIcon, TrophyIcon } from "lucide-react";
 import moment from "moment";
 
 import Goal from "@/types/Goal";
@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@comp
 import { Table, TableBody, TableCell, TableRow } from "@components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip";
 
-export function AchievementsTracker({ className }: { className?: string }) {
+export function GoalsTracker({ className }: { className?: string }) {
     // [ ] TODO: Implement goals/achievements endpoints
 
     // const query = useQuery({
@@ -123,7 +123,7 @@ export function AchievementsTracker({ className }: { className?: string }) {
         <Card className={className}>
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                 <div>
-                    <CardTitle>Achievements</CardTitle>
+                    <CardTitle>Goals Tracker</CardTitle>
                     <CardDescription>
                         Progression for your active savings goals
                     </CardDescription>
@@ -152,7 +152,7 @@ export function AchievementsTracker({ className }: { className?: string }) {
                                                         <TooltipTrigger
                                                             className="text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50"
                                                         >
-                                                            <CircleHelpIcon size={18} />
+                                                            <InfoIcon className="w-5 h-5" />
                                                         </TooltipTrigger>
                                                         <TooltipContent>
                                                             {goal.description}
@@ -163,7 +163,7 @@ export function AchievementsTracker({ className }: { className?: string }) {
                                             <TableCell>
                                                 <Progress
                                                     progress={progress}
-                                                    icon={<TrophyIcon size={20} />}
+                                                    icon={<TrophyIcon className="w-5 h-5" />}
                                                     color={color}
                                                 />
                                             </TableCell>
