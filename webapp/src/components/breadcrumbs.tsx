@@ -18,8 +18,6 @@ export default function Breadcrumbs() {
         .filter(({ data }) => Boolean(data))
         .filter(({ data }) => Boolean((data as WithBreadcrumb).breadcrumb))
 
-    console.log(crumbs)
-
     return <Breadcrumb>
         <BreadcrumbList>
             {crumbs.map(({ data, pathname }, idx, crumbs) => {
