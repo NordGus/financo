@@ -145,8 +145,8 @@ export function TransactionHistory({
 
     if (isError) throw error
 
-    return (<div className={cn("flex flex-col gap-4", className)}>
-        <div className={cn("flex justify-between")}>
+    return (<>
+        <div className={cn("flex justify-between", className)}>
             <Popover>
                 <PopoverTrigger asChild={true}>
                     <Button
@@ -198,7 +198,7 @@ export function TransactionHistory({
                 </Button>
             }
         </div>
-        <Card>
+        <Card className={className}>
             <CardHeader className="flex flex-row items-start justify-between space-y-0">
                 <div>
                     <CardTitle>Transactions</CardTitle>
@@ -228,7 +228,7 @@ export function TransactionHistory({
                 }
             </CardContent>
         </Card>
-    </div>)
+    </>)
 }
 
 function TransactionsTable({
