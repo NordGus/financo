@@ -8,7 +8,7 @@ import currencyAmountColor from "@helpers/currencyAmountColor";
 import { cn } from "@/lib/utils";
 
 import { staleTimeDefault } from "@queries/Client";
-import { getPendingTransactions } from "@api/transactions";
+import { getPendingTransactions, getTransactions } from "@api/transactions";
 
 import { Throbber } from "@components/Throbber";
 import {
@@ -57,6 +57,45 @@ export function PendingTransactions({
                     Please check that is no longer the case and update the transactions to reflect this
                 </CardDescription>
             </CardFooter>
+        </Card>
+    )
+}
+
+export function UpcomingTransactions({
+    accountID, className
+}: { accountID: number, className?: string }) {
+    const { data: transactions, isFetching, isError, error } = useQuery({
+        queryKey: ["transactions", "upcoming", "account", accountID],
+        queryFn: getTransactions({
+            executedFrom: moment().format('YYYY-MM-DD'),
+            executedUntil: moment().add({ month: 1 }).format('YYYY-MM-DD'),
+            account: [accountID]
+        }),
+        staleTime: staleTimeDefault
+    })
+
+    if (isError) throw error
+    if (isEmpty(transactions) || isNil(transactions)) return null
+
+    return (
+        <Card className={className}>
+            <CardHeader className="flex flex-row items-start justify-between space-y-0">
+                <div>
+                    <CardTitle>Upcoming Transactions</CardTitle>
+                    <CardDescription>
+                        Transactions that will become effective in the next month
+                    </CardDescription>
+                </div>
+                {isFetching && <Throbber variant="small" />}
+            </CardHeader>
+            <CardContent>
+                <TransactionsTable
+                    accountID={accountID}
+                    transactions={transactions}
+                    sortByFn={(a, b) => Date.parse(a.executedAt!) - Date.parse(b.executedAt!)}
+                    groupByFn={({ executedAt }) => executedAt!}
+                />
+            </CardContent>
         </Card>
     )
 }

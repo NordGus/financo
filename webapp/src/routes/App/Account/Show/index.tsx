@@ -8,7 +8,7 @@ import Panel from "@components/Panel"
 import { CardSummary } from "@components/card"
 import { Card, CardContent } from "@components/ui/card"
 import { Tabs } from "@components/ui/tabs"
-import { PendingTransactions } from "./transactions"
+import { PendingTransactions, UpcomingTransactions } from "./transactions"
 
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
     if (!params.id) {
@@ -48,6 +48,7 @@ export default function Show() {
                         className="grow"
                     />
                 </div>
+                <UpcomingTransactions accountID={account.id} />
                 <PendingTransactions accountID={account.id} />
             </div>
         </div >
