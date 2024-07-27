@@ -5,7 +5,10 @@ import { accountQuery } from "@queries/accounts"
 
 import { Throbber } from "@components/Throbber"
 import Panel from "@components/Panel"
-import Transactions from "./Transactions"
+import { CardSummary } from "@components/card"
+import { Card, CardContent } from "@components/ui/card"
+import { Tabs } from "@components/ui/tabs"
+import { PendingTransactions } from "./transactions"
 
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
     if (!params.id) {
@@ -19,41 +22,34 @@ export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFun
 
 export default function Show() {
     const { id } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
-    const query = useSuspenseQuery(accountQuery(id))
+    const { data: account, isFetching, isError, error } = useSuspenseQuery(accountQuery(id))
 
-    if (query.error) {
-        throw query.error
-    }
+    if (isError) throw error
 
     return (
-        <div
-            className="h-full grid grid-rows-[minmax(0,_min-content)_minmax(0,_1fr)_minmax(0,_1fr)_minmax(0,_1fr)] grid-cols-4 gap-1"
-        >
-            <div className="col-span-4 flex items-stretch min-h-10 h-10 max-h-10">
+        <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-4">
+                <Card>
+                    <CardContent>
+                        Account Form goes here
+                    </CardContent>
+                </Card>
             </div>
-            <Panel.Base
-                header={<>
-                    {
-                        query.isFetching && <div
-                            className="flex justify-center items-center py-1 px-2 gap-2"
-                        >
-                            <Throbber variant="small" />
-                            <p>Fetching</p>
-                        </div>
-                    }
-                    <Panel.Components.Title grow={true} text="Details" />
-                </>}
-                className="row-span-3"
-            >
-                <div className="flex-grow overflow-y-auto">
-                    Account Form goes here
+            <div className="flex flex-col gap-4">
+                <div className="flex gap-4 items-stretch">
+                    <CardSummary
+                        title="Balance"
+                        balances={[{ amount: account.balance, currency: account.currency }]}
+                        className="grow"
+                    />
+                    <CardSummary
+                        title="Balance"
+                        balances={[{ amount: account.balance, currency: account.currency }]}
+                        className="grow"
+                    />
                 </div>
-            </Panel.Base>
-            <Transactions
-                className="row-span-2"
-                account={query.data}
-            />
-            <Panel.Clean className="col-span-3">a graphic goes here</Panel.Clean>
+                <PendingTransactions accountID={account.id} />
+            </div>
         </div >
     )
 }
