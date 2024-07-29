@@ -321,17 +321,17 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             control={form.control}
                             name="currency"
                             render={({ field }) => (
-                                <FormItem className="flex flex-col">
+                                <FormItem>
                                     <FormLabel>Currency</FormLabel>
                                     <Popover>
-                                        <PopoverTrigger asChild>
+                                        <PopoverTrigger asChild={true}>
                                             <FormControl>
                                                 <Button
                                                     variant="outline"
                                                     role="combobox"
                                                     className={cn(
                                                         "w-full justify-between",
-                                                        !field.value && "text-muted-foreground"
+                                                        !field.value && "text-zin-500"
                                                     )}
                                                 >
                                                     {
@@ -396,6 +396,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                     <FormLabel>Color</FormLabel>
                                     <FormControl>
                                         <Input
+                                            type="color"
                                             {...field}
                                             placeholder={"Color"}
                                         />
