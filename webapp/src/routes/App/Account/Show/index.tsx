@@ -1,6 +1,11 @@
 import { QueryClient, useSuspenseQuery } from "@tanstack/react-query"
-import { LoaderFunctionArgs, redirect, useLoaderData } from "react-router-dom"
 import { isEqual } from "lodash"
+import {
+    LoaderFunctionArgs,
+    Params,
+    redirect,
+    useLoaderData
+} from "react-router-dom"
 
 import { staleTimeDefault } from "@queries/Client"
 import { deleteAccount, getAccount } from "@api/accounts"
@@ -25,19 +30,22 @@ export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFun
 }
 
 export const action = (queryClient: QueryClient) => async ({
-    request, params
-}: { request: Request, params: { id: string } }) => {
+    request, params: { id }
+}: { request: Request, params: Params }) => {
+    if (!id) throw new Error('No account ID provided')
+
     switch (request.method) {
         case "DELETE":
-            const response = await deleteAccount(params.id)
+            const response = await deleteAccount(id)
 
-            if (!response.ok) throw response // [ ] TODO: Make more robust or use toasts
+            // [ ] TODO: Make more robust or use toasts
+            if (!response.ok) throw new Response("", { status: 500 })
 
             queryClient.invalidateQueries({
                 predicate: ({ queryKey }) => {
-                    return isEqual(queryKey, ["transactions", "pending", "account", params.id]) ||
-                        isEqual(queryKey, ["transactions", "pending", "account", params.id]) ||
-                        isEqual(queryKey, ['accounts', 'account', params.id])
+                    return isEqual(queryKey, ["transactions", "pending", "account", id]) ||
+                        isEqual(queryKey, ["transactions", "pending", "account", id]) ||
+                        isEqual(queryKey, ['accounts', 'account', id])
                 }
             })
 
