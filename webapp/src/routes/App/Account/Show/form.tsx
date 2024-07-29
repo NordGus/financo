@@ -52,7 +52,7 @@ const updateSchema = z.object({
     description: z.string()
         .trim()
         .max(128, { message: "must be 128 characters at most" })
-        .nullable()
+        .optional()
         .optional(),
     capital: z.number({
         required_error: "is required",
@@ -68,14 +68,11 @@ const updateSchema = z.object({
         balance: z.number({
             required_error: "is required",
             invalid_type_error: "must be a number"
-        }).nullable(),
-        at: z.string({
+        }).optional(),
+        at: z.date({
             required_error: "is required",
-            invalid_type_error: "must be a string"
-        }).datetime({
-            message: "must be datetime",
-            offset: true
-        }).nullable()
+            invalid_type_error: "must be a date"
+        }).optional()
     }),
     color: z.string({
         required_error: "is required",
@@ -101,7 +98,7 @@ const updateSchema = z.object({
         invalid_type_error: "must be a boolean"
     }),
     children: z.object({
-        id: z.number({ invalid_type_error: "must be a number" }).nullable().optional(),
+        id: z.number({ invalid_type_error: "must be a number" }).optional().optional(),
         kind: z.nativeEnum(Kind,
             {
                 required_error: "is required",
@@ -122,7 +119,7 @@ const updateSchema = z.object({
         description: z.string()
             .trim()
             .max(128, { message: "must be 128 characters at most" })
-            .nullable()
+            .optional()
             .optional(),
         capital: z.number({
             required_error: "is required",
@@ -138,14 +135,11 @@ const updateSchema = z.object({
             balance: z.number({
                 required_error: "is required",
                 invalid_type_error: "must be a number"
-            }).nullable(),
-            at: z.string({
+            }).optional(),
+            at: z.date({
                 required_error: "is required",
-                invalid_type_error: "must be a string"
-            }).datetime({
-                message: "must be datetime",
-                offset: true
-            }).nullable()
+                invalid_type_error: "must be a date"
+            }).optional()
         }),
         color: z.string({
             required_error: "is required",
@@ -174,44 +168,47 @@ const updateSchema = z.object({
             required_error: "is required",
             invalid_type_error: "must be a boolean"
         }),
-    }).array().nullable()
+    }).array().optional()
 })
 
-export function UpdateAccountForm({ account, loading }: { account: Detailed, loading: boolean }) {
-    const [historyAt, setHistoryAt] = useState<Date | undefined>(
-        isNil(account.history?.at)
-            ? undefined
-            : moment(account.history.at).toDate()
-    )
+function onSubmitUpdate(values: z.infer<typeof updateSchema>) {
+    console.log("it saved")
+    console.log(values)
+}
 
+export function UpdateAccountForm({ account, loading }: { account: Detailed, loading: boolean }) {
     const form = useForm<z.infer<typeof updateSchema>>({
         resolver: zodResolver(updateSchema),
         defaultValues: {
             currency: account.currency,
             name: account.name,
-            description: account.description,
+            description: account.description ?? undefined,
             capital: account.capital,
             history: {
                 present: !isNil(account.history),
-                balance: isNil(account.history?.balance) ? null : account.history.balance,
-                at: isNil(account.history?.at) ? null : account.history.at
+                balance: isNil(account.history?.balance) ? undefined : account.history.balance,
+                at: isNil(account.history?.at) ? undefined : moment(account.history.at).toDate()
             },
             color: account.color,
             icon: account.icon,
             archive: !isNil(account.archivedAt),
-            children: isNil(account.children) ? null : account.children.map(
+            children: isNil(account.children) ? undefined : account.children.map(
                 (child) => {
                     return {
-                        id: child.id,
+                        id: child.id ?? undefined,
                         kind: child.kind,
                         currency: child.currency,
                         name: child.name,
-                        description: child.description,
+                        description: child.description ?? undefined,
                         capital: child.capital,
                         history: {
                             present: !isNil(child.history),
-                            balance: isNil(child.history?.balance) ? null : child.history.balance,
-                            at: isNil(child.history?.at) ? null : child.history.at
+                            balance: isNil(child.history?.balance)
+                                ? undefined
+                                : child.history.balance,
+                            at: isNil(child.history?.at)
+                                ? undefined
+                                : moment(child.history.at).toDate()
                         },
                         color: child.color,
                         icon: child.icon,
@@ -223,13 +220,9 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
         }
     })
 
-    const onSubmit = (values: z.infer<typeof updateSchema>) => {
-        console.log(values)
-    }
-
     return <div className="flex flex-col gap-4">
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <form onSubmit={form.handleSubmit(onSubmitUpdate)} className="flex flex-col gap-4">
                 <Card>
                     <CardHeader className="flex flex-row justify-between items-start">
                         <div>
@@ -241,6 +234,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                         {loading && <Throbber variant="small" />}
                     </CardHeader>
                     <CardContent className="flex flex-col gap-4">
+                        <FormLabel>Name</FormLabel>
                         <FormField
                             control={form.control}
                             name="name"
@@ -261,13 +255,15 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             name="description"
                             render={({ field }) => (
                                 <FormItem>
+                                    <FormLabel>Description</FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            value={field.value ?? undefined}
+                                            value={field.value}
                                             placeholder={"Description"}
                                         />
                                     </FormControl>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
@@ -276,6 +272,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             name="currency"
                             render={({ field }) => (
                                 <FormItem>
+                                    <FormLabel>Currency</FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
@@ -291,6 +288,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             name="color"
                             render={({ field }) => (
                                 <FormItem>
+                                    <FormLabel>Color</FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
@@ -306,6 +304,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             name="icon"
                             render={({ field }) => (
                                 <FormItem>
+                                    <FormLabel>Icon</FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
@@ -321,7 +320,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                         </div>
                     </CardContent>
                 </Card>
-                <Card>
+                {/* <Card>
                     <CardHeader className="flex flex-row justify-between items-start">
                         <div>
                             <CardTitle>History</CardTitle>
@@ -336,18 +335,15 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             name="history.present"
                             render={({ field }) => (
                                 <FormItem className="flex flex-row items-center justify-between">
-                                    <div className="space-y-0.5">
-                                        <FormLabel>
-                                            Does this account has a previous history?
-                                        </FormLabel>
+                                    <div>
+                                        <FormLabel>Does this account has history</FormLabel>
                                     </div>
                                     <FormControl>
                                         <Switch
                                             checked={field.value}
-                                            onChange={field.onChange}
+                                            onCheckedChange={field.onChange}
                                         />
                                     </FormControl>
-                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
@@ -356,8 +352,10 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             name="history.balance"
                             render={({ field }) => (
                                 <FormItem>
+                                    <FormLabel>Balance</FormLabel>
                                     <FormControl>
                                         <Input
+                                            type="number"
                                             {...field}
                                             value={field.value ?? 0}
                                             placeholder={"Balance"}
@@ -371,43 +369,42 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             control={form.control}
                             name="history.at"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormControl>
-                                        <>
-                                            <Popover>
-                                                <PopoverTrigger asChild={true}>
-                                                    <Button
-                                                        variant="outline"
-                                                        className={cn(
-                                                            "w-full justify-start text-left font-normal",
-                                                            !historyAt && "text-zinc-500"
-                                                        )}
-                                                    >
-                                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                                        {
-                                                            historyAt
-                                                                ? format(historyAt, "PPP")
-                                                                : <span>At</span>
-                                                        }
-                                                    </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0" align="start">
-                                                    <Calendar
-                                                        mode="single"
-                                                        selected={historyAt}
-                                                        onSelect={setHistoryAt}
-                                                        initialFocus
-                                                    />
-                                                </PopoverContent>
-                                            </Popover>
-                                            <Input
-                                                type="hidden"
-                                                {...field}
-                                                value={historyAt?.toISOString()}
-                                                placeholder={"At"}
+                                <FormItem className="flex flex-col">
+                                    <FormLabel>Date of birth</FormLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button
+                                                    variant={"outline"}
+                                                    className={cn(
+                                                        "w-full pl-3 text-left font-normal",
+                                                        !field.value && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    {field.value ? (
+                                                        format(field.value, "PPP")
+                                                    ) : (
+                                                        <span>Pick a date</span>
+                                                    )}
+                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0" align="start">
+                                            <Calendar
+                                                mode="single"
+                                                selected={field.value}
+                                                onSelect={field.onChange}
+                                                disabled={(date) =>
+                                                    date > new Date() || date < new Date("1900-01-01")
+                                                }
+                                                initialFocus
                                             />
-                                        </>
-                                    </FormControl>
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormDescription>
+                                        Your date of birth is used to calculate your age.
+                                    </FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -416,9 +413,9 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             <Button type="submit">Save</Button>
                         </div>
                     </CardContent>
-                </Card>
+                </Card> */}
             </form>
-        </Form>
+        </Form >
         <RouterForm
             className="flex"
             method="delete"
@@ -432,5 +429,5 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                 Delete
             </Button>
         </RouterForm>
-    </div>
+    </div >
 }
