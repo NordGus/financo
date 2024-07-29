@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Currency } from "dinero.js";
 import validateCurrencyCode from "validate-currency-code";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +20,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@comp
 import { Throbber } from "@components/Throbber";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
+import { useState } from "react";
+import moment from "moment";
+import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@components/ui/calendar";
 
 const updateSchema = z.object({
     kind: z.nativeEnum(Kind,
@@ -169,8 +175,11 @@ const updateSchema = z.object({
 })
 
 export function UpdateAccountForm({ account, loading }: { account: Detailed, loading: boolean }) {
-    const [detailsChanged, setDetailsChanged] = useState(false)
-    const [historyChanged, setHistoryChanged] = useState(false)
+    const [historyAt, setHistoryAt] = useState<Date | undefined>(
+        // isNil(account.history?.at)
+        //     ? undefined
+        //     : moment(account.history.at).toDate()
+    )
 
     const form = useForm<z.infer<typeof updateSchema>>({
         resolver: zodResolver(updateSchema),
@@ -238,10 +247,6 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                         <Input
                                             {...field}
                                             placeholder={"Name"}
-                                            onChange={(event) => {
-                                                setDetailsChanged(true)
-                                                field.onChange(event)
-                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -258,10 +263,6 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                             {...field}
                                             value={field.value ?? undefined}
                                             placeholder={"Description"}
-                                            onChange={(event) => {
-                                                setDetailsChanged(true)
-                                                field.onChange(event)
-                                            }}
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -276,10 +277,6 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                         <Input
                                             {...field}
                                             placeholder={"Currency"}
-                                            onChange={(event) => {
-                                                setDetailsChanged(true)
-                                                field.onChange(event)
-                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -295,10 +292,6 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                         <Input
                                             {...field}
                                             placeholder={"Color"}
-                                            onChange={(event) => {
-                                                setDetailsChanged(true)
-                                                field.onChange(event)
-                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -314,17 +307,15 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                         <Input
                                             {...field}
                                             placeholder={"Icon"}
-                                            onChange={(event) => {
-                                                setDetailsChanged(true)
-                                                field.onChange(event)
-                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        {detailsChanged && <Button type="submit">Save</Button>}
+                        <div className="flex justify-end">
+                            <Button type="submit">Save</Button>
+                        </div>
                     </CardContent>
                 </Card>
                 <Card>
@@ -347,10 +338,6 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                             {...field}
                                             value={field.value.toString()}
                                             placeholder={"Present"}
-                                            onChange={(event) => {
-                                                setHistoryChanged(true)
-                                                field.onChange(event)
-                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -367,10 +354,6 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                             {...field}
                                             value={field.value ?? 0}
                                             placeholder={"Balance"}
-                                            onChange={(event) => {
-                                                setHistoryChanged(true)
-                                                field.onChange(event)
-                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -383,21 +366,48 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
-                                        <Input
-                                            {...field}
-                                            value={field.value ?? undefined}
-                                            placeholder={"At"}
-                                            onChange={(event) => {
-                                                setHistoryChanged(true)
-                                                field.onChange(event)
-                                            }}
-                                        />
+                                        <>
+                                            <Popover>
+                                                <PopoverTrigger asChild={true}>
+                                                    <Button
+                                                        variant="outline"
+                                                        className={cn(
+                                                            "w-full justify-start text-left font-normal",
+                                                            !historyAt && "text-zinc-500"
+                                                        )}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {
+                                                            historyAt
+                                                                ? format(historyAt, "PPP")
+                                                                : <span>At</span>
+                                                        }
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0" align="start">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={historyAt}
+                                                        onSelect={setHistoryAt}
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                            <Input
+                                                type="hidden"
+                                                {...field}
+                                                value={historyAt?.toISOString()}
+                                                placeholder={"At"}
+                                            />
+                                        </>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        {historyChanged && <Button type="submit">Save</Button>}
+                        <div className="flex justify-end">
+                            <Button type="submit">Save</Button>
+                        </div>
                     </CardContent>
                 </Card>
             </form>
