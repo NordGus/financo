@@ -52,7 +52,7 @@ func main() {
 	router.Route("/accounts", accounts.Routes)
 	router.Route("/summary", summary.Routes)
 	router.Route("/transactions", transactions.Routes)
-	router.Route("/currency", currency.Routes)
+	router.Route("/currencies", currency.Routes)
 
 	err = http.ListenAndServe(":3000", router)
 	if err != nil {
