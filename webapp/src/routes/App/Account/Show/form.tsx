@@ -18,6 +18,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@comp
 import { Throbber } from "@components/Throbber";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
+import kindToHuman from "@helpers/account/kindToHuman";
 
 const updateSchema = z.object({
     kind: z.nativeEnum(Kind,
@@ -217,7 +218,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                         <div>
                             <CardTitle>Details</CardTitle>
                             <CardDescription>
-                                Account information and configuration
+                                Information and configuration for a {kindToHuman(account.kind)} account
                             </CardDescription>
                         </div>
                         {loading && <Throbber variant="small" />}
