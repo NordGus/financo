@@ -49,7 +49,6 @@ export default interface Detailed {
 }
 
 export interface Update {
-    id: number
     kind: Kind
     currency: Currency
     name: string
@@ -63,5 +62,23 @@ export interface Update {
     color: string
     icon: Icon
     archive: boolean
-    children: Update[] | null
+    children: UpdateChild[] | null
+}
+
+export interface UpdateChild {
+    id?: number
+    kind: Kind
+    currency: Currency
+    name: string
+    description: string | null
+    capital: number
+    history: {
+        present: boolean,
+        balance: number | null,
+        at: string | null
+    }
+    color: string
+    icon: Icon
+    archive: boolean
+    delete: boolean
 }
