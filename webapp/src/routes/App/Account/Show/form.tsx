@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Currency } from "dinero.js";
 import validateCurrencyCode from "validate-currency-code";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { isNil } from "lodash";
+import { isEmpty, isNil } from "lodash";
 import { useForm } from "react-hook-form";
 import { Form as RouterForm } from "react-router-dom";
 import { CalendarIcon } from "lucide-react";
@@ -180,6 +180,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
     const form = useForm<z.infer<typeof updateSchema>>({
         resolver: zodResolver(updateSchema),
         defaultValues: {
+            kind: account.kind,
             currency: account.currency,
             name: account.name,
             description: account.description ?? undefined,
@@ -220,6 +221,10 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
         }
     })
 
+    useEffect(() => {
+        if (!isEmpty(form.formState.errors)) console.log("errors:", form.formState.errors)
+    }, [form.formState.errors])
+
     return <div className="flex flex-col gap-4">
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmitUpdate)} className="flex flex-col gap-4">
@@ -234,6 +239,22 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                         {loading && <Throbber variant="small" />}
                     </CardHeader>
                     <CardContent className="flex flex-col gap-4">
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem className="hidden">
+                                    <FormControl>
+                                        <Input
+                                            type="hidden"
+                                            {...field}
+                                            placeholder={"Name"}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormLabel>Name</FormLabel>
                         <FormField
                             control={form.control}
@@ -320,7 +341,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                         </div>
                     </CardContent>
                 </Card>
-                {/* <Card>
+                <Card>
                     <CardHeader className="flex flex-row justify-between items-start">
                         <div>
                             <CardTitle>History</CardTitle>
@@ -413,7 +434,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             <Button type="submit">Save</Button>
                         </div>
                     </CardContent>
-                </Card> */}
+                </Card>
             </form>
         </Form >
         <RouterForm
