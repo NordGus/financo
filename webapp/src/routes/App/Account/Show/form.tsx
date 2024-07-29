@@ -51,6 +51,7 @@ import {
     CommandItem,
     CommandList
 } from "@components/ui/command";
+import isExternalAccount from "@helpers/account/isExternalAccount";
 
 const updateSchema = z.object({
     kind: z.nativeEnum(Kind,
@@ -426,99 +427,101 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                         </div>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardHeader className="flex flex-row justify-between items-start">
-                        <div>
-                            <CardTitle>History</CardTitle>
-                            <CardDescription>
-                                Represents the account's balance at a given date when you don't the complete transaction history
-                            </CardDescription>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-4">
-                        <FormField
-                            control={form.control}
-                            name="history.present"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between">
-                                    <div>
-                                        <FormLabel>Does this account has history</FormLabel>
-                                    </div>
-                                    <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                        />
-                                    </FormControl>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="history.balance"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Balance</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            {...field}
-                                            value={field.value ?? 0}
-                                            placeholder={"Balance"}
-                                        />
-                                    </FormControl>
-                                    <FormDescription>Transaction's amount</FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="history.at"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>At</FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-full pl-3 text-left font-normal",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {field.value ? (
-                                                        format(field.value, "PPP")
-                                                    ) : (
-                                                        <span>Pick a date</span>
-                                                    )}
-                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value}
-                                                onSelect={field.onChange}
-                                                disabled={(date) =>
-                                                    date > new Date() || date < new Date("1900-01-01")
-                                                }
-                                                initialFocus
+                {!isExternalAccount(account.kind) && (
+                    <Card>
+                        <CardHeader className="flex flex-row justify-between items-start">
+                            <div>
+                                <CardTitle>History</CardTitle>
+                                <CardDescription>
+                                    Represents the account's balance at a given date when you don't the complete transaction history
+                                </CardDescription>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="flex flex-col gap-4">
+                            <FormField
+                                control={form.control}
+                                name="history.present"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row items-center justify-between">
+                                        <div>
+                                            <FormLabel>Does this account has history</FormLabel>
+                                        </div>
+                                        <FormControl>
+                                            <Switch
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
                                             />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormDescription>Transaction's date</FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <div className="flex justify-end">
-                            <Button type="submit">Save</Button>
-                        </div>
-                    </CardContent>
-                </Card>
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="history.balance"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Balance</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="number"
+                                                {...field}
+                                                value={field.value ?? 0}
+                                                placeholder={"Balance"}
+                                            />
+                                        </FormControl>
+                                        <FormDescription>Transaction's amount</FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="history.at"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel>At</FormLabel>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-full pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-auto p-0" align="start">
+                                                <Calendar
+                                                    mode="single"
+                                                    selected={field.value}
+                                                    onSelect={field.onChange}
+                                                    disabled={(date) =>
+                                                        date > new Date() || date < new Date("1900-01-01")
+                                                    }
+                                                    initialFocus
+                                                />
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormDescription>Transaction's date</FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <div className="flex justify-end">
+                                <Button type="submit">Save</Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
             </form>
         </Form >
         <RouterForm
