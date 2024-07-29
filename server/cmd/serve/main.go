@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"financo/server/accounts"
+	"financo/server/currency"
 	"financo/server/summary"
 	"financo/server/transactions"
 	"financo/server/types/generic/context_key"
@@ -51,6 +52,7 @@ func main() {
 	router.Route("/accounts", accounts.Routes)
 	router.Route("/summary", summary.Routes)
 	router.Route("/transactions", transactions.Routes)
+	router.Route("/currency", currency.Routes)
 
 	err = http.ListenAndServe(":3000", router)
 	if err != nil {
