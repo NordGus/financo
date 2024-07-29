@@ -247,7 +247,10 @@ function TransactionsTable({
             }
         })
         .map(({ date, transactions }) => (
-            <div key={`transactions:pending:${date.toISOString()}`}>
+            <div
+                key={`transactions:pending:${date.toISOString()}`}
+                className={cn("", (date > new Date()) && "opacity-50")}
+            >
                 <h4 className="text-xl">
                     {date.toLocaleDateString(undefined, {
                         weekday: "long",
