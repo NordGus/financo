@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Currency } from "dinero.js";
 import validateCurrencyCode from "validate-currency-code";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,61 +15,62 @@ import {
     FormItem,
     FormMessage
 } from "@components/ui/form";
+import kindToHuman from "@helpers/account/kindToHuman";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
 import { Throbber } from "@components/Throbber";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
-import kindToHuman from "@helpers/account/kindToHuman";
 
 const updateSchema = z.object({
     kind: z.nativeEnum(Kind,
         {
-            required_error: "Kind is required",
-            invalid_type_error: "Kind must be a string",
-            message: "Kind is not valid"
+            required_error: "is required",
+            invalid_type_error: "must be a string",
+            message: "invalid"
         }
     ),
     currency: z.custom<Currency>(
         (value) => validateCurrencyCode(value),
-        (value) => { return { message: `${value} isn't ISO 4217 currency code` } }
+        { message: "must be a ISO 4217 currency code" }
     ),
     name: z.string({
-        required_error: "Name is required",
-        invalid_type_error: "Name must be a string"
+        required_error: "is required",
+        invalid_type_error: "must be a string"
     }).trim()
-        .min(1, { message: 'Name must be present' })
-        .max(60, { message: 'Name must be 60 characters at most' }),
+        .min(1, { message: 'must be present' })
+        .max(60, { message: 'must be 60 characters at most' }),
     description: z.string()
         .trim()
-        .max(128, { message: "Description must be 128 characters at most" })
+        .max(128, { message: "must be 128 characters at most" })
         .nullable()
         .optional(),
     capital: z.number({
-        required_error: "Capital is required",
-        invalid_type_error: "Name must be a number"
+        required_error: "is required",
+        invalid_type_error: "must be a number"
     }),
     history: z.object({
         present: z.boolean(
             {
-                required_error: "Present is required",
-                invalid_type_error: "Present must be a boolean"
+                required_error: "is required",
+                invalid_type_error: "must be a boolean"
             }
         ),
         balance: z.number({
-            required_error: "Balance is required",
-            invalid_type_error: "Balance must be a number"
+            required_error: "is required",
+            invalid_type_error: "must be a number"
         }).nullable(),
         at: z.string({
-            required_error: "At is required",
-            invalid_type_error: "At must be a string"
+            required_error: "is required",
+            invalid_type_error: "must be a string"
         }).datetime({
-            message: "At must be datetime",
+            message: "must be datetime",
             offset: true
         }).nullable()
     }),
     color: z.string({
-        required_error: "Color is required",
-        invalid_type_error: "Color must be a string"
+        required_error: "is required",
+        invalid_type_error: "must be a string"
     }).refine(
         (color) => {
             const validator = new Option().style;
@@ -76,69 +78,69 @@ const updateSchema = z.object({
 
             return validator.color.length > 0
         },
-        (color) => { return { message: `${color} is not a valid color code` } }
+        { message: `must be a valid color code` }
     ),
     icon: z.nativeEnum(Icon,
         {
-            required_error: "Icon is required",
-            invalid_type_error: "Icon is invalid",
-            message: "Icon is not supported"
+            required_error: "is required",
+            invalid_type_error: "is invalid",
+            message: "not supported"
         }
     ),
     archive: z.boolean({
-        required_error: "Archive is required",
-        invalid_type_error: "Archive must be a boolean"
+        required_error: "is required",
+        invalid_type_error: "must be a boolean"
     }),
     children: z.object({
-        id: z.number({ invalid_type_error: "ID must be a number" }).nullable().optional(),
+        id: z.number({ invalid_type_error: "must be a number" }).nullable().optional(),
         kind: z.nativeEnum(Kind,
             {
-                required_error: "Kind is required",
-                invalid_type_error: "Kind must be a string",
-                message: "Kind is not valid"
+                required_error: "is required",
+                invalid_type_error: "must be a string",
+                message: "is not valid"
             }
         ),
         currency: z.custom<Currency>(
             (value) => validateCurrencyCode(value),
-            (value) => { return { message: `${value} isn't ISO 4217 currency code` } }
+            { message: "must be a ISO 4217 currency code" }
         ),
         name: z.string({
-            required_error: "Name is required",
-            invalid_type_error: "Name must be a string"
+            required_error: "is required",
+            invalid_type_error: "must be a string"
         }).trim()
-            .min(1, { message: 'Name must be present' })
-            .max(60, { message: 'Name must be 60 characters at most' }),
+            .min(1, { message: 'must be present' })
+            .max(60, { message: 'must be 60 characters at most' }),
         description: z.string()
             .trim()
-            .max(128, { message: "Description must be 128 characters at most" })
+            .max(128, { message: "must be 128 characters at most" })
             .nullable()
             .optional(),
         capital: z.number({
-            required_error: "Capital is required",
-            invalid_type_error: "Name must be a number"
+            required_error: "is required",
+            invalid_type_error: "must be a number"
         }),
         history: z.object({
             present: z.boolean(
                 {
-                    required_error: "Present is required",
-                    invalid_type_error: "Present must be a boolean"
+                    required_error: "is required",
+                    invalid_type_error: "must be a boolean"
                 }
             ),
             balance: z.number({
-                required_error: "Balance is required",
-                invalid_type_error: "Balance must be a number"
+                required_error: "is required",
+                invalid_type_error: "must be a number"
             }).nullable(),
             at: z.string({
-                required_error: "At is required",
-                invalid_type_error: "At must be a string"
+                required_error: "is required",
+                invalid_type_error: "must be a string"
             }).datetime({
-                message: "At must be datetime",
+                message: "must be datetime",
                 offset: true
             }).nullable()
         }),
         color: z.string({
-            required_error: "Color is required",
-            invalid_type_error: "Color must be a string"
+            required_error: "is required",
+            invalid_type_error: "must be a string"
         }).refine(
             (color) => {
                 const validator = new Option().style;
@@ -146,18 +148,18 @@ const updateSchema = z.object({
 
                 return validator.color.length > 0
             },
-            (color) => { return { message: `${color} is not a valid color code` } }
+            { message: `must be a valid color code` }
         ),
         icon: z.nativeEnum(Icon,
             {
-                required_error: "Icon is required",
-                invalid_type_error: "Icon is invalid",
-                message: "Icon is not supported"
+                required_error: "is required",
+                invalid_type_error: "is invalid",
+                message: "not supported"
             }
         ),
         archive: z.boolean({
-            required_error: "Archive is required",
-            invalid_type_error: "Archive must be a boolean"
+            required_error: "is required",
+            invalid_type_error: "must be a boolean"
         }),
         deleted: z.boolean({
             required_error: "is required",
@@ -167,6 +169,9 @@ const updateSchema = z.object({
 })
 
 export function UpdateAccountForm({ account, loading }: { account: Detailed, loading: boolean }) {
+    const [detailsChanged, setDetailsChanged] = useState(false)
+    const [historyChanged, setHistoryChanged] = useState(false)
+
     const form = useForm<z.infer<typeof updateSchema>>({
         resolver: zodResolver(updateSchema),
         defaultValues: {
@@ -223,14 +228,21 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                         </div>
                         {loading && <Throbber variant="small" />}
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="flex flex-col gap-4">
                         <FormField
                             control={form.control}
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
-                                        <Input {...field} placeholder={"Name"} />
+                                        <Input
+                                            {...field}
+                                            placeholder={"Name"}
+                                            onChange={(event) => {
+                                                setDetailsChanged(true)
+                                                field.onChange(event)
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -246,6 +258,10 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                             {...field}
                                             value={field.value ?? undefined}
                                             placeholder={"Description"}
+                                            onChange={(event) => {
+                                                setDetailsChanged(true)
+                                                field.onChange(event)
+                                            }}
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -257,7 +273,14 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
-                                        <Input {...field} placeholder={"Currency"} />
+                                        <Input
+                                            {...field}
+                                            placeholder={"Currency"}
+                                            onChange={(event) => {
+                                                setDetailsChanged(true)
+                                                field.onChange(event)
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -269,7 +292,14 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
-                                        <Input {...field} placeholder={"Color"} />
+                                        <Input
+                                            {...field}
+                                            placeholder={"Color"}
+                                            onChange={(event) => {
+                                                setDetailsChanged(true)
+                                                field.onChange(event)
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -281,12 +311,20 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
-                                        <Input {...field} placeholder={"Icon"} />
+                                        <Input
+                                            {...field}
+                                            placeholder={"Icon"}
+                                            onChange={(event) => {
+                                                setDetailsChanged(true)
+                                                field.onChange(event)
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+                        {detailsChanged && <Button type="submit">Save</Button>}
                     </CardContent>
                 </Card>
                 <Card>
@@ -298,7 +336,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             </CardDescription>
                         </div>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="flex flex-col gap-4">
                         <FormField
                             control={form.control}
                             name="history.present"
@@ -309,6 +347,10 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                             {...field}
                                             value={field.value.toString()}
                                             placeholder={"Present"}
+                                            onChange={(event) => {
+                                                setHistoryChanged(true)
+                                                field.onChange(event)
+                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -324,7 +366,11 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                         <Input
                                             {...field}
                                             value={field.value ?? 0}
-                                            placeholder={"Currency"}
+                                            placeholder={"Balance"}
+                                            onChange={(event) => {
+                                                setHistoryChanged(true)
+                                                field.onChange(event)
+                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -340,16 +386,20 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                         <Input
                                             {...field}
                                             value={field.value ?? undefined}
-                                            placeholder={"Color"}
+                                            placeholder={"At"}
+                                            onChange={(event) => {
+                                                setHistoryChanged(true)
+                                                field.onChange(event)
+                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
+                        {historyChanged && <Button type="submit">Save</Button>}
                     </CardContent>
                 </Card>
-                <Button type="submit">Save</Button>
             </form>
         </Form>
         <RouterForm
