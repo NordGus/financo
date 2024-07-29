@@ -20,43 +20,43 @@ export default function Layout() {
                 <NavLink
                     name="Dashboard"
                     path=""
-                    icon={<ChartCandlestickIcon className="w-6 h-6" />}
+                    icon={<ChartCandlestickIcon className="w-[1.75rem] h-[1.75rem]" />}
                 />
                 <NavLink
                     name="Accounts"
                     path="accounts"
-                    icon={<VaultIcon className="w-6 h-6" />}
+                    icon={<VaultIcon className="w-[1.75rem] h-[1.75rem]" />}
                 />
                 <NavLink
                     name="Ledger"
                     path="books"
-                    icon={<BookMarkedIcon className="w-6 h-6" />}
+                    icon={<BookMarkedIcon className="w-[1.75rem] h-[1.75rem]" />}
                 />
                 <NavLink
                     name="Budgets"
                     path="budgets"
-                    icon={<NotebookTabsIcon className="w-6 h-6" />}
+                    icon={<NotebookTabsIcon className="w-[1.75rem] h-[1.75rem]" />}
                 />
                 <NavLink
                     name="Payment Plans"
                     path="plans"
-                    icon={<RouteIcon className="w-6 h-6" />}
+                    icon={<RouteIcon className="w-[1.75rem] h-[1.75rem]" />}
                 />
                 <NavLink
                     name="Savings Goals"
                     path="goals"
-                    icon={<GoalIcon className="w-6 h-6" />}
+                    icon={<GoalIcon className="w-[1.75rem] h-[1.75rem]" />}
                 />
                 <span className="grow contents-['']"></span>
                 <NavLink
                     name="Achievements"
                     path="achievements"
-                    icon={<TrophyIcon className="w-6 h-6" />}
+                    icon={<TrophyIcon className="w-[1.75rem] h-[1.75rem]" />}
                 />
                 <NavLink
                     name="Configuration"
                     path="settings"
-                    icon={<SettingsIcon className="w-6 h-6" />}
+                    icon={<SettingsIcon className="w-[1.75rem] h-[1.75rem]" />}
                 />
             </nav>
             <main className='block min-h-full overflow-y-auto p-2'>
