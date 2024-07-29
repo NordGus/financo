@@ -12,7 +12,6 @@ import {
     FormControl,
     FormField,
     FormItem,
-    FormLabel,
     FormMessage
 } from "@components/ui/form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
@@ -41,7 +40,8 @@ const updateSchema = z.object({
     description: z.string()
         .trim()
         .max(128, { message: "Description must be 128 characters at most" })
-        .nullable(),
+        .nullable()
+        .optional(),
     capital: z.number({
         required_error: "Capital is required",
         invalid_type_error: "Name must be a number"
@@ -110,7 +110,8 @@ const updateSchema = z.object({
         description: z.string()
             .trim()
             .max(128, { message: "Description must be 128 characters at most" })
-            .nullable(),
+            .nullable()
+            .optional(),
         capital: z.number({
             required_error: "Capital is required",
             invalid_type_error: "Name must be a number"
@@ -168,7 +169,6 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
     const form = useForm<z.infer<typeof updateSchema>>({
         resolver: zodResolver(updateSchema),
         defaultValues: {
-            kind: account.kind,
             currency: account.currency,
             name: account.name,
             description: account.description,
@@ -222,15 +222,125 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                         </div>
                         {loading && <Throbber variant="small" />}
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-4">
                         <FormField
                             control={form.control}
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Name</FormLabel>
                                     <FormControl>
-                                        <Input {...field} />
+                                        <Input {...field} placeholder={"Name"} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            value={field.value === null ? undefined : field.value}
+                                            placeholder={"Description"}
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="currency"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input {...field} placeholder={"Currency"} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="color"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input {...field} placeholder={"Color"} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="icon"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input {...field} placeholder={"Icon"} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row justify-between items-start">
+                        <div>
+                            <CardTitle>History</CardTitle>
+                            <CardDescription>
+                                Represents the account's balance at a given date when you don't the complete transaction history
+                            </CardDescription>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="history.present"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            value={field.value ? 'true' : 'false'}
+                                            placeholder={"Present"}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="history.balance"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            value={field.value ?? 0}
+                                            placeholder={"Currency"}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="history.at"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            value={field.value ?? undefined}
+                                            placeholder={"Color"}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
