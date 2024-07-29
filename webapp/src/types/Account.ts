@@ -49,10 +49,9 @@ export default interface Detailed {
 }
 
 export interface Update {
-    kind: Kind
     currency: Currency
     name: string
-    description: string | null
+    description: string | null | undefined
     capital: number
     history: {
         present: boolean,
@@ -70,7 +69,7 @@ export interface UpdateChild {
     kind: Kind
     currency: Currency
     name: string
-    description: string | null
+    description: string | null | undefined
     capital: number
     history: {
         present: boolean,
