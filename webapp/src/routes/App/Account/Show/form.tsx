@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Currency } from "dinero.js";
 import validateCurrencyCode from "validate-currency-code";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -382,6 +382,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                             placeholder={"Balance"}
                                         />
                                     </FormControl>
+                                    <FormDescription>Transaction's amount</FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -391,7 +392,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             name="history.at"
                             render={({ field }) => (
                                 <FormItem className="flex flex-col">
-                                    <FormLabel>Date of birth</FormLabel>
+                                    <FormLabel>At</FormLabel>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <FormControl>
@@ -423,9 +424,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                             />
                                         </PopoverContent>
                                     </Popover>
-                                    <FormDescription>
-                                        Your date of birth is used to calculate your age.
-                                    </FormDescription>
+                                    <FormDescription>Transaction's date</FormDescription>
                                     <FormMessage />
                                 </FormItem>
                             )}
