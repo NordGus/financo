@@ -243,7 +243,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            value={field.value === null ? undefined : field.value}
+                                            value={field.value ?? undefined}
                                             placeholder={"Description"}
                                         />
                                     </FormControl>
@@ -306,7 +306,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                     <FormControl>
                                         <Input
                                             {...field}
-                                            value={field.value ? 'true' : 'false'}
+                                            value={field.value.toString()}
                                             placeholder={"Present"}
                                         />
                                     </FormControl>
