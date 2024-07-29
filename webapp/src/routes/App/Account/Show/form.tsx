@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Currency } from "dinero.js";
 import validateCurrencyCode from "validate-currency-code";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -5,28 +6,30 @@ import { z } from "zod";
 import { isNil } from "lodash";
 import { useForm } from "react-hook-form";
 import { Form as RouterForm } from "react-router-dom";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import moment from "moment";
 
 import Detailed, { Icon, Kind } from "@/types/Account";
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
+    FormLabel,
     FormMessage
 } from "@components/ui/form";
 import kindToHuman from "@helpers/account/kindToHuman";
+import { cn } from "@/lib/utils";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
 import { Throbber } from "@components/Throbber";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
-import { useState } from "react";
-import moment from "moment";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { Calendar } from "@components/ui/calendar";
+import { Switch } from "@components/ui/switch";
 
 const updateSchema = z.object({
     kind: z.nativeEnum(Kind,
@@ -176,9 +179,9 @@ const updateSchema = z.object({
 
 export function UpdateAccountForm({ account, loading }: { account: Detailed, loading: boolean }) {
     const [historyAt, setHistoryAt] = useState<Date | undefined>(
-        // isNil(account.history?.at)
-        //     ? undefined
-        //     : moment(account.history.at).toDate()
+        isNil(account.history?.at)
+            ? undefined
+            : moment(account.history.at).toDate()
     )
 
     const form = useForm<z.infer<typeof updateSchema>>({
@@ -332,12 +335,16 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             control={form.control}
                             name="history.present"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className="flex flex-row items-center justify-between">
+                                    <div className="space-y-0.5">
+                                        <FormLabel>
+                                            Does this account has a previous history?
+                                        </FormLabel>
+                                    </div>
                                     <FormControl>
-                                        <Input
-                                            {...field}
-                                            value={field.value.toString()}
-                                            placeholder={"Present"}
+                                        <Switch
+                                            checked={field.value}
+                                            onChange={field.onChange}
                                         />
                                     </FormControl>
                                     <FormMessage />
