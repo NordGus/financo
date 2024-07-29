@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Currency } from "dinero.js";
 import validateCurrencyCode from "validate-currency-code";
@@ -6,11 +7,19 @@ import { z } from "zod";
 import { isEmpty, isNil } from "lodash";
 import { useForm } from "react-hook-form";
 import { Form as RouterForm } from "react-router-dom";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, CheckIcon } from "lucide-react";
 import { format } from "date-fns";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 import moment from "moment";
 
 import Detailed, { Icon, Kind } from "@/types/Account";
+
+import { getCurrencies } from "@api/currencies";
+import { staleTimeDefault } from "@queries/Client";
+
+import kindToHuman from "@helpers/account/kindToHuman";
+import { cn } from "@/lib/utils";
+
 import {
     Form,
     FormControl,
@@ -20,18 +29,28 @@ import {
     FormLabel,
     FormMessage
 } from "@components/ui/form";
-import kindToHuman from "@helpers/account/kindToHuman";
-import { cn } from "@/lib/utils";
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@components/ui/card";
 import { Throbber } from "@components/Throbber";
 import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
 import { Calendar } from "@components/ui/calendar";
 import { Switch } from "@components/ui/switch";
-import { CurrencyField } from "@components/forms/fields/currency";
 import { Textarea } from "@components/ui/textarea";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList
+} from "@components/ui/command";
 
 const updateSchema = z.object({
     kind: z.nativeEnum(Kind,
@@ -179,6 +198,11 @@ function onSubmitUpdate(values: z.infer<typeof updateSchema>) {
 }
 
 export function UpdateAccountForm({ account, loading }: { account: Detailed, loading: boolean }) {
+    const { data: currencies, isError, error } = useQuery({
+        queryKey: ["currencies"],
+        queryFn: getCurrencies,
+        staleTime: staleTimeDefault
+    })
     const form = useForm<z.infer<typeof updateSchema>>({
         resolver: zodResolver(updateSchema),
         defaultValues: {
@@ -226,6 +250,8 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
     useEffect(() => {
         if (!isEmpty(form.formState.errors)) console.log("errors:", form.formState.errors)
     }, [form.formState.errors])
+
+    if (isError) throw error
 
     return <div className="flex flex-col gap-4">
         <Form {...form}>
@@ -291,9 +317,76 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                 </FormItem>
                             )}
                         />
-                        <CurrencyField
-                            form={form}
+                        <FormField
+                            control={form.control}
                             name="currency"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                    <FormLabel>Currency</FormLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <FormControl>
+                                                <Button
+                                                    variant="outline"
+                                                    role="combobox"
+                                                    className={cn(
+                                                        "w-full justify-between",
+                                                        !field.value && "text-muted-foreground"
+                                                    )}
+                                                >
+                                                    {
+                                                        field.value
+                                                            ? currencies?.find(
+                                                                ({ code }) => code === field.value
+                                                            )?.name
+                                                            : "Select Currency"
+                                                    }
+                                                    <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                </Button>
+                                            </FormControl>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-[200px] p-0">
+                                            <Command>
+                                                <CommandInput
+                                                    placeholder="Search currency..."
+                                                    className="h-9"
+                                                />
+                                                <CommandList>
+                                                    <CommandEmpty>No Currency found.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {currencies?.map(({ code, name }) => (
+                                                            <CommandItem
+                                                                value={code}
+                                                                key={name}
+                                                                onSelect={() => {
+                                                                    form.setValue("currency", code)
+                                                                }}
+                                                                onClick={() => {
+                                                                    form.setValue("currency", code)
+                                                                }}
+                                                            >
+                                                                {name}
+                                                                <CheckIcon
+                                                                    className={cn(
+                                                                        "ml-auto h-4 w-4",
+                                                                        code === field.value
+                                                                            ? "opacity-100"
+                                                                            : "opacity-0"
+                                                                    )}
+                                                                />
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
+                                    <FormDescription>
+                                        This is the currency your account operates with
+                                    </FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
                         <FormField
                             control={form.control}
