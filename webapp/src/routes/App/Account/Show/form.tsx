@@ -267,7 +267,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                         </div>
                         {loading && <Throbber variant="small" />}
                     </CardHeader>
-                    <CardContent className="flex flex-col gap-4">
+                    <CardContent className="flex flex-col gap-2">
                         <FormField
                             control={form.control}
                             name="name"
@@ -437,7 +437,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                 </CardDescription>
                             </div>
                         </CardHeader>
-                        <CardContent className="flex flex-col gap-4">
+                        <CardContent className="flex flex-col gap-2">
                             <FormField
                                 control={form.control}
                                 name="history.present"
