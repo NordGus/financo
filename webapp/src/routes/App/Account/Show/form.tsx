@@ -1,20 +1,30 @@
 import { Currency } from "dinero.js";
 import validateCurrencyCode from "validate-currency-code";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { isNil } from "lodash";
+import { useForm } from "react-hook-form";
 
-import { Icon, Kind } from "@/types/Account";
+import Detailed, { Icon, Kind } from "@/types/Account";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "@components/ui/form";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
+import { Throbber } from "@components/Throbber";
+import { Input } from "@components/ui/input";
+import { Button } from "@components/ui/button";
 
-export const formSchema = z.object({
-    kind: z.enum(
-        [
-            Kind.CapitalNormal,
-            Kind.CapitalSavings,
-            Kind.DebtLoan,
-            Kind.DebtPersonal,
-            Kind.DebtCredit,
-            Kind.ExternalIncome,
-            Kind.ExternalExpense
-        ],
+const updateSchema = z.object({
+    id: z.number({
+        required_error: "is required",
+        invalid_type_error: "must be a string",
+    }),
+    kind: z.nativeEnum(Kind,
         {
             required_error: "Kind is required",
             invalid_type_error: "Kind must be a string",
@@ -83,16 +93,7 @@ export const formSchema = z.object({
     ),
     children: z.object({
         id: z.number({ invalid_type_error: "ID must be a number" }).nullable(),
-        kind: z.enum(
-            [
-                Kind.CapitalNormal,
-                Kind.CapitalSavings,
-                Kind.DebtLoan,
-                Kind.DebtPersonal,
-                Kind.DebtCredit,
-                Kind.ExternalIncome,
-                Kind.ExternalExpense
-            ],
+        kind: z.nativeEnum(Kind,
             {
                 required_error: "Kind is required",
                 invalid_type_error: "Kind must be a string",
@@ -161,3 +162,83 @@ export const formSchema = z.object({
         ),
     }).array().nullable()
 })
+
+export function UpdateAccountForm({ account, loading }: { account: Detailed, loading: boolean }) {
+    const form = useForm<z.infer<typeof updateSchema>>({
+        resolver: zodResolver(updateSchema),
+        defaultValues: {
+            id: account.id,
+            kind: account.kind,
+            currency: account.currency,
+            name: account.name,
+            description: account.description,
+            capital: account.capital,
+            archive: !isNil(account.archivedAt),
+            history: {
+                present: !isNil(account.history),
+                balance: isNil(account.history?.balance) ? null : account.history.balance,
+                at: isNil(account.history?.at) ? null : account.history.at
+            },
+            color: account.color,
+            icon: account.icon,
+            children: isNil(account.children) ? null : account.children.map(
+                (child) => {
+                    return {
+                        id: child.id,
+                        kind: child.kind,
+                        currency: child.currency,
+                        name: child.name,
+                        description: child.description,
+                        capital: child.capital,
+                        archive: !isNil(child.archivedAt),
+                        history: {
+                            present: !isNil(child.history),
+                            balance: isNil(child.history?.balance) ? null : child.history.balance,
+                            at: isNil(child.history?.at) ? null : child.history.at
+                        },
+                        color: child.color,
+                        icon: child.icon,
+                    }
+                }
+            )
+        }
+    })
+
+    const onSubmit = (values: z.infer<typeof updateSchema>) => {
+        console.log(values)
+    }
+
+    return <>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                <Card>
+                    <CardHeader className="flex flex-row justify-between items-start">
+                        <div>
+                            <CardTitle>Details</CardTitle>
+                            <CardDescription>
+                                Account information and configuration
+                            </CardDescription>
+                        </div>
+                        {loading && <Throbber variant="small" />}
+                    </CardHeader>
+                    <CardContent>
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Name</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </CardContent>
+                </Card>
+                <Button type="submit">Save</Button>
+            </form>
+        </Form>
+    </>
+}
