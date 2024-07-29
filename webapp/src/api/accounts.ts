@@ -35,9 +35,9 @@ export function getAccounts(filters: ListFilters): () => Promise<Preview[]> {
     }
 }
 
-export async function updateAccount(account: Detailed): Promise<Detailed[]> {
+export async function updateAccount(account: Detailed): Promise<Detailed> {
     const response = await fetch(`/api/accounts/${account.id}`, {
-        method: "PATCH",
+        method: "PUT",
         headers: {
             'Content-Type': 'application/json'
         },
@@ -50,4 +50,8 @@ export async function updateAccount(account: Detailed): Promise<Detailed[]> {
     }
 
     return response.json()
+}
+
+export async function deleteAccount(id: string): Promise<Response> {
+    return fetch(`/api/accounts/${id}`, { method: "DELETE" })
 }
