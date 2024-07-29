@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { isNil } from "lodash";
 import { useForm } from "react-hook-form";
+import { Form as RouterForm } from "react-router-dom";
 
 import Detailed, { Icon, Kind } from "@/types/Account";
 import {
@@ -208,7 +209,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
         console.log(values)
     }
 
-    return <>
+    return <div className="flex flex-col gap-4">
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
                 <Card>
@@ -240,5 +241,22 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                 <Button type="submit">Save</Button>
             </form>
         </Form>
-    </>
+        <RouterForm
+            className="flex"
+            method="delete"
+            onSubmit={(event) => {
+                if (!confirm(`Do you want to delete this account? (${account.name})`)) {
+                    event.preventDefault()
+                }
+            }}
+        >
+            <Button
+                type="submit"
+                variant="destructive"
+                className="grow"
+            >
+                Delete
+            </Button>
+        </RouterForm>
+    </div>
 }
