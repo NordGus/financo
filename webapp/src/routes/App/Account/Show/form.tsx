@@ -21,10 +21,6 @@ import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 
 const updateSchema = z.object({
-    id: z.number({
-        required_error: "is required",
-        invalid_type_error: "must be a string",
-    }),
     kind: z.nativeEnum(Kind,
         {
             required_error: "Kind is required",
@@ -50,22 +46,6 @@ const updateSchema = z.object({
         required_error: "Capital is required",
         invalid_type_error: "Name must be a number"
     }),
-    color: z.string({
-        required_error: "Color is required",
-        invalid_type_error: "Color must be a string"
-    }).refine(
-        (color) => {
-            const validator = new Option().style;
-            validator.color = color
-
-            return validator.color.length > 0
-        },
-        (color) => { return { message: `${color} is not a valid color code` } }
-    ),
-    archive: z.boolean({
-        required_error: "Archive is required",
-        invalid_type_error: "Archive must be a boolean"
-    }),
     history: z.object({
         present: z.boolean(
             {
@@ -85,6 +65,18 @@ const updateSchema = z.object({
             offset: true
         }).nullable()
     }),
+    color: z.string({
+        required_error: "Color is required",
+        invalid_type_error: "Color must be a string"
+    }).refine(
+        (color) => {
+            const validator = new Option().style;
+            validator.color = color
+
+            return validator.color.length > 0
+        },
+        (color) => { return { message: `${color} is not a valid color code` } }
+    ),
     icon: z.nativeEnum(Icon,
         {
             required_error: "Icon is required",
@@ -92,8 +84,12 @@ const updateSchema = z.object({
             message: "Icon is not supported"
         }
     ),
+    archive: z.boolean({
+        required_error: "Archive is required",
+        invalid_type_error: "Archive must be a boolean"
+    }),
     children: z.object({
-        id: z.number({ invalid_type_error: "ID must be a number" }).nullable(),
+        id: z.number({ invalid_type_error: "ID must be a number" }).nullable().optional(),
         kind: z.nativeEnum(Kind,
             {
                 required_error: "Kind is required",
@@ -119,22 +115,6 @@ const updateSchema = z.object({
             required_error: "Capital is required",
             invalid_type_error: "Name must be a number"
         }),
-        color: z.string({
-            required_error: "Color is required",
-            invalid_type_error: "Color must be a string"
-        }).refine(
-            (color) => {
-                const validator = new Option().style;
-                validator.color = color
-
-                return validator.color.length > 0
-            },
-            (color) => { return { message: `${color} is not a valid color code` } }
-        ),
-        archive: z.boolean({
-            required_error: "Archive is required",
-            invalid_type_error: "Archive must be a boolean"
-        }),
         history: z.object({
             present: z.boolean(
                 {
@@ -154,6 +134,18 @@ const updateSchema = z.object({
                 offset: true
             }).nullable()
         }),
+        color: z.string({
+            required_error: "Color is required",
+            invalid_type_error: "Color must be a string"
+        }).refine(
+            (color) => {
+                const validator = new Option().style;
+                validator.color = color
+
+                return validator.color.length > 0
+            },
+            (color) => { return { message: `${color} is not a valid color code` } }
+        ),
         icon: z.nativeEnum(Icon,
             {
                 required_error: "Icon is required",
@@ -161,6 +153,14 @@ const updateSchema = z.object({
                 message: "Icon is not supported"
             }
         ),
+        archive: z.boolean({
+            required_error: "Archive is required",
+            invalid_type_error: "Archive must be a boolean"
+        }),
+        deleted: z.boolean({
+            required_error: "is required",
+            invalid_type_error: "must be a boolean"
+        }),
     }).array().nullable()
 })
 
@@ -168,13 +168,11 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
     const form = useForm<z.infer<typeof updateSchema>>({
         resolver: zodResolver(updateSchema),
         defaultValues: {
-            id: account.id,
             kind: account.kind,
             currency: account.currency,
             name: account.name,
             description: account.description,
             capital: account.capital,
-            archive: !isNil(account.archivedAt),
             history: {
                 present: !isNil(account.history),
                 balance: isNil(account.history?.balance) ? null : account.history.balance,
@@ -182,6 +180,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
             },
             color: account.color,
             icon: account.icon,
+            archive: !isNil(account.archivedAt),
             children: isNil(account.children) ? null : account.children.map(
                 (child) => {
                     return {
@@ -191,7 +190,6 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                         name: child.name,
                         description: child.description,
                         capital: child.capital,
-                        archive: !isNil(child.archivedAt),
                         history: {
                             present: !isNil(child.history),
                             balance: isNil(child.history?.balance) ? null : child.history.balance,
@@ -199,6 +197,8 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                         },
                         color: child.color,
                         icon: child.icon,
+                        archive: !isNil(child.archivedAt),
+                        delete: false
                     }
                 }
             )
@@ -250,11 +250,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                 }
             }}
         >
-            <Button
-                type="submit"
-                variant="destructive"
-                className="grow"
-            >
+            <Button type="submit" variant="destructive" className="grow">
                 Delete
             </Button>
         </RouterForm>
