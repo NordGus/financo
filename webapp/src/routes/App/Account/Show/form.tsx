@@ -9,7 +9,6 @@ import { Form as RouterForm } from "react-router-dom";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import moment from "moment";
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
 
 import Detailed, { Icon, Kind } from "@/types/Account";
 import {
@@ -31,10 +30,8 @@ import { Button } from "@components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
 import { Calendar } from "@components/ui/calendar";
 import { Switch } from "@components/ui/switch";
-import { useQuery } from "@tanstack/react-query";
-import { getCurrencies } from "@api/currencies";
-import { staleTimeDefault } from "@queries/Client";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@components/ui/command";
+import { CurrencyField } from "@components/forms/fields/currency";
+import { Textarea } from "@components/ui/textarea";
 
 const updateSchema = z.object({
     kind: z.nativeEnum(Kind,
@@ -182,12 +179,6 @@ function onSubmitUpdate(values: z.infer<typeof updateSchema>) {
 }
 
 export function UpdateAccountForm({ account, loading }: { account: Detailed, loading: boolean }) {
-    const { data: currencies, isError, error } = useQuery({
-        queryKey: ["currencies"],
-        queryFn: getCurrencies,
-        staleTime: staleTimeDefault
-    })
-
     const form = useForm<z.infer<typeof updateSchema>>({
         resolver: zodResolver(updateSchema),
         defaultValues: {
@@ -235,8 +226,6 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
     useEffect(() => {
         if (!isEmpty(form.formState.errors)) console.log("errors:", form.formState.errors)
     }, [form.formState.errors])
-
-    if (isError) throw error
 
     return <div className="flex flex-col gap-4">
         <Form {...form}>
@@ -291,86 +280,20 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                 <FormItem>
                                     <FormLabel>Description</FormLabel>
                                     <FormControl>
-                                        <Input
+                                        <Textarea
+                                            placeholder="Tell us a little bit about yourself"
+                                            className="resize-none"
+                                            rows={5}
                                             {...field}
-                                            value={field.value}
-                                            placeholder={"Description"}
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <FormField
-                            control={form.control}
+                        <CurrencyField
+                            form={form}
                             name="currency"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>Currency</FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant="outline"
-                                                    role="combobox"
-                                                    className={cn(
-                                                        "w-full justify-between",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {
-                                                        field.value
-                                                            ? currencies?.find(
-                                                                ({ code }) => code === field.value
-                                                            )?.name
-                                                            : "Select Currency"
-                                                    }
-                                                    <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-[200px] p-0">
-                                            <Command>
-                                                <CommandInput
-                                                    placeholder="Search currency..."
-                                                    className="h-9"
-                                                />
-                                                <CommandList>
-                                                    <CommandEmpty>No Currency found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {currencies?.map(({ code, name }) => (
-                                                            <CommandItem
-                                                                value={code}
-                                                                key={name}
-                                                                onSelect={() => {
-                                                                    form.setValue("currency", code)
-                                                                }}
-                                                                onClick={() => {
-                                                                    form.setValue("currency", code)
-                                                                }}
-                                                            >
-                                                                {name}
-                                                                <CheckIcon
-                                                                    className={cn(
-                                                                        "ml-auto h-4 w-4",
-                                                                        code === field.value
-                                                                            ? "opacity-100"
-                                                                            : "opacity-0"
-                                                                    )}
-                                                                />
-                                                            </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                </CommandList>
-                                            </Command>
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormDescription>
-                                        This is the language that will be used in the dashboard.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
                         />
                         <FormField
                             control={form.control}
