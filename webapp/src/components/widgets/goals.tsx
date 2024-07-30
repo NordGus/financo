@@ -14,6 +14,7 @@ import { Button } from "@components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 export function GoalsTracker({ className }: { className?: string }) {
     // [ ] TODO: Implement goals/achievements endpoints
@@ -120,7 +121,7 @@ export function GoalsTracker({ className }: { className?: string }) {
     ]
 
     return (
-        <Card className={className}>
+        <Card className={cn("flex flex-col", className)}>
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                 <div>
                     <CardTitle>Goals Tracker</CardTitle>
@@ -130,7 +131,49 @@ export function GoalsTracker({ className }: { className?: string }) {
                 </div>
                 {isFetching && <Throbber variant="small" />}
             </CardHeader>
-            <CardContent>
+            <CardContent className="grow overflow-y-auto">
+                {
+                    isNil(goals) || isEmpty(goals)
+                        ? <div className="mt-4 space-y-4">
+                            <p>You have no active savings goals</p>
+                            <Button variant="outline" className="">Create New Goal</Button>
+                        </div>
+                        : <Table>
+                            <TableBody>
+                                {
+                                    goals.sort((a, b) => a.position - b.position).map((goal) => {
+                                        const progress = goal.balance / goal.goal
+                                        const color = "#22c55e"
+
+                                        return <TableRow key={`goal:${goal.id}`}>
+                                            <TableCell>{goal.name}</TableCell>
+                                            <TableCell>
+                                                {!isNil(goal.description) && (
+                                                    <Tooltip delayDuration={0}>
+                                                        <TooltipTrigger
+                                                            className="text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50"
+                                                        >
+                                                            <InfoIcon className="w-5 h-5" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            {goal.description}
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Progress
+                                                    progress={progress}
+                                                    icon={<TrophyIcon className="w-5 h-5" />}
+                                                    color={color}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    })
+                                }
+                            </TableBody>
+                        </Table>
+                }
                 {
                     isNil(goals) || isEmpty(goals)
                         ? <div className="mt-4 space-y-4">

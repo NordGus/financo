@@ -26,12 +26,14 @@ export function loader(_queryClient: QueryClient): LoaderFunction {
 export default function Index() {
     return (
         <>
-            <div className="grid grid-cols-2 gap-4 items-stretch">
-                <SummaryCapital />
-                <SummaryDebt />
-                <SummaryNetWorth />
-                <SummaryAvailableCredit />
-                <GoalsTracker className="col-span-2" />
+            <div className="flex flex-col gap-4 h-full items-stretch overflow-y-hidden">
+                <div className="grid grid-cols-2 gap-4 items-stretch grow">
+                    <SummaryCapital />
+                    <SummaryDebt />
+                    <SummaryNetWorth />
+                    <SummaryAvailableCredit />
+                </div>
+                <GoalsTracker className="col-span-2 h-[65dvh]" />
             </div>
             <Tabs
                 defaultValue={"capital"}
