@@ -254,7 +254,7 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
 
     if (isError) throw error
 
-    return <div className="flex flex-col gap-4">
+    return <>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmitUpdate)} className="flex flex-col gap-4">
                 <Card>
@@ -422,11 +422,11 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                 </FormItem>
                             )}
                         />
-                        <div className="flex justify-end">
-                            <Button type="submit">Save</Button>
-                        </div>
                     </CardContent>
                 </Card>
+                <div className="flex justify-end sticky top-0">
+                    <Button type="submit">Save</Button>
+                </div>
                 {!isExternalAccount(account.kind) && (
                     <Card>
                         <CardHeader className="flex flex-row justify-between items-start">
@@ -516,9 +516,6 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                     </FormItem>
                                 )}
                             />
-                            <div className="flex justify-end">
-                                <Button type="submit">Save</Button>
-                            </div>
                         </CardContent>
                     </Card>
                 )}
@@ -537,5 +534,5 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                 Delete
             </Button>
         </RouterForm>
-    </div >
+    </>
 }

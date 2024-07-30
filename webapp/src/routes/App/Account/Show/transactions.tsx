@@ -146,7 +146,7 @@ export function TransactionHistory({
     if (isError) throw error
 
     return (<>
-        <div className={cn("flex justify-between", className)}>
+        <div className={cn("flex justify-between sticky top-0")}>
             <Popover>
                 <PopoverTrigger asChild={true}>
                     <Button

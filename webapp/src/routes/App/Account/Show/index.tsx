@@ -70,9 +70,8 @@ export default function Show() {
     if (isError) throw error
 
     return (
-        <div className="grid grid-cols-2 gap-4">
-            <UpdateAccountForm account={account} loading={isFetching} />
-            <div className="flex flex-col gap-4">
+        <>
+            <div className="flex flex-col gap-4 m-0 h-full overflow-y-auto">
                 <div className="flex gap-4 items-stretch">
                     <CardSummary
                         title="Balance"
@@ -87,8 +86,13 @@ export default function Show() {
                 </div>
                 <UpcomingTransactions account={account} />
                 <PendingTransactions account={account} />
-                <TransactionHistory account={account} />
             </div>
-        </div >
+            <div className="flex flex-col gap-4 m-0 h-full overflow-y-auto">
+                <UpdateAccountForm account={account} loading={isFetching} />
+            </div>
+            <div className="flex flex-col gap-4 m-0 h-full overflow-y-auto">
+                <TransactionHistory account={account} className="grow flex flex-col" />
+            </div>
+        </>
     )
 }
