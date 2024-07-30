@@ -11,8 +11,8 @@ export function loader(_queryClient: QueryClient): LoaderFunction {
 
 export default function Layout() {
     return (
-        <div className="space-y-4">
-            <div className="h-10 md:h-9 flex items-center">
+        <div className="gap-4 grid grid-rows-[min-content_1fr] grid-cols-3 h-full">
+            <div className="flex items-center col-span-3 pt-2">
                 <Breadcrumbs />
             </div>
             <Outlet />

@@ -157,7 +157,7 @@ export function CapitalAccountsTable({ }) {
                         </Accordion>
                 }
             </CardContent>
-        </Card >
+        </Card>
     )
 }
 

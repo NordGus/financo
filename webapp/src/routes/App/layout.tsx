@@ -14,9 +14,9 @@ import NavLink from "@components/NavLink";
 
 export default function Layout() {
     return (
-        <div className='w-full h-[100dvh] grid grid-cols-[min-content_minmax(0,_1fr)] dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50'
+        <div className='w-full h-[100dvh] grid grid-cols-[min-content_minmax(0,_1fr)] dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 items-stretch'
         >
-            <nav className='flex flex-col gap-2 p-2 h-full m-0 border-r border-zinc-200 dark:border-zinc-800 bg-transparent shadow-sm'>
+            <nav className='flex flex-col gap-2 p-2 m-0 border-r border-zinc-200 dark:border-zinc-800 bg-transparent shadow-sm'>
                 <NavLink
                     name="Dashboard"
                     path=""
@@ -59,7 +59,7 @@ export default function Layout() {
                     icon={<SettingsIcon className="w-[1.75rem] h-[1.75rem]" />}
                 />
             </nav>
-            <main className='block min-h-full overflow-y-auto p-2'>
+            <main className='block p-2 h-full overflow-y-hidden'>
                 <Outlet />
             </main>
         </div>
