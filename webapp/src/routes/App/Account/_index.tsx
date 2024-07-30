@@ -2,13 +2,6 @@ import { QueryClient } from "@tanstack/react-query";
 import { LoaderFunction, LoaderFunctionArgs, Outlet } from "react-router-dom";
 
 import Breadcrumbs from "@components/breadcrumbs";
-import { GoalsTracker } from "@components/widgets/goals";
-import {
-    SummaryCapital,
-    SummaryDebt,
-    SummaryNetWorth,
-    SummaryAvailableCredit
-} from "@components/widgets/summaries";
 
 export function loader(_queryClient: QueryClient): LoaderFunction {
     return async (_props: LoaderFunctionArgs) => {
@@ -22,18 +15,7 @@ export default function Layout() {
             <div className="h-10 md:h-9 flex items-center">
                 <Breadcrumbs />
             </div>
-            <div className="grid grid-cols-3 gap-4 items-start">
-                <div className="grid grid-cols-2 gap-4">
-                    <SummaryCapital />
-                    <SummaryDebt />
-                    <SummaryNetWorth />
-                    <SummaryAvailableCredit />
-                    <GoalsTracker className="col-span-2" />
-                </div>
-                <div className="col-span-2">
-                    <Outlet />
-                </div>
-            </div>
+            <Outlet />
         </div>
     )
 }
