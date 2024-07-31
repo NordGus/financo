@@ -1,7 +1,8 @@
 import { QueryClient } from "@tanstack/react-query";
-import { LoaderFunction, LoaderFunctionArgs, Outlet } from "react-router-dom";
+import { Link, LoaderFunction, LoaderFunctionArgs, Outlet } from "react-router-dom";
 
 import Breadcrumbs from "@components/breadcrumbs";
+import { Button } from "@components/ui/button";
 
 export function loader(_queryClient: QueryClient): LoaderFunction {
     return async (_props: LoaderFunctionArgs) => {
@@ -11,9 +12,13 @@ export function loader(_queryClient: QueryClient): LoaderFunction {
 
 export default function Layout() {
     return (
-        <div className="gap-4 grid grid-rows-[min-content_1fr] grid-cols-3 h-full">
-            <div className="flex items-center col-span-3 pt-2">
+        <div className="gap-4 flex flex-col">
+            <div className="flex items-center">
                 <Breadcrumbs />
+                <span className="grow contents-['']"></span>
+                <Button asChild={true}>
+                    <Link to="/accounts/new">New Account</Link>
+                </Button>
             </div>
             <Outlet />
         </div>
