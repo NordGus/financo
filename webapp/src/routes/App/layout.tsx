@@ -59,7 +59,7 @@ export default function Layout() {
                     icon={<SettingsIcon className="w-[1.75rem] h-[1.75rem]" />}
                 />
             </nav>
-            <main className='block min-h-full overflow-y-auto p-2'>
+            <main className='overflow-y-auto p-2'>
                 <Outlet />
             </main>
         </div>
