@@ -17,13 +17,6 @@ import { getAccounts } from "@api/accounts";
 
 import { Throbber } from "@components/Throbber";
 import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle
-} from "@components/ui/card";
-import {
     Table,
     TableBody,
     TableCell,
@@ -119,31 +112,36 @@ export function CapitalAccountsTable({ }) {
     if (archivedIsError) throw archivedError
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0">
-                <div className="space-y-2">
-                    <CardTitle>Capital</CardTitle>
-                    <CardDescription>
-                        Represents your bank account, cash or savings accounts
-                    </CardDescription>
-                </div>
-                {activeIsFetching || archivedIsFetching && <Throbber variant="small" />}
-            </CardHeader>
-            <CardContent className="mt-4 space-y-4">
-                {
-                    isNil(active) || isEmpty(active)
-                        ? <>
-                            <p>You have no active capital accounts</p>
-                            <Button variant="outline" asChild={true}>
-                                <Link to="/accounts/new">Create New Account</Link>
-                            </Button>
-                        </>
-                        : <div className="rounded-md border dark:border-zinc-800">
-                            <CapitalTable accounts={active} navigate={navigate} />
-                        </div>
-                }
-                {
-                    isEmpty(archived) || isNil(archived)
+        <div className="flex flex-col gap-4 px-4">
+            {
+                activeIsFetching
+                    ? <div className="flex justify-center p-4 gap-2">
+                        <Throbber /><span>Fetching</span>
+                    </div>
+                    : <>
+                        <p className="text-zinc-500">
+                            Represents your bank account, cash or savings accounts
+                        </p>
+                        {
+                            isNil(active) || isEmpty(active)
+                                ? <>
+                                    <p>You have no active capital accounts</p>
+                                    <Button variant="outline" asChild={true}>
+                                        <Link to="/accounts/new">Create New Account</Link>
+                                    </Button>
+                                </>
+                                : <div className="rounded-md border dark:border-zinc-800">
+                                    <CapitalTable accounts={active} navigate={navigate} />
+                                </div>
+                        }
+                    </>
+            }
+            {
+                archivedIsFetching
+                    ? <div className="flex justify-center p-4 gap-2">
+                        <Throbber /><span>Fetching</span>
+                    </div>
+                    : isEmpty(archived) || isNil(archived)
                         ? null
                         : <Accordion type="single" collapsible={true}>
                             <AccordionItem value="archived">
@@ -155,9 +153,8 @@ export function CapitalAccountsTable({ }) {
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
-                }
-            </CardContent>
-        </Card>
+            }
+        </div>
     )
 }
 
@@ -272,31 +269,36 @@ export function DebtAccountsTable({ }) {
     if (archivedIsError) throw archivedError
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                <div className="space-y-2">
-                    <CardTitle>Debts and Credit Lines</CardTitle>
-                    <CardDescription>
-                        Represent loans of any kind, debts between you and your friends or any kind of credit line, like credit cards
-                    </CardDescription>
-                </div>
-                {activeIsFetching || archivedIsFetching && <Throbber variant="small" />}
-            </CardHeader>
-            <CardContent className="mt-4 space-y-4">
-                {
-                    isNil(active) || isEmpty(active)
-                        ? <>
-                            <p>You have no active debts</p>
-                            <Button variant="outline" asChild={true}>
-                                <Link to="/accounts/new">Create New Account</Link>
-                            </Button>
-                        </>
-                        : <div className="rounded-md border dark:border-zinc-800">
-                            <DebtTable accounts={active} navigate={navigate} />
-                        </div>
-                }
-                {
-                    isEmpty(archived) || isNil(archived)
+        <div className="flex flex-col gap-4 px-4">
+            {
+                activeIsFetching
+                    ? <div className="flex justify-center p-4 gap-2">
+                        <Throbber /><span>Fetching</span>
+                    </div>
+                    : <>
+                        <p className="text-zinc-500">
+                            Represent loans of any kind, debts between you and your friends or any kind of credit line, like credit cards
+                        </p>
+                        {
+                            isNil(active) || isEmpty(active)
+                                ? <>
+                                    <p>You have no active capital accounts</p>
+                                    <Button variant="outline" asChild={true}>
+                                        <Link to="/accounts/new">Create New Account</Link>
+                                    </Button>
+                                </>
+                                : <div className="rounded-md border dark:border-zinc-800">
+                                    <DebtTable accounts={active} navigate={navigate} />
+                                </div>
+                        }
+                    </>
+            }
+            {
+                archivedIsFetching
+                    ? <div className="flex justify-center p-4 gap-2">
+                        <Throbber /><span>Fetching</span>
+                    </div>
+                    : isEmpty(archived) || isNil(archived)
                         ? null
                         : <Accordion type="single" collapsible={true}>
                             <AccordionItem value="archived">
@@ -308,9 +310,8 @@ export function DebtAccountsTable({ }) {
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
-                }
-            </CardContent>
-        </Card>
+            }
+        </div>
     )
 }
 
@@ -411,31 +412,36 @@ export function IncomeAccountsTable({ }) {
     if (archivedIsError) throw archivedError
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                <div className="space-y-2">
-                    <CardTitle>Income Sources and Incoming Transactions</CardTitle>
-                    <CardDescription>
-                        Represent any possible incoming source of currency
-                    </CardDescription>
-                </div>
-                {activeIsFetching && archivedIsFetching && <Throbber variant="small" />}
-            </CardHeader>
-            <CardContent className="mt-4 space-y-4">
-                {
-                    isNil(active) || isEmpty(active)
-                        ? <>
-                            <p>You have no active income sources</p>
-                            <Button variant="outline" asChild={true}>
-                                <Link to="/accounts/new">Create New Account</Link>
-                            </Button>
-                        </>
-                        : <div className="rounded-md border dark:border-zinc-800">
-                            <ExternalTable accounts={active} navigate={navigate} />
-                        </div>
-                }
-                {
-                    isEmpty(archived) || isNil(archived)
+        <div className="flex flex-col gap-4 px-4">
+            {
+                activeIsFetching
+                    ? <div className="flex justify-center p-4 gap-2">
+                        <Throbber /><span>Fetching</span>
+                    </div>
+                    : <>
+                        <p className="text-zinc-500">
+                            Represent any possible incoming source of currency
+                        </p>
+                        {
+                            isNil(active) || isEmpty(active)
+                                ? <>
+                                    <p>You have no active capital accounts</p>
+                                    <Button variant="outline" asChild={true}>
+                                        <Link to="/accounts/new">Create New Account</Link>
+                                    </Button>
+                                </>
+                                : <div className="rounded-md border dark:border-zinc-800">
+                                    <ExternalTable accounts={active} navigate={navigate} />
+                                </div>
+                        }
+                    </>
+            }
+            {
+                archivedIsFetching
+                    ? <div className="flex justify-center p-4 gap-2">
+                        <Throbber /><span>Fetching</span>
+                    </div>
+                    : isEmpty(archived) || isNil(archived)
                         ? null
                         : <Accordion type="single" collapsible={true}>
                             <AccordionItem value="archived">
@@ -447,9 +453,8 @@ export function IncomeAccountsTable({ }) {
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
-                }
-            </CardContent>
-        </Card>
+            }
+        </div>
     )
 }
 
@@ -480,31 +485,36 @@ export function ExpenseAccountsTable({ }) {
     if (archivedIsError) throw archivedError
 
     return (
-        <Card>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-                <div className="space-y-2">
-                    <CardTitle>Expenses and Outgoing Transactions</CardTitle>
-                    <CardDescription>
-                        Represent any possible expense or outgoing source of currency
-                    </CardDescription>
-                </div>
-                {activeIsFetching || archivedIsFetching && <Throbber variant="small" />}
-            </CardHeader>
-            <CardContent className="mt-4 space-y-4">
-                {
-                    isNil(active) || isEmpty(active)
-                        ? <>
-                            <p>You have no active expense sources</p>
-                            <Button variant="outline" asChild={true}>
-                                <Link to="/accounts/new">Create New Account</Link>
-                            </Button>
-                        </>
-                        : <div className="rounded-md border dark:border-zinc-800">
-                            <ExternalTable accounts={active} navigate={navigate} />
-                        </div>
-                }
-                {
-                    isEmpty(archived) || isNil(archived)
+        <div className="flex flex-col gap-4 px-4">
+            {
+                activeIsFetching
+                    ? <div className="flex justify-center p-4 gap-2">
+                        <Throbber /><span>Fetching</span>
+                    </div>
+                    : <>
+                        <p className="text-zinc-500">
+                            Represent any possible incoming source of currency
+                        </p>
+                        {
+                            isNil(active) || isEmpty(active)
+                                ? <>
+                                    <p>You have no active capital accounts</p>
+                                    <Button variant="outline" asChild={true}>
+                                        <Link to="/accounts/new">Create New Account</Link>
+                                    </Button>
+                                </>
+                                : <div className="rounded-md border dark:border-zinc-800">
+                                    <ExternalTable accounts={active} navigate={navigate} />
+                                </div>
+                        }
+                    </>
+            }
+            {
+                archivedIsFetching
+                    ? <div className="flex justify-center p-4 gap-2">
+                        <Throbber /><span>Fetching</span>
+                    </div>
+                    : isEmpty(archived) || isNil(archived)
                         ? null
                         : <Accordion type="single" collapsible={true}>
                             <AccordionItem value="archived">
@@ -516,8 +526,7 @@ export function ExpenseAccountsTable({ }) {
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
-                }
-            </CardContent>
-        </Card>
+            }
+        </div>
     )
 }
