@@ -1,7 +1,6 @@
 import { LoaderFunction, LoaderFunctionArgs } from "react-router-dom";
 import { QueryClient } from "@tanstack/react-query";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
 import {
     CapitalAccountsTable,
     DebtAccountsTable,
@@ -14,6 +13,12 @@ import {
     SummaryNetWorth,
     SummaryAvailableCredit
 } from "@components/widgets/summaries";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger
+} from "@components/ui/accordion";
 
 export function loader(_queryClient: QueryClient): LoaderFunction {
     return async (_props: LoaderFunctionArgs) => {
@@ -30,22 +35,32 @@ export default function Index() {
                 <SummaryNetWorth className="grow" />
                 <SummaryAvailableCredit className="grow" />
             </div>
-            <Tabs defaultValue={"mine"}>
-                <div className="sticky top-0 mb-4 z-20">
-                    <TabsList className="shadow-md">
-                        <TabsTrigger value="mine">Mine</TabsTrigger>
-                        <TabsTrigger value="external">External</TabsTrigger>
-                    </TabsList>
-                </div>
-                <TabsContent value="mine" className="flex flex-col gap-4 m-0">
-                    <CapitalAccountsTable />
-                    <DebtAccountsTable />
-                </TabsContent>
-                <TabsContent value="external" className="flex flex-col gap-4 m-0">
-                    <IncomeAccountsTable />
-                    <ExpenseAccountsTable />
-                </TabsContent>
-            </Tabs>
+            <Accordion type="single" defaultValue={"capital"} collapsible>
+                <AccordionItem value="capital">
+                    <AccordionTrigger>Capital</AccordionTrigger>
+                    <AccordionContent>
+                        <CapitalAccountsTable />
+                    </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="debt">
+                    <AccordionTrigger>Debts and Credit Lines</AccordionTrigger>
+                    <AccordionContent>
+                        <DebtAccountsTable />
+                    </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="income">
+                    <AccordionTrigger>Income Sources and Incoming Transactions</AccordionTrigger>
+                    <AccordionContent>
+                        <IncomeAccountsTable />
+                    </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="expenses">
+                    <AccordionTrigger>Expenses and Outgoing Transactions</AccordionTrigger>
+                    <AccordionContent>
+                        <ExpenseAccountsTable />
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
         </>
     )
 }
