@@ -21,13 +21,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs"
 
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
-    if (!params.id) {
-        throw new Error('No account ID provided')
-    }
+    if (!params.id) throw new Error('No account ID provided')
 
-    await queryClient.ensureQueryData(query(params.id))
+    const account = await queryClient.ensureQueryData(query(params.id))
 
-    return { id: params.id, breadcrumb: "Edit Account" }
+    return { id: params.id, breadcrumb: account.name }
 }
 
 export const action = (queryClient: QueryClient) => async ({
