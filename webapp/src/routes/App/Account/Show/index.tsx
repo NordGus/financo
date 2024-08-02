@@ -18,6 +18,7 @@ import {
     PendingTransactions,
     UpcomingTransactions
 } from "./transactions"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs"
 
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
     if (!params.id) {
@@ -70,29 +71,36 @@ export default function Show() {
     if (isError) throw error
 
     return (
-        <>
-            <div className="flex flex-col gap-4 m-0 h-full overflow-y-auto">
-                <div className="flex gap-4 items-stretch">
-                    <CardSummary
-                        title="Balance"
-                        balances={[{ amount: account.balance, currency: account.currency }]}
-                        className="grow"
-                    />
-                    <CardSummary
-                        title="Balance"
-                        balances={[{ amount: account.balance, currency: account.currency }]}
-                        className="grow"
-                    />
-                </div>
-                <UpcomingTransactions account={account} />
-                <PendingTransactions account={account} />
-            </div>
-            <div className="flex flex-col gap-4 m-0 h-full overflow-y-auto">
+        <div className="grid grid-cols-4 grid-rows-[20dvh_minmax(0,_1fr)] gap-4">
+            <CardSummary
+                title="Balance"
+                balances={[{ amount: account.balance, currency: account.currency }]}
+                className="grow col-span-2"
+            />
+            <CardSummary
+                title="Balance"
+                balances={[{ amount: account.balance, currency: account.currency }]}
+                className="grow col-span-2"
+            />
+            <div className="col-span-3 row-span-2">
                 <UpdateAccountForm account={account} loading={isFetching} />
             </div>
-            <div className="flex flex-col gap-4 m-0 h-full overflow-y-auto">
-                <TransactionHistory account={account} className="grow flex flex-col" />
-            </div>
-        </>
+            <Tabs defaultValue="pending" className="flex flex-col gap-4">
+                <TabsList>
+                    <TabsTrigger value="pending" className="grow">Pending</TabsTrigger>
+                    <TabsTrigger value="upcoming" className="grow">Upcoming</TabsTrigger>
+                    <TabsTrigger value="history" className="grow">History</TabsTrigger>
+                </TabsList>
+                <TabsContent value="pending" className="m-0">
+                    <PendingTransactions account={account} />
+                </TabsContent>
+                <TabsContent value="upcoming" className="m-0">
+                    <UpcomingTransactions account={account} />
+                </TabsContent>
+                <TabsContent value="history" className="m-0 space-y-4">
+                    <TransactionHistory account={account} className="flex flex-col" />
+                </TabsContent>
+            </Tabs>
+        </div >
     )
 }
