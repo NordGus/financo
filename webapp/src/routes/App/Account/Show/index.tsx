@@ -73,11 +73,13 @@ export default function Show() {
     return (
         <div className="grid grid-cols-4 grid-rows-[20dvh_minmax(0,_1fr)] gap-4">
             <CardSummary
+                key={`summary:account:${id}:balance`}
                 title="Balance"
                 balances={[{ amount: account.balance, currency: account.currency }]}
                 className="grow col-span-2"
             />
             <CardSummary
+                key={`summary:account:${id}:balance:1`}
                 title="Balance"
                 balances={[{ amount: account.balance, currency: account.currency }]}
                 className="grow col-span-2"

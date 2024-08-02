@@ -1,13 +1,15 @@
 import Summary from "@/types/Summary";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { cn } from "@/lib/utils";
+
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import { cn } from "@/lib/utils";
+
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 export function CardSummary({
     title,
     balances,
-    className
+    className,
 }: { title: string, balances: Summary[], className?: string }) {
     return (
         <Card className={className}>
@@ -17,6 +19,7 @@ export function CardSummary({
             <CardContent>
                 {
                     balances.map(({ amount, currency }) => <div
+                        key={`${title.replace(" ", "").toLowerCase()}:${currency}`}
                         className={cn("text-2xl font-bold", currencyAmountColor(amount, false))}
                     >
                         {currencyAmountToHuman(Math.abs(amount), currency)}
