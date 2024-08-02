@@ -82,7 +82,7 @@ export default function Show() {
                 balances={[{ amount: account.balance, currency: account.currency }]}
                 className="grow col-span-2"
             />
-            <div className="col-span-3 row-span-2">
+            <div className="col-span-3">
                 <UpdateAccountForm account={account} loading={isFetching} />
             </div>
             <Tabs defaultValue="pending" className="flex flex-col gap-4">
