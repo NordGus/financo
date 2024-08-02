@@ -1,7 +1,10 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { groupBy, isEmpty, isNil } from "lodash";
 import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import moment from "moment";
 
 import Transaction from "@/types/Transaction";
@@ -24,10 +27,7 @@ import {
 } from "@components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@components/ui/table";
 import { Button } from "@components/ui/button";
-import { useEffect, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import { Calendar } from "@components/ui/calendar";
 
 export function PendingTransactions({
@@ -40,7 +40,6 @@ export function PendingTransactions({
     })
 
     if (isError) throw error
-    if (isEmpty(transactions) || isNil(transactions)) return null
 
     return (
         <Card className={className}>
@@ -54,18 +53,27 @@ export function PendingTransactions({
                 {isFetching && <Throbber variant="small" />}
             </CardHeader>
             <CardContent className="space-y-4">
-                <TransactionsTable
-                    accountID={accountID}
-                    transactions={transactions}
-                    sortByFn={(a, b) => Date.parse(a.issuedAt) - Date.parse(b.issuedAt)}
-                    groupByFn={({ issuedAt }) => issuedAt}
-                />
+                {
+                    isEmpty(transactions) || isNil(transactions)
+                        ? <>
+                            <p>There aren't any pending transactions</p>
+                        </>
+                        : <TransactionsTable
+                            accountID={accountID}
+                            transactions={transactions}
+                            sortByFn={(a, b) => Date.parse(a.issuedAt) - Date.parse(b.issuedAt)}
+                            groupByFn={({ issuedAt }) => issuedAt}
+                            withUpcoming={false}
+                        />
+                }
             </CardContent>
-            <CardFooter>
-                <CardDescription>
-                    Please check that is no longer the case and update the transactions to reflect this
-                </CardDescription>
-            </CardFooter>
+            {
+                !isEmpty(transactions) && !isNil(transactions) && <CardFooter>
+                    <CardDescription>
+                        Please check that is no longer the case and update the transactions to reflect this
+                    </CardDescription>
+                </CardFooter>
+            }
         </Card>
     )
 }
@@ -84,7 +92,6 @@ export function UpcomingTransactions({
     })
 
     if (isError) throw error
-    if (isEmpty(transactions) || isNil(transactions)) return null
 
     return (
         <Card className={className}>
@@ -98,12 +105,21 @@ export function UpcomingTransactions({
                 {isFetching && <Throbber variant="small" />}
             </CardHeader>
             <CardContent className="space-y-4">
-                <TransactionsTable
-                    accountID={accountID}
-                    transactions={transactions}
-                    sortByFn={(a, b) => Date.parse(a.executedAt!) - Date.parse(b.executedAt!)}
-                    groupByFn={({ executedAt }) => executedAt!}
-                />
+                {
+                    isEmpty(transactions) || isNil(transactions)
+                        ? <>
+                            <p>There aren't any upcoming transactions</p>
+                        </>
+                        : <TransactionsTable
+                            accountID={accountID}
+                            transactions={transactions}
+                            sortByFn={
+                                (a, b) => Date.parse(a.executedAt!) - Date.parse(b.executedAt!)
+                            }
+                            groupByFn={({ executedAt }) => executedAt!}
+                            withUpcoming={false}
+                        />
+                }
             </CardContent>
         </Card>
     )
@@ -224,6 +240,7 @@ export function TransactionHistory({
                                 (a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)
                             }
                             groupByFn={({ executedAt }) => executedAt!}
+                            withUpcoming={true}
                         />
                 }
             </CardContent>
@@ -232,13 +249,16 @@ export function TransactionHistory({
 }
 
 function TransactionsTable({
-    accountID, transactions, sortByFn, groupByFn
+    accountID, transactions, sortByFn, groupByFn, withUpcoming
 }: {
     accountID: number
     transactions: Transaction[]
     sortByFn: (a: Transaction, b: Transaction) => number
-    groupByFn: (tr: Transaction) => string
+    groupByFn: (tr: Transaction) => string,
+    withUpcoming: boolean
 }) {
+    const upcomingDate = moment().startOf('day').toDate()
+
     return Object.entries(groupBy(transactions.sort(sortByFn), groupByFn))
         .map(([date, tr]) => {
             return {
@@ -249,7 +269,7 @@ function TransactionsTable({
         .map(({ date, transactions }) => (
             <div
                 key={`transactions:pending:${date.toISOString()}`}
-                className={cn("", (date > new Date()) && "opacity-50")}
+                className={cn("", withUpcoming && date > upcomingDate && "opacity-50")}
             >
                 <h4 className="text-xl">
                     {date.toLocaleDateString(undefined, {
