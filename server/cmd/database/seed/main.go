@@ -1173,8 +1173,8 @@ func createAllTransactions(
 			SourceAmount: 40_00,
 			TargetAmount: 40_00,
 			// Doesn't have any notes
-			IssuedAt:   executionTime.AddDate(0, 0, -8),
-			ExecutedAt: nullable.New(executionTime.AddDate(0, 0, -7)),
+			IssuedAt:   executionTime,
+			ExecutedAt: nullable.New(executionTime),
 			// Is not deleted
 			CreatedAt: executionTime,
 			UpdatedAt: executionTime,
