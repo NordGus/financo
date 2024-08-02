@@ -30,10 +30,10 @@ export default function Index() {
     return (
         <>
             <div className="grid grid-cols-4 gap-4 h-[20dvh] items-stretch">
-                <SummaryCapital className="grow" />
-                <SummaryDebt className="grow" />
-                <SummaryNetWorth className="grow" />
-                <SummaryAvailableCredit className="grow" />
+                <SummaryCapital className="grow" key="summary:capital" />
+                <SummaryDebt className="grow" key="summary:debt" />
+                <SummaryNetWorth className="grow" key="summary:netWorth" />
+                <SummaryAvailableCredit className="grow" key="summary:availableCredit" />
             </div>
             <Accordion type="single" defaultValue={"capital"} collapsible>
                 <AccordionItem value="capital">
