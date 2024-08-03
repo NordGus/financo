@@ -1,20 +1,32 @@
+import { ReactNode } from "react"
 import { isNil } from "lodash"
 import { CheckIcon } from "lucide-react"
-import { ReactNode } from "react"
+
+import { cn } from "@/lib/utils"
+
 
 interface Props {
     progress: number
     color?: string
-    icon?: ReactNode
+    icon?: ReactNode,
+    className?: string
 }
 
-export function Progress({ progress, color, icon }: Props) {
+export function Progress({ progress, color, icon, className }: Props) {
     const dasharray = 300
     const fillStrokeWidth = 10
     const baseStrokeWidth = 3
 
     return (
-        <div className="m-auto w-10 h-10 relative" style={{ color: color }}>
+        <div
+            className={
+                cn(
+                    "m-auto w-10 h-10 relative",
+                    className
+                )
+            }
+            style={{ color: color }}
+        >
             <span
                 className="absolute bottom-0 top-0 right-0 left-0 flex justify-center items-center"
             >
