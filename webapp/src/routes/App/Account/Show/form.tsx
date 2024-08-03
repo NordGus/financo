@@ -33,6 +33,7 @@ import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle
 } from "@components/ui/card";
@@ -198,12 +199,15 @@ function onSubmitUpdate(values: z.infer<typeof updateSchema>) {
     console.log(values)
 }
 
-export function UpdateAccountForm({ account, loading }: { account: Detailed, loading: boolean }) {
+export function UpdateAccountForm({
+    account, loading, className
+}: { account: Detailed, loading: boolean, className?: string }) {
     const { data: currencies, isError, error } = useQuery({
         queryKey: ["currencies"],
         queryFn: getCurrencies,
         staleTime: staleTimeDefault
     })
+
     const form = useForm<z.infer<typeof updateSchema>>({
         resolver: zodResolver(updateSchema),
         defaultValues: {
@@ -254,9 +258,26 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
 
     if (isError) throw error
 
-    return <>
+    return <div className={cn("flex flex-col gap-4", className)}>
+        <div className="flex justify-end gap-4">
+            <RouterForm
+                method="delete"
+                onSubmit={(event) => {
+                    if (!confirm(`Do you want to delete this account? (${account.name})`)) {
+                        event.preventDefault()
+                    }
+                }}
+            >
+                <Button type="submit" variant="destructive" className="grow">
+                    Delete
+                </Button>
+            </RouterForm>
+        </div>
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmitUpdate)} className="flex flex-col gap-4">
+            <form
+                onSubmit={form.handleSubmit(onSubmitUpdate)}
+                className="flex flex-col gap-4"
+            >
                 <Card>
                     <CardHeader className="flex flex-row justify-between items-start">
                         <div>
@@ -357,8 +378,8 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                                     <CommandGroup>
                                                         {currencies?.map(({ code, name }) => (
                                                             <CommandItem
-                                                                value={code}
-                                                                key={name}
+                                                                value={name}
+                                                                key={code}
                                                                 onSelect={() => {
                                                                     form.setValue("currency", code)
                                                                 }}
@@ -423,10 +444,10 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                             )}
                         />
                     </CardContent>
+                    <CardFooter className="flex justify-end">
+                        <Button type="submit">Save</Button>
+                    </CardFooter>
                 </Card>
-                <div className="flex justify-end sticky top-0">
-                    <Button type="submit">Save</Button>
-                </div>
                 {!isExternalAccount(account.kind) && (
                     <Card>
                         <CardHeader className="flex flex-row justify-between items-start">
@@ -517,22 +538,12 @@ export function UpdateAccountForm({ account, loading }: { account: Detailed, loa
                                 )}
                             />
                         </CardContent>
+                        <CardFooter className="flex justify-end">
+                            <Button type="submit">Save</Button>
+                        </CardFooter>
                     </Card>
                 )}
             </form>
         </Form >
-        <RouterForm
-            className="flex"
-            method="delete"
-            onSubmit={(event) => {
-                if (!confirm(`Do you want to delete this account? (${account.name})`)) {
-                    event.preventDefault()
-                }
-            }}
-        >
-            <Button type="submit" variant="destructive" className="grow">
-                Delete
-            </Button>
-        </RouterForm>
-    </>
+    </div>
 }

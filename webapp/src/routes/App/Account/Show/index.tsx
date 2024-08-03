@@ -133,10 +133,8 @@ export default function Show() {
                     />
                     : null
             }
-            <div className="col-span-3">
-                <UpdateAccountForm account={account} loading={isFetching} />
-            </div>
-            <Tabs defaultValue="pending" className="flex flex-col gap-4">
+            <UpdateAccountForm account={account} loading={isFetching} className="col-span-2" />
+            <Tabs defaultValue="pending" className="flex flex-col gap-4 col-span-2">
                 <TabsList>
                     <TabsTrigger value="pending" className="grow">Pending</TabsTrigger>
                     <TabsTrigger value="upcoming" className="grow">Upcoming</TabsTrigger>
