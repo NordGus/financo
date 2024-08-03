@@ -257,7 +257,7 @@ function TransactionsTable({
     groupByFn: (tr: Transaction) => string,
     withUpcoming: boolean
 }) {
-    const upcomingDate = moment().startOf('day').toDate()
+    const upcomingDate = moment().endOf('day').toDate()
 
     return Object.entries(groupBy(transactions.sort(sortByFn), groupByFn))
         .map(([date, tr]) => {
