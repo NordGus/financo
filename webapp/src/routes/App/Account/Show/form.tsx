@@ -259,20 +259,6 @@ export function UpdateAccountForm({
     if (isError) throw error
 
     return <div className={cn("flex flex-col gap-4", className)}>
-        <div className="flex justify-end gap-4">
-            <RouterForm
-                method="delete"
-                onSubmit={(event) => {
-                    if (!confirm(`Do you want to delete this account? (${account.name})`)) {
-                        event.preventDefault()
-                    }
-                }}
-            >
-                <Button type="submit" variant="destructive" className="grow">
-                    Delete
-                </Button>
-            </RouterForm>
-        </div>
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmitUpdate)}
@@ -545,5 +531,33 @@ export function UpdateAccountForm({
                 )}
             </form>
         </Form >
+        <div className="flex justify-stretch gap-4">
+            <RouterForm
+                className="flex grow"
+                method="patch"
+                onSubmit={(event) => {
+                    if (!confirm(`Do you want to archive this account? (${account.name})`)) {
+                        event.preventDefault()
+                    }
+                }}
+            >
+                <Button type="submit" variant="outline" className="grow">
+                    Archive
+                </Button>
+            </RouterForm>
+            <RouterForm
+                className="flex grow"
+                method="delete"
+                onSubmit={(event) => {
+                    if (!confirm(`Do you want to delete this account? (${account.name})`)) {
+                        event.preventDefault()
+                    }
+                }}
+            >
+                <Button type="submit" variant="destructive" className="grow">
+                    Delete
+                </Button>
+            </RouterForm>
+        </div>
     </div>
 }
