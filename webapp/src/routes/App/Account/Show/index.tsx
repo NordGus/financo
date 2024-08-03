@@ -19,6 +19,13 @@ import {
     UpcomingTransactions
 } from "./transactions"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs"
+import { cn } from "@/lib/utils"
+import isCapitalAccount from "@helpers/account/isCapitalAccount"
+import isDebtAccount from "@helpers/account/isDebtAccount"
+import { Kind } from "@/types/Account"
+import { Progress } from "@components/Progress"
+import { CheckIcon } from "lucide-react"
+import isExternalAccount from "@helpers/account/isExternalAccount"
 
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
     if (!params.id) throw new Error('No account ID provided')
@@ -70,18 +77,62 @@ export default function Show() {
 
     return (
         <div className="grid grid-cols-4 grid-rows-[20dvh_minmax(0,_1fr)] gap-4">
+            {
+                isDebtAccount(account.kind)
+                    ? <Progress
+                        className="h-[15dvh] w-[15dvh] m-auto text-5xl"
+                        color={account.color}
+                        progress={Math.abs((account.capital + account.balance) / account.capital)}
+                        icon={<CheckIcon size={50} />}
+                    />
+                    : null
+            }
             <CardSummary
                 key={`summary:account:${id}:balance`}
-                title="Balance"
+                title={
+                    isDebtAccount(account.kind)
+                        ? "Debt"
+                        : isExternalAccount(account.kind)
+                            ? "This month's balance"
+                            : "Balance"
+                }
                 balances={[{ amount: account.balance, currency: account.currency }]}
-                className="grow col-span-2"
+                className={
+                    cn("grow",
+                        isCapitalAccount(account.kind) && "col-span-4",
+                        isExternalAccount(account.kind) && "col-span-4",
+                    )
+                }
             />
-            <CardSummary
-                key={`summary:account:${id}:balance:1`}
-                title="Balance"
-                balances={[{ amount: account.balance, currency: account.currency }]}
-                className="grow col-span-2"
-            />
+            {
+                isDebtAccount(account.kind)
+                    ? <CardSummary
+                        key={`summary:account:${id}:paid`}
+                        title={account.kind === Kind.DebtCredit ? "Available Credit" : "Paid"}
+                        balances={[
+                            {
+                                amount: account.capital + account.balance,
+                                currency: account.currency
+                            }
+                        ]}
+                        className="grow"
+                    />
+                    : null
+            }
+            {
+                isDebtAccount(account.kind)
+                    ? <CardSummary
+                        key={`summary:account:${id}:capital`}
+                        title={account.kind === Kind.DebtCredit ? "Credit" : "Amount"}
+                        balances={
+                            account.kind === Kind.DebtCredit
+                                ? [{ amount: account.capital, currency: account.currency }]
+                                : [{ amount: -account.capital, currency: account.currency }]
+                        }
+                        className="grow"
+                    />
+                    : null
+            }
             <div className="col-span-3">
                 <UpdateAccountForm account={account} loading={isFetching} />
             </div>
