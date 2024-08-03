@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Link } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { groupBy, isEmpty, isNil } from "lodash";
+import { UseMutationResult, UseSuspenseQueryResult } from "@tanstack/react-query";
+import { groupBy, isEmpty, isEqual, isNil } from "lodash";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -13,8 +13,7 @@ import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import { cn } from "@/lib/utils";
 
-import { staleTimeDefault } from "@queries/Client";
-import { getPendingTransactions, getTransactions, ListFilters } from "@api/transactions";
+import { ListFilters } from "@api/transactions";
 
 import { Throbber } from "@components/Throbber";
 import {
@@ -31,14 +30,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover"
 import { Calendar } from "@components/ui/calendar";
 
 export function PendingTransactions({
-    account: { id: accountID }, className
-}: { account: { id: number }, className?: string }) {
-    const { data: transactions, isFetching, isError, error } = useQuery({
-        queryKey: ["transactions", "pending", "account", accountID],
-        queryFn: getPendingTransactions({ account: [accountID] }),
-        staleTime: staleTimeDefault
-    })
-
+    account: { id: accountID },
+    query: { data: transactions, isFetching, isError, error },
+    className
+}: {
+    account: { id: number },
+    query: UseSuspenseQueryResult<Transaction[], Error>,
+    className?: string,
+}) {
     if (isError) throw error
 
     return (
@@ -79,18 +78,14 @@ export function PendingTransactions({
 }
 
 export function UpcomingTransactions({
-    account: { id: accountID }, className
-}: { account: { id: number }, className?: string }) {
-    const { data: transactions, isFetching, isError, error } = useQuery({
-        queryKey: ["transactions", "upcoming", "account", accountID],
-        queryFn: getTransactions({
-            executedFrom: moment().format('YYYY-MM-DD'),
-            executedUntil: moment().add({ month: 1 }).format('YYYY-MM-DD'),
-            account: [accountID]
-        }),
-        staleTime: staleTimeDefault
-    })
-
+    account: { id: accountID },
+    query: { data: transactions, isFetching, isError, error },
+    className
+}: {
+    account: { id: number },
+    query: UseSuspenseQueryResult<Transaction[], Error>,
+    className?: string,
+}) {
     if (isError) throw error
 
     return (
@@ -126,38 +121,28 @@ export function UpcomingTransactions({
 }
 
 export function TransactionHistory({
-    account: { id: accountID, updatedAt }, className
-}: { account: { id: number, updatedAt: string }, className?: string }) {
-    const defaultFilters: () => ListFilters = () => {
-        return {
-            executedFrom: moment().startOf('month').toISOString(),
-            executedUntil: moment().toISOString(),
-            account: [accountID]
-        }
-    }
-    const defaultDateRange: () => DateRange = () => {
-        return {
-            from: moment().startOf('month').toDate(),
-            to: moment().toDate()
-        }
-    }
-
-    const [filters, setFilters] = useState<ListFilters>(defaultFilters())
-    const [date, setDate] = useState<DateRange | undefined>(defaultDateRange())
-    const [clearable, setClearable] = useState(false)
-    const { data: transactions, isPending, isError, error, mutate } = useMutation({
-        mutationKey: ["transactions", "account", accountID],
-        mutationFn: (filters: ListFilters) => getTransactions(filters)()
+    account: { id: accountID },
+    mutation: { data: transactions, isPending, isError, error },
+    defaultFilters,
+    filtersState: [filters, setFilters],
+    className
+}: {
+    account: { id: number },
+    mutation: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
+    defaultFilters: () => ListFilters,
+    filtersState: [ListFilters, Dispatch<SetStateAction<ListFilters>>]
+    className?: string,
+}) {
+    const [date, setDate] = useState<DateRange | undefined>({
+        from: moment(filters.executedFrom).toDate(),
+        to: moment(filters.executedUntil).toDate()
     })
-
-    useEffect(() => mutate(filters), [filters, updatedAt])
-    useEffect(() => {
-        setFilters({
-            account: [accountID],
-            executedFrom: date?.from?.toISOString(),
-            executedUntil: date?.to?.toISOString(),
-        })
-    }, [date])
+    const [clearable, setClearable] = useState(
+        !isEqual(
+            { from: date?.from?.toISOString(), to: date?.to?.toISOString() },
+            { from: defaultFilters().executedFrom, to: defaultFilters().executedUntil }
+        )
+    )
 
     if (isError) throw error
 
@@ -196,6 +181,11 @@ export function TransactionHistory({
                         selected={date}
                         onSelect={(value) => {
                             setDate(value)
+                            setFilters({
+                                account: [accountID],
+                                executedFrom: value?.from?.toISOString(),
+                                executedUntil: value?.to?.toISOString(),
+                            })
                             setClearable(true)
                         }}
                         numberOfMonths={2}
@@ -206,7 +196,11 @@ export function TransactionHistory({
                 clearable && <Button
                     variant="link"
                     onClick={() => {
-                        setDate(defaultDateRange())
+                        setDate({
+                            from: moment(defaultFilters().executedFrom).toDate(),
+                            to: moment(defaultFilters().executedUntil).toDate()
+                        })
+                        setFilters(defaultFilters())
                         setClearable(false)
                     }}
                 >
