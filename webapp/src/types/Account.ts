@@ -49,19 +49,20 @@ export default interface Detailed {
 }
 
 export interface Update {
+    kind: Kind,
     currency: Currency
     name: string
-    description: string | null
+    description?: string | null | undefined
     capital: number
     history: {
         present: boolean,
-        balance: number | null,
-        at: string | null
+        balance?: number | null | undefined,
+        at?: string | null | undefined
     }
     color: string
     icon: Icon
     archive: boolean
-    children: UpdateChild[] | null
+    children: UpdateChild[]
 }
 
 export interface UpdateChild {
@@ -69,15 +70,15 @@ export interface UpdateChild {
     kind: Kind
     currency: Currency
     name: string
-    description: string | null
+    description?: string | null | undefined
     capital: number
     history: {
         present: boolean,
-        balance: number | null,
-        at: string | null
+        balance?: number | null | undefined,
+        at?: string | null | undefined
     }
     color: string
     icon: Icon
     archive: boolean
-    delete: boolean
+    deleted: boolean
 }

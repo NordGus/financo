@@ -1,4 +1,4 @@
-import Detailed, { Kind, Preview } from "@/types/Account"
+import Detailed, { Kind, Preview, Update } from "@/types/Account"
 import isEmptyParam from "@helpers/isEmptyParam"
 
 export function getAccount(id: number): () => Promise<Detailed> {
@@ -35,13 +35,11 @@ export function getAccounts(filters: ListFilters): () => Promise<Preview[]> {
     }
 }
 
-export async function updateAccount(account: Detailed): Promise<Detailed> {
-    const response = await fetch(`/api/accounts/${account.id}`, {
+export async function updateAccount(id: number, data: Update): Promise<Update> {
+    const response = await fetch(`/api/accounts/${id}`, {
         method: "PUT",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(account)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
     })
 
     if (!response.ok) {
@@ -52,6 +50,10 @@ export async function updateAccount(account: Detailed): Promise<Detailed> {
     return response.json()
 }
 
-export async function deleteAccount(id: string): Promise<Response> {
+export async function archiveAccount(id: number): Promise<Response> {
+    return fetch(`/api/accounts/${id}/archive`, { method: "PATCH" })
+}
+
+export async function deleteAccount(id: number): Promise<Response> {
     return fetch(`/api/accounts/${id}`, { method: "DELETE" })
 }

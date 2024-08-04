@@ -1,10 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Currency } from "dinero.js";
 import validateCurrencyCode from "validate-currency-code";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { isEmpty, isNil } from "lodash";
+import { isEmpty, isEqual, isNil } from "lodash";
 import { useForm } from "react-hook-form";
 import { Form as RouterForm } from "react-router-dom";
 import { CalendarIcon, CheckIcon } from "lucide-react";
@@ -53,6 +53,7 @@ import {
     CommandItem,
     CommandList
 } from "@components/ui/command";
+import { updateAccount } from "@api/accounts";
 
 const updateSchema = z.object({
     kind: z.nativeEnum(Kind,
@@ -197,6 +198,7 @@ const updateSchema = z.object({
 export function UpdateAccountForm({
     account, loading, className
 }: { account: Detailed, loading: boolean, className?: string }) {
+    const queryClient = useQueryClient()
     const { data: currencies, isError, error } = useQuery({
         queryKey: ["currencies"],
         queryFn: getCurrencies,
@@ -247,9 +249,33 @@ export function UpdateAccountForm({
         }
     })
 
-    const onSubmitUpdate = (values: z.infer<typeof updateSchema>) => {
-        console.log("it saved")
-        console.log(values)
+    const onSubmitUpdate = async (values: z.infer<typeof updateSchema>) => {
+        await updateAccount(account.id, {
+            ...values,
+            history: {
+                ...values.history,
+                at: values.history?.at?.toISOString()
+            },
+            children: values.children?.map((child) => {
+                return {
+                    ...child,
+                    history: {
+                        ...child.history,
+                        at: child.history?.at?.toISOString()
+                    }
+                }
+            }) || []
+        })
+
+        // [ ] TODO: implement toast to notify saved success
+
+        queryClient.invalidateQueries({
+            predicate: ({ queryKey }) => {
+                return isEqual(queryKey, ["accounts", "account", account.id]) ||
+                    isEqual(queryKey, ["transactions", "pending", "account", account.id]) ||
+                    isEqual(queryKey, ["transactions", "upcoming", "account", account.id])
+            }
+        })
     }
 
     const [intlConfig, setIntlConfig] = useState<{ locale: string, currency: Currency }>({
