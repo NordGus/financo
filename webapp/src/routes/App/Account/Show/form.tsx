@@ -18,6 +18,7 @@ import { getCurrencies } from "@api/currencies";
 import { staleTimeDefault } from "@queries/Client";
 
 import kindToHuman from "@helpers/account/kindToHuman";
+import isExternalAccount from "@helpers/account/isExternalAccount";
 import { cn } from "@/lib/utils";
 
 import {
@@ -38,7 +39,7 @@ import {
     CardTitle
 } from "@components/ui/card";
 import { Throbber } from "@components/Throbber";
-import { Input } from "@components/ui/input";
+import { CurrencyInput, Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
 import { Calendar } from "@components/ui/calendar";
@@ -52,7 +53,6 @@ import {
     CommandItem,
     CommandList
 } from "@components/ui/command";
-import isExternalAccount from "@helpers/account/isExternalAccount";
 
 const updateSchema = z.object({
     kind: z.nativeEnum(Kind,
@@ -465,21 +465,33 @@ export function UpdateAccountForm({
                             <FormField
                                 control={form.control}
                                 name="history.balance"
-                                render={({ field }) => (
-                                    <FormItem>
+                                render={({ field }) => {
+                                    let value = !field.value ? 0 : field.value / 100
+
+                                    return <FormItem>
                                         <FormLabel>Balance</FormLabel>
                                         <FormControl>
-                                            <Input
-                                                type="number"
-                                                {...field}
-                                                value={field.value ?? 0}
+                                            <CurrencyInput
+                                                name={field.name}
+                                                value={value}
                                                 placeholder={"Balance"}
+                                                intlConfig={{
+                                                    locale: "en-US",
+                                                    currency: form.getValues("currency") ?? "USD"
+                                                }}
+                                                onValueChange={(_value, _name, values) => {
+                                                    field.onChange(
+                                                        Number(
+                                                            values?.value?.replace(".", "") ?? 0
+                                                        )
+                                                    )
+                                                }}
                                             />
                                         </FormControl>
                                         <FormDescription>Transaction's amount</FormDescription>
                                         <FormMessage />
                                     </FormItem>
-                                )}
+                                }}
                             />
                             <FormField
                                 control={form.control}
