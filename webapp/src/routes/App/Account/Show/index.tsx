@@ -12,9 +12,13 @@ import { CheckIcon } from "lucide-react"
 
 import { Kind } from "@/types/Account"
 
-import { staleTimeDefault } from "@queries/Client"
-import { deleteAccount, getAccount } from "@api/accounts"
-import { getPendingTransactions, getTransactions, ListFilters } from "@api/transactions"
+import {
+    accountQueryOptions,
+    pendingTransactionsQueryOptions,
+    upcomingTransactionsQueryOptions
+} from "@queries/accounts"
+import { archiveAccount, deleteAccount } from "@api/accounts"
+import { getTransactions, ListFilters } from "@api/transactions"
 
 import isExternalAccount from "@helpers/account/isExternalAccount"
 import isCapitalAccount from "@helpers/account/isCapitalAccount"
@@ -35,41 +39,13 @@ function defaultHistoryFilters(accountID: number): ListFilters {
     }
 }
 
-function queryOptions(id: number) {
-    return {
-        queryKey: ['accounts', 'account', id],
-        queryFn: getAccount(id),
-        staleTime: staleTimeDefault
-    }
-}
-
-function pendingTransactionsQueryOptions(id: number) {
-    return {
-        queryKey: ["transactions", "pending", "account", id],
-        queryFn: getPendingTransactions({ account: [id] }),
-        staleTime: staleTimeDefault
-    }
-}
-
-function upcomingTransactionsQueryOptions(id: number) {
-    return {
-        queryKey: ["transactions", "upcoming", "account", id],
-        queryFn: getTransactions({
-            executedFrom: moment().format('YYYY-MM-DD'),
-            executedUntil: moment().add({ month: 1 }).format('YYYY-MM-DD'),
-            account: [id]
-        }),
-        staleTime: staleTimeDefault
-    }
-}
-
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
     if (!params.id) throw new Error('No account ID provided')
 
     const id = Number(params.id)
 
     const [account] = await Promise.all([
-        queryClient.ensureQueryData(queryOptions(id)),
+        queryClient.ensureQueryData(accountQueryOptions(id)),
         queryClient.ensureQueryData(pendingTransactionsQueryOptions(id)),
         queryClient.ensureQueryData(upcomingTransactionsQueryOptions(id))
     ])
@@ -78,16 +54,29 @@ export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFun
 }
 
 export const action = (queryClient: QueryClient) => async ({
-    request, params: { id }
+    request, params
 }: { request: Request, params: Params }) => {
-    if (!id) throw new Error('No account ID provided')
+    if (!params.id) throw new Error('No account ID provided')
+    const id = Number(params.id)
 
     switch (request.method) {
-        case "DELETE":
-            const response = await deleteAccount(id)
+        case "PATCH":
+            const archived = await archiveAccount(id)
 
             // [ ] TODO: Make more robust or use toasts
-            if (!response.ok) throw new Response("", { status: 500 })
+            if (!archived.ok) throw new Response("", { status: 500 })
+
+            queryClient.invalidateQueries({
+                predicate: ({ queryKey }) => isEqual(queryKey, ['accounts', 'account', id])
+            })
+
+            // [ ] TODO:Check how to return data to trigger a toast
+            return redirect(`/accounts/${id}`, { status: 302 })
+        case "DELETE":
+            const deleted = await deleteAccount(id)
+
+            // [ ] TODO: Make more robust or use toasts
+            if (!deleted.ok) throw new Response("", { status: 500 })
 
             queryClient.invalidateQueries({
                 predicate: ({ queryKey }) => {
@@ -107,7 +96,7 @@ export default function Show() {
     const { id } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
     const [historyFilters, setHistoryFilters] = useState<ListFilters>(defaultHistoryFilters(id))
 
-    const { data: account, isFetching, isError, error } = useSuspenseQuery(queryOptions(id))
+    const { data: account, isFetching, isError, error } = useSuspenseQuery(accountQueryOptions(id))
     const pendingTransactionsQuery = useSuspenseQuery(pendingTransactionsQueryOptions(id))
     const upcomingTransactionsQuery = useSuspenseQuery(upcomingTransactionsQueryOptions(id))
     const historyTransactionsMutation = useMutation({
