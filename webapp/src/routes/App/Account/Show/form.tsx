@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Currency } from "dinero.js";
 import validateCurrencyCode from "validate-currency-code";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -194,11 +194,6 @@ const updateSchema = z.object({
     }).array().optional()
 })
 
-function onSubmitUpdate(values: z.infer<typeof updateSchema>) {
-    console.log("it saved")
-    console.log(values)
-}
-
 export function UpdateAccountForm({
     account, loading, className
 }: { account: Detailed, loading: boolean, className?: string }) {
@@ -250,6 +245,16 @@ export function UpdateAccountForm({
                 }
             )
         }
+    })
+
+    const onSubmitUpdate = (values: z.infer<typeof updateSchema>) => {
+        console.log("it saved")
+        console.log(values)
+    }
+
+    const [intlConfig, setIntlConfig] = useState<{ locale: string, currency: Currency }>({
+        locale: "en-US",
+        currency: form.getValues("currency") ?? "USD"
     })
 
     useEffect(() => {
@@ -368,9 +373,21 @@ export function UpdateAccountForm({
                                                                 key={code}
                                                                 onSelect={() => {
                                                                     form.setValue("currency", code)
+                                                                    setIntlConfig(
+                                                                        {
+                                                                            ...intlConfig,
+                                                                            currency: code
+                                                                        }
+                                                                    )
                                                                 }}
                                                                 onClick={() => {
                                                                     form.setValue("currency", code)
+                                                                    setIntlConfig(
+                                                                        {
+                                                                            ...intlConfig,
+                                                                            currency: code
+                                                                        }
+                                                                    )
                                                                 }}
                                                             >
                                                                 {name}
@@ -465,25 +482,18 @@ export function UpdateAccountForm({
                             <FormField
                                 control={form.control}
                                 name="history.balance"
-                                render={({ field }) => {
-                                    let value = !field.value ? 0 : field.value / 100
-
-                                    return <FormItem>
+                                render={({ field }) => (
+                                    <FormItem>
                                         <FormLabel>Balance</FormLabel>
                                         <FormControl>
                                             <CurrencyInput
                                                 name={field.name}
-                                                value={value}
+                                                value={!field.value ? 0 : field.value / 100}
                                                 placeholder={"Balance"}
-                                                intlConfig={{
-                                                    locale: "en-US",
-                                                    currency: form.getValues("currency") ?? "USD"
-                                                }}
-                                                onValueChange={(_value, _name, values) => {
+                                                intlConfig={intlConfig}
+                                                onValueChange={(value) => {
                                                     field.onChange(
-                                                        Number(
-                                                            values?.value?.replace(".", "") ?? 0
-                                                        )
+                                                        Number(value?.replace(".", "") ?? 0)
                                                     )
                                                 }}
                                             />
@@ -491,7 +501,7 @@ export function UpdateAccountForm({
                                         <FormDescription>Transaction's amount</FormDescription>
                                         <FormMessage />
                                     </FormItem>
-                                }}
+                                )}
                             />
                             <FormField
                                 control={form.control}
