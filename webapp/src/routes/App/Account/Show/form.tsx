@@ -309,9 +309,9 @@ export function UpdateAccountForm({
                 {!isExternalAccount(account.kind) && (
                     <History form={form} intlConfig={intlConfig} />
                 )}
-                {
-
-                }
+                {isExternalAccount(account.kind) && (
+                    <Children account={account} currency={currency} form={form} />
+                )}
             </form>
         </Form >
         <div className="flex justify-stretch gap-4">
@@ -371,24 +371,8 @@ function Details({
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                    <FormItem className="hidden">
-                        <FormControl>
-                            <Input
-                                type="hidden"
-                                {...field}
-                                placeholder={"Name"}
-                            />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
-            <FormLabel>Name</FormLabel>
-            <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
                     <FormItem>
+                        <FormLabel>Name</FormLabel>
                         <FormControl>
                             <Input
                                 {...field}
@@ -407,7 +391,7 @@ function Details({
                         <FormLabel>Description</FormLabel>
                         <FormControl>
                             <Textarea
-                                placeholder="Tell us a little bit about yourself"
+                                placeholder="Remind you what this account represents"
                                 className="resize-none"
                                 rows={5}
                                 {...field}
@@ -641,6 +625,190 @@ function History({
                     </FormItem>
                 )}
             />
+        </CardContent>
+        <CardFooter className="flex justify-end">
+            <Button type="submit">Save</Button>
+        </CardFooter>
+    </Card>
+}
+
+function Children({
+    account, currency, form
+}: {
+    form: UseFormReturn<z.infer<typeof updateSchema>>,
+    currency: Currency,
+    account: Detailed,
+}) {
+    const { fields: children, append } = useFieldArray({
+        name: "children",
+        control: form.control,
+        keyName: "identity"
+    })
+
+    return <Card>
+        <CardHeader className="flex flex-row justify-between items-start gap-4 space-y-0">
+            <div className="space-y-1.5">
+                <CardTitle>Children</CardTitle>
+                <CardDescription>Accounts which parent is the current account</CardDescription>
+            </div>
+            <Button
+                type="button"
+                onClick={() => {
+                    if (confirm(`Do you want to add a new child account to this account? ${account.name}`)) {
+                        append({
+                            id: undefined,
+                            icon: form.getValues("icon"),
+                            kind: account.kind,
+                            name: "",
+                            history: { present: false },
+                            color: form.getValues("color"),
+                            archive: false,
+                            deleted: false,
+                            capital: 0,
+                            currency: currency
+                        })
+                    }
+                }}
+                variant="outline"
+            >
+                Add
+            </Button>
+        </CardHeader>
+        <CardContent className="divide-y-[1px] dark:divide-zinc-800">
+            {children.map((child, index) => {
+                return <div className="flex flex-col gap-4 py-4" key={child.identity}>
+                    <CardTitle>Details</CardTitle>
+                    <CardDescription>
+                        Information and configuration for a child {kindToHuman(child.kind)} account
+                    </CardDescription>
+                    <FormField
+                        control={form.control}
+                        name={`children.${index}.id`}
+                        render={({ field }) => (
+                            <input {...field} type="hidden" hidden={true} />
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name={`children.${index}.kind`}
+                        render={({ field }) => (
+                            <input {...field} type="hidden" hidden={true} />
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name={`children.${index}.currency`}
+                        render={({ field }) => (
+                            <input {...field} value={currency} type="hidden" hidden={true} />
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name={`children.${index}.name`}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Name</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        placeholder={"Name"}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name={`children.${index}.description`}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                    <Textarea
+                                        placeholder="Remind you what this account represents"
+                                        className="resize-none"
+                                        rows={5}
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name={`children.${index}.color`}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Color</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="color"
+                                        {...field}
+                                        placeholder={"Color"}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name={`children.${index}.icon`}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Icon</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        placeholder={"Icon"}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name={`children.${index}.archive`}
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between">
+                                <div>
+                                    <FormLabel>
+                                        Do you want to archive this child account?
+                                    </FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name={`children.${index}.deleted`}
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between">
+                                <div>
+                                    <FormLabel>
+                                        Do you want to delete this child account?
+                                    </FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                </div>
+            })}
         </CardContent>
         <CardFooter className="flex justify-end">
             <Button type="submit">Save</Button>
