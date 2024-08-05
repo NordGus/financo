@@ -279,7 +279,8 @@ export function UpdateAccountForm({
         })
     }
 
-    const [currency, setCurrency] = useState<Currency>(account.currency)
+    const [currency, setCurrency] = useState(account.currency)
+    const [color, setColor] = useState(account.color)
     const [intlConfig, setIntlConfig] = useState<{ locale: string, currency: Currency }>({
         locale: "en-US",
         currency: form.getValues("currency") ?? "USD"
@@ -305,12 +306,13 @@ export function UpdateAccountForm({
                     intlConfig={intlConfig}
                     setIntlConfig={setIntlConfig}
                     setCurrency={setCurrency}
+                    setColor={setColor}
                 />
                 {!isExternalAccount(account.kind) && (
                     <History form={form} intlConfig={intlConfig} />
                 )}
                 {isExternalAccount(account.kind) && (
-                    <Children account={account} currency={currency} form={form} />
+                    <Children account={account} currency={currency} color={color} form={form} />
                 )}
             </form>
         </Form >
@@ -346,7 +348,7 @@ export function UpdateAccountForm({
 }
 
 function Details({
-    form, loading, account, currencies, setIntlConfig, intlConfig, setCurrency
+    form, loading, account, currencies, setIntlConfig, intlConfig, setCurrency, setColor
 }: {
     form: UseFormReturn<z.infer<typeof updateSchema>>,
     loading: boolean,
@@ -354,7 +356,8 @@ function Details({
     currencies: ApiCurrency[] | undefined,
     intlConfig: { locale: string, currency: Currency },
     setIntlConfig: Dispatch<SetStateAction<{ locale: string, currency: Currency }>>,
-    setCurrency: Dispatch<SetStateAction<Currency>>
+    setCurrency: Dispatch<SetStateAction<Currency>>,
+    setColor: Dispatch<SetStateAction<string>>
 }) {
     return <Card>
         <CardHeader className="flex flex-row justify-between items-start">
@@ -494,9 +497,13 @@ function Details({
                         <FormLabel>Color</FormLabel>
                         <FormControl>
                             <Input
-                                type="color"
                                 {...field}
+                                type="color"
                                 placeholder={"Color"}
+                                onChange={(event) => {
+                                    setColor(event.target.value)
+                                    field.onChange(event)
+                                }}
                             />
                         </FormControl>
                         <FormMessage />
@@ -572,9 +579,7 @@ function History({
                                 placeholder={"Balance"}
                                 intlConfig={intlConfig}
                                 onValueChange={(value) => {
-                                    field.onChange(
-                                        Number(value?.replace(".", "") ?? 0)
-                                    )
+                                    field.onChange(Number(value?.replace(".", "") ?? 0))
                                 }}
                             />
                         </FormControl>
@@ -633,11 +638,12 @@ function History({
 }
 
 function Children({
-    account, currency, form
+    account, currency, form, color
 }: {
     form: UseFormReturn<z.infer<typeof updateSchema>>,
     currency: Currency,
     account: Detailed,
+    color: string
 }) {
     const { fields: children, append } = useFieldArray({
         name: "children",
@@ -704,6 +710,13 @@ function Children({
                     />
                     <FormField
                         control={form.control}
+                        name={`children.${index}.color`}
+                        render={({ field }) => (
+                            <input {...field} value={color} type="hidden" hidden={true} />
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
                         name={`children.${index}.name`}
                         render={({ field }) => (
                             <FormItem>
@@ -730,23 +743,6 @@ function Children({
                                         className="resize-none"
                                         rows={5}
                                         {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name={`children.${index}.color`}
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Color</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="color"
-                                        {...field}
-                                        placeholder={"Color"}
                                     />
                                 </FormControl>
                                 <FormMessage />
