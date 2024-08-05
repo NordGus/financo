@@ -96,6 +96,7 @@ WHERE
     AND acc.parent_id = $2
 GROUP BY
     acc.id
+ORDER BY acc.archived_at DESC NULLS FIRST, acc.created_at
 	`
 )
 
