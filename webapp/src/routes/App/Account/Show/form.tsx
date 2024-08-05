@@ -298,6 +298,29 @@ export function UpdateAccountForm({
                 onSubmit={form.handleSubmit(onSubmitUpdate)}
                 className="flex flex-col gap-4"
             >
+                <Card className="p-6">
+                    <FormField
+                        control={form.control}
+                        name="archive"
+                        render={({ field }) => (
+                            <FormItem
+                                className="flex flex-row items-center justify-between space-y-0"
+                            >
+                                <div>
+                                    <FormLabel>
+                                        Do you want to archive this child account?
+                                    </FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                </Card>
                 <Details
                     form={form}
                     loading={loading}
@@ -553,7 +576,9 @@ function History({
                 control={form.control}
                 name="history.present"
                 render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between">
+                    <FormItem
+                        className="flex flex-row items-center justify-between space-y-0"
+                    >
                         <div>
                             <FormLabel>Does this account has history</FormLabel>
                         </div>
@@ -769,7 +794,9 @@ function Children({
                         control={form.control}
                         name={`children.${index}.archive`}
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between">
+                            <FormItem
+                                className="flex flex-row items-center justify-between space-y-0"
+                            >
                                 <div>
                                     <FormLabel>
                                         Do you want to archive this child account?
@@ -788,7 +815,9 @@ function Children({
                         control={form.control}
                         name={`children.${index}.deleted`}
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between">
+                            <FormItem
+                                className="flex flex-row items-center justify-between space-y-0"
+                            >
                                 <div>
                                     <FormLabel>
                                         Do you want to delete this child account?
