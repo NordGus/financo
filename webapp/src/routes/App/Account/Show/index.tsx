@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs"
 import { Progress } from "@components/Progress"
 import { CardSummary } from "@components/card"
+import { toast } from "@components/ui/use-toast"
 import { TransactionHistory, PendingTransactions, UpcomingTransactions } from "./transactions"
 import { UpdateAccountForm } from "./form"
 
@@ -63,7 +64,6 @@ export const action = (queryClient: QueryClient) => async ({
         case "delete":
             const deleted = await deleteAccount(id)
 
-            // [ ] TODO: Make more robust or use toasts
             if (!deleted.ok) throw new Response("", { status: 500 })
 
             queryClient.invalidateQueries({
@@ -72,6 +72,11 @@ export const action = (queryClient: QueryClient) => async ({
                         isEqual(queryKey, ["transactions", "pending", "account", id]) ||
                         isEqual(queryKey, ['accounts', 'account', id])
                 }
+            })
+
+            toast({
+                title: "Deleted",
+                description: "Account has been deleted"
             })
 
             return redirect(`/accounts`)
