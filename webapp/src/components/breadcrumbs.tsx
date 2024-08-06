@@ -23,25 +23,20 @@ export default function Breadcrumbs() {
             {crumbs.map(({ data, pathname }, idx, crumbs) => {
                 const isLast = idx == crumbs.length - 1
 
-                return <>
-                    <BreadcrumbItem key={`breadcrumb:${idx}`} className="text-xl">
-                        {
-                            isLast
-                                ? <BreadcrumbPage key={`breadcrumb:${idx}:page`}>
+                return <BreadcrumbItem key={`breadcrumb:${idx}`} className="text-xl">
+                    {
+                        isLast
+                            ? <BreadcrumbPage key={`breadcrumb:${idx}:page`}>
+                                {(data as WithBreadcrumb).breadcrumb}
+                            </BreadcrumbPage>
+                            : <BreadcrumbLink asChild={true}>
+                                <Link to={pathname}>
                                     {(data as WithBreadcrumb).breadcrumb}
-                                </BreadcrumbPage>
-                                : <BreadcrumbLink asChild={true} key={`breadcrumb:${idx}:link`}>
-                                    <Link
-                                        to={pathname}
-                                        key={`breadcrumb:${idx}:link:navigation`}
-                                    >
-                                        {(data as WithBreadcrumb).breadcrumb}
-                                    </Link>
-                                </BreadcrumbLink>
-                        }
-                    </BreadcrumbItem>
-                    {!isLast && <BreadcrumbSeparator key={`breadcrumb:${idx}:separator`} />}
-                </>
+                                </Link>
+                            </BreadcrumbLink>
+                    }
+                    {!isLast && <BreadcrumbSeparator />}
+                </BreadcrumbItem>
             }
             )}
         </BreadcrumbList>
