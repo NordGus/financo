@@ -56,6 +56,7 @@ import {
     CommandList
 } from "@components/ui/command";
 import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
+import { useToast } from "@components/ui/use-toast";
 
 const updateSchema = z.object({
     id: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
@@ -246,6 +247,7 @@ export function UpdateAccountForm({
     account, loading, className
 }: { account: Detailed, loading: boolean, className?: string }) {
     const queryClient = useQueryClient()
+    const { toast } = useToast()
     const { data: currencies, isError, error } = useQuery({
         queryKey: ["currencies"],
         queryFn: getCurrencies,
@@ -258,32 +260,45 @@ export function UpdateAccountForm({
     })
 
     const onSubmitUpdate = async (values: z.infer<typeof updateSchema>) => {
-        const updated = await updateAccount(values.id, {
-            ...values,
-            history: {
-                ...values.history,
-                at: values.history?.at?.toISOString()
-            },
-            children: values.children?.map((child) => {
-                return {
-                    ...child,
-                    history: {
-                        ...child.history,
-                        at: child.history?.at?.toISOString()
+        try {
+            const updated = await updateAccount(values.id, {
+                ...values,
+                history: {
+                    ...values.history,
+                    at: values.history?.at?.toISOString()
+                },
+                children: values.children?.map((child) => {
+                    return {
+                        ...child,
+                        history: {
+                            ...child.history,
+                            at: child.history?.at?.toISOString()
+                        }
                     }
+                }) || []
+            })
+
+            queryClient.invalidateQueries({
+                predicate: ({ queryKey }) => {
+                    return isEqual(queryKey, ["accounts", "account", account.id]) ||
+                        isEqual(queryKey, ["transactions", "pending", "account", account.id]) ||
+                        isEqual(queryKey, ["transactions", "upcoming", "account", account.id])
                 }
-            }) || []
-        })
+            })
 
-        queryClient.invalidateQueries({
-            predicate: ({ queryKey }) => {
-                return isEqual(queryKey, ["accounts", "account", account.id]) ||
-                    isEqual(queryKey, ["transactions", "pending", "account", account.id]) ||
-                    isEqual(queryKey, ["transactions", "upcoming", "account", account.id])
-            }
-        })
+            form.reset(mapAccountToUpdateForm(updated))
 
-        form.reset(mapAccountToUpdateForm(updated))
+            toast({
+                title: "Saved",
+                description: `${updated.name} has been updated`
+            })
+        } catch {
+            toast({
+                variant: "destructive",
+                title: "Something went wrong",
+                description: "There was a problem with the API"
+            })
+        }
     }
 
     const [currency, setCurrency] = useState(account.currency)

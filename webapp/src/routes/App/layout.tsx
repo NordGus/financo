@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import NavLink from "@components/NavLink";
+import { Toaster } from "@components/ui/toaster";
 
 export default function Layout() {
     return (
@@ -61,6 +62,7 @@ export default function Layout() {
             </nav>
             <main className='overflow-y-auto p-2'>
                 <Outlet />
+                <Toaster />
             </main>
         </div>
     )
