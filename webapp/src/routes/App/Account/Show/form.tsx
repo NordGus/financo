@@ -7,7 +7,7 @@ import { z } from "zod";
 import { isEmpty, isEqual, isNil } from "lodash";
 import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
 import { Form as RouterForm } from "react-router-dom";
-import { CalendarIcon, CheckIcon } from "lucide-react";
+import { CalendarIcon, CheckIcon, PackageIcon } from "lucide-react";
 import { format } from "date-fns";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import moment from "moment";
@@ -15,6 +15,7 @@ import moment from "moment";
 import Detailed, { Icon, Kind } from "@/types/Account";
 import { Currency as ApiCurrency } from "@/types/currency";
 
+import { updateAccount } from "@api/accounts";
 import { getCurrencies } from "@api/currencies";
 import { staleTimeDefault } from "@queries/Client";
 
@@ -54,9 +55,10 @@ import {
     CommandItem,
     CommandList
 } from "@components/ui/command";
-import { updateAccount } from "@api/accounts";
+import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 
 const updateSchema = z.object({
+    id: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
     kind: z.nativeEnum(Kind,
         {
             required_error: "is required",
@@ -189,12 +191,56 @@ const updateSchema = z.object({
             required_error: "is required",
             invalid_type_error: "must be a boolean"
         }),
-        deleted: z.boolean({
+        delete: z.boolean({
             required_error: "is required",
             invalid_type_error: "must be a boolean"
         }),
     }).array().optional()
 })
+
+function mapAccountToUpdateForm(account: Detailed): z.infer<typeof updateSchema> {
+    return {
+        id: account.id,
+        kind: account.kind,
+        currency: account.currency,
+        name: account.name,
+        description: account.description ?? undefined,
+        capital: account.capital,
+        history: {
+            present: !isNil(account.history),
+            balance: isNil(account.history?.balance) ? undefined : account.history.balance,
+            at: isNil(account.history?.at) ? undefined : moment(account.history.at).toDate()
+        },
+        color: account.color,
+        icon: account.icon,
+        archive: !isNil(account.archivedAt),
+        children: isNil(account.children) ? undefined : account.children.map(
+            (child) => {
+                return {
+                    id: child.id ?? undefined,
+                    kind: child.kind,
+                    currency: child.currency,
+                    name: child.name,
+                    description: child.description ?? undefined,
+                    capital: child.capital,
+                    history: {
+                        present: !isNil(child.history),
+                        balance: isNil(child.history?.balance)
+                            ? undefined
+                            : child.history.balance,
+                        at: isNil(child.history?.at)
+                            ? undefined
+                            : moment(child.history.at).toDate()
+                    },
+                    color: child.color,
+                    icon: child.icon,
+                    archive: !isNil(child.archivedAt),
+                    delete: false
+                }
+            }
+        )
+    }
+}
 
 export function UpdateAccountForm({
     account, loading, className
@@ -208,50 +254,11 @@ export function UpdateAccountForm({
 
     const form = useForm<z.infer<typeof updateSchema>>({
         resolver: zodResolver(updateSchema),
-        defaultValues: {
-            kind: account.kind,
-            currency: account.currency,
-            name: account.name,
-            description: account.description ?? undefined,
-            capital: account.capital,
-            history: {
-                present: !isNil(account.history),
-                balance: isNil(account.history?.balance) ? undefined : account.history.balance,
-                at: isNil(account.history?.at) ? undefined : moment(account.history.at).toDate()
-            },
-            color: account.color,
-            icon: account.icon,
-            archive: !isNil(account.archivedAt),
-            children: isNil(account.children) ? undefined : account.children.map(
-                (child) => {
-                    return {
-                        id: child.id ?? undefined,
-                        kind: child.kind,
-                        currency: child.currency,
-                        name: child.name,
-                        description: child.description ?? undefined,
-                        capital: child.capital,
-                        history: {
-                            present: !isNil(child.history),
-                            balance: isNil(child.history?.balance)
-                                ? undefined
-                                : child.history.balance,
-                            at: isNil(child.history?.at)
-                                ? undefined
-                                : moment(child.history.at).toDate()
-                        },
-                        color: child.color,
-                        icon: child.icon,
-                        archive: !isNil(child.archivedAt),
-                        delete: false
-                    }
-                }
-            )
-        }
+        defaultValues: mapAccountToUpdateForm(account)
     })
 
     const onSubmitUpdate = async (values: z.infer<typeof updateSchema>) => {
-        await updateAccount(account.id, {
+        const updated = await updateAccount(values.id, {
             ...values,
             history: {
                 ...values.history,
@@ -268,8 +275,6 @@ export function UpdateAccountForm({
             }) || []
         })
 
-        // [ ] TODO: implement toast to notify saved success
-
         queryClient.invalidateQueries({
             predicate: ({ queryKey }) => {
                 return isEqual(queryKey, ["accounts", "account", account.id]) ||
@@ -277,6 +282,8 @@ export function UpdateAccountForm({
                     isEqual(queryKey, ["transactions", "upcoming", "account", account.id])
             }
         })
+
+        form.reset(mapAccountToUpdateForm(updated))
     }
 
     const [currency, setCurrency] = useState(account.currency)
@@ -293,11 +300,38 @@ export function UpdateAccountForm({
     if (isError) throw error
 
     return <div className={cn("flex flex-col gap-4", className)}>
+        {
+            account.archivedAt && (
+                <Alert>
+                    <PackageIcon className="h-4 w-4" />
+                    <AlertTitle>Heads Up!</AlertTitle>
+                    <AlertDescription>
+                        This account is archived
+                    </AlertDescription>
+                </Alert>
+            )
+        }
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onSubmitUpdate)}
                 className="flex flex-col gap-4"
             >
+                <Details
+                    form={form}
+                    loading={loading}
+                    account={account}
+                    currencies={currencies}
+                    intlConfig={intlConfig}
+                    setIntlConfig={setIntlConfig}
+                    setCurrency={setCurrency}
+                    setColor={setColor}
+                />
+                {!isExternalAccount(account.kind) && (
+                    <History form={form} intlConfig={intlConfig} />
+                )}
+                {isExternalAccount(account.kind) && (
+                    <Children account={account} currency={currency} color={color} form={form} />
+                )}
                 <Card className="p-6">
                     <FormField
                         control={form.control}
@@ -321,38 +355,9 @@ export function UpdateAccountForm({
                         )}
                     />
                 </Card>
-                <Details
-                    form={form}
-                    loading={loading}
-                    account={account}
-                    currencies={currencies}
-                    intlConfig={intlConfig}
-                    setIntlConfig={setIntlConfig}
-                    setCurrency={setCurrency}
-                    setColor={setColor}
-                />
-                {!isExternalAccount(account.kind) && (
-                    <History form={form} intlConfig={intlConfig} />
-                )}
-                {isExternalAccount(account.kind) && (
-                    <Children account={account} currency={currency} color={color} form={form} />
-                )}
             </form>
         </Form >
         <div className="flex justify-stretch gap-4">
-            <RouterForm
-                className="flex grow"
-                method="patch"
-                onSubmit={(event) => {
-                    if (!confirm(`Do you want to archive this account? (${account.name})`)) {
-                        event.preventDefault()
-                    }
-                }}
-            >
-                <Button type="submit" variant="outline" className="grow">
-                    Archive
-                </Button>
-            </RouterForm>
             <RouterForm
                 className="flex grow"
                 method="delete"
@@ -393,6 +398,13 @@ function Details({
             {loading && <Throbber variant="small" />}
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
+            <FormField
+                control={form.control}
+                name="id"
+                render={({ field }) => (
+                    <input {...field} type="hidden" hidden={true} />
+                )}
+            />
             <FormField
                 control={form.control}
                 name="name"
@@ -694,7 +706,7 @@ function Children({
                             history: { present: false },
                             color: form.getValues("color"),
                             archive: false,
-                            deleted: false,
+                            delete: false,
                             capital: 0,
                             currency: currency
                         })
@@ -813,7 +825,7 @@ function Children({
                     />
                     <FormField
                         control={form.control}
-                        name={`children.${index}.deleted`}
+                        name={`children.${index}.delete`}
                         render={({ field }) => (
                             <FormItem
                                 className="flex flex-row items-center justify-between space-y-0"
