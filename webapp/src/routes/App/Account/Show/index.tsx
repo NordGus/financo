@@ -17,7 +17,7 @@ import {
     pendingTransactionsQueryOptions,
     upcomingTransactionsQueryOptions
 } from "@queries/accounts"
-import { archiveAccount, deleteAccount } from "@api/accounts"
+import { deleteAccount } from "@api/accounts"
 import { getTransactions, ListFilters } from "@api/transactions"
 
 import isExternalAccount from "@helpers/account/isExternalAccount"
@@ -59,20 +59,8 @@ export const action = (queryClient: QueryClient) => async ({
     if (!params.id) throw new Error('No account ID provided')
     const id = Number(params.id)
 
-    switch (request.method) {
-        case "PATCH":
-            const archived = await archiveAccount(id)
-
-            // [ ] TODO: Make more robust or use toasts
-            if (!archived.ok) throw new Response("", { status: 500 })
-
-            queryClient.invalidateQueries({
-                predicate: ({ queryKey }) => isEqual(queryKey, ['accounts', 'account', id])
-            })
-
-            // [ ] TODO:Check how to return data to trigger a toast
-            return redirect(`/accounts/${id}`, { status: 302 })
-        case "DELETE":
+    switch (request.method.toLowerCase()) {
+        case "delete":
             const deleted = await deleteAccount(id)
 
             // [ ] TODO: Make more robust or use toasts

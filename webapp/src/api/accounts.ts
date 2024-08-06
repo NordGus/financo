@@ -50,10 +50,6 @@ export async function updateAccount(id: number, data: Update): Promise<Detailed>
     return response.json()
 }
 
-export async function archiveAccount(id: number): Promise<Response> {
-    return fetch(`/api/accounts/${id}/archive`, { method: "PATCH" })
-}
-
 export async function deleteAccount(id: number): Promise<Response> {
     return fetch(`/api/accounts/${id}`, { method: "DELETE" })
 }
