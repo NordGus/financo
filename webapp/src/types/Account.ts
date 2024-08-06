@@ -49,6 +49,7 @@ export default interface Detailed {
 }
 
 export interface Update {
+    id: number
     kind: Kind,
     currency: Currency
     name: string
@@ -80,5 +81,5 @@ export interface UpdateChild {
     color: string
     icon: Icon
     archive: boolean
-    deleted: boolean
+    delete: boolean
 }
