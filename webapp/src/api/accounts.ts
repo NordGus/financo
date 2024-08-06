@@ -35,7 +35,7 @@ export function getAccounts(filters: ListFilters): () => Promise<Preview[]> {
     }
 }
 
-export async function updateAccount(id: number, data: Update): Promise<Update> {
+export async function updateAccount(id: number, data: Update): Promise<Detailed> {
     const response = await fetch(`/api/accounts/${id}`, {
         method: "PUT",
         headers: { 'Content-Type': 'application/json' },
