@@ -21,6 +21,7 @@ import { staleTimeDefault } from "@queries/Client";
 
 import kindToHuman from "@helpers/account/kindToHuman";
 import isExternalAccount from "@helpers/account/isExternalAccount";
+import isDebtAccount, { isCreditAccount } from "@helpers/account/isDebtAccount";
 import { cn } from "@/lib/utils";
 
 import {
@@ -341,6 +342,9 @@ export function UpdateAccountForm({
                     setCurrency={setCurrency}
                     setColor={setColor}
                 />
+                {isDebtAccount(account.kind) && (
+                    <Capital account={account} intlConfig={intlConfig} form={form} />
+                )}
                 {!isExternalAccount(account.kind) && (
                     <History form={form} intlConfig={intlConfig} />
                 )}
@@ -686,6 +690,55 @@ function History({
         <CardFooter className="flex justify-end">
             <Button type="submit">Save</Button>
         </CardFooter>
+    </Card>
+}
+
+function Capital({
+    account, form, intlConfig
+}: {
+    account: Detailed,
+    form: UseFormReturn<z.infer<typeof updateSchema>>,
+    intlConfig: { locale: string, currency: Currency }
+}) {
+    return <Card>
+        <CardHeader className="flex flex-row justify-between items-start">
+            <div>
+                <CardTitle>Capital</CardTitle>
+                <CardDescription>
+                    {
+                        isCreditAccount(account.kind)
+                            ? "Represents the credit line's limit"
+                            : "Represents the amount of the loan"
+                    }
+                </CardDescription>
+            </div>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2">
+            <FormField
+                control={form.control}
+                name="capital"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Balance</FormLabel>
+                        <FormControl>
+                            <CurrencyInput
+                                name={field.name}
+                                value={!field.value ? 0 : field.value / 100}
+                                placeholder={"Balance"}
+                                intlConfig={intlConfig}
+                                onValueChange={(value) => {
+                                    field.onChange(Number(value?.replace(".", "") ?? 0))
+                                }}
+                            />
+                        </FormControl>
+                        <FormDescription>
+                            A positive value indicates that you owe money. While a negative one indicates that you're owed money.
+                        </FormDescription>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+        </CardContent>
     </Card>
 }
 
