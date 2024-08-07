@@ -50,6 +50,13 @@ export async function updateAccount(id: number, data: Update): Promise<Detailed>
     return response.json()
 }
 
-export async function deleteAccount(id: number): Promise<Response> {
-    return fetch(`/api/accounts/${id}`, { method: "DELETE" })
+export async function deleteAccount(id: number): Promise<Detailed> {
+    const response = await fetch(`/api/accounts/${id}`, { method: "DELETE" })
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
 }

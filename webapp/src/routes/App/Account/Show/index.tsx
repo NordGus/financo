@@ -64,8 +64,6 @@ export const action = (queryClient: QueryClient) => async ({
         case "delete":
             const deleted = await deleteAccount(id)
 
-            if (!deleted.ok) throw new Response("", { status: 500 })
-
             queryClient.invalidateQueries({
                 predicate: ({ queryKey }) => {
                     return isEqual(queryKey, ["transactions", "pending", "account", id]) ||
@@ -76,7 +74,7 @@ export const action = (queryClient: QueryClient) => async ({
 
             toast({
                 title: "Deleted",
-                description: "Account has been deleted"
+                description: `${deleted.name} and its children have been deleted`
             })
 
             return redirect(`/accounts`)
