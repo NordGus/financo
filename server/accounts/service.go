@@ -11,9 +11,9 @@ func Routes(r chi.Router) {
 	r.Get("/", handlers.List)
 
 	r.Route("/{accountID}", func(r chi.Router) {
-		r.Use(middleware.GetAccount, middleware.GetChildren)
-		r.Get("/", handlers.Show)
+		r.With(middleware.GetAccount, middleware.GetChildren).Get("/", handlers.Show)
+		r.With(middleware.GetAccount, middleware.GetChildren).Delete("/", handlers.Destroy)
+
 		r.Put("/", handlers.Update)
-		r.Patch("/", handlers.Update)
 	})
 }

@@ -2,22 +2,29 @@ package handlers
 
 import (
 	"encoding/json"
-	"financo/server/accounts/types/response"
+	"financo/server/accounts/commands/update_command"
+	"financo/server/accounts/types/request"
 	"financo/server/types/generic/context_key"
 	"log"
 	"net/http"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // TODO: Implement save mechanism
 func Update(w http.ResponseWriter, r *http.Request) {
 	var (
-		data = response.Detailed{Children: make([]response.DetailedChild, 0, 10)}
+		req = request.Update{Children: make([]request.UpdateChild, 0, 10)}
 	)
 
-	acc, ok := r.Context().Value(context_key.Account).(*response.Detailed)
+	conn, ok := r.Context().Value(context_key.DB).(*pgxpool.Conn)
 	if !ok {
-		log.Println("account not found")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		log.Println("db connection not found")
+		http.Error(
+			w,
+			http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError,
+		)
 		return
 	}
 
@@ -29,7 +36,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	err := json.NewDecoder(body).Decode(&data)
+	err := json.NewDecoder(body).Decode(&req)
 	if err != nil {
 		log.Println("failed to decode body", err)
 		http.Error(
@@ -40,9 +47,17 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("%+v \n", data)
+	res, err := update_command.New(conn, req).Run()
+	if err != nil {
+		http.Error(
+			w,
+			http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError,
+		)
+		return
+	}
 
-	resp, err := json.Marshal(*acc)
+	resp, err := json.Marshal(&res)
 	if err != nil {
 		log.Println("failed json Marshal", err)
 		http.Error(
