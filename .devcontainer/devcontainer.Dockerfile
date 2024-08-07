@@ -7,7 +7,7 @@ ARG NODE_VERSION
 
 FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} as node
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION}
-ARG PNPM_VERSION
+ARG NPM_VERSION
 ARG GO_AIR_VERSION
 ARG GO_GOOSE_VERSION
 ARG USERNAME=vscode
@@ -34,7 +34,7 @@ RUN adduser $USERNAME -s /bin/sh -D -u $USER_UID $USER_GID && \
 RUN apk add -q --update --progress --no-cache git make sudo openssh-client zsh nano postgresql16-client
 
 # updating npm
-RUN npm install -g pnpm@$PNPM_VERSION
+RUN npm install -g npm@$NPM_VERSION
 
 # installing cosmtrek/air for hot reloading
 RUN go install github.com/air-verse/air@$GO_AIR_VERSION

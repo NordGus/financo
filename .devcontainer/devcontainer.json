@@ -68,7 +68,7 @@
   },
   "postStartCommand": {
     "go:install:dependencies": "go mod download",
-    "npm:install:dependencies": "pnpm install",
+    "npm:install:dependencies": "npm install",
     "db:setup": "make db-setup"
   }
 }

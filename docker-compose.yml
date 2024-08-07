@@ -9,7 +9,7 @@ services:
         GO_VERSION: "1.22"
         ALPINE_VERSION: "3.20"
         NODE_VERSION: "20"
-        PNPM_VERSION: "latest"
+        NPM_VERSION: "latest"
         GO_AIR_VERSION: "latest"
         GO_GOOSE_VERSION: "latest"
     user: vscode
