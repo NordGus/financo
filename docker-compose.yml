@@ -9,34 +9,13 @@ services:
         GO_VERSION: "1.22"
         ALPINE_VERSION: "latest"
         NODE_VERSION: "20"
-        NPM_VERSION: "latest"
+        PNPM_VERSION: "latest"
         GO_AIR_VERSION: "latest"
         GO_GOOSE_VERSION: "latest"
     user: vscode
     env_file: .env
     volumes:
       - ${HOME}/Development/financo:/workspace:cached
-      - ${HOME}/.ssh:/home/vscode/.ssh:ro
-      - ${HOME}/.gitconfig:/home/vscode/.gitconfig:ro
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - seccomp:unconfined
-    command: /bin/sh -c "while sleep 1000; do :; done"
-
-  jetbrains:
-    build:
-      dockerfile: .jetbrains-devcontainer/devcontainer.Dockerfile
-      context: .
-      args:
-        GO_VERSION: "1.22"
-        NODE_VERSION: "20"
-        NPM_VERSION: "latest"
-        GO_AIR_VERSION: "latest"
-        GO_GOOSE_VERSION: "latest"
-    env_file: .env
-    volumes:
-      - ${HOME}/Development/financo:/workspace
       - ${HOME}/.ssh:/home/vscode/.ssh:ro
       - ${HOME}/.gitconfig:/home/vscode/.gitconfig:ro
     cap_add:
