@@ -11,7 +11,6 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-// TODO: Implement save mechanism
 func Update(w http.ResponseWriter, r *http.Request) {
 	var (
 		req = request.Update{Children: make([]request.UpdateChild, 0, 10)}
@@ -47,7 +46,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := update_command.New(conn, req).Run()
+	res, err := update_command.New(conn, req).Run(r.Context())
 	if err != nil {
 		http.Error(
 			w,
