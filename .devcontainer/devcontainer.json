@@ -36,7 +36,7 @@
       ],
       "settings": {
         "go.useLanguageServer": true,
-        "workbench.colorTheme": "Tokyo Night",
+        "workbench.colorTheme": "GitHub Dark Default",
         "workbench.iconTheme": "catppuccin-mocha",
         "editor.rulers": [
           100
