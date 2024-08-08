@@ -14,3 +14,7 @@ const (
 	ExternalIncome  Kind = "external_income"
 	ExternalExpense Kind = "external_expense"
 )
+
+func IsExternal(kind Kind) bool {
+	return kind == ExternalIncome || kind == ExternalExpense
+}
