@@ -9,6 +9,7 @@ import (
 	"financo/server/types/records/account"
 	"financo/server/types/records/transaction"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -175,6 +176,7 @@ func (c *command) findExistingRecordsAndBuildUpdate(ctx context.Context) ([]acco
 	return records, nil
 }
 
+// TODO: fix this query
 func (c *command) updateRecords(ctx context.Context, records []account.Record, tx pgx.Tx) error {
 	var (
 		count       = len(records)
@@ -218,10 +220,42 @@ func (c *command) updateRecords(ctx context.Context, records []account.Record, t
 		)
 	}
 
-	query := fmt.Sprintf("UPDATE accounts acc SET acc.kind = data.kind, acc.currency = data.currency, acc.name = data.name, acc.description = data.description, acc.color = data.color, acc.icon = data.icon, acc.capital = data.capital, acc.archived_at = data.archived_at, acc.deleted_at = data.deleted_at, acc.updated_at = data.updated_at FROM (VALUES %s) AS data(id, parent_id, kind, currency, name, description, color, icon, capital, archived_at, deleted_at, updated_at) WHERE acc.id = data.id", strings.Join(queryValues, ", "))
+	query := fmt.Sprintf(`
+	UPDATE accounts
+	SET
+		kind = data.kind,
+		currency = data.currency,
+		name = data.name,
+		description = data.description,
+		color = data.color,
+		icon = data.icon,
+		capital = data.capital::bigint,
+		archived_at = data.archived_at::timestamp,
+		deleted_at = data.deleted_at::timestamp,
+		updated_at = data.updated_at::timestamp
+	FROM (VALUES %s)
+	AS data(
+		id,
+		parent_id,
+		kind,
+		currency,
+		name,
+		description,
+		color,
+		icon,
+		capital,
+		archived_at,
+		deleted_at,
+		updated_at
+	) WHERE accounts.id = data.id::bigint`,
+		strings.Join(queryValues, ", "),
+	)
+
+	log.Println(queryValues, values, query)
 
 	_, err := tx.Exec(ctx, query, values...)
 	if err != nil {
+		log.Println("here")
 		return err
 	}
 

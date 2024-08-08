@@ -48,6 +48,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 	res, err := update_command.New(conn, req).Run(r.Context())
 	if err != nil {
+		log.Println("command failed", err)
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
