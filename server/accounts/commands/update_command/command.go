@@ -2,6 +2,7 @@ package update_command
 
 import (
 	"context"
+	"errors"
 	"financo/server/accounts/types/request"
 	"financo/server/accounts/types/response"
 	"financo/server/types/generic/nullable"
@@ -97,9 +98,12 @@ func (c *command) findExistingRecordsAndBuildUpdate(ctx context.Context) ([]acco
 		updated_at
 	FROM accounts
 	WHERE id = ANY ($1)
+		AND deleted_at IS NULL
+		AND kind != $2
 	ORDER BY parent_id NULLS FIRST
 		`,
 		ids,
+		account.SystemHistoric,
 	)
 	if err != nil {
 		return records, err
@@ -162,6 +166,10 @@ func (c *command) findExistingRecordsAndBuildUpdate(ctx context.Context) ([]acco
 
 		records = append(records, record)
 		i++
+	}
+
+	if len(records) == 0 {
+		return records, errors.New("account not found")
 	}
 
 	return records, nil
@@ -458,5 +466,251 @@ func (c *command) updateHistoryTransaction(ctx context.Context, tx pgx.Tx, hist 
 }
 
 func (c *command) buildResponse(ctx context.Context) (response.Detailed, error) {
-	return response.Detailed{}, nil
+	var (
+		res = response.Detailed{
+			ID:          c.req.ID,
+			Kind:        c.req.Kind,
+			Currency:    c.req.Currency,
+			Name:        c.req.Name,
+			Description: c.req.Description,
+			Balance:     0,
+			Capital:     c.req.Capital,
+			Color:       string(c.req.Color),
+			Icon:        c.req.Icon,
+			ArchivedAt:  nullable.Type[time.Time]{},
+			CreatedAt:   c.timestamp,
+			UpdatedAt:   c.timestamp,
+			Children:    make([]response.DetailedChild, 0, 10),
+		}
+
+		histBalance nullable.Type[int64]
+		histAt      nullable.Type[time.Time]
+	)
+
+	err := c.conn.QueryRow(
+		ctx,
+		`
+	WITH
+		active_transactions (
+			id,
+			source_id,
+			target_id,
+			issued_at,
+			executed_at,
+			source_amount,
+			target_amount
+		) AS (
+			SELECT
+				id,
+				source_id,
+				target_id,
+				issued_at,
+				executed_at,
+				source_amount,
+				target_amount
+			FROM transactions
+			WHERE
+				deleted_at IS NULL
+				AND executed_at IS NOT NULL
+				AND executed_at <= NOW()
+		),
+		history_accounts (id, parent_id, balance, at) AS (
+			SELECT
+				acc.id,
+				acc.parent_id,
+				SUM(
+					CASE
+						WHEN tr.source_id = acc.id THEN - tr.source_amount
+						ELSE tr.target_amount
+					END
+				) AS balance,
+				MAX(tr.executed_at) AS at
+			FROM
+				accounts acc
+				LEFT JOIN active_transactions tr ON tr.source_id = acc.id
+				OR tr.target_id = acc.id
+			WHERE
+				acc.parent_id IS NOT NULL
+				AND acc.deleted_at IS NULL
+				AND acc.kind = $1
+			GROUP BY
+				acc.id
+		)
+	SELECT
+		acc.id,
+		SUM(
+			COALESCE(
+				CASE
+					WHEN tr.source_id = acc.id THEN - tr.source_amount
+					ELSE tr.target_amount
+				END,
+				0
+			)
+		) AS balance,
+		MAX(hist.balance)::bigint AS hist_balance,
+		MAX(hist.at)::date AS hist_at,
+		acc.archived_at,
+		acc.created_at,
+		acc.updated_at
+	FROM
+		accounts acc
+		LEFT JOIN active_transactions tr ON tr.source_id = acc.id
+		OR tr.target_id = acc.id
+		LEFT JOIN history_accounts hist ON hist.parent_id = acc.id
+	WHERE
+		acc.deleted_at IS NULL
+		AND acc.id = $2
+	GROUP BY
+		acc.id
+		`,
+		account.SystemHistoric,
+		res.ID,
+	).Scan(
+		&res.ID,
+		&res.Balance,
+		&histBalance,
+		&histAt,
+		&res.ArchivedAt,
+		&res.CreatedAt,
+		&res.UpdatedAt,
+	)
+	if err != nil {
+		return res, err
+	}
+
+	if c.req.History.Present && histBalance.Valid && histAt.Valid {
+		res.History = nullable.New(response.History{
+			Balance: histBalance.Val,
+			At:      histAt.Val,
+		})
+	}
+
+	rows, err := c.conn.Query(
+		ctx,
+		`
+	WITH
+		active_transactions (
+			id,
+			source_id,
+			target_id,
+			issued_at,
+			executed_at,
+			source_amount,
+			target_amount
+		) AS (
+			SELECT
+				id,
+				source_id,
+				target_id,
+				issued_at,
+				executed_at,
+				source_amount,
+				target_amount
+			FROM transactions
+			WHERE
+				deleted_at IS NULL
+				AND executed_at IS NOT NULL
+				AND executed_at <= NOW()
+		),
+		history_accounts (id, parent_id, balance, at) AS (
+			SELECT
+				acc.id,
+				acc.parent_id,
+				SUM(
+					CASE
+						WHEN tr.source_id = acc.id THEN - tr.source_amount
+						ELSE tr.target_amount
+					END
+				) AS balance,
+				MAX(tr.executed_at) AS at
+			FROM
+				accounts acc
+				LEFT JOIN active_transactions tr ON tr.source_id = acc.id
+				OR tr.target_id = acc.id
+			WHERE
+				acc.parent_id IS NOT NULL
+				AND acc.deleted_at IS NULL
+				AND acc.kind = $1
+			GROUP BY
+				acc.id
+		)
+	SELECT
+		acc.id,
+		acc.kind,
+		acc.currency,
+		acc.name,
+		acc.description,
+		SUM(
+			COALESCE(
+				CASE
+					WHEN tr.source_id = acc.id THEN - tr.source_amount
+					ELSE tr.target_amount
+				END,
+				0
+			)
+		) AS balance,
+		acc.capital,
+		MAX(COALESCE(hist.balance, 0))::bigint AS hist_balance,
+		MAX(hist.at)::date AS hist_at,
+		acc.color,
+		acc.icon,
+		acc.archived_at,
+		acc.created_at,
+		acc.updated_at
+	FROM
+		accounts acc
+		LEFT JOIN active_transactions tr ON tr.source_id = acc.id
+		OR tr.target_id = acc.id
+		LEFT JOIN history_accounts hist ON hist.parent_id = acc.id
+	WHERE
+		acc.deleted_at IS NULL
+		AND acc.kind != $1
+		AND acc.parent_id = $2
+	GROUP BY
+		acc.id
+	ORDER BY acc.archived_at DESC NULLS FIRST, acc.created_at
+		`,
+		account.SystemHistoric,
+		res.ID,
+	)
+	if err != nil {
+		return res, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var child response.DetailedChild
+
+		err = rows.Scan(
+			&child.ID,
+			&child.Kind,
+			&child.Currency,
+			&child.Name,
+			&child.Description,
+			&child.Balance,
+			&child.Capital,
+			&histBalance,
+			&histAt,
+			&child.Color,
+			&child.Icon,
+			&child.ArchivedAt,
+			&child.CreatedAt,
+			&child.UpdatedAt,
+		)
+		if err != nil {
+			return res, err
+		}
+
+		if histBalance.Valid && histAt.Valid {
+			child.History = nullable.New(response.History{
+				Balance: histBalance.Val,
+				At:      histAt.Val,
+			})
+		}
+
+		res.Balance += child.Balance
+		res.Children = append(res.Children, child)
+	}
+
+	return res, nil
 }
