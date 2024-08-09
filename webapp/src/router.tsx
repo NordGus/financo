@@ -30,11 +30,6 @@ const router = createBrowserRouter([
                         action: App.Account.actions.account(Client),
                         element: <App.Account.Show />
                     },
-                    {
-                        path: "new",
-                        loader: App.Account.loaders.new(Client),
-                        element: <App.Account.New />
-                    },
                 ]
             },
             {
