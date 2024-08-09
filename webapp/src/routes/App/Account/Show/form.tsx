@@ -61,7 +61,7 @@ import { useToast } from "@components/ui/use-toast";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 
-const updateSchema = z.object({
+const schema = z.object({
     id: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
     kind: z.nativeEnum(Kind,
         {
@@ -202,7 +202,7 @@ const updateSchema = z.object({
     }).array().optional()
 })
 
-function mapAccountToUpdateForm(account: Detailed): z.infer<typeof updateSchema> {
+function mapAccountToUpdateForm(account: Detailed): z.infer<typeof schema> {
     return {
         id: account.id,
         kind: account.kind,
@@ -257,12 +257,12 @@ export function UpdateAccountForm({
         staleTime: staleTimeDefault
     })
 
-    const form = useForm<z.infer<typeof updateSchema>>({
-        resolver: zodResolver(updateSchema),
+    const form = useForm<z.infer<typeof schema>>({
+        resolver: zodResolver(schema),
         defaultValues: mapAccountToUpdateForm(account)
     })
 
-    const onSubmitUpdate = async (values: z.infer<typeof updateSchema>) => {
+    const onSubmitUpdate = async (values: z.infer<typeof schema>) => {
         try {
             const updated = await updateAccount(values.id, {
                 ...values,
@@ -393,7 +393,7 @@ export function UpdateAccountForm({
 function Details({
     form, loading, account, currencies, setCurrency, setColor
 }: {
-    form: UseFormReturn<z.infer<typeof updateSchema>>,
+    form: UseFormReturn<z.infer<typeof schema>>,
     loading: boolean,
     account: Detailed,
     currencies: ApiCurrency[] | undefined,
@@ -572,7 +572,7 @@ function Details({
 function History({
     form, currency
 }: {
-    form: UseFormReturn<z.infer<typeof updateSchema>>,
+    form: UseFormReturn<z.infer<typeof schema>>,
     currency: Currency
 }) {
     return <Card>
@@ -685,7 +685,7 @@ function Capital({
     account, form, currency
 }: {
     account: Detailed,
-    form: UseFormReturn<z.infer<typeof updateSchema>>,
+    form: UseFormReturn<z.infer<typeof schema>>,
     currency: Currency
 }) {
     return <Card>
@@ -739,7 +739,7 @@ function Capital({
 function Children({
     account, currency, form, color
 }: {
-    form: UseFormReturn<z.infer<typeof updateSchema>>,
+    form: UseFormReturn<z.infer<typeof schema>>,
     currency: Currency,
     account: Detailed,
     color: string
