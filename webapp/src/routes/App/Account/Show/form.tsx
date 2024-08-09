@@ -42,7 +42,7 @@ import {
     CardTitle
 } from "@components/ui/card";
 import { Throbber } from "@components/Throbber";
-import { CurrencyInput, Input } from "@components/ui/input";
+import { Input } from "@components/ui/input";
 import { Button } from "@components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
 import { Calendar } from "@components/ui/calendar";
@@ -58,6 +58,8 @@ import {
 } from "@components/ui/command";
 import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 import { useToast } from "@components/ui/use-toast";
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import currencyAmountColor from "@helpers/currencyAmountColor";
 
 const updateSchema = z.object({
     id: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
@@ -83,10 +85,10 @@ const updateSchema = z.object({
         .max(128, { message: "must be 128 characters at most" })
         .optional()
         .optional(),
-    capital: z.number({
-        required_error: "is required",
-        invalid_type_error: "must be a number"
-    }),
+    capital: z.preprocess(
+        Number,
+        z.number({ required_error: "is required", invalid_type_error: "must be a number" })
+    ),
     history: z.object({
         present: z.boolean(
             {
@@ -94,10 +96,10 @@ const updateSchema = z.object({
                 invalid_type_error: "must be a boolean"
             }
         ),
-        balance: z.number({
-            required_error: "is required",
-            invalid_type_error: "must be a number"
-        }).optional(),
+        balance: z.preprocess(
+            Number,
+            z.number({ required_error: "is required", invalid_type_error: "must be a number" })
+        ).optional(),
         at: z.date({
             required_error: "is required",
             invalid_type_error: "must be a date"
@@ -150,10 +152,10 @@ const updateSchema = z.object({
             .max(128, { message: "must be 128 characters at most" })
             .optional()
             .optional(),
-        capital: z.number({
-            required_error: "is required",
-            invalid_type_error: "must be a number"
-        }),
+        capital: z.preprocess(
+            Number,
+            z.number({ required_error: "is required", invalid_type_error: "must be a number" })
+        ),
         history: z.object({
             present: z.boolean(
                 {
@@ -161,10 +163,10 @@ const updateSchema = z.object({
                     invalid_type_error: "must be a boolean"
                 }
             ),
-            balance: z.number({
-                required_error: "is required",
-                invalid_type_error: "must be a number"
-            }).optional(),
+            balance: z.preprocess(
+                Number,
+                z.number({ required_error: "is required", invalid_type_error: "must be a number" })
+            ).optional(),
             at: z.date({
                 required_error: "is required",
                 invalid_type_error: "must be a date"
@@ -279,15 +281,13 @@ export function UpdateAccountForm({
                 }) || []
             })
 
-            queryClient.invalidateQueries({
+            await queryClient.invalidateQueries({
                 predicate: ({ queryKey }) => {
                     return isEqual(queryKey, ["accounts", "account", account.id]) ||
                         isEqual(queryKey, ["transactions", "pending", "account", account.id]) ||
                         isEqual(queryKey, ["transactions", "upcoming", "account", account.id])
                 }
             })
-
-            form.reset(mapAccountToUpdateForm(updated))
 
             toast({
                 title: "Saved",
@@ -304,14 +304,12 @@ export function UpdateAccountForm({
 
     const [currency, setCurrency] = useState(account.currency)
     const [color, setColor] = useState(account.color)
-    const [intlConfig, setIntlConfig] = useState<{ locale: string, currency: Currency }>({
-        locale: "en-US",
-        currency: form.getValues("currency") ?? "USD"
-    })
 
     useEffect(() => {
         if (!isEmpty(form.formState.errors)) console.log("errors:", form.formState.errors)
     }, [form.formState.errors])
+
+    useEffect(() => form.reset(mapAccountToUpdateForm(account)), [account.updatedAt])
 
     if (isError) throw error
 
@@ -337,16 +335,14 @@ export function UpdateAccountForm({
                     loading={loading}
                     account={account}
                     currencies={currencies}
-                    intlConfig={intlConfig}
-                    setIntlConfig={setIntlConfig}
                     setCurrency={setCurrency}
                     setColor={setColor}
                 />
                 {isDebtAccount(account.kind) && (
-                    <Capital account={account} intlConfig={intlConfig} form={form} />
+                    <Capital account={account} currency={currency} form={form} />
                 )}
                 {!isExternalAccount(account.kind) && (
-                    <History form={form} intlConfig={intlConfig} />
+                    <History form={form} currency={currency} />
                 )}
                 {isExternalAccount(account.kind) && (
                     <Children account={account} currency={currency} color={color} form={form} />
@@ -395,14 +391,12 @@ export function UpdateAccountForm({
 }
 
 function Details({
-    form, loading, account, currencies, setIntlConfig, intlConfig, setCurrency, setColor
+    form, loading, account, currencies, setCurrency, setColor
 }: {
     form: UseFormReturn<z.infer<typeof updateSchema>>,
     loading: boolean,
     account: Detailed,
     currencies: ApiCurrency[] | undefined,
-    intlConfig: { locale: string, currency: Currency },
-    setIntlConfig: Dispatch<SetStateAction<{ locale: string, currency: Currency }>>,
     setCurrency: Dispatch<SetStateAction<Currency>>,
     setColor: Dispatch<SetStateAction<string>>
 }) {
@@ -502,22 +496,10 @@ function Details({
                                                     onSelect={() => {
                                                         form.setValue("currency", code)
                                                         setCurrency(code)
-                                                        setIntlConfig(
-                                                            {
-                                                                ...intlConfig,
-                                                                currency: code
-                                                            }
-                                                        )
                                                     }}
                                                     onClick={() => {
                                                         form.setValue("currency", code)
                                                         setCurrency(code)
-                                                        setIntlConfig(
-                                                            {
-                                                                ...intlConfig,
-                                                                currency: code
-                                                            }
-                                                        )
                                                     }}
                                                 >
                                                     {name}
@@ -588,10 +570,10 @@ function Details({
 }
 
 function History({
-    form, intlConfig
+    form, currency
 }: {
     form: UseFormReturn<z.infer<typeof updateSchema>>,
-    intlConfig: { locale: string, currency: Currency }
+    currency: Currency
 }) {
     return <Card>
         <CardHeader className="flex flex-row justify-between items-start">
@@ -629,15 +611,21 @@ function History({
                     <FormItem>
                         <FormLabel>Balance</FormLabel>
                         <FormControl>
-                            <CurrencyInput
-                                name={field.name}
-                                value={!field.value ? 0 : field.value / 100}
-                                placeholder={"Balance"}
-                                intlConfig={intlConfig}
-                                onValueChange={(value) => {
-                                    field.onChange(Number(value?.replace(".", "") ?? 0))
-                                }}
-                            />
+                            <div className="flex flex-row gap-4 justify-between items-center">
+                                <Input
+                                    {...field}
+                                    placeholder={"Balance"}
+                                    className="flex-1"
+                                />
+                                <span
+                                    className={cn(
+                                        "text-lg flex-1 text-right",
+                                        currencyAmountColor(field.value ?? 0)
+                                    )}
+                                >
+                                    {currencyAmountToHuman(field.value ?? 0, currency)}
+                                </span>
+                            </div>
                         </FormControl>
                         <FormDescription>Transaction's amount</FormDescription>
                         <FormMessage />
@@ -694,11 +682,11 @@ function History({
 }
 
 function Capital({
-    account, form, intlConfig
+    account, form, currency
 }: {
     account: Detailed,
     form: UseFormReturn<z.infer<typeof updateSchema>>,
-    intlConfig: { locale: string, currency: Currency }
+    currency: Currency
 }) {
     return <Card>
         <CardHeader className="flex flex-row justify-between items-start">
@@ -719,17 +707,23 @@ function Capital({
                 name="capital"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Balance</FormLabel>
+                        <FormLabel>Capital</FormLabel>
                         <FormControl>
-                            <CurrencyInput
-                                name={field.name}
-                                value={!field.value ? 0 : field.value / 100}
-                                placeholder={"Balance"}
-                                intlConfig={intlConfig}
-                                onValueChange={(value) => {
-                                    field.onChange(Number(value?.replace(".", "") ?? 0))
-                                }}
-                            />
+                            <div className="flex flex-row gap-4 justify-between items-center">
+                                <Input
+                                    {...field}
+                                    placeholder={"Capital"}
+                                    className="flex-1"
+                                />
+                                <span
+                                    className={cn(
+                                        "text-lg flex-1 text-right",
+                                        currencyAmountColor(field.value ?? 0)
+                                    )}
+                                >
+                                    {currencyAmountToHuman(field.value ?? 0, currency)}
+                                </span>
+                            </div>
                         </FormControl>
                         <FormDescription>
                             A positive value indicates that you owe money. While a negative one indicates that you're owed money.
