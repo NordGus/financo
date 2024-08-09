@@ -427,20 +427,20 @@ func (c *command) updateHistoryTransaction(ctx context.Context, tx pgx.Tx, hist 
 		tr.IssuedAt = c.req.History.At.Val
 		tr.ExecutedAt = c.req.History.At
 		tr.DeletedAt = nullable.Type[time.Time]{}
-	}
 
-	if c.req.History.Present && c.req.History.Balance.Present && c.req.History.Balance.Val >= 0 {
-		tr.SourceID = hist.ID
-		tr.TargetID = c.req.ID
-		tr.SourceAmount = c.req.History.Balance.Val
-		tr.TargetAmount = c.req.History.Balance.Val
-	}
+		if c.req.History.Balance.Present && c.req.History.Balance.Val > 0 {
+			tr.SourceID = hist.ID
+			tr.TargetID = c.req.ID
+			tr.SourceAmount = c.req.History.Balance.Val
+			tr.TargetAmount = c.req.History.Balance.Val
+		}
 
-	if c.req.History.Present && c.req.History.Balance.Present && c.req.History.Balance.Val < 0 {
-		tr.SourceID = c.req.ID
-		tr.TargetID = hist.ID
-		tr.SourceAmount = -c.req.History.Balance.Val
-		tr.TargetAmount = -c.req.History.Balance.Val
+		if c.req.History.Balance.Present && c.req.History.Balance.Val < 0 {
+			tr.SourceID = c.req.ID
+			tr.TargetID = hist.ID
+			tr.SourceAmount = -c.req.History.Balance.Val
+			tr.TargetAmount = -c.req.History.Balance.Val
+		}
 	}
 
 	tr.UpdatedAt = c.timestamp
@@ -449,18 +449,18 @@ func (c *command) updateHistoryTransaction(ctx context.Context, tx pgx.Tx, hist 
 		_, err := tx.Exec(
 			ctx,
 			`
-	UPDATE transactions
-	SET
-		source_id = $2,
-		target_id = $3,
-		source_amount = $4,
-		target_amount = $5,
-		notes = $6,
-		issued_at = $7,
-		executed_at = $8,
-		deleted_at = $9,
-		updated_at = $10
-	WHERE id = $1
+				UPDATE transactions
+				SET
+					source_id = $2,
+					target_id = $3,
+					source_amount = $4,
+					target_amount = $5,
+					notes = $6,
+					issued_at = $7,
+					executed_at = $8,
+					deleted_at = $9,
+					updated_at = $10
+				WHERE id = $1
 			`,
 			tr.ID,
 			tr.SourceID,
@@ -482,18 +482,18 @@ func (c *command) updateHistoryTransaction(ctx context.Context, tx pgx.Tx, hist 
 		_, err := tx.Exec(
 			ctx,
 			`
-	INSERT INTO transactions (
-		source_id,
-		target_id,
-		source_amount,
-		target_amount,
-		notes,
-		issued_at,
-		executed_at,
-		deleted_at,
-		created_at,
-		updated_at
-	) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+				INSERT INTO transactions (
+					source_id,
+					target_id,
+					source_amount,
+					target_amount,
+					notes,
+					issued_at,
+					executed_at,
+					deleted_at,
+					created_at,
+					updated_at
+				) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 			`,
 			tr.SourceID,
 			tr.TargetID,
@@ -547,78 +547,78 @@ func (c *command) buildResponse(ctx context.Context) (response.Detailed, error) 
 	err := c.conn.QueryRow(
 		ctx,
 		`
-	WITH
-		active_transactions (
-			id,
-			source_id,
-			target_id,
-			issued_at,
-			executed_at,
-			source_amount,
-			target_amount
-		) AS (
-			SELECT
-				id,
-				source_id,
-				target_id,
-				issued_at,
-				executed_at,
-				source_amount,
-				target_amount
-			FROM transactions
-			WHERE
-				deleted_at IS NULL
-				AND executed_at IS NOT NULL
-				AND executed_at <= NOW()
-		),
-		history_accounts (id, parent_id, balance, at) AS (
+			WITH
+				active_transactions (
+					id,
+					source_id,
+					target_id,
+					issued_at,
+					executed_at,
+					source_amount,
+					target_amount
+				) AS (
+					SELECT
+						id,
+						source_id,
+						target_id,
+						issued_at,
+						executed_at,
+						source_amount,
+						target_amount
+					FROM transactions
+					WHERE
+						deleted_at IS NULL
+						AND executed_at IS NOT NULL
+						AND executed_at <= NOW()
+				),
+				history_accounts (id, parent_id, balance, at) AS (
+					SELECT
+						acc.id,
+						acc.parent_id,
+						SUM(
+							CASE
+								WHEN tr.source_id = acc.id THEN - tr.source_amount
+								ELSE tr.target_amount
+							END
+						) AS balance,
+						MAX(tr.executed_at) AS at
+					FROM
+						accounts acc
+						LEFT JOIN active_transactions tr ON tr.source_id = acc.id
+						OR tr.target_id = acc.id
+					WHERE
+						acc.parent_id IS NOT NULL
+						AND acc.deleted_at IS NULL
+						AND acc.kind = $1
+					GROUP BY
+						acc.id
+				)
 			SELECT
 				acc.id,
-				acc.parent_id,
 				SUM(
-					CASE
-						WHEN tr.source_id = acc.id THEN - tr.source_amount
-						ELSE tr.target_amount
-					END
+					COALESCE(
+						CASE
+							WHEN tr.source_id = acc.id THEN - tr.source_amount
+							ELSE tr.target_amount
+						END,
+						0
+					)
 				) AS balance,
-				MAX(tr.executed_at) AS at
+				MAX(hist.balance)::bigint AS hist_balance,
+				MAX(hist.at)::date AS hist_at,
+				acc.archived_at,
+				acc.created_at,
+				acc.updated_at
 			FROM
 				accounts acc
 				LEFT JOIN active_transactions tr ON tr.source_id = acc.id
 				OR tr.target_id = acc.id
+				LEFT JOIN history_accounts hist ON hist.parent_id = acc.id
 			WHERE
-				acc.parent_id IS NOT NULL
-				AND acc.deleted_at IS NULL
-				AND acc.kind = $1
+				acc.deleted_at IS NULL
+				AND acc.id = $2
 			GROUP BY
 				acc.id
-		)
-	SELECT
-		acc.id,
-		SUM(
-			COALESCE(
-				CASE
-					WHEN tr.source_id = acc.id THEN - tr.source_amount
-					ELSE tr.target_amount
-				END,
-				0
-			)
-		) AS balance,
-		MAX(hist.balance)::bigint AS hist_balance,
-		MAX(hist.at)::date AS hist_at,
-		acc.archived_at,
-		acc.created_at,
-		acc.updated_at
-	FROM
-		accounts acc
-		LEFT JOIN active_transactions tr ON tr.source_id = acc.id
-		OR tr.target_id = acc.id
-		LEFT JOIN history_accounts hist ON hist.parent_id = acc.id
-	WHERE
-		acc.deleted_at IS NULL
-		AND acc.id = $2
-	GROUP BY
-		acc.id
 		`,
 		account.SystemHistoric,
 		res.ID,
@@ -645,87 +645,87 @@ func (c *command) buildResponse(ctx context.Context) (response.Detailed, error) 
 	rows, err := c.conn.Query(
 		ctx,
 		`
-	WITH
-		active_transactions (
-			id,
-			source_id,
-			target_id,
-			issued_at,
-			executed_at,
-			source_amount,
-			target_amount
-		) AS (
-			SELECT
-				id,
-				source_id,
-				target_id,
-				issued_at,
-				executed_at,
-				source_amount,
-				target_amount
-			FROM transactions
-			WHERE
-				deleted_at IS NULL
-				AND executed_at IS NOT NULL
-				AND executed_at <= NOW()
-		),
-		history_accounts (id, parent_id, balance, at) AS (
+			WITH
+				active_transactions (
+					id,
+					source_id,
+					target_id,
+					issued_at,
+					executed_at,
+					source_amount,
+					target_amount
+				) AS (
+					SELECT
+						id,
+						source_id,
+						target_id,
+						issued_at,
+						executed_at,
+						source_amount,
+						target_amount
+					FROM transactions
+					WHERE
+						deleted_at IS NULL
+						AND executed_at IS NOT NULL
+						AND executed_at <= NOW()
+				),
+				history_accounts (id, parent_id, balance, at) AS (
+					SELECT
+						acc.id,
+						acc.parent_id,
+						SUM(
+							CASE
+								WHEN tr.source_id = acc.id THEN - tr.source_amount
+								ELSE tr.target_amount
+							END
+						) AS balance,
+						MAX(tr.executed_at) AS at
+					FROM
+						accounts acc
+						LEFT JOIN active_transactions tr ON tr.source_id = acc.id
+						OR tr.target_id = acc.id
+					WHERE
+						acc.parent_id IS NOT NULL
+						AND acc.deleted_at IS NULL
+						AND acc.kind = $1
+					GROUP BY
+						acc.id
+				)
 			SELECT
 				acc.id,
-				acc.parent_id,
+				acc.kind,
+				acc.currency,
+				acc.name,
+				acc.description,
 				SUM(
-					CASE
-						WHEN tr.source_id = acc.id THEN - tr.source_amount
-						ELSE tr.target_amount
-					END
+					COALESCE(
+						CASE
+							WHEN tr.source_id = acc.id THEN - tr.source_amount
+							ELSE tr.target_amount
+						END,
+						0
+					)
 				) AS balance,
-				MAX(tr.executed_at) AS at
+				acc.capital,
+				MAX(COALESCE(hist.balance, 0))::bigint AS hist_balance,
+				MAX(hist.at)::date AS hist_at,
+				acc.color,
+				acc.icon,
+				acc.archived_at,
+				acc.created_at,
+				acc.updated_at
 			FROM
 				accounts acc
 				LEFT JOIN active_transactions tr ON tr.source_id = acc.id
 				OR tr.target_id = acc.id
+				LEFT JOIN history_accounts hist ON hist.parent_id = acc.id
 			WHERE
-				acc.parent_id IS NOT NULL
-				AND acc.deleted_at IS NULL
-				AND acc.kind = $1
+				acc.deleted_at IS NULL
+				AND acc.kind != $1
+				AND acc.parent_id = $2
 			GROUP BY
 				acc.id
-		)
-	SELECT
-		acc.id,
-		acc.kind,
-		acc.currency,
-		acc.name,
-		acc.description,
-		SUM(
-			COALESCE(
-				CASE
-					WHEN tr.source_id = acc.id THEN - tr.source_amount
-					ELSE tr.target_amount
-				END,
-				0
-			)
-		) AS balance,
-		acc.capital,
-		MAX(COALESCE(hist.balance, 0))::bigint AS hist_balance,
-		MAX(hist.at)::date AS hist_at,
-		acc.color,
-		acc.icon,
-		acc.archived_at,
-		acc.created_at,
-		acc.updated_at
-	FROM
-		accounts acc
-		LEFT JOIN active_transactions tr ON tr.source_id = acc.id
-		OR tr.target_id = acc.id
-		LEFT JOIN history_accounts hist ON hist.parent_id = acc.id
-	WHERE
-		acc.deleted_at IS NULL
-		AND acc.kind != $1
-		AND acc.parent_id = $2
-	GROUP BY
-		acc.id
-	ORDER BY acc.archived_at DESC NULLS FIRST, acc.created_at
+			ORDER BY acc.archived_at DESC NULLS FIRST, acc.created_at
 		`,
 		account.SystemHistoric,
 		res.ID,
