@@ -7,7 +7,7 @@ import { z } from "zod";
 import { isEmpty, isEqual, isNil } from "lodash";
 import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
 import { Form as RouterForm } from "react-router-dom";
-import { CalendarIcon, CheckIcon, PackageIcon } from "lucide-react";
+import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
 import { format } from "date-fns";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import moment from "moment";
@@ -317,10 +317,10 @@ export function UpdateAccountForm({
         {
             account.archivedAt && (
                 <Alert>
-                    <PackageIcon className="h-4 w-4" />
-                    <AlertTitle>Heads Up!</AlertTitle>
+                    <InfoIcon className="h-5 w-5" />
+                    <AlertTitle>This account is archived</AlertTitle>
                     <AlertDescription>
-                        This account is archived
+                        This means that its transaction history continues to appear in the application. But it will not show in lists to create new transactions, affect your debt levels or available credit.
                     </AlertDescription>
                 </Alert>
             )
