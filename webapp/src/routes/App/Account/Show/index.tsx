@@ -51,7 +51,7 @@ export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFun
         queryClient.ensureQueryData(upcomingTransactionsQueryOptions(id))
     ])
 
-    return { id: account.id, breadcrumb: account.name }
+    return { id: account.id, breadcrumb: "Edit Account" }
 }
 
 export const action = (queryClient: QueryClient) => async ({
