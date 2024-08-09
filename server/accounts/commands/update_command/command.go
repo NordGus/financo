@@ -428,16 +428,16 @@ func (c *command) updateHistoryTransaction(ctx context.Context, tx pgx.Tx, hist 
 		tr.ExecutedAt = c.req.History.At
 		tr.DeletedAt = nullable.Type[time.Time]{}
 
-		if c.req.History.Balance.Present && c.req.History.Balance.Val > 0 {
-			tr.SourceID = hist.ID
-			tr.TargetID = c.req.ID
+		if c.req.History.Balance.Valid && c.req.History.Balance.Val > 0 {
+			tr.SourceID = c.req.ID
+			tr.TargetID = hist.ID
 			tr.SourceAmount = c.req.History.Balance.Val
 			tr.TargetAmount = c.req.History.Balance.Val
 		}
 
-		if c.req.History.Balance.Present && c.req.History.Balance.Val < 0 {
-			tr.SourceID = c.req.ID
-			tr.TargetID = hist.ID
+		if c.req.History.Balance.Valid && c.req.History.Balance.Val <= 0 {
+			tr.SourceID = hist.ID
+			tr.TargetID = c.req.ID
 			tr.SourceAmount = -c.req.History.Balance.Val
 			tr.TargetAmount = -c.req.History.Balance.Val
 		}
@@ -445,7 +445,7 @@ func (c *command) updateHistoryTransaction(ctx context.Context, tx pgx.Tx, hist 
 
 	tr.UpdatedAt = c.timestamp
 
-	if tr.ID > 1 {
+	if tr.ID > 0 {
 		_, err := tx.Exec(
 			ctx,
 			`
