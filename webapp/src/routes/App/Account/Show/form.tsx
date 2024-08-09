@@ -306,7 +306,7 @@ export function UpdateAccountForm({
     const [color, setColor] = useState(account.color)
 
     useEffect(() => {
-        if (!isEmpty(form.formState.errors)) console.log("errors:", form.formState.errors)
+        if (!isEmpty(form.formState.errors)) console.error("errors:", form.formState.errors)
     }, [form.formState.errors])
 
     useEffect(() => form.reset(mapAccountToUpdateForm(account)), [account.updatedAt])
