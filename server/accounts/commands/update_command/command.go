@@ -8,9 +8,6 @@ import (
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
 	"financo/server/types/records/transaction"
-	"fmt"
-	"log"
-	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -36,7 +33,7 @@ func New(conn *pgxpool.Conn, req request.Update) Command {
 }
 
 func (c *command) Run(ctx context.Context) (response.Detailed, error) {
-	records, err := c.findExistingRecordsAndBuildUpdate(ctx)
+	records, err := c.findOrInitializeRecords(ctx)
 	if err != nil {
 		return response.Detailed{}, err
 	}
@@ -65,11 +62,13 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 	return c.buildResponse(ctx)
 }
 
-func (c *command) findExistingRecordsAndBuildUpdate(ctx context.Context) ([]account.Record, error) {
+func (c *command) findOrInitializeRecords(ctx context.Context) ([]account.Record, error) {
 	var (
-		records = make([]account.Record, 0, len(c.req.Children)+1)
-		ids     = make([]int64, 0, len(c.req.Children)+1)
-		i       = 0
+		records    = make([]account.Record, 0, len(c.req.Children)+1)
+		indexes    = make([]int, 0, len(c.req.Children))
+		newRecords = make([]account.Record, 0, len(c.req.Children))
+		ids        = make([]int64, 0, len(c.req.Children)+1)
+		i          = 0
 	)
 
 	ids = append(ids, c.req.ID)
@@ -77,6 +76,31 @@ func (c *command) findExistingRecordsAndBuildUpdate(ctx context.Context) ([]acco
 	for i := 0; i < len(c.req.Children); i++ {
 		if c.req.Children[i].ID.Valid {
 			ids = append(ids, c.req.Children[i].ID.Val)
+			indexes = append(indexes, i)
+		} else {
+			record := account.Record{
+				ID:          -1,
+				ParentID:    nullable.New(c.req.ID),
+				Kind:        c.req.Children[i].Kind,
+				Currency:    c.req.Children[i].Currency,
+				Name:        c.req.Children[i].Name,
+				Description: c.req.Children[i].Description,
+				Color:       c.req.Children[i].Color,
+				Icon:        c.req.Children[i].Icon,
+				Capital:     c.req.Children[i].Capital,
+				CreatedAt:   c.timestamp,
+				UpdatedAt:   c.timestamp,
+			}
+
+			if c.req.Children[i].Archive {
+				record.ArchivedAt = nullable.New(c.timestamp)
+			}
+
+			if c.req.Children[i].Delete {
+				record.DeletedAt = nullable.New(c.timestamp)
+			}
+
+			newRecords = append(newRecords, record)
 		}
 	}
 
@@ -148,19 +172,19 @@ func (c *command) findExistingRecordsAndBuildUpdate(ctx context.Context) ([]acco
 		}
 
 		if i > 0 {
-			record.Currency = c.req.Children[i-1].Currency
-			record.Name = c.req.Children[i-1].Name
-			record.Description = c.req.Children[i-1].Description
-			record.Color = c.req.Children[i-1].Color
-			record.Icon = c.req.Children[i-1].Icon
-			record.Capital = c.req.Children[i-1].Capital
+			record.Currency = c.req.Children[indexes[i-1]].Currency
+			record.Name = c.req.Children[indexes[i-1]].Name
+			record.Description = c.req.Children[indexes[i-1]].Description
+			record.Color = c.req.Children[indexes[i-1]].Color
+			record.Icon = c.req.Children[indexes[i-1]].Icon
+			record.Capital = c.req.Children[indexes[i-1]].Capital
 			record.UpdatedAt = c.timestamp
 
-			if c.req.Children[i-1].Archive {
+			if c.req.Children[indexes[i-1]].Archive {
 				record.ArchivedAt = nullable.New(c.timestamp)
 			}
 
-			if c.req.Children[i-1].Delete {
+			if c.req.Children[indexes[i-1]].Delete {
 				record.DeletedAt = nullable.New(c.timestamp)
 			}
 		}
@@ -169,6 +193,8 @@ func (c *command) findExistingRecordsAndBuildUpdate(ctx context.Context) ([]acco
 		i++
 	}
 
+	records = append(records, newRecords...)
+
 	if len(records) == 0 {
 		return records, errors.New("account not found")
 	}
@@ -176,87 +202,84 @@ func (c *command) findExistingRecordsAndBuildUpdate(ctx context.Context) ([]acco
 	return records, nil
 }
 
-// TODO: fix this query
 func (c *command) updateRecords(ctx context.Context, records []account.Record, tx pgx.Tx) error {
-	var (
-		count       = len(records)
-		values      = make([]any, 0, count*12)
-		queryValues = make([]string, 0, count)
-	)
+	for i := 0; i < len(records); i++ {
+		record := records[i]
 
-	for i := 0; i < count; i++ {
-		values = append(values,
-			records[i].ID,
-			records[i].ParentID,
-			records[i].Kind,
-			records[i].Currency,
-			records[i].Name,
-			records[i].Description,
-			records[i].Color,
-			records[i].Icon,
-			records[i].Capital,
-			records[i].ArchivedAt,
-			records[i].DeletedAt,
-			records[i].UpdatedAt,
-		)
+		if record.ID > 0 {
+			_, err := tx.Exec(
+				ctx,
+				`
+					UPDATE accounts
+					SET
+						kind = $2,
+						currency = $3,
+						name = $4,
+						description = $5,
+						color = $6,
+						icon = $7,
+						capital = $8,
+						archived_at = $9,
+						deleted_at = $10,
+						updated_at = $11
+					WHERE accounts.id = $1
+				 `,
+				record.ID,
+				record.Kind,
+				record.Currency,
+				record.Name,
+				record.Description,
+				record.Color,
+				record.Icon,
+				record.Capital,
+				record.ArchivedAt,
+				record.DeletedAt,
+				record.UpdatedAt,
+			)
+			if err != nil {
+				return err
+			}
+		}
 
-		queryValues = append(
-			queryValues,
-			fmt.Sprintf(
-				"($%d, $%d, $%d, $%d, $%d, $%d, $%d, $%d, $%d, $%d, $%d, $%d)",
-				(i*count)+1,
-				(i*count)+2,
-				(i*count)+3,
-				(i*count)+4,
-				(i*count)+5,
-				(i*count)+6,
-				(i*count)+7,
-				(i*count)+8,
-				(i*count)+9,
-				(i*count)+10,
-				(i*count)+11,
-				(i*count)+12,
-			),
-		)
-	}
+		if record.ID <= 0 {
+			var id int64
 
-	query := fmt.Sprintf(`
-	UPDATE accounts
-	SET
-		kind = data.kind,
-		currency = data.currency,
-		name = data.name,
-		description = data.description,
-		color = data.color,
-		icon = data.icon,
-		capital = data.capital::bigint,
-		archived_at = data.archived_at::timestamp,
-		deleted_at = data.deleted_at::timestamp,
-		updated_at = data.updated_at::timestamp
-	FROM (VALUES %s)
-	AS data(
-		id,
-		parent_id,
-		kind,
-		currency,
-		name,
-		description,
-		color,
-		icon,
-		capital,
-		archived_at,
-		deleted_at,
-		updated_at
-	) WHERE accounts.id = data.id::bigint`,
-		strings.Join(queryValues, ", "),
-	)
-
-	log.Println(queryValues, values, query)
-
-	_, err := tx.Exec(ctx, query, values...)
-	if err != nil {
-		log.Println("here")
-		return err
+			err := tx.QueryRow(
+				ctx,
+				`
+					INSERT INTO accounts(
+						parent_id,
+						kind,
+						currency,
+						name,
+						description,
+						color,
+						icon,
+						capital,
+						archived_at,
+						deleted_at,
+						created_at,
+						updated_at
+					) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+					RETURNING id
+				 `,
+				record.ParentID,
+				record.Kind,
+				record.Currency,
+				record.Name,
+				record.Description,
+				record.Color,
+				record.Icon,
+				record.Capital,
+				record.ArchivedAt,
+				record.DeletedAt,
+				record.CreatedAt,
+				record.UpdatedAt,
+			).Scan(&id)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
@@ -343,7 +366,7 @@ func (c *command) findOrInitializeHistoryTransaction(ctx context.Context, histor
 		ctx,
 		`
 	SELECT
-		id != NULL
+		COALESCE(id != NULL, FALSE)
 	FROM transactions
 	WHERE (source_id = $1 AND target_id = $2)
 		OR (source_id = $2 AND target_id = $1)
