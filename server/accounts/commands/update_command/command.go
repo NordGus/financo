@@ -366,7 +366,7 @@ func (c *command) findOrInitializeHistoryTransaction(ctx context.Context, histor
 		ctx,
 		`
 	SELECT
-		COALESCE(id != NULL, FALSE)
+		COUNT(id) > 0
 	FROM transactions
 	WHERE (source_id = $1 AND target_id = $2)
 		OR (source_id = $2 AND target_id = $1)
