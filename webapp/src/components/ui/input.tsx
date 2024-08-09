@@ -1,5 +1,4 @@
 import * as React from "react"
-import CrrcyInput, { CurrencyInputProps } from "react-currency-input-field"
 
 import { cn } from "@/lib/utils"
 
@@ -26,23 +25,4 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 )
 Input.displayName = "Input"
 
-const CurrencyInput = React.forwardRef<HTMLInputElement, CurrencyInputProps>(
-  ({ className, ...props }, ref) => {
-    return (
-      <CrrcyInput
-        className={cn(baseClassNames, className)}
-        ref={ref}
-        {...props}
-        decimalScale={2}
-        decimalsLimit={2}
-        disableAbbreviations={true}
-        step={0.01}
-        maxLength={15}
-      />
-    )
-  }
-)
-
-CurrencyInput.displayName = "CurrencyInput"
-
-export { Input, CurrencyInput }
+export { Input }
