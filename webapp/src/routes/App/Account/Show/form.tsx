@@ -293,7 +293,9 @@ export function UpdateAccountForm({
                 title: "Saved",
                 description: `${updated.name} has been updated`
             })
-        } catch {
+        } catch (e) {
+            console.error(e)
+
             toast({
                 variant: "destructive",
                 title: "Something went wrong",
