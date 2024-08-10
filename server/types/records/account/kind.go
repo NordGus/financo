@@ -18,3 +18,7 @@ const (
 func IsExternal(kind Kind) bool {
 	return kind == ExternalIncome || kind == ExternalExpense
 }
+
+func IsDebt(kind Kind) bool {
+	return kind == DebtLoan || kind == DebtPersonal || kind == DebtCredit
+}
