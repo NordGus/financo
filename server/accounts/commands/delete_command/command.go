@@ -2,7 +2,6 @@ package delete_command
 
 import (
 	"context"
-	"errors"
 	"financo/server/accounts/queries/detailed_children_query"
 	"financo/server/accounts/queries/detailed_query"
 	"financo/server/accounts/types/response"
@@ -62,9 +61,11 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 	}()
 
 	ids = append(ids, res.ID)
+	res.UpdatedAt = c.timestamp
 
 	for i := 0; i < len(res.Children); i++ {
 		ids = append(ids, res.Children[i].ID)
+		res.Children[i].UpdatedAt = c.timestamp
 	}
 
 	err = c.markAccountsAsDeleted(ctx, tx)
@@ -83,9 +84,31 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 }
 
 func (c *command) markAccountsAsDeleted(ctx context.Context, tx pgx.Tx) error {
-	return errors.New("not implemented")
+	_, err := tx.Exec(
+		ctx,
+		`
+			UPDATE accounts
+			SET deleted_at = $2, updated_at = $2
+			WHERE (id = $1 OR parent_id = $1) AND deleted_at IS NULL
+		`,
+		c.id,
+		c.timestamp,
+	)
+
+	return err
 }
 
 func (c *command) markTransactionsAsDeleted(ctx context.Context, tx pgx.Tx, ids []int64) error {
-	return errors.New("not implemented")
+	_, err := tx.Exec(
+		ctx,
+		`
+			UPDATE transactions
+			SET deleted_at = $2, updated_at = $2
+			WHERE (source_id = ANY ($1) OR target_id = ANY ($1)) AND deleted_at IS NULL
+		`,
+		ids,
+		c.timestamp,
+	)
+
+	return err
 }
