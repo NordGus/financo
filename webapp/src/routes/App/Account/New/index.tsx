@@ -5,7 +5,7 @@ import { Currency } from "dinero.js";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { isEmpty } from "lodash";
+import { isEmpty, isNil } from "lodash";
 import { CheckIcon } from "lucide-react";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 
@@ -80,7 +80,7 @@ const schema = z.object({
         .optional()
         .optional(),
     capital: z.preprocess(
-        Number,
+        (arg) => isNil(arg) ? 0 : Number(arg),
         z.number({ required_error: "is required", invalid_type_error: "must be a number" })
     ),
     color: z.string({

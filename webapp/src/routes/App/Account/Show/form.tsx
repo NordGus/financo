@@ -86,7 +86,7 @@ const schema = z.object({
         .optional()
         .optional(),
     capital: z.preprocess(
-        Number,
+        (arg) => isNil(arg) ? 0 : Number(arg),
         z.number({ required_error: "is required", invalid_type_error: "must be a number" })
     ),
     history: z.object({
@@ -97,7 +97,7 @@ const schema = z.object({
             }
         ),
         balance: z.preprocess(
-            Number,
+            (arg) => isNil(arg) ? 0 : Number(arg),
             z.number({ required_error: "is required", invalid_type_error: "must be a number" })
         ).optional(),
         at: z.date({
@@ -153,7 +153,7 @@ const schema = z.object({
             .optional()
             .optional(),
         capital: z.preprocess(
-            Number,
+            (arg) => isNil(arg) ? 0 : Number(arg),
             z.number({ required_error: "is required", invalid_type_error: "must be a number" })
         ),
         history: z.object({
@@ -164,7 +164,7 @@ const schema = z.object({
                 }
             ),
             balance: z.preprocess(
-                Number,
+                (arg) => isNil(arg) ? 0 : Number(arg),
                 z.number({ required_error: "is required", invalid_type_error: "must be a number" })
             ).optional(),
             at: z.date({
