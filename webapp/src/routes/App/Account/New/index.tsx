@@ -1,6 +1,6 @@
 import validateCurrencyCode from "validate-currency-code";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Currency } from "dinero.js";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,6 +41,8 @@ import {
     CommandItem,
     CommandList
 } from "@components/ui/command";
+import { createAccount } from "@api/accounts";
+import { useNavigate } from "react-router-dom";
 
 interface NewProps {
     setOpen: Dispatch<SetStateAction<boolean>>
@@ -113,6 +115,8 @@ const kinds: Array<{ code: CreatableKinds, name: string }> = [
 ]
 
 export function NewAccountForm({ setOpen }: NewProps) {
+    const navigate = useNavigate()
+    const queryClient = useQueryClient()
     const [currency, setCurrency] = useState<Currency>("EUR")
     const [kind, setKind] = useState<CreatableKinds>(Kind.CapitalNormal)
     const { toast } = useToast()
@@ -120,21 +124,30 @@ export function NewAccountForm({ setOpen }: NewProps) {
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
-            kind: kind,
-            currency: currency,
+            kind: Kind.CapitalNormal,
+            currency: "EUR",
             capital: 0,
             icon: Icon.Base,
         }
     })
 
-    const onSubmit = (values: z.infer<typeof schema>) => {
+    const onSubmit = async (values: z.infer<typeof schema>) => {
         try {
-            console.log(values)
+            const created = await createAccount({
+                ...values,
+                capital: isDebtAccount(values.kind) ? values.capital : 0
+            })
+
             toast({
                 title: "Created",
-                description: `${values.name} has been created`
+                description: `${created.name} has been created`
             })
+
             setOpen(false)
+
+            queryClient.invalidateQueries({ queryKey: ["accounts"] })
+
+            navigate(`/accounts/${created.id}`)
         } catch (e) {
             console.error(e)
 
@@ -154,7 +167,6 @@ export function NewAccountForm({ setOpen }: NewProps) {
 
     if (isError) throw error
 
-    useEffect(() => { if (!isDebtAccount(kind)) form.setValue("capital", 0) }, [kind])
     useEffect(() => {
         if (!isEmpty(form.formState.errors)) console.error("errors:", form.formState.errors)
     }, [form.formState.errors])

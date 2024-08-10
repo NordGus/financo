@@ -83,3 +83,18 @@ export interface UpdateChild {
     archive: boolean
     delete: boolean
 }
+
+export interface Create {
+    kind: Kind,
+    currency: Currency
+    name: string
+    description?: string | null | undefined
+    capital: number
+    color: string
+    icon: Icon
+}
+
+export interface CreateResponse {
+    id: number
+    name: string
+}

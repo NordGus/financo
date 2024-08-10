@@ -1,4 +1,4 @@
-import Detailed, { Kind, Preview, Update } from "@/types/Account"
+import Detailed, { Create, CreateResponse, Kind, Preview, Update } from "@/types/Account"
 import isEmptyParam from "@helpers/isEmptyParam"
 
 export function getAccount(id: number): () => Promise<Detailed> {
@@ -33,6 +33,21 @@ export function getAccounts(filters: ListFilters): () => Promise<Preview[]> {
 
         return response.json()
     }
+}
+
+export async function createAccount(data: Create): Promise<CreateResponse> {
+    const response = await fetch(`/api/accounts`, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
 }
 
 export async function updateAccount(id: number, data: Update): Promise<Detailed> {
