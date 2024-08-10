@@ -21,6 +21,8 @@ goals.
 10. Design Intelligence graphs for my expenses.
 11. Design Intelligence graphs for my income.
 12. Subdivide each transaction into items to generate inflation intelligence.
+13. Allow me to add Stocks as accounts to store and follow how my money is doing in the market.
+14. Give daily pricing for each of my stocks.
 
 ## Development plan
 
