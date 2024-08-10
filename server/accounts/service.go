@@ -10,6 +10,8 @@ func Routes(r chi.Router) {
 	r.Get("/", handlers.List)
 	r.Post("/", handlers.Create)
 
+	r.Get("/select", handlers.Select)
+
 	r.Route("/{accountID}", func(r chi.Router) {
 		r.Get("/", handlers.Show)
 		r.Delete("/", handlers.Destroy)
