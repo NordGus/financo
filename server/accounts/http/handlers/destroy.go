@@ -2,12 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
-	"financo/server/accounts/types/response"
+	"financo/server/accounts/commands/delete_command"
 	"financo/server/types/generic/context_key"
 	"log"
 	"net/http"
-	"time"
+	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -23,38 +24,9 @@ func Destroy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	acc, ok := r.Context().Value(context_key.Account).(*response.Detailed)
-	if !ok {
-		log.Println("account not found")
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	tr, err := conn.Begin(r.Context())
-	if !ok {
-		log.Println("db connection failed to start transaction")
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-	defer func() {
-		err = tr.Commit(r.Context())
-		if err != nil {
-			log.Println("failed to commit transaction", err)
-		}
-	}()
-
-	_, err = tr.Exec(
-		r.Context(),
-		"UPDATE accounts SET deleted_at = $2, updated_at = $2 WHERE id = $1 OR parent_id = $1",
-		acc.ID,
-		time.Now(),
-	)
+	id, err := strconv.ParseInt(chi.URLParam(r, "accountID"), 10, 64)
 	if err != nil {
-		log.Println("failed to delete account", err)
+		log.Println("failed to parse account id", err)
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
@@ -63,24 +35,9 @@ func Destroy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ids := make([]int64, 0, len(acc.Children)+1)
-	ids = append(ids, acc.ID)
-
-	for i := 0; i < len(acc.Children); i++ {
-		ids = append(ids, acc.Children[i].ID)
-	}
-
-	_, err = tr.Exec(
-		r.Context(),
-		`
-UPDATE transactions
-SET deleted_at = $2, updated_at = $2
-WHERE source_id = ANY ($1) OR target_id = ANY ($1)`,
-		ids,
-		time.Now(),
-	)
+	res, err := delete_command.New(conn, id).Run(r.Context())
 	if err != nil {
-		log.Println("failed to delete account", err)
+		log.Println("command failed", err)
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
@@ -89,7 +46,7 @@ WHERE source_id = ANY ($1) OR target_id = ANY ($1)`,
 		return
 	}
 
-	resp, err := json.Marshal(*acc)
+	resp, err := json.Marshal(&res)
 	if err != nil {
 		log.Println("failed json Marshal", err)
 		http.Error(
