@@ -13,8 +13,7 @@ func Routes(r chi.Router) {
 
 	r.Route("/{accountID}", func(r chi.Router) {
 		r.With(middleware.GetAccount, middleware.GetChildren).Get("/", handlers.Show)
-		r.With(middleware.GetAccount, middleware.GetChildren).Delete("/", handlers.Destroy)
-
+		r.Delete("/", handlers.Destroy)
 		r.Put("/", handlers.Update)
 	})
 }

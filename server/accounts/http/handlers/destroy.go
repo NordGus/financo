@@ -47,7 +47,7 @@ func Destroy(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	cmd, err := tr.Exec(
+	_, err = tr.Exec(
 		r.Context(),
 		"UPDATE accounts SET deleted_at = $2, updated_at = $2 WHERE id = $1 OR parent_id = $1",
 		acc.ID,
@@ -55,15 +55,6 @@ func Destroy(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		log.Println("failed to delete account", err)
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-	if cmd.RowsAffected() == 0 {
-		log.Println("failed to delete account")
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
@@ -79,7 +70,7 @@ func Destroy(w http.ResponseWriter, r *http.Request) {
 		ids = append(ids, acc.Children[i].ID)
 	}
 
-	cmd, err = tr.Exec(
+	_, err = tr.Exec(
 		r.Context(),
 		`
 UPDATE transactions
@@ -90,15 +81,6 @@ WHERE source_id = ANY ($1) OR target_id = ANY ($1)`,
 	)
 	if err != nil {
 		log.Println("failed to delete account", err)
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-	if cmd.RowsAffected() == 0 {
-		log.Println("failed to delete account")
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
