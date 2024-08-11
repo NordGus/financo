@@ -263,7 +263,7 @@ func (q *query) filterKinds() []account.Kind {
 	)
 
 	for i := 0; i < len(q.kinds); i++ {
-		if _, ok := accepted[q.kinds[i]]; ok {
+		if accepted[q.kinds[i]] {
 			kinds = append(kinds, q.kinds[i])
 		}
 	}
