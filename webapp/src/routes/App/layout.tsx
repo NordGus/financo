@@ -30,7 +30,7 @@ export default function Layout() {
                 />
                 <NavLink
                     name="Ledger"
-                    path="books"
+                    path="ledger"
                     icon={<BookMarkedIcon className="w-[1.75rem] h-[1.75rem]" />}
                 />
                 <NavLink

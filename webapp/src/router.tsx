@@ -33,8 +33,8 @@ const router = createBrowserRouter([
                 ]
             },
             {
-                path: "books",
-                element: <App.Books />,
+                path: "ledger",
+                element: <App.Ledger />,
                 children: [
                     {
                         path: "transactions/:id",

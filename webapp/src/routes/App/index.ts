@@ -1,5 +1,5 @@
 import Account from "./Account";
-import Books from "./Books";
+import Ledger from "./Ledger";
 import ErrorBoundary from "./ErrorBoundary";
 import Goal from "./Goal";
 import Layout from "./layout";
@@ -10,7 +10,7 @@ import Transaction from "./Transaction";
 export default {
     Layout,
     Dashboard,
-    Books,
+    Ledger,
     Account,
     Goal,
     Transaction,
