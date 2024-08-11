@@ -177,7 +177,7 @@ func (q *query) Find(ctx context.Context) ([]response.Select, error) {
 		}
 	}
 
-	return res, errors.New("not implemented")
+	return res, nil
 }
 
 func (q *query) filterKinds() []account.Kind {
