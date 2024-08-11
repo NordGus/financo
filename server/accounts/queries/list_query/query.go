@@ -310,7 +310,7 @@ func buildPreviewChild(r row) response.PreviewChild {
 		Name:        r.childName.Val,
 		Description: r.childDescription,
 		Balance:     r.childBalance.Val,
-		Capital:     r.childBalance.Val,
+		Capital:     r.childCapital.Val,
 		Color:       color.Type(r.childColor.Val),
 		Icon:        icon.Type(r.childIcon.Val),
 		ArchivedAt:  r.childArchivedAt,
