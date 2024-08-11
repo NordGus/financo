@@ -269,8 +269,8 @@ func (q *query) filterKinds() []account.Kind {
 	}
 
 	if len(kinds) == 0 {
-		q.kinds = append(
-			q.kinds,
+		kinds = append(
+			kinds,
 			account.CapitalNormal,
 			account.CapitalSavings,
 			account.DebtCredit,

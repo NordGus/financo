@@ -44,7 +44,7 @@ func Select(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(&res)
+	response, err := json.Marshal(res)
 	if err != nil {
 		log.Println("failed json Marshal", err)
 		http.Error(
