@@ -4,22 +4,19 @@ import (
 	"context"
 	"financo/server/accounts/types/response"
 	"financo/server/types/generic/nullable"
+	"financo/server/types/queries"
 	"financo/server/types/records/account"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Query interface {
-	Find(ctx context.Context) (response.Detailed, error)
-}
-
 type query struct {
 	id   int64
 	conn *pgxpool.Conn
 }
 
-func New(id int64, conn *pgxpool.Conn) Query {
+func New(id int64, conn *pgxpool.Conn) queries.Query[response.Detailed] {
 	return &query{
 		id:   id,
 		conn: conn,
