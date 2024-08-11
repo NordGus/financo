@@ -34,15 +34,17 @@ const router = createBrowserRouter([
             },
             {
                 path: "ledger",
-                element: <App.Ledger />,
+                loader: App.Ledger.loaders.main(Client),
+                element: <App.Ledger.Layout />,
                 children: [
                     {
-                        path: "transactions/:id",
-                        element: <App.Transaction.Show />
+                        index: true,
+                        loader: App.Ledger.loaders.transactions(Client),
+                        element: <App.Ledger.Index />
                     },
                     {
-                        path: "transactions/new",
-                        element: <App.Transaction.New />
+                        path: ":id",
+                        action: App.Ledger.actions.transaction(Client),
                     },
                 ]
             },

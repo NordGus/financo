@@ -80,21 +80,13 @@ export function getPendingTransactions(filters: PendingFilters): () => Promise<T
     }
 }
 
-export function getTransactionsForAccount(
-    accountId: string,
-    filters: ListFilters
-): () => Promise<Transaction[]> {
-    return async () => {
-        const params = new URLSearchParams(
-            Object.entries(filters).filter(([_, value]) => !isEmptyParam(value))
-        )
-        const response = await fetch(`/api/accounts/${accountId}/transactions?${params.toString()}`)
+export async function deleteTransaction(id: number): Promise<Transaction> {
+    const response = await fetch(`/api/transactions/${id}`, { method: "DELETE" })
 
-        if (!response.ok) {
-            console.error(response)
-            throw new Error('Network response was not ok')
-        }
-
-        return response.json()
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
     }
+
+    return response.json()
 }

@@ -1,6 +1,5 @@
 import { UseMutationResult } from "@tanstack/react-query";
 import { groupBy, isEmpty, isNil } from "lodash";
-import { Link } from "react-router-dom";
 import moment from "moment";
 
 import Transaction from "@/types/Transaction";
@@ -11,8 +10,6 @@ import Panel from "@components/Panel";
 import Preview from "@components/transaction/Preview";
 
 interface Props {
-    showFilters: boolean,
-    setShowFilters: React.Dispatch<React.SetStateAction<boolean>>,
     transactions: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
     className?: string
 }
@@ -25,33 +22,14 @@ function sortAndGroup(transactions: Transaction[]) {
 }
 
 export default function History({
-    showFilters,
-    setShowFilters,
     transactions: tr,
     className
 }: Props) {
-    const newTransactionPath = "/books/transactions/new"
-
     return (
         <Panel.WithLoadingIndicator
             grow={true}
             className={className}
-            header={<>
-                <Panel.Components.Title grow={true} text="Transactions" />
-                <Panel.Components.ActionButton
-                    text={
-                        <span className="material-symbols-rounded">filter_list</span>
-                    }
-                    onClick={() => setShowFilters(!showFilters)}
-                    active={showFilters}
-                />
-                <Panel.Components.ActionLink
-                    text={
-                        <span className="material-symbols-rounded">add</span>
-                    }
-                    to={newTransactionPath}
-                />
-            </>}
+            header={<></>}
             loading={tr.isPending}
             contents={
                 (isEmpty(tr.data) || isNil(tr.data))
@@ -92,9 +70,6 @@ export default function History({
                     <p>
                         There's no <span className="font-bold">Transactions</span> for the given filters
                     </p>
-                    <Link to={newTransactionPath} className="text-sm underline">
-                        You can add more
-                    </Link>
                 </div>
             }
         />
