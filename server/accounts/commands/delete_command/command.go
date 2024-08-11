@@ -5,6 +5,7 @@ import (
 	"financo/server/accounts/queries/detailed_children_query"
 	"financo/server/accounts/queries/detailed_query"
 	"financo/server/accounts/types/response"
+	"financo/server/types/commands"
 	"log"
 	"time"
 
@@ -12,17 +13,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Command interface {
-	Run(context.Context) (response.Detailed, error)
-}
-
 type command struct {
 	id        int64
 	conn      *pgxpool.Conn
 	timestamp time.Time
 }
 
-func New(conn *pgxpool.Conn, id int64) Command {
+func New(conn *pgxpool.Conn, id int64) commands.Command[response.Detailed] {
 	return &command{
 		id:        id,
 		conn:      conn,

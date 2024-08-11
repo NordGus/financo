@@ -5,6 +5,7 @@ import (
 	"errors"
 	"financo/server/accounts/types/request"
 	"financo/server/accounts/types/response"
+	"financo/server/types/commands"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
 	"financo/server/types/records/transaction"
@@ -14,17 +15,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type Command interface {
-	Run(context.Context) (response.Detailed, error)
-}
-
 type command struct {
 	req       request.Update
 	conn      *pgxpool.Conn
 	timestamp time.Time
 }
 
-func New(conn *pgxpool.Conn, req request.Update) Command {
+func New(conn *pgxpool.Conn, req request.Update) commands.Command[response.Detailed] {
 	return &command{
 		req:       req,
 		conn:      conn,
