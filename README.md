@@ -44,6 +44,8 @@ A simple personal finances application to bring order to the chaos of your perso
     - [x] Develop Transactions History implementation.
       - [ ] Write design document
       - [ ] Make design in `drawio`
+- [ ] Refactor Account list endpoint.
+- [ ] Develop an Account list endpoint for selects in the app.
 - [ ] Migrate elements from this list to a Notion project.
 - [ ] Migrate to `shadcn/ui` for ui
   - [x] Layout
