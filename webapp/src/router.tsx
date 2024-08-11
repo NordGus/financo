@@ -16,19 +16,19 @@ const router = createBrowserRouter([
             },
             {
                 path: "accounts",
-                loader: App.Account.loaders.main(Client),
-                element: <App.Account.Layout />,
+                loader: App.Accounts.loaders.main(Client),
+                element: <App.Accounts.Layout />,
                 children: [
                     {
                         index: true,
-                        loader: App.Account.loaders.accounts(Client),
-                        element: <App.Account.Index />
+                        loader: App.Accounts.loaders.accounts(Client),
+                        element: <App.Accounts.Index />
                     },
                     {
                         path: ":id",
-                        loader: App.Account.loaders.account(Client),
-                        action: App.Account.actions.account(Client),
-                        element: <App.Account.Show />
+                        loader: App.Accounts.loaders.account(Client),
+                        action: App.Accounts.actions.account(Client),
+                        element: <App.Accounts.Show />
                     },
                 ]
             },

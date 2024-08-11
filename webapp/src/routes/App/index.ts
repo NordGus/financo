@@ -1,4 +1,4 @@
-import Account from "./Account";
+import Accounts from "./Accounts";
 import Ledger from "./Ledger";
 import ErrorBoundary from "./ErrorBoundary";
 import Goal from "./Goal";
@@ -11,7 +11,7 @@ export default {
     Layout,
     Dashboard,
     Ledger,
-    Account,
+    Accounts,
     Goal,
     Transaction,
     NotFound,
