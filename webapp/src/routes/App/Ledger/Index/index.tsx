@@ -1,11 +1,17 @@
 import { getTransactions, ListFilters } from "@api/transactions";
 import Transactions from "../Transactions";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import Chart from "../Chart";
-import { LoaderFunction, LoaderFunctionArgs } from "react-router-dom";
+import { LoaderFunction, LoaderFunctionArgs, useOutletContext } from "react-router-dom";
+import Transaction from "@/types/Transaction";
 
+interface OutletContext {
+    filters: ListFilters
+    setOpen: Dispatch<SetStateAction<boolean>>
+    setTransaction: Dispatch<SetStateAction<Transaction | {}>>
+}
 
 function defaultFilters(): ListFilters {
     return {
@@ -22,7 +28,7 @@ export function loader(_queryClient: QueryClient): LoaderFunction {
 }
 
 export default function Index() {
-    const [filters, setFilters] = useState<ListFilters>(defaultFilters())
+    const { filters, setTransaction, setOpen } = useOutletContext<OutletContext>()
 
     const transactionHistory = useMutation({
         mutationFn: (filters: ListFilters) => getTransactions(filters)()

@@ -1,5 +1,8 @@
 import { Params, redirect } from "react-router-dom";
 import { QueryClient } from "@tanstack/react-query";
+import { Dispatch, SetStateAction } from "react";
+
+import Transaction from "@/types/Transaction";
 
 import { deleteTransaction } from "@api/transactions";
 
@@ -29,4 +32,17 @@ export const action = (queryClient: QueryClient) => async ({
         default:
             throw new Response("", { status: 405 })
     }
+}
+
+interface Props {
+    transaction: Transaction
+    setOpen: Dispatch<SetStateAction<boolean>>
+}
+
+export default function UpdateForm({ transaction }: Props) {
+    return (
+        <span className="text-zinc-950 dark:text-zinc-50">
+            {JSON.stringify(transaction)}
+        </span>
+    )
 }
