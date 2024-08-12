@@ -7,8 +7,13 @@ import Transaction from "@/types/Transaction";
 
 import Panel from "@components/Panel";
 import Preview from "@components/transaction/Preview";
+import { ListFilters } from "@api/transactions";
+import { Dispatch, SetStateAction } from "react";
 
 interface Props {
+    filters: ListFilters
+    setOpen: Dispatch<SetStateAction<boolean>>
+    setTransaction: Dispatch<SetStateAction<Transaction | {}>>
     className?: string
 }
 
@@ -19,7 +24,7 @@ function sortAndGroup(transactions: Transaction[]) {
     );
 }
 
-export default function Pending({ className }: Props) {
+export default function Pending({ setOpen, setTransaction, className }: Props) {
     const query = useQuery(transactionsQueries.pending)
 
     return (
@@ -53,9 +58,14 @@ export default function Pending({ className }: Props) {
                                     })}
                                 </h2>
                                 {transactions.map((transaction) => (
-                                    <Preview.WithNavigation
+                                    <Preview.ForList
                                         key={`transaction:pending:${transaction.id}`}
+                                        onClick={() => {
+                                            setTransaction(transaction)
+                                            setOpen(true)
+                                        }}
                                         transaction={transaction}
+                                        className="cursor-pointer"
                                     />
                                 ))}
 

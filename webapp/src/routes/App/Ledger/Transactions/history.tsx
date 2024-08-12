@@ -1,16 +1,19 @@
-import { UseMutationResult } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { groupBy, isEmpty, isNil } from "lodash";
 import moment from "moment";
 
 import Transaction from "@/types/Transaction";
 
-import { ListFilters } from "@api/transactions";
+import { getTransactions, ListFilters } from "@api/transactions";
 
 import Panel from "@components/Panel";
 import Preview from "@components/transaction/Preview";
+import { Dispatch, SetStateAction, useEffect } from "react";
 
 interface Props {
-    transactions: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
+    filters: ListFilters
+    setOpen: Dispatch<SetStateAction<boolean>>
+    setTransaction: Dispatch<SetStateAction<Transaction | {}>>
     className?: string
 }
 
@@ -21,20 +24,25 @@ function sortAndGroup(transactions: Transaction[]) {
     );
 }
 
-export default function History({
-    transactions: tr,
-    className
-}: Props) {
+export default function History({ filters, setOpen, setTransaction, className }: Props) {
+    const { data, isPending, isError, error, mutate } = useMutation({
+        mutationFn: (filters: ListFilters) => getTransactions(filters)()
+    })
+
+    useEffect(() => mutate(filters), [filters])
+
+    if (isError) throw error
+
     return (
         <Panel.WithLoadingIndicator
             grow={true}
             className={className}
             header={<></>}
-            loading={tr.isPending}
+            loading={isPending}
             contents={
-                (isEmpty(tr.data) || isNil(tr.data))
+                (isEmpty(data) || isNil(data))
                     ? null
-                    : Object.entries(sortAndGroup(tr.data)).
+                    : Object.entries(sortAndGroup(data)).
                         map(([date, transactions]) => {
                             return {
                                 date: moment(date, 'YYYY-MM-DD').toDate(),
@@ -56,9 +64,14 @@ export default function History({
                                     })}
                                 </h2>
                                 {transactions.map((transaction) => (
-                                    <Preview.WithNavigation
+                                    <Preview.ForList
                                         key={`transaction:${transaction.id}`}
+                                        onClick={() => {
+                                            setTransaction(transaction)
+                                            setOpen(true)
+                                        }}
                                         transaction={transaction}
+                                        className="cursor-pointer"
                                     />
                                 ))}
 

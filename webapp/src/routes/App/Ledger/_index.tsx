@@ -143,7 +143,7 @@ export default function Layout() {
                 context={{
                     filters,
                     setTransaction,
-                    setOpenSheet,
+                    setOpen: setOpenSheet,
                 }}
             />
         </div>

@@ -1,15 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
+import { Dispatch, SetStateAction } from "react";
 import { groupBy, isEmpty, isNil } from "lodash";
 import moment from "moment";
 
 import Transaction from "@/types/Transaction";
 
 import { transactionsQueries } from "@queries/transactions";
+import { ListFilters } from "@api/transactions";
 
 import Panel from "@components/Panel";
 import Preview from "@components/transaction/Preview";
 
 interface Props {
+    filters: ListFilters
+    setOpen: Dispatch<SetStateAction<boolean>>
+    setTransaction: Dispatch<SetStateAction<Transaction | {}>>
     className?: string
 }
 
@@ -20,7 +25,7 @@ function sortAndGroup(transactions: Transaction[]) {
     );
 }
 
-export default function Upcoming({ className }: Props) {
+export default function Upcoming({ setOpen, setTransaction, className }: Props) {
     const query = useQuery(transactionsQueries.upcoming)
 
     return (
@@ -54,9 +59,14 @@ export default function Upcoming({ className }: Props) {
                                     })}
                                 </h2>
                                 {transactions.map((transaction) => (
-                                    <Preview.WithNavigation
-                                        key={`transaction:${transaction.id}`}
+                                    <Preview.ForList
+                                        key={`transaction:upcoming:${transaction.id}`}
+                                        onClick={() => {
+                                            setTransaction(transaction)
+                                            setOpen(true)
+                                        }}
                                         transaction={transaction}
+                                        className="cursor-pointer"
                                     />
                                 ))}
 
