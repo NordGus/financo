@@ -5,7 +5,6 @@ import Goal from "./Goal";
 import Layout from "./layout";
 import NotFound from "./NotFound";
 import Dashboard from "./Dashboard";
-import Transaction from "./Transaction";
 
 export default {
     Layout,
@@ -13,7 +12,6 @@ export default {
     Ledger,
     Accounts,
     Goal,
-    Transaction,
     NotFound,
     ErrorBoundary,
 }
