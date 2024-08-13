@@ -3,8 +3,11 @@ import { QueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
+import { isEqual } from "lodash";
 import moment from "moment";
 import { CalendarIcon } from "lucide-react";
+
+import Transaction from "@/types/Transaction";
 
 import { ListFilters } from "@api/transactions";
 import { cn } from "@/lib/utils";
@@ -12,12 +15,19 @@ import { cn } from "@/lib/utils";
 import Breadcrumbs from "@components/breadcrumbs";
 import { Button } from "@components/ui/button";
 import { Calendar } from "@components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@components/ui/sheet";
-import Transaction from "@/types/Transaction";
-import { isEqual } from "lodash";
-import UpdateForm from "./Transactions/Show";
-import NewForm from "./Transactions/New";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger
+} from "@components/ui/popover";
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger
+} from "@components/ui/sheet";
+import Transactions from "./Transactions";
 
 function defaultFilters(): ListFilters {
     return {
@@ -130,8 +140,11 @@ export default function Layout() {
                         </SheetHeader>
                         {
                             (isEqual(transaction, {}))
-                                ? <NewForm transaction={{}} setOpen={setOpenSheet} />
-                                : <UpdateForm
+                                ? <Transactions.Create
+                                    transaction={{}}
+                                    setOpen={setOpenSheet}
+                                />
+                                : <Transactions.Update
                                     transaction={transaction as Transaction}
                                     setOpen={setOpenSheet}
                                 />
