@@ -31,6 +31,19 @@ export interface Preview {
     children?: Preview[] | null
 }
 
+export interface Select {
+    id: number
+    kind: Kind
+    currency: Currency
+    name: string
+    description: string | null
+    color: string
+    icon: Icon
+    createdAt: string
+    updatedAt: string
+    children?: Select[] | null
+}
+
 export default interface Detailed {
     id: number
     kind: Kind

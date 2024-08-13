@@ -1,4 +1,4 @@
-import Detailed, { Create, CreateResponse, Kind, Preview, Update } from "@/types/Account"
+import Detailed, { Create, CreateResponse, Kind, Preview, Select, Update } from "@/types/Account"
 import isEmptyParam from "@helpers/isEmptyParam"
 
 export function getAccount(id: number): () => Promise<Detailed> {
@@ -33,6 +33,17 @@ export function getAccounts(filters: ListFilters): () => Promise<Preview[]> {
 
         return response.json()
     }
+}
+
+export async function getSelectableAccounts(): Promise<Select[]> {
+    const response = await fetch(`/api/accounts/select`)
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
 }
 
 export async function createAccount(data: Create): Promise<CreateResponse> {
