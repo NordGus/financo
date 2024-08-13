@@ -41,6 +41,8 @@ import {
     PopoverTrigger
 } from "@components/ui/popover";
 import { useToast } from "@components/ui/use-toast";
+import { Input } from "@components/ui/input";
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 
 const schema = z.object({
     id: z.number({ invalid_type_error: "must be a number" }).optional(),
@@ -353,6 +355,90 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                         </FormItem>
                     )}
                 />
+                <FormField
+                    control={form.control}
+                    name="sourceAmount"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>
+                                {
+                                    source?.currency === target?.currency
+                                        ? "Amount"
+                                        : "Source Amount"
+                                }
+                            </FormLabel>
+                            <FormControl>
+                                <div className="flex flex-row gap-4 justify-between items-center">
+                                    <Input
+                                        {...field}
+                                        placeholder={
+                                            source?.currency === target?.currency
+                                                ? "Amount"
+                                                : "Source Amount"
+                                        }
+                                        className="flex-1"
+                                        onChange={(event) => {
+                                            if (source?.currency === target?.currency) {
+                                                form.setValue(
+                                                    "targetAmount",
+                                                    Number(event.target.value)
+                                                )
+                                            }
+
+                                            field.onChange(event)
+                                        }}
+                                    />
+                                    <span
+                                        className={cn(
+                                            "text-lg flex-1 text-right",
+                                        )}
+                                    >
+                                        {
+                                            currencyAmountToHuman(
+                                                field.value ?? 0, source?.currency || "EUR"
+                                            )
+                                        }
+                                    </span>
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                {
+                    source?.currency !== target?.currency && (
+                        <FormField
+                            control={form.control}
+                            name="targetAmount"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Target Amount</FormLabel>
+                                    <FormControl>
+                                        <div className="flex flex-row gap-4 justify-between items-center">
+                                            <Input
+                                                {...field}
+                                                placeholder={"Target Amount"}
+                                                className="flex-1"
+                                            />
+                                            <span
+                                                className={cn(
+                                                    "text-lg flex-1 text-right",
+                                                )}
+                                            >
+                                                {
+                                                    currencyAmountToHuman(
+                                                        field.value ?? 0, target?.currency || "EUR"
+                                                    )
+                                                }
+                                            </span>
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    )
+                }
             </form>
         </Form>
     )
