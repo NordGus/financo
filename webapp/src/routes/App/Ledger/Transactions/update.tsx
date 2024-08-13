@@ -39,7 +39,7 @@ interface Props {
     setOpen: Dispatch<SetStateAction<boolean>>
 }
 
-export default function UpdateForm({ transaction }: Props) {
+export default function Update({ transaction }: Props) {
     return (
         <span className="text-zinc-950 dark:text-zinc-50">
             {JSON.stringify(transaction)}

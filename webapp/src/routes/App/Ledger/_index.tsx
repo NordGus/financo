@@ -140,10 +140,7 @@ export default function Layout() {
                         </SheetHeader>
                         {
                             (isEqual(transaction, {}))
-                                ? <Transactions.Create
-                                    transaction={{}}
-                                    setOpen={setOpenSheet}
-                                />
+                                ? <Transactions.Create setOpen={setOpenSheet} />
                                 : <Transactions.Update
                                     transaction={transaction as Transaction}
                                     setOpen={setOpenSheet}
