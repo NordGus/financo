@@ -1,12 +1,10 @@
-import Create from "./create";
-import Update from "./update";
+import Form from "./form";
 import History from "./history";
 import Pending from "./pending";
 import Upcoming from "./upcoming";
 
 export default {
-    Create,
-    Update,
+    Form,
     History,
     Pending,
     Upcoming

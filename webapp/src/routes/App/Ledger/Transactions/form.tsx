@@ -1,40 +1,51 @@
-import { cn } from "@/lib/utils";
-import { Select } from "@/types/Account";
-import { getSelectableAccounts } from "@api/accounts";
-import { Button } from "@components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@components/ui/command";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
-import { useToast } from "@components/ui/use-toast";
-import { accountContrastColor } from "@helpers/account/accountContrastColor";
-import kindToHuman from "@helpers/account/kindToHuman";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { staleTimeDefault } from "@queries/Client";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
-import { Currency } from "dinero.js";
-import { isNil } from "lodash";
+import { isEqual, isNil } from "lodash";
 import { CheckIcon } from "lucide-react";
+import moment from "moment";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import validateCurrencyCode from "validate-currency-code";
 import { z } from "zod";
 
+import Transaction from "@/types/Transaction";
+import { Select } from "@/types/Account";
+
+import { getSelectableAccounts } from "@api/accounts";
+import { staleTimeDefault } from "@queries/Client";
+
+import kindToHuman from "@helpers/account/kindToHuman";
+import { accountContrastColor } from "@helpers/account/accountContrastColor";
+import { cn } from "@/lib/utils";
+
+import { Button } from "@components/ui/button";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList
+} from "@components/ui/command";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "@components/ui/form";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger
+} from "@components/ui/popover";
+import { useToast } from "@components/ui/use-toast";
+
 const schema = z.object({
-    source: z.object({
-        id: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
-        currency: z.custom<Currency>(
-            (value) => validateCurrencyCode(value),
-            { message: "must be a ISO 4217 currency code" }
-        ),
-    }),
-    target: z.object({
-        id: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
-        currency: z.custom<Currency>(
-            (value) => validateCurrencyCode(value),
-            { message: "must be a ISO 4217 currency code" }
-        ),
-    }),
+    id: z.number({ invalid_type_error: "must be a number" }).optional(),
+    sourceId: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
+    targetId: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
     issuedAt: z.date({ required_error: "is required", invalid_type_error: "must be a date" }),
     executedAt: z.date({ invalid_type_error: "must be a date" }).nullable().optional(),
     sourceAmount: z.number({
@@ -47,13 +58,40 @@ const schema = z.object({
     }),
 })
 
+function mapTransactionToForm(transaction: Transaction | {}): z.infer<typeof schema> | {} {
+    if (isEqual(transaction, {})) return {}
+    const {
+        id,
+        source: { id: sourceId },
+        target: { id: targetId },
+        issuedAt,
+        executedAt,
+        sourceAmount,
+        targetAmount
+    } = transaction as Transaction
+
+    return {
+        id,
+        sourceId,
+        targetId,
+        issuedAt: moment(issuedAt).toDate(),
+        executedAt: executedAt ? moment(executedAt).toDate() : undefined,
+        sourceAmount,
+        targetAmount
+    } as z.infer<typeof schema>
+}
+
 interface Props {
+    transaction: Transaction | {}
     setOpen: Dispatch<SetStateAction<boolean>>
 }
 
-export default function Crete({ setOpen }: Props) {
+export default function TransactionForm({ transaction, setOpen }: Props) {
     const { toast } = useToast()
-    const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) })
+    const form = useForm<z.infer<typeof schema>>({
+        resolver: zodResolver(schema),
+        defaultValues: mapTransactionToForm(transaction)
+    })
     const [source, setSource] = useState<Select | undefined>()
     const [target, setTarget] = useState<Select | undefined>()
     const [sources, setSources] = useState<Select[]>([])
@@ -83,6 +121,14 @@ export default function Crete({ setOpen }: Props) {
     }
 
     if (accounts.isError) throw accounts.error
+
+    useEffect(() => {
+        if (isNil(accounts.data)) return
+        if (isEqual(transaction, {})) return
+
+        setSource(accounts.data.find(({ id }) => (transaction as Transaction).source.id === id))
+        setTarget(accounts.data.find(({ id }) => (transaction as Transaction).target.id === id))
+    }, [accounts.data])
 
     useEffect(() => {
         if (isNil(accounts.data)) return
@@ -129,7 +175,7 @@ export default function Crete({ setOpen }: Props) {
             >
                 <FormField
                     control={form.control}
-                    name="source.id"
+                    name="sourceId"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>From</FormLabel>
@@ -178,13 +224,11 @@ export default function Crete({ setOpen }: Props) {
                                                         value={acc.name}
                                                         key={acc.id}
                                                         onSelect={() => {
-                                                            form.setValue("source.id", acc.id)
-                                                            form.setValue("source.currency", acc.currency)
+                                                            form.setValue("sourceId", acc.id)
                                                             setSource(acc)
                                                         }}
                                                         onClick={() => {
-                                                            form.setValue("source.id", acc.id)
-                                                            form.setValue("source.currency", acc.currency)
+                                                            form.setValue("sourceId", acc.id)
                                                             setSource(acc)
                                                         }}
                                                         className="flex gap-4"
@@ -221,7 +265,7 @@ export default function Crete({ setOpen }: Props) {
                 />
                 <FormField
                     control={form.control}
-                    name="target.id"
+                    name="targetId"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>To</FormLabel>
@@ -270,13 +314,11 @@ export default function Crete({ setOpen }: Props) {
                                                         value={acc.name}
                                                         key={acc.id}
                                                         onSelect={() => {
-                                                            form.setValue("target.id", acc.id)
-                                                            form.setValue("target.currency", acc.currency)
+                                                            form.setValue("targetId", acc.id)
                                                             setTarget(acc)
                                                         }}
                                                         onClick={() => {
-                                                            form.setValue("target.id", acc.id)
-                                                            form.setValue("target.currency", acc.currency)
+                                                            form.setValue("targetId", acc.id)
                                                             setTarget(acc)
                                                         }}
                                                         className="flex gap-4"

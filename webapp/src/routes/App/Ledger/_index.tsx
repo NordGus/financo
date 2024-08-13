@@ -138,14 +138,7 @@ export default function Layout() {
                                 }
                             </SheetTitle>
                         </SheetHeader>
-                        {
-                            (isEqual(transaction, {}))
-                                ? <Transactions.Create setOpen={setOpenSheet} />
-                                : <Transactions.Update
-                                    transaction={transaction as Transaction}
-                                    setOpen={setOpenSheet}
-                                />
-                        }
+                        <Transactions.Form transaction={transaction} setOpen={setOpenSheet} />
                     </SheetContent>
                 </Sheet>
             </div>

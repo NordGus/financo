@@ -1,6 +1,6 @@
 import Layout, { loader as mainLoader } from "./_index";
 import Index, { loader as indexLoader } from "./Index";
-import { action as showAction } from "./Transactions/update";
+import { action as showAction } from "./Transactions/show";
 
 export default {
     loaders: {
