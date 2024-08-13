@@ -36,7 +36,7 @@ export interface Select {
     kind: Kind
     currency: Currency
     name: string
-    description: string | null
+    description?: string | null
     color: string
     icon: Icon
     createdAt: string

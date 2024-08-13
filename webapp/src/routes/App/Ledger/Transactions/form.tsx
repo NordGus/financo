@@ -8,7 +8,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import Transaction from "@/types/Transaction";
+import Transaction, { Account } from "@/types/Transaction";
 import { Select } from "@/types/Account";
 
 import { getSelectableAccounts } from "@api/accounts";
@@ -83,11 +83,25 @@ function mapTransactionToForm(transaction: Transaction | {}): z.infer<typeof sch
     } as z.infer<typeof schema>
 }
 
+function mapAccountToSelect(account: Account): Select {
+    return {
+        id: account.id,
+        name: account.parent ? `${account.parent.name} (${account.name})` : account.name,
+        currency: account.currency,
+        kind: account.kind,
+        color: account.color,
+        icon: account.icon,
+        createdAt: account.createdAt,
+        updatedAt: account.updatedAt
+    }
+}
+
 interface Props {
     transaction: Transaction | {}
     setOpen: Dispatch<SetStateAction<boolean>>
 }
 
+// - [ ] TODO: refactor app to disable transaction when one of the accounts is archived
 export default function TransactionForm({ transaction, setOpen }: Props) {
     const { toast } = useToast()
     const form = useForm<z.infer<typeof schema>>({
@@ -128,8 +142,8 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
         if (isNil(accounts.data)) return
         if (isEqual(transaction, {})) return
 
-        setSource(accounts.data.find(({ id }) => (transaction as Transaction).source.id === id))
-        setTarget(accounts.data.find(({ id }) => (transaction as Transaction).target.id === id))
+        setSource(mapAccountToSelect((transaction as Transaction).source))
+        setTarget(mapAccountToSelect((transaction as Transaction).target))
     }, [accounts.data])
 
     useEffect(() => {
