@@ -39,10 +39,10 @@
         "workbench.colorTheme": "GitHub Dark Default",
         "workbench.iconTheme": "catppuccin-mocha",
         "editor.rulers": [
-          100
+          120
         ],
         "editor.wordWrap": "wordWrapColumn",
-        "editor.wordWrapColumn": 100,
+        "editor.wordWrapColumn": 120,
         "editor.formatOnSave": true,
         "editor.fontSize": 16,
         "editor.fontFamily": "'Geist Mono Medium'",
