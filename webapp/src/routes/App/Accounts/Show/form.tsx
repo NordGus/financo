@@ -298,8 +298,8 @@ export function UpdateAccountForm({
 
             toast({
                 variant: "destructive",
-                title: "Something went wrong",
-                description: "There was a problem with the API"
+                title: "Oops!",
+                description: "Something went wrong with the API"
             })
         }
     }
