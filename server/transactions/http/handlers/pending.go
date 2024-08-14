@@ -35,6 +35,7 @@ SELECT
     src.name,
     src.color,
     src.icon,
+    src.archived_at,
     src.created_at,
     src.updated_at,
     src_p.id,
@@ -43,6 +44,7 @@ SELECT
     src_p.name,
     src_p.color,
     src_p.icon,
+    src_p.archived_at,
     src_p.created_at,
     src_p.updated_at,
     trg.id,
@@ -51,6 +53,7 @@ SELECT
     trg.name,
     trg.color,
     trg.icon,
+    trg.archived_at,
     trg.created_at,
     trg.updated_at,
     trgp.id,
@@ -59,6 +62,7 @@ SELECT
     trgp.name,
     trgp.color,
     trgp.icon,
+    trgp.archived_at,
     trgp.created_at,
     trgp.updated_at
 FROM
