@@ -141,7 +141,6 @@ interface Props {
     setOpen: Dispatch<SetStateAction<boolean>>
 }
 
-// [x] refactor app to disable transaction when one of the accounts is archived
 export default function TransactionForm({ transaction, setOpen }: Props) {
     const queryClient = useQueryClient()
     const { toast } = useToast()
