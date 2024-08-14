@@ -172,6 +172,7 @@ func Upcoming(w http.ResponseWriter, r *http.Request) {
 			&tr.Source.Name,
 			&tr.Source.Color,
 			&tr.Source.Icon,
+			&tr.Source.ArchivedAt,
 			&tr.Source.CreatedAt,
 			&tr.Source.UpdatedAt,
 			&srcParent.ID,
