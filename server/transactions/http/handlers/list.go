@@ -217,6 +217,7 @@ func List(w http.ResponseWriter, r *http.Request) {
 			&trgParent.Name,
 			&trgParent.Color,
 			&trgParent.Icon,
+			&trgParent.ArchivedAt,
 			&trgParent.CreatedAt,
 			&trgParent.UpdatedAt,
 		)
