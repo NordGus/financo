@@ -284,7 +284,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                                             variant="outline"
                                             role="combobox"
                                             className={cn(
-                                                "w-full justify-between gap-4",
+                                                "w-full justify-between gap-4 font-normal",
                                                 !field.value && "text-zin-500"
                                             )}
                                             style={
@@ -374,7 +374,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                                             variant="outline"
                                             role="combobox"
                                             className={cn(
-                                                "w-full justify-between gap-4",
+                                                "w-full justify-between gap-4 font-normal",
                                                 !field.value && "text-zin-500"
                                             )}
                                             style={
