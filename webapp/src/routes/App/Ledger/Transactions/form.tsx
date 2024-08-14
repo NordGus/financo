@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import { isEqual, isNil } from "lodash";
-import { CheckIcon } from "lucide-react";
+import { CalendarIcon, CheckIcon } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -30,6 +30,7 @@ import {
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -43,13 +44,15 @@ import {
 import { useToast } from "@components/ui/use-toast";
 import { Input } from "@components/ui/input";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import { format } from "date-fns";
+import { Calendar } from "@components/ui/calendar";
 
 const schema = z.object({
     id: z.number({ invalid_type_error: "must be a number" }).optional(),
     sourceId: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
     targetId: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
     issuedAt: z.date({ required_error: "is required", invalid_type_error: "must be a date" }),
-    executedAt: z.date({ invalid_type_error: "must be a date" }).nullable().optional(),
+    executedAt: z.date({ invalid_type_error: "must be a date" }).optional(),
     sourceAmount: z.number({
         required_error: "is required",
         invalid_type_error: "must be a number"
@@ -96,12 +99,25 @@ function mapAccountToSelect(account: Account): Select {
     }
 }
 
+function issuedAtDefault(transaction: Transaction | {}): Date {
+    if (isEqual(transaction, {})) return moment().toDate()
+
+    return moment((transaction as Transaction).issuedAt).toDate()
+}
+
+function executedAtDefault(transaction: Transaction | {}): Date | undefined {
+    if (isEqual(transaction, {})) return undefined
+    if (!(transaction as Transaction).executedAt) return undefined
+
+    return moment((transaction as Transaction).executedAt!).toDate()
+}
+
 interface Props {
     transaction: Transaction | {}
     setOpen: Dispatch<SetStateAction<boolean>>
 }
 
-// - [ ] TODO: refactor app to disable transaction when one of the accounts is archived
+// [ ] refactor app to disable transaction when one of the accounts is archived
 export default function TransactionForm({ transaction, setOpen }: Props) {
     const { toast } = useToast()
     const form = useForm<z.infer<typeof schema>>({
@@ -112,6 +128,8 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
     const [target, setTarget] = useState<Select | undefined>()
     const [sources, setSources] = useState<Select[]>([])
     const [targets, setTargets] = useState<Select[]>([])
+    const [issuedAt, setIssuedAt] = useState<Date>(issuedAtDefault(transaction))
+    const [executedAt, setExecutedAt] = useState<Date | undefined>(executedAtDefault(transaction))
 
     const accounts = useQuery({
         queryKey: ["accounts", "select"],
@@ -122,9 +140,11 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
     const onSubmit = async (values: z.infer<typeof schema>) => {
         try {
             console.log(values)
-            setTarget(undefined)
-            setSource(undefined)
             setOpen(false)
+            toast({
+                title: "Saved!",
+                description: `Transaction between source and target has been saved`
+            })
         } catch (e) {
             console.error(e)
 
@@ -137,6 +157,8 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
     }
 
     if (accounts.isError) throw accounts.error
+
+    useEffect(() => form.setValue("issuedAt", issuedAt), [])
 
     useEffect(() => {
         if (isNil(accounts.data)) return
@@ -182,6 +204,11 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                 }).flat(1)
         )
     }, [accounts.data, source])
+
+    useEffect(() => {
+        if (!executedAt) return
+        if (issuedAt > executedAt) setExecutedAt(undefined)
+    }, [issuedAt])
 
     return (
         <Form {...form}>
@@ -453,6 +480,91 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                         />
                     )
                 }
+                <FormField
+                    control={form.control}
+                    name="issuedAt"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                            <FormLabel>Issued At</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild={true}>
+                                    <FormControl>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn(
+                                                "pl-3 text-left font-normal",
+                                                !field.value && "text-zinc-500"
+                                            )}
+                                        >
+                                            {field.value ? (
+                                                format(field.value, "PPP")
+                                            ) : (
+                                                <span>Pick a date</span>
+                                            )}
+                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value}
+                                        onSelect={(date, selectedDay, activeModifiers, e) => {
+                                            setIssuedAt(selectedDay)
+                                            field.onChange(date, selectedDay, activeModifiers, e)
+                                        }}
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            <FormDescription>
+                                Indicates the date that the transaction is executed on the source account
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="executedAt"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                            <FormLabel>Executed At</FormLabel>
+                            <Popover>
+                                <PopoverTrigger asChild={true}>
+                                    <FormControl>
+                                        <Button
+                                            variant={"outline"}
+                                            className={cn(
+                                                "pl-3 text-left font-normal",
+                                                !field.value && "text-zinc-500"
+                                            )}
+                                        >
+                                            {field.value ? (
+                                                format(field.value, "PPP")
+                                            ) : (
+                                                <span>Pick a date</span>
+                                            )}
+                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        disabled={(date) => date < moment(issuedAt).startOf('day').toDate()}
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            <FormDescription>
+                                Indicates the date that the transaction is received by the target account
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Button type="submit">Save</Button>
             </form>
         </Form>
     )
