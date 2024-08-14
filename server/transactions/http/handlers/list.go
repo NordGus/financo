@@ -141,6 +141,7 @@ func List(w http.ResponseWriter, r *http.Request) {
 			filterCount,
 		)
 
+		// [ ] refactor frontend to pass all ids instead of adding these joins
 		indirect := fmt.Sprintf(
 			"(src.parent_id = ANY ($%d) OR trg.parent_id = ANY ($%d))",
 			filterCount,
