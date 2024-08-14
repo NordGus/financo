@@ -177,7 +177,7 @@ func (c *command) findOrInitializeRecords(ctx context.Context) ([]account.Record
 			record.Capital = c.req.Children[indexes[i-1]].Capital
 			record.UpdatedAt = c.timestamp
 
-			if c.req.Children[indexes[i-1]].Archive {
+			if c.req.Children[indexes[i-1]].Archive || c.req.Archive {
 				record.ArchivedAt = nullable.New(c.timestamp)
 			}
 
