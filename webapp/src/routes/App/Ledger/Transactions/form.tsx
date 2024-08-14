@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import { Form as RouterForm } from "react-router-dom";
 
 import Transaction, { Account, Create, Update } from "@/types/Transaction";
-import { Select } from "@/types/Account";
+import { Kind, Select } from "@/types/Account";
 
 import { getSelectableAccounts } from "@api/accounts";
 import { createTransaction, updateTransaction } from "@api/transactions";
@@ -114,6 +114,13 @@ function anyAccountIsArchived(transaction: Transaction | {}): boolean {
 
     return !isNil((transaction as Transaction).target.archivedAt) ||
         !isNil((transaction as Transaction).source.archivedAt)
+}
+
+function isHistoryTransaction(transaction: Transaction | {}): boolean {
+    if (isEqual(transaction, {})) return false
+
+    return (transaction as Transaction).target.kind === Kind.SystemHistoric ||
+        (transaction as Transaction).source.kind === Kind.SystemHistoric
 }
 
 function issuedAtDefault(transaction: Transaction | {}): Date {
@@ -268,6 +275,17 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                             <AlertTitle>One of the accounts in the transaction is archived</AlertTitle>
                             <AlertDescription>
                                 If you modify this transaction, you will damage the historic data for the archived account
+                            </AlertDescription>
+                        </Alert>
+                    )
+                }
+                {
+                    isHistoryTransaction(transaction) && (
+                        <Alert>
+                            <InfoIcon className="h-5 w-5" />
+                            <AlertTitle>This is a history transaction</AlertTitle>
+                            <AlertDescription>
+                                It can't be deleted
                             </AlertDescription>
                         </Alert>
                     )
@@ -641,7 +659,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                 <Button type="submit">Save</Button>
             </form>
             {
-                !isEmpty(transaction) && (
+                !isEmpty(transaction) && !isHistoryTransaction(transaction) && (
                     <RouterForm
                         className="flex p-0 mt-4"
                         method="delete"
