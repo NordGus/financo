@@ -359,7 +359,7 @@ export function UpdateAccountForm({
                             >
                                 <div>
                                     <FormLabel>
-                                        Do you want to archive this child account?
+                                        Do you want to archive this account?
                                     </FormLabel>
                                 </div>
                                 <FormControl>
