@@ -1,4 +1,4 @@
-import Transaction from "@/types/Transaction"
+import Transaction, { Create, Update } from "@/types/Transaction"
 
 import isEmptyParam from "@helpers/isEmptyParam"
 
@@ -78,6 +78,36 @@ export function getPendingTransactions(filters: PendingFilters): () => Promise<T
 
         return response.json()
     }
+}
+
+export async function createTransaction(data: Create): Promise<Transaction> {
+    const response = await fetch("/api/transactions", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
+}
+
+export async function updateTransaction(id: number, data: Update): Promise<Transaction> {
+    const response = await fetch(`/api/transactions/${id}`, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+
+    if (!response.ok) {
+        console.error(response)
+        throw new Error('Network response was not ok')
+    }
+
+    return response.json()
 }
 
 export async function deleteTransaction(id: number): Promise<Transaction> {

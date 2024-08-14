@@ -1,19 +1,22 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CaretSortIcon } from "@radix-ui/react-icons";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { isEqual, isNil } from "lodash";
 import { CalendarIcon, CheckIcon } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { format } from "date-fns";
 
-import Transaction, { Account } from "@/types/Transaction";
+import Transaction, { Account, Create, Update } from "@/types/Transaction";
 import { Select } from "@/types/Account";
 
 import { getSelectableAccounts } from "@api/accounts";
+import { createTransaction, updateTransaction } from "@api/transactions";
 import { staleTimeDefault } from "@queries/Client";
 
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import kindToHuman from "@helpers/account/kindToHuman";
 import { accountContrastColor } from "@helpers/account/accountContrastColor";
 import { cn } from "@/lib/utils";
@@ -43,14 +46,13 @@ import {
 } from "@components/ui/popover";
 import { useToast } from "@components/ui/use-toast";
 import { Input } from "@components/ui/input";
-import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
-import { format } from "date-fns";
 import { Calendar } from "@components/ui/calendar";
+import { Textarea } from "@components/ui/textarea";
 
 const schema = z.object({
     id: z.number({ invalid_type_error: "must be a number" }).optional(),
-    sourceId: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
-    targetId: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
+    sourceID: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
+    targetID: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
     issuedAt: z.date({ required_error: "is required", invalid_type_error: "must be a date" }),
     executedAt: z.date({ invalid_type_error: "must be a date" }).optional(),
     sourceAmount: z.number({
@@ -61,14 +63,19 @@ const schema = z.object({
         required_error: "is required",
         invalid_type_error: "must be a number"
     }),
+    notes: z.string({ invalid_type_error: "must be a string" })
+        .trim()
+        .max(128, { message: "must be 128 characters at most" })
+        .optional()
 })
 
 function mapTransactionToForm(transaction: Transaction | {}): z.infer<typeof schema> | {} {
     if (isEqual(transaction, {})) return {}
     const {
         id,
-        source: { id: sourceId },
-        target: { id: targetId },
+        source: { id: sourceID },
+        target: { id: targetID },
+        notes,
         issuedAt,
         executedAt,
         sourceAmount,
@@ -77,8 +84,9 @@ function mapTransactionToForm(transaction: Transaction | {}): z.infer<typeof sch
 
     return {
         id,
-        sourceId,
-        targetId,
+        sourceID,
+        targetID,
+        notes: notes ? notes : undefined,
         issuedAt: moment(issuedAt).toDate(),
         executedAt: executedAt ? moment(executedAt).toDate() : undefined,
         sourceAmount,
@@ -119,6 +127,7 @@ interface Props {
 
 // [ ] refactor app to disable transaction when one of the accounts is archived
 export default function TransactionForm({ transaction, setOpen }: Props) {
+    const queryClient = useQueryClient()
     const { toast } = useToast()
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -139,11 +148,38 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
 
     const onSubmit = async (values: z.infer<typeof schema>) => {
         try {
-            console.log(values)
+            const { id, sourceID, targetID, issuedAt, executedAt, sourceAmount, targetAmount, notes } = values
+
+            const tr = !id
+                ? await createTransaction({
+                    sourceID,
+                    targetID,
+                    issuedAt: issuedAt.toISOString(),
+                    executedAt: executedAt ? executedAt.toISOString() : null,
+                    sourceAmount,
+                    targetAmount,
+                    notes: notes ? notes : null
+                } as Create)
+                : await updateTransaction(id, {
+                    id,
+                    sourceID,
+                    targetID,
+                    issuedAt: issuedAt.toISOString(),
+                    executedAt: executedAt ? executedAt.toISOString() : null,
+                    sourceAmount,
+                    targetAmount,
+                    notes: notes ? notes : null
+                } as Update);
+
+            Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+                queryClient.invalidateQueries({ queryKey: ["accounts"] })
+            ])
+
             setOpen(false)
             toast({
                 title: "Saved!",
-                description: `Transaction between source and target has been saved`
+                description: `Transaction between ${tr.source.name} and ${tr.target.name} has been saved`
             })
         } catch (e) {
             console.error(e)
@@ -218,7 +254,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
             >
                 <FormField
                     control={form.control}
-                    name="sourceId"
+                    name="sourceID"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>From</FormLabel>
@@ -267,11 +303,11 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                                                         value={acc.name}
                                                         key={acc.id}
                                                         onSelect={() => {
-                                                            form.setValue("sourceId", acc.id)
+                                                            form.setValue("sourceID", acc.id)
                                                             setSource(acc)
                                                         }}
                                                         onClick={() => {
-                                                            form.setValue("sourceId", acc.id)
+                                                            form.setValue("sourceID", acc.id)
                                                             setSource(acc)
                                                         }}
                                                         className="flex gap-4"
@@ -308,7 +344,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                 />
                 <FormField
                     control={form.control}
-                    name="targetId"
+                    name="targetID"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>To</FormLabel>
@@ -357,11 +393,11 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                                                         value={acc.name}
                                                         key={acc.id}
                                                         onSelect={() => {
-                                                            form.setValue("targetId", acc.id)
+                                                            form.setValue("targetID", acc.id)
                                                             setTarget(acc)
                                                         }}
                                                         onClick={() => {
-                                                            form.setValue("targetId", acc.id)
+                                                            form.setValue("targetID", acc.id)
                                                             setTarget(acc)
                                                         }}
                                                         className="flex gap-4"
@@ -560,6 +596,24 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                             <FormDescription>
                                 Indicates the date that the transaction is received by the target account
                             </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Notes</FormLabel>
+                            <FormControl>
+                                <Textarea
+                                    placeholder="Any reminder about this transaction"
+                                    className="resize-none"
+                                    rows={5}
+                                    {...field}
+                                />
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
