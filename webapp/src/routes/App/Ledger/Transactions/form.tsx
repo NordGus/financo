@@ -57,14 +57,14 @@ const schema = z.object({
     targetID: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
     issuedAt: z.date({ required_error: "is required", invalid_type_error: "must be a date" }),
     executedAt: z.date({ invalid_type_error: "must be a date" }).optional(),
-    sourceAmount: z.number({
-        required_error: "is required",
-        invalid_type_error: "must be a number"
-    }),
-    targetAmount: z.number({
-        required_error: "is required",
-        invalid_type_error: "must be a number"
-    }),
+    sourceAmount: z.preprocess(
+        (arg) => isNil(arg) ? 0 : Number(arg),
+        z.number({ required_error: "is required", invalid_type_error: "must be a number" })
+    ),
+    targetAmount: z.preprocess(
+        (arg) => isNil(arg) ? 0 : Number(arg),
+        z.number({ required_error: "is required", invalid_type_error: "must be a number" })
+    ),
     notes: z.string({ invalid_type_error: "must be a string" })
         .trim()
         .max(128, { message: "must be 128 characters at most" })

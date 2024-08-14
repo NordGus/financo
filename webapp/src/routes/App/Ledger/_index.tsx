@@ -128,7 +128,7 @@ export default function Layout() {
                             New
                         </Button>
                     </SheetTrigger>
-                    <SheetContent className="w-[400px] sm:w-[540px] sm:max-w-[540px]">
+                    <SheetContent className="w-[400px] sm:w-[540px] sm:max-w-[540px] overflow-y-auto">
                         <SheetHeader>
                             <SheetTitle>
                                 {

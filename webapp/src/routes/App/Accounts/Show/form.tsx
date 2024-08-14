@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { isEmpty, isEqual, isNil } from "lodash";
 import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
-import { Form as RouterForm } from "react-router-dom";
+import { redirect, Form as RouterForm } from "react-router-dom";
 import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
 import { format } from "date-fns";
 import { CaretSortIcon } from "@radix-ui/react-icons";
@@ -293,6 +293,7 @@ export function UpdateAccountForm({
                 title: "Saved",
                 description: `${updated.name} has been updated`
             })
+            form.reset({ ...mapAccountToUpdateForm(updated) })
         } catch (e) {
             console.error(e)
 
