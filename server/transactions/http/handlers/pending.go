@@ -87,15 +87,16 @@ type Parent struct {
 }
 
 type Account struct {
-	ID        int64                 `json:"id"`
-	Kind      account.Kind          `json:"kind"`
-	Currency  currency.Type         `json:"currency"`
-	Name      string                `json:"name"`
-	Color     color.Type            `json:"color"`
-	Icon      icon.Type             `json:"icon"`
-	CreatedAt time.Time             `json:"createdAt"`
-	UpdatedAt time.Time             `json:"updatedAt"`
-	Parent    nullable.Type[Parent] `json:"parent"`
+	ID         int64                    `json:"id"`
+	Kind       account.Kind             `json:"kind"`
+	Currency   currency.Type            `json:"currency"`
+	Name       string                   `json:"name"`
+	Color      color.Type               `json:"color"`
+	Icon       icon.Type                `json:"icon"`
+	ArchivedAt nullable.Type[time.Time] `json:"archivedAt"`
+	CreatedAt  time.Time                `json:"createdAt"`
+	UpdatedAt  time.Time                `json:"updatedAt"`
+	Parent     nullable.Type[Parent]    `json:"parent"`
 }
 
 type Transaction struct {
@@ -112,14 +113,15 @@ type Transaction struct {
 }
 
 type NullableAccount struct {
-	ID        nullable.Type[int64]     `json:"id"`
-	Kind      nullable.Type[string]    `json:"kind"`
-	Currency  nullable.Type[string]    `json:"currency"`
-	Name      nullable.Type[string]    `json:"name"`
-	Color     nullable.Type[string]    `json:"color"`
-	Icon      nullable.Type[string]    `json:"icon"`
-	CreatedAt nullable.Type[time.Time] `json:"createdAt"`
-	UpdatedAt nullable.Type[time.Time] `json:"updatedAt"`
+	ID         nullable.Type[int64]     `json:"id"`
+	Kind       nullable.Type[string]    `json:"kind"`
+	Currency   nullable.Type[string]    `json:"currency"`
+	Name       nullable.Type[string]    `json:"name"`
+	Color      nullable.Type[string]    `json:"color"`
+	Icon       nullable.Type[string]    `json:"icon"`
+	ArchivedAt nullable.Type[time.Time] `json:"archivedAt"`
+	CreatedAt  nullable.Type[time.Time] `json:"createdAt"`
+	UpdatedAt  nullable.Type[time.Time] `json:"updatedAt"`
 }
 
 func Pending(w http.ResponseWriter, r *http.Request) {
