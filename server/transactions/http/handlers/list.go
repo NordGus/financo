@@ -208,6 +208,7 @@ func List(w http.ResponseWriter, r *http.Request) {
 			&tr.Target.Name,
 			&tr.Target.Color,
 			&tr.Target.Icon,
+			&tr.Target.ArchivedAt,
 			&tr.Target.CreatedAt,
 			&tr.Target.UpdatedAt,
 			&trgParent.ID,
