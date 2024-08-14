@@ -26,6 +26,7 @@ SELECT
     tr.executed_at,
     tr.source_amount,
     tr.target_amount,
+    tr.notes,
     tr.created_at,
     tr.updated_at,
     src.id,
@@ -105,6 +106,7 @@ type Transaction struct {
 	SourceAmount int64                    `json:"sourceAmount"`
 	Target       Account                  `json:"target"`
 	TargetAmount int64                    `json:"targetAmount"`
+	Notes        nullable.Type[string]    `json:"notes"`
 	CreatedAt    time.Time                `json:"createdAt"`
 	UpdatedAt    time.Time                `json:"updatedAt"`
 }
@@ -206,6 +208,7 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 			&tr.ExecutedAt,
 			&tr.SourceAmount,
 			&tr.TargetAmount,
+			&tr.Notes,
 			&tr.CreatedAt,
 			&tr.UpdatedAt,
 			&tr.Source.ID,
