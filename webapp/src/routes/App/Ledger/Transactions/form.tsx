@@ -1,13 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { isEqual, isNil } from "lodash";
+import { isEmpty, isEqual, isNil } from "lodash";
 import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
+import { Form as RouterForm } from "react-router-dom";
 
 import Transaction, { Account, Create, Update } from "@/types/Transaction";
 import { Select } from "@/types/Account";
@@ -111,8 +112,8 @@ function mapAccountToSelect(account: Account): Select {
 function anyAccountIsArchived(transaction: Transaction | {}): boolean {
     if (isEqual(transaction, {})) return false
 
-    return isNil((transaction as Transaction).target.archivedAt) ||
-        isNil((transaction as Transaction).source.archivedAt)
+    return !isNil((transaction as Transaction).target.archivedAt) ||
+        !isNil((transaction as Transaction).source.archivedAt)
 }
 
 function issuedAtDefault(transaction: Transaction | {}): Date {
@@ -639,6 +640,24 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                 />
                 <Button type="submit">Save</Button>
             </form>
+            {
+                !isEmpty(transaction) && (
+                    <RouterForm
+                        className="flex p-0 mt-4"
+                        method="delete"
+                        action={`/ledger/${(transaction as Transaction).id}`}
+                        onSubmit={(event) => {
+                            if (!confirm(`Do you want to delete this transaction?`)) {
+                                event.preventDefault()
+                            }
+                        }}
+                    >
+                        <Button type="submit" variant="destructive" className="grow">
+                            Delete
+                        </Button>
+                    </RouterForm>
+                )
+            }
         </Form>
     )
 }

@@ -25,7 +25,7 @@ export const action = (queryClient: QueryClient) => async ({
                 description: `Transaction between ${deleted.source.name} and ${deleted.target.name} have been deleted`
             })
 
-            return redirect(`/transactions`)
+            return redirect(`/ledger`)
         default:
             throw new Response("", { status: 405 })
     }
