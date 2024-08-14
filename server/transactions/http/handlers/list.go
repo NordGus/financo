@@ -199,6 +199,7 @@ func List(w http.ResponseWriter, r *http.Request) {
 			&srcParent.Name,
 			&srcParent.Color,
 			&srcParent.Icon,
+			&srcParent.ArchivedAt,
 			&srcParent.CreatedAt,
 			&srcParent.UpdatedAt,
 			&tr.Target.ID,
