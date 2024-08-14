@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { isEqual, isNil } from "lodash";
-import { CalendarIcon, CheckIcon } from "lucide-react";
+import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -48,6 +48,7 @@ import { useToast } from "@components/ui/use-toast";
 import { Input } from "@components/ui/input";
 import { Calendar } from "@components/ui/calendar";
 import { Textarea } from "@components/ui/textarea";
+import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 
 const schema = z.object({
     id: z.number({ invalid_type_error: "must be a number" }).optional(),
@@ -105,6 +106,13 @@ function mapAccountToSelect(account: Account): Select {
         createdAt: account.createdAt,
         updatedAt: account.updatedAt
     }
+}
+
+function anyAccountIsArchived(transaction: Transaction | {}): boolean {
+    if (isEqual(transaction, {})) return false
+
+    return isNil((transaction as Transaction).target.archivedAt) ||
+        isNil((transaction as Transaction).source.archivedAt)
 }
 
 function issuedAtDefault(transaction: Transaction | {}): Date {
@@ -252,6 +260,17 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="pt-4 flex flex-col gap-4 text-zinc-950 dark:text-zinc-50"
             >
+                {
+                    anyAccountIsArchived(transaction) && (
+                        <Alert>
+                            <InfoIcon className="h-5 w-5" />
+                            <AlertTitle>One of the accounts in the transaction is archived</AlertTitle>
+                            <AlertDescription>
+                                If you modify this transaction, you will damage the historic data for the archived account
+                            </AlertDescription>
+                        </Alert>
+                    )
+                }
                 <FormField
                     control={form.control}
                     name="sourceID"
