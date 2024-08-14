@@ -76,14 +76,15 @@ WHERE
 )
 
 type Parent struct {
-	ID        int64         `json:"id"`
-	Kind      account.Kind  `json:"kind"`
-	Currency  currency.Type `json:"currency"`
-	Name      string        `json:"name"`
-	Color     color.Type    `json:"color"`
-	Icon      icon.Type     `json:"icon"`
-	CreatedAt time.Time     `json:"createdAt"`
-	UpdatedAt time.Time     `json:"updatedAt"`
+	ID         int64                    `json:"id"`
+	Kind       account.Kind             `json:"kind"`
+	Currency   currency.Type            `json:"currency"`
+	Name       string                   `json:"name"`
+	Color      color.Type               `json:"color"`
+	Icon       icon.Type                `json:"icon"`
+	ArchivedAt nullable.Type[time.Time] `json:"archivedAt"`
+	CreatedAt  time.Time                `json:"createdAt"`
+	UpdatedAt  time.Time                `json:"updatedAt"`
 }
 
 type Account struct {
@@ -294,14 +295,15 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 func buildParent(data NullableAccount) nullable.Type[Parent] {
 	if data.ID.Valid {
 		return nullable.New(Parent{
-			ID:        data.ID.Val,
-			Kind:      account.Kind(data.Kind.Val),
-			Currency:  currency.Type(data.Currency.Val),
-			Name:      data.Name.Val,
-			Color:     color.Type(data.Color.Val),
-			Icon:      icon.Type(data.Icon.Val),
-			CreatedAt: data.CreatedAt.Val,
-			UpdatedAt: data.UpdatedAt.Val,
+			ID:         data.ID.Val,
+			Kind:       account.Kind(data.Kind.Val),
+			Currency:   currency.Type(data.Currency.Val),
+			Name:       data.Name.Val,
+			Color:      color.Type(data.Color.Val),
+			Icon:       icon.Type(data.Icon.Val),
+			ArchivedAt: data.ArchivedAt,
+			CreatedAt:  data.CreatedAt.Val,
+			UpdatedAt:  data.UpdatedAt.Val,
 		})
 	}
 
