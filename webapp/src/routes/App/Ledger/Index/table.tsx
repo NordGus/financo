@@ -67,7 +67,7 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
     return (
         <>
             <TableRow className="border-t dark:border-zinc-800">
-                <TableHead colSpan={5}>
+                <TableHead colSpan={8}>
                     {date.toLocaleDateString(undefined, {
                         weekday: "long",
                         year: "numeric",
@@ -86,14 +86,15 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
                             setOpen(true)
                         }}
                     >
+                        <TableHead className="w-fit">From</TableHead>
                         <TableCell
-                            className="w-[5rem] text-center"
+                            className="w-8 h-8 p-0 flex justify-center items-center leading-none"
                             style={{
                                 backgroundColor: transaction.source.color,
                                 color: accountContrastColor(transaction.source.color)
                             }}
                         >
-                            {kindToHuman(transaction.source.kind)}
+                            {kindToHuman(transaction.source.kind).at(0)}
                         </TableCell>
                         <TableCell className="w-[40dvw]">
                             {
@@ -118,14 +119,15 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
                                 )
                             }
                         </TableCell>
+                        <TableHead className="w-fit">To</TableHead>
                         <TableCell
-                            className="w-[5rem] text-center"
+                            className="w-8 h-8 p-0 flex justify-center items-center leading-none"
                             style={{
                                 backgroundColor: transaction.target.color,
                                 color: accountContrastColor(transaction.target.color)
                             }}
                         >
-                            {kindToHuman(transaction.target.kind)}
+                            {kindToHuman(transaction.target.kind).at(0)}
                         </TableCell>
                         <TableCell className="w-[40dvw]">
                             <div className="flex flex-row gap-4">
