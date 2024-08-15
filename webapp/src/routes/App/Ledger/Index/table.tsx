@@ -88,7 +88,7 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
                     >
                         <TableHead className="w-fit">From</TableHead>
                         <TableCell
-                            className="w-8 h-8 p-0 flex justify-center items-center leading-none"
+                            className="w-[4rem] p-0 text-center text-3xl"
                             style={{
                                 backgroundColor: transaction.source.color,
                                 color: accountContrastColor(transaction.source.color)
@@ -121,7 +121,7 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
                         </TableCell>
                         <TableHead className="w-fit">To</TableHead>
                         <TableCell
-                            className="w-8 h-8 p-0 flex justify-center items-center leading-none"
+                            className="w-[4rem] p-0 text-center text-3xl"
                             style={{
                                 backgroundColor: transaction.target.color,
                                 color: accountContrastColor(transaction.target.color)

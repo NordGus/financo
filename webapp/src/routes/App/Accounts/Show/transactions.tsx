@@ -345,35 +345,38 @@ function SectionRow({ account: { id: accountID }, date, transactions, withUpcomi
                     const account = source.id === accountID ? source : target
                     const amount = source.id === accountID ? sourceAmount : targetAmount
 
-                    return (<TableRow key={`transaction:&{accountID}:${id}:${withUpcoming}`}>
-                        <TableCell
-                            className={cn("text-center w-[5dvw]", cellClassName)}
-                            style={{
-                                backgroundColor: external.color,
-                                color: accountContrastColor(external.color)
-                            }}
+                    return (
+                        <TableRow
+                            key={`transaction:&{accountID}:${id}:${withUpcoming}`}
+                            className={cellClassName}
                         >
-                            {kindToHuman(external.kind)}
-                        </TableCell>
-                        <TableCell className={cellClassName}>
-                            {
-                                isNil(external.parent)
-                                    ? `${external.name}`
-                                    : `${external.parent.name} (${external.name})`
-                            }
-                        </TableCell>
-                        <TableCell
-                            className={
-                                cn(
-                                    "text-right w-[7.5dvw] font-semibold",
-                                    currencyAmountColor(account.id === source.id ? -1 : 1),
-                                    cellClassName
-                                )
-                            }
-                        >
-                            {currencyAmountToHuman(amount, account.currency)}
-                        </TableCell>
-                    </TableRow>)
+                            <TableCell
+                                className="w-[4rem] text-center text-2xl p-0"
+                                style={{
+                                    backgroundColor: external.color,
+                                    color: accountContrastColor(external.color)
+                                }}
+                            >
+                                {kindToHuman(external.kind).at(0)}
+                            </TableCell>
+                            <TableCell>
+                                {
+                                    isNil(external.parent)
+                                        ? `${external.name}`
+                                        : `${external.parent.name} (${external.name})`
+                                }
+                            </TableCell>
+                            <TableCell
+                                className={
+                                    cn(
+                                        "text-right w-[7.5rem] font-semibold",
+                                        currencyAmountColor(account.id === source.id ? -1 : 1)
+                                    )
+                                }
+                            >
+                                {currencyAmountToHuman(amount, account.currency)}
+                            </TableCell>
+                        </TableRow>)
                 })
             }
         </>
