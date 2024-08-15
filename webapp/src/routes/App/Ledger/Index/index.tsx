@@ -1,7 +1,6 @@
 import { LoaderFunction, LoaderFunctionArgs, useOutletContext } from "react-router-dom";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { QueryClient, useMutation } from "@tanstack/react-query";
-import { isEmpty, isNil } from "lodash";
 import moment from "moment";
 
 import Transaction from "@/types/Transaction";
@@ -14,9 +13,8 @@ import {
     UpcomingFilters
 } from "@api/transactions";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@components/ui/accordion";
-import { Throbber } from "@components/Throbber";
+import { Card, CardHeader, CardTitle } from "@components/ui/card";
+import { Accordion } from "@components/ui/accordion";
 import { TransactionsHistory } from "./history";
 import { TransactionsPending } from "./pending"
 import { TransactionsUpcoming } from "./upcoming";
@@ -59,52 +57,12 @@ export default function Index() {
                 <CardTitle>Transactions</CardTitle>
             </CardHeader>
             <Accordion type="multiple">
-                {
-                    pendingTransactions.isPending
-                        ? <CardContent className="flex flex-row gap-4 justify-center items-center">
-                            <Throbber /> <p>Fetching</p>
-                        </CardContent>
-                        : !isEmpty(pendingTransactions.data) && !isNil(pendingTransactions.data) && (
-                            <AccordionItem value="upcoming">
-                                <AccordionTrigger className="px-5">Upcoming</AccordionTrigger>
-                                <AccordionContent>
-                                    <CardContent>
-                                        <CardDescription>
-                                            Transactions that will become effective in the next month
-                                        </CardDescription>
-                                    </CardContent>
-                                    <TransactionsUpcoming
-                                        mutation={upcomingTransactions}
-                                        setOpen={setOpen}
-                                        setTransaction={setTransaction}
-                                    />
-                                </AccordionContent>
-                            </AccordionItem>
-                        )
-                }
-                {
-                    pendingTransactions.isPending
-                        ? <CardContent className="flex flex-row gap-4 justify-center items-center">
-                            <Throbber /> <p>Fetching</p>
-                        </CardContent>
-                        : !isEmpty(pendingTransactions.data) && !isNil(pendingTransactions.data) && (
-                            <AccordionItem value="pending">
-                                <AccordionTrigger className="px-5">Pending</AccordionTrigger>
-                                <AccordionContent>
-                                    <CardContent>
-                                        <CardDescription>
-                                            Transactions with unknown Execution Date. Please check that is no longer the case and update the transactions to reflect this
-                                        </CardDescription>
-                                    </CardContent>
-                                    <TransactionsPending
-                                        mutation={pendingTransactions}
-                                        setOpen={setOpen}
-                                        setTransaction={setTransaction}
-                                    />
-                                </AccordionContent>
-                            </AccordionItem>
-                        )
-                }
+                <TransactionsUpcoming
+                    mutation={upcomingTransactions} setOpen={setOpen} setTransaction={setTransaction}
+                />
+                <TransactionsPending
+                    mutation={pendingTransactions} setOpen={setOpen} setTransaction={setTransaction}
+                />
             </Accordion>
             <TransactionsHistory filters={filters} setOpen={setOpen} setTransaction={setTransaction} />
         </Card>

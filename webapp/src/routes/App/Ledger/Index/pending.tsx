@@ -14,8 +14,9 @@ import currencySourceAmountColor from "@helpers/transaction/currencySourceAmount
 import { cn } from "@/lib/utils"
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@components/ui/table"
-import { CardContent, CardFooter } from "@components/ui/card"
+import { CardContent, CardDescription } from "@components/ui/card"
 import { Throbber } from "@components/Throbber"
+import { AccordionContent, AccordionItem, AccordionTrigger } from "@components/ui/accordion"
 
 interface Props {
     mutation: UseMutationResult<Transaction[], Error, PendingFilters, unknown>
@@ -34,54 +35,54 @@ export function TransactionsPending({ mutation: { data, isPending, isError, erro
     if (isError) throw error
 
     if (isPending) return (
-        <>
-            <CardContent className="flex flex-row gap-4 justify-center items-center">
-                <Throbber /> <p>Fetching</p>
-            </CardContent>
-            <CardFooter></CardFooter>
-        </>
+        <CardContent className="flex flex-row gap-4 justify-center items-center">
+            <Throbber /> <p>Fetching</p>
+        </CardContent>
     )
 
-    if (isEmpty(data) || isNil(data)) return (
-        <>
-            <CardContent className="flex flex-row gap-4 justify-center items-center">
-                <p>There's no <span className="font-bold">Transactions</span> for the given filters</p>
-            </CardContent>
-            <CardFooter></CardFooter>
-        </>
-    )
+    if (isEmpty(data) || isNil(data)) return null
 
     return (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead className="w-[20dvw]">Issued At</TableHead>
-                    <TableHead className="w-[35dvw]">From</TableHead>
-                    <TableHead className="w-[35dvw]">To</TableHead>
-                    <TableHead className="w-[10dvw]">Amount</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {
-                    Object.entries(sortAndGroup(data))
-                        .map(([date, transactions]) => ({
-                            date: moment(date, 'YYYY-MM-DD').toDate(),
-                            transactions: transactions.sort((a, b) => {
-                                return Date.parse(a.updatedAt) - Date.parse(b.updatedAt)
-                            })
-                        }))
-                        .map(({ date, transactions }) => (
-                            <SectionRow
-                                key={date.toISOString()}
-                                date={date}
-                                transactions={transactions}
-                                setOpen={setOpen}
-                                setTransaction={setTransaction}
-                            />
-                        ))
-                }
-            </TableBody>
-        </Table>
+        <AccordionItem value="pending">
+            <AccordionTrigger className="px-5">Pending</AccordionTrigger>
+            <AccordionContent>
+                <CardContent>
+                    <CardDescription>
+                        Transactions with unknown Execution Date. Please check that is no longer the case and update the transactions to reflect this
+                    </CardDescription>
+                </CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[20dvw]">Issued At</TableHead>
+                            <TableHead className="w-[35dvw]">From</TableHead>
+                            <TableHead className="w-[35dvw]">To</TableHead>
+                            <TableHead className="w-[10dvw]">Amount</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {
+                            Object.entries(sortAndGroup(data))
+                                .map(([date, transactions]) => ({
+                                    date: moment(date, 'YYYY-MM-DD').toDate(),
+                                    transactions: transactions.sort((a, b) => {
+                                        return Date.parse(a.updatedAt) - Date.parse(b.updatedAt)
+                                    })
+                                }))
+                                .map(({ date, transactions }) => (
+                                    <SectionRow
+                                        key={date.toISOString()}
+                                        date={date}
+                                        transactions={transactions}
+                                        setOpen={setOpen}
+                                        setTransaction={setTransaction}
+                                    />
+                                ))
+                        }
+                    </TableBody>
+                </Table>
+            </AccordionContent>
+        </AccordionItem>
     )
 }
 
