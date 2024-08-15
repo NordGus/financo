@@ -1,10 +1,13 @@
 import { useMemo } from "react"
 
+import { cn } from "@/lib/utils"
+
 interface Props {
     variant?: "small" | "normal" | "big"
+    className?: string
 }
 
-export function Throbber({ variant = "normal" }: Props) {
+export function Throbber({ variant = "normal", className }: Props) {
     const wrapperClassName = useMemo(() => {
         if (variant === "small") return "block h-5 h-5"
         if (variant === "normal") return "block h-10 h-10"
@@ -15,7 +18,7 @@ export function Throbber({ variant = "normal" }: Props) {
     const baseStrokeWidth = 2
 
     return (
-        <span className={wrapperClassName}>
+        <span className={cn(className, wrapperClassName)}>
             <svg
                 className="animate-spin"
                 stroke="currentColor"
