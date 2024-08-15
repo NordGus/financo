@@ -44,6 +44,7 @@ function defaultHistoryFilters(account: Detailed): ListFilters {
     }
 }
 
+// [ ] make endpoints specialized to retrieved transactions for a given account
 export function Transactions({ account, className }: Props) {
     const [filters, setFilters] = useState<ListFilters>(defaultHistoryFilters(account))
 
