@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { Link, NavigateFunction, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Color from "colorjs.io";
 import { isEmpty, isNil } from "lodash";
-import { MinusIcon, PlusIcon } from "lucide-react";
 
 import { Kind, Preview } from "@/types/Account";
 
@@ -39,10 +37,10 @@ function CapitalTable({ accounts, navigate }: { accounts: Preview[], navigate: N
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Name</TableHead>
+                    <TableHead className="w-[20dvw]">Name</TableHead>
                     <TableHead>Description</TableHead>
-                    <TableHead>Kind</TableHead>
-                    <TableHead>Balance</TableHead>
+                    <TableHead className="w-[15dvw]">Kind</TableHead>
+                    <TableHead className="w-[7.5dvw]">Balance</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -157,13 +155,13 @@ function DebtTable({ accounts, navigate }: { accounts: Preview[], navigate: Navi
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead></TableHead>
-                    <TableHead>Name</TableHead>
+                    <TableHead className="w-[5dvw]"></TableHead>
+                    <TableHead className="w-[20dvw]">Name</TableHead>
                     <TableHead>Description</TableHead>
-                    <TableHead>Kind</TableHead>
-                    <TableHead>Debt</TableHead>
-                    <TableHead>Paid</TableHead>
-                    <TableHead>Amount/Credit</TableHead>
+                    <TableHead className="w-[15dvw]">Kind</TableHead>
+                    <TableHead className="w-[7.5dvw]">Debt</TableHead>
+                    <TableHead className="w-[7.5dvw]">Paid</TableHead>
+                    <TableHead className="w-[7.5dvw]">Amount/Credit</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -308,67 +306,30 @@ function ExternalTable({
     return <Table className="table-fixed">
         <TableHeader>
             <TableRow>
-                <TableHead className="w-[3rem]"></TableHead>
-                <TableHead className="w-[20rem]">Name</TableHead>
+                <TableHead className="w-[20dvw]">Name</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead className="w-[8rem]">Currency</TableHead>
+                <TableHead className="w-[5dvw]">Currency</TableHead>
             </TableRow>
         </TableHeader>
         <TableBody>
-            {
-                accounts.map((account) => <ExternalRow account={account} navigate={navigate} />)
-            }
+            {accounts.map((account) => <ExternalRow account={account} navigate={navigate} />)}
         </TableBody>
     </Table>
 }
 
 function ExternalRow({
-    account: { id, name, description, currency, children }, navigate
+    account: { id, name, description, currency }, navigate
 }: { account: Preview, navigate: NavigateFunction }) {
-    const [showChildren, setShowChildren] = useState(false)
-    const isChildless = isEmpty(children) || isNil(children)
-
     return (
-        <>
-            <TableRow
-                key={`account:${id}`}
-                className="cursor-pointer"
-            >
-                {
-                    isChildless
-                        ? <TableCell onClick={() => navigate(`/accounts/${id}`)}></TableCell>
-                        : <TableCell
-                            onClick={() => setShowChildren(!showChildren)}
-                            className="text-center"
-                        >
-                            {
-                                showChildren
-                                    ? <MinusIcon className="inline-block" />
-                                    : <PlusIcon className="inline-block" />
-                            }
-                        </TableCell>
-                }
-                <TableCell onClick={() => navigate(`/accounts/${id}`)}>{name}</TableCell>
-                <TableCell onClick={() => navigate(`/accounts/${id}`)}>{description}</TableCell>
-                <TableCell onClick={() => navigate(`/accounts/${id}`)}>{currency}</TableCell>
-            </TableRow>
-            {
-                isChildless
-                    ? null
-                    : showChildren
-                        ? children.map((child) => <TableRow
-                            key={`account:${id}`}
-                            className="cursor-pointer"
-                            onClick={() => navigate(`/accounts/${id}`)}
-                        >
-                            <TableCell></TableCell>
-                            <TableCell>{name} ({child.name})</TableCell>
-                            <TableCell>{child.description}</TableCell>
-                            <TableCell>{child.currency}</TableCell>
-                        </TableRow>)
-                        : null
-            }
-        </>
+        <TableRow
+            key={`account:${id}`}
+            className="cursor-pointer"
+            onClick={() => navigate(`/accounts/${id}`)}
+        >
+            <TableCell>{name}</TableCell>
+            <TableCell>{description}</TableCell>
+            <TableCell>{currency}</TableCell>
+        </TableRow>
     )
 }
 
