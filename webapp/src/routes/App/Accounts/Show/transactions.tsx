@@ -1,6 +1,6 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useMutation, UseMutationResult, useSuspenseQuery, UseSuspenseQueryResult } from "@tanstack/react-query";
+import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { groupBy, isEmpty, isEqual, isNil } from "lodash";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
@@ -10,6 +10,7 @@ import moment from "moment";
 import Detailed from "@/types/Account"
 import Transaction from "@/types/Transaction";
 
+import { accountContrastColor } from "@helpers/account/accountContrastColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import kindToHuman from "@helpers/account/kindToHuman";
@@ -27,7 +28,6 @@ import {
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle
 } from "@components/ui/card";
@@ -36,7 +36,6 @@ import { Button } from "@components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
 import { Calendar } from "@components/ui/calendar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@components/ui/accordion";
-import { accountContrastColor } from "@helpers/account/accountContrastColor";
 
 interface Props {
     account: Detailed
@@ -104,7 +103,10 @@ export function Transactions({ account, className }: Props) {
                 <CardHeader
                     className="flex flex-row justify-between items-start space-x-0 space-y-0"
                 >
-                    <CardTitle>Transactions</CardTitle>
+                    <div className="flex flex-row gap-2 items-center">
+                        <CardTitle>Transactions</CardTitle>
+                        {historyMutation.isPending && (<Throbber variant="small" className="inline-block" />)}
+                    </div>
                     <div className={cn("flex justify-end gap-4")}>
                         {
                             clearable && <Button
@@ -184,29 +186,31 @@ function Pending({ account, mutation: { data: transactions, isPending, isError, 
     mutation: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
 }) {
     if (isError) throw error
-    if (isPending) return (
-        <CardContent>
-            <div className="flex flex-row justify-center items-center">
-                <Throbber /> <span>Fetching</span>
-            </div>
-        </CardContent>
-    )
-    if (isEmpty(transactions) || isNil(transactions)) return null
+    if ((isEmpty(transactions) || isNil(transactions)) && isPending) return null
+    if ((isEmpty(transactions) || isNil(transactions)) && !isPending) return null
 
     return (
         <AccordionItem value="pending" className="border-none">
-            <AccordionTrigger className="px-4">Pending</AccordionTrigger>
+            <AccordionTrigger className="px-4">
+                <span className="flex flex-row gap-2 items-center">
+                    Pending {isPending && (<Throbber variant="small" className="inline-block" />)}
+                </span>
+            </AccordionTrigger>
             <AccordionContent className="pb-0 mb-4 border-b dark:border-zinc-800">
                 <CardDescription className="px-4 mb-4">
                     Transactions with unknown Execution Date
                 </CardDescription>
-                <TransactionsTable
-                    account={account}
-                    transactions={transactions}
-                    sortByFn={(a, b) => Date.parse(a.issuedAt) - Date.parse(b.issuedAt)}
-                    groupByFn={({ issuedAt }) => issuedAt}
-                    withUpcoming={true}
-                />
+                {
+                    isEmpty(transactions) || isNil(transactions)
+                        ? null
+                        : <TransactionsTable
+                            account={account}
+                            transactions={transactions}
+                            sortByFn={(a, b) => Date.parse(a.issuedAt) - Date.parse(b.issuedAt)}
+                            groupByFn={({ issuedAt }) => issuedAt}
+                            withUpcoming={true}
+                        />
+                }
             </AccordionContent>
         </AccordionItem>
     )
@@ -217,29 +221,31 @@ function Upcoming({ account, mutation: { data: transactions, isPending, isError,
     mutation: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
 }) {
     if (isError) throw error
-    if (isPending) return (
-        <CardContent>
-            <div className="flex flex-row justify-center items-center">
-                <Throbber /> <span>Fetching</span>
-            </div>
-        </CardContent>
-    )
-    if (isEmpty(transactions) || isNil(transactions)) return null
+    if ((isEmpty(transactions) || isNil(transactions)) && isPending) return null
+    if ((isEmpty(transactions) || isNil(transactions)) && !isPending) return null
 
     return (
         <AccordionItem value="upcoming" className="border-none">
-            <AccordionTrigger className="px-4">Upcoming</AccordionTrigger>
+            <AccordionTrigger className="px-4">
+                <span className="flex flex-row gap-2 items-center">
+                    Upcoming {isPending && (<Throbber variant="small" className="inline-block" />)}
+                </span>
+            </AccordionTrigger>
             <AccordionContent className="pb-0 mb-4 border-b dark:border-zinc-800">
                 <CardDescription className="px-4 mb-4">
                     Transactions that will become effective in the next month
                 </CardDescription>
-                <TransactionsTable
-                    account={account}
-                    transactions={transactions}
-                    sortByFn={(a, b) => Date.parse(a.executedAt!) - Date.parse(b.executedAt!)}
-                    groupByFn={({ executedAt }) => executedAt!}
-                    withUpcoming={false}
-                />
+                {
+                    isEmpty(transactions) || isNil(transactions)
+                        ? null
+                        : <TransactionsTable
+                            account={account}
+                            transactions={transactions}
+                            sortByFn={(a, b) => Date.parse(a.executedAt!) - Date.parse(b.executedAt!)}
+                            groupByFn={({ executedAt }) => executedAt!}
+                            withUpcoming={false}
+                        />
+                }
             </AccordionContent>
         </AccordionItem>
     )
@@ -252,20 +258,13 @@ function History({
     account: Detailed,
     mutation: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
 }) {
-
     if (isError) throw error
-    if (isPending) return (
-        <CardContent>
-            <div className="flex flex-row justify-center items-center">
-                <Throbber /> <span>Fetching</span>
-            </div>
-        </CardContent>
-    )
+    if (isPending) return null
     if (isEmpty(transactions) || isNil(transactions)) return (
-        <CardContent>
+        <CardContent className="space-y-2">
             <p>This account doesn't have any transactions for the period</p>
-            <Button variant="outline" asChild={true}>
-                <Link to="/accounts/new">Create New Transaction</Link>
+            <Button asChild={true}>
+                <Link to="/ledger">Go to Ledger</Link>
             </Button>
         </CardContent>
     )
