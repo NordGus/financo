@@ -35,7 +35,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from "@components/ui
 import { Button } from "@components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
 import { Calendar } from "@components/ui/calendar";
-import { Accordion } from "@components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@components/ui/accordion";
 import { accountContrastColor } from "@helpers/account/accountContrastColor";
 
 interface Props {
@@ -99,76 +99,79 @@ export function Transactions({ account, className }: Props) {
     }, [filters, account.updatedAt])
 
     return (
-        <div className={cn("flex flex-col gap-4", className)}>
-            <div className={cn("flex justify-end gap-4")}>
-                {
-                    clearable && <Button
-                        variant="link"
-                        onClick={() => {
-                            const reset = historyFilters(account, {})
-
-                            setDate({
-                                from: moment(reset.executedFrom).toDate(),
-                                to: moment(reset.executedUntil).toDate()
-                            })
-                            setFilters(reset)
-                            setClearable(false)
-                        }}
-                    >
-                        Clear
-                    </Button>
-                }
-                <Popover>
-                    <PopoverTrigger asChild={true}>
-                        <Button
-                            id="date"
-                            variant="outline"
-                            className={cn(
-                                "min-w-[10rem] justify-start text-left font-normal",
-                                !date && "text-zinc-500"
-                            )}
-                        >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date?.from ? (
-                                date.to ? (
-                                    <>
-                                        {format(date.from, "LLL dd, y")} -{" "}
-                                        {format(date.to, "LLL dd, y")}
-                                    </>
-                                ) : (
-                                    format(date.from, "LLL dd, y")
-                                )
-                            ) : (
-                                <span>Pick a date</span>
-                            )}
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                            initialFocus={true}
-                            mode="range"
-                            defaultMonth={date?.from}
-                            selected={date}
-                            onSelect={(value) => {
-                                setDate(value!)
-                                setFilters(historyFilters(account, {
-                                    ...filters,
-                                    executedFrom: value!.from!.toISOString(),
-                                    executedUntil: value!.to!.toISOString(),
-                                }))
-                                setClearable(true)
-                            }}
-                            numberOfMonths={2}
-                        />
-                    </PopoverContent>
-                </Popover>
-            </div>
-            <Card>
-                <CardHeader>
+        <div className={className}>
+            <Card className={className}>
+                <CardHeader
+                    className="flex flex-row justify-between items-start space-x-0 space-y-0"
+                >
                     <CardTitle>Transactions</CardTitle>
+                    <div className={cn("flex justify-end gap-4")}>
+                        {
+                            clearable && <Button
+                                variant="link"
+                                onClick={() => {
+                                    const reset = historyFilters(account, {})
+
+                                    setDate({
+                                        from: moment(reset.executedFrom).toDate(),
+                                        to: moment(reset.executedUntil).toDate()
+                                    })
+                                    setFilters(reset)
+                                    setClearable(false)
+                                }}
+                            >
+                                Clear
+                            </Button>
+                        }
+                        <Popover>
+                            <PopoverTrigger asChild={true}>
+                                <Button
+                                    id="date"
+                                    variant="outline"
+                                    className={cn(
+                                        "min-w-[10rem] justify-start text-left font-normal",
+                                        !date && "text-zinc-500"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {date?.from ? (
+                                        date.to ? (
+                                            <>
+                                                {format(date.from, "LLL dd, y")} -{" "}
+                                                {format(date.to, "LLL dd, y")}
+                                            </>
+                                        ) : (
+                                            format(date.from, "LLL dd, y")
+                                        )
+                                    ) : (
+                                        <span>Pick a date</span>
+                                    )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                    initialFocus={true}
+                                    mode="range"
+                                    defaultMonth={date?.from}
+                                    selected={date}
+                                    onSelect={(value) => {
+                                        setDate(value!)
+                                        setFilters(historyFilters(account, {
+                                            ...filters,
+                                            executedFrom: value!.from!.toISOString(),
+                                            executedUntil: value!.to!.toISOString(),
+                                        }))
+                                        setClearable(true)
+                                    }}
+                                    numberOfMonths={2}
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
                 </CardHeader>
                 <Accordion type="multiple">
-
+                    <Pending account={account} mutation={pendingMutation} />
+                    <Upcoming account={account} mutation={upcomingMutation} />
                 </Accordion>
                 <History account={account} mutation={historyMutation} />
             </Card>
@@ -176,94 +179,69 @@ export function Transactions({ account, className }: Props) {
     )
 }
 
-export function PendingTransactions({
-    account: { id: accountID },
-    query: { data: transactions, isFetching, isError, error },
-    className
-}: {
-    account: { id: number },
-    query: UseSuspenseQueryResult<Transaction[], Error>,
-    className?: string,
+function Pending({ account, mutation: { data: transactions, isPending, isError, error }, }: {
+    account: Detailed,
+    mutation: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
 }) {
     if (isError) throw error
+    if (isPending) return (
+        <CardContent>
+            <div className="flex flex-row justify-center items-center">
+                <Throbber /> <span>Fetching</span>
+            </div>
+        </CardContent>
+    )
+    if (isEmpty(transactions) || isNil(transactions)) return null
 
     return (
-        <Card className={className}>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0">
-                <div>
-                    <CardTitle>Pending Transactions</CardTitle>
-                    <CardDescription>
-                        Transactions with unknown Execution Date
-                    </CardDescription>
-                </div>
-                {isFetching && <Throbber variant="small" />}
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {
-                    isEmpty(transactions) || isNil(transactions)
-                        ? <>
-                            <p>There aren't any pending transactions</p>
-                        </>
-                        : <TransactionsTable
-                            accountID={accountID}
-                            transactions={transactions}
-                            sortByFn={(a, b) => Date.parse(a.issuedAt) - Date.parse(b.issuedAt)}
-                            groupByFn={({ issuedAt }) => issuedAt}
-                            withUpcoming={false}
-                        />
-                }
-            </CardContent>
-            {
-                !isEmpty(transactions) && !isNil(transactions) && <CardFooter>
-                    <CardDescription>
-                        Please check that is no longer the case and update the transactions to reflect this
-                    </CardDescription>
-                </CardFooter>
-            }
-        </Card>
+        <AccordionItem value="pending" className="border-none">
+            <AccordionTrigger className="px-4">Pending</AccordionTrigger>
+            <AccordionContent className="pb-0 mb-4 border-b dark:border-zinc-800">
+                <CardDescription className="px-4 mb-4">
+                    Transactions with unknown Execution Date
+                </CardDescription>
+                <TransactionsTable
+                    account={account}
+                    transactions={transactions}
+                    sortByFn={(a, b) => Date.parse(a.issuedAt) - Date.parse(b.issuedAt)}
+                    groupByFn={({ issuedAt }) => issuedAt}
+                    withUpcoming={true}
+                />
+            </AccordionContent>
+        </AccordionItem>
     )
 }
 
-export function UpcomingTransactions({
-    account: { id: accountID },
-    query: { data: transactions, isFetching, isError, error },
-    className
-}: {
-    account: { id: number },
-    query: UseSuspenseQueryResult<Transaction[], Error>,
-    className?: string,
+function Upcoming({ account, mutation: { data: transactions, isPending, isError, error }, }: {
+    account: Detailed,
+    mutation: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
 }) {
     if (isError) throw error
+    if (isPending) return (
+        <CardContent>
+            <div className="flex flex-row justify-center items-center">
+                <Throbber /> <span>Fetching</span>
+            </div>
+        </CardContent>
+    )
+    if (isEmpty(transactions) || isNil(transactions)) return null
 
     return (
-        <Card className={className}>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0">
-                <div>
-                    <CardTitle>Upcoming Transactions</CardTitle>
-                    <CardDescription>
-                        Transactions that will become effective in the next month
-                    </CardDescription>
-                </div>
-                {isFetching && <Throbber variant="small" />}
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {
-                    isEmpty(transactions) || isNil(transactions)
-                        ? <>
-                            <p>There aren't any upcoming transactions</p>
-                        </>
-                        : <TransactionsTable
-                            accountID={accountID}
-                            transactions={transactions}
-                            sortByFn={
-                                (a, b) => Date.parse(a.executedAt!) - Date.parse(b.executedAt!)
-                            }
-                            groupByFn={({ executedAt }) => executedAt!}
-                            withUpcoming={false}
-                        />
-                }
-            </CardContent>
-        </Card>
+        <AccordionItem value="upcoming" className="border-none">
+            <AccordionTrigger className="px-4">Upcoming</AccordionTrigger>
+            <AccordionContent className="pb-0 mb-4 border-b dark:border-zinc-800">
+                <CardDescription className="px-4 mb-4">
+                    Transactions that will become effective in the next month
+                </CardDescription>
+                <TransactionsTable
+                    account={account}
+                    transactions={transactions}
+                    sortByFn={(a, b) => Date.parse(a.executedAt!) - Date.parse(b.executedAt!)}
+                    groupByFn={({ executedAt }) => executedAt!}
+                    withUpcoming={false}
+                />
+            </AccordionContent>
+        </AccordionItem>
     )
 }
 
