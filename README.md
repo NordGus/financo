@@ -54,6 +54,6 @@ A simple personal finances application to bring order to the chaos of your perso
     - [x] Redesign flow
     - [x] Redesign show/update
   - [ ] Transactions
-    - [ ] Redesign index
+    - [x] Redesign index
     - [ ] Redesign flow
     - [x] Redesign show/update
