@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction, useEffect } from "react"
-import { useMutation } from "@tanstack/react-query"
+import { Dispatch, SetStateAction } from "react"
+import { UseMutationResult } from "@tanstack/react-query"
 import { groupBy, isEmpty, isNil } from "lodash"
 import moment from "moment"
 
 import Transaction from "@/types/Transaction"
 
-import { getTransactions, ListFilters } from "@api/transactions"
+import { ListFilters } from "@api/transactions"
 
 import { accountContrastColor } from "@helpers/account/accountContrastColor"
 import kindToHuman from "@helpers/account/kindToHuman"
@@ -18,7 +18,7 @@ import { CardContent, CardFooter } from "@components/ui/card"
 import { Throbber } from "@components/Throbber"
 
 interface Props {
-    filters: ListFilters
+    mutation: UseMutationResult<Transaction[], Error, ListFilters, unknown>
     setOpen: Dispatch<SetStateAction<boolean>>
     setTransaction: Dispatch<SetStateAction<Transaction | {}>>
 }
@@ -30,14 +30,7 @@ function sortAndGroup(transactions: Transaction[]) {
     );
 }
 
-export function TransactionsHistory({ filters, setOpen, setTransaction }: Props) {
-    const { data, isPending, isError, error, mutate } = useMutation({
-        mutationKey: ["transactions", "history"],
-        mutationFn: (filters: ListFilters) => getTransactions(filters)()
-    })
-
-    useEffect(() => mutate(filters), [filters])
-
+export function TransactionsHistory({ mutation: { data, isPending, isError, error }, setOpen, setTransaction }: Props) {
     if (isError) throw error
 
     if (isPending) return (

@@ -7,6 +7,7 @@ import Transaction from "@/types/Transaction";
 
 import {
     getPendingTransactions,
+    getTransactions,
     getUpcomingTransactions,
     ListFilters,
     PendingFilters,
@@ -44,12 +45,18 @@ export default function Index() {
         mutationFn: (filters: UpcomingFilters) => getUpcomingTransactions(filters)()
     })
 
+    const historyTransactions = useMutation({
+        mutationKey: ["transactions", "history"],
+        mutationFn: (filters: ListFilters) => getTransactions(filters)()
+    })
+
     useEffect(() => pendingTransactions.mutate({ account: filters.account }), [filters])
     useEffect(() => {
         upcomingTransactions.mutate({
             executedUntil: moment().add({ month: 1 }).toISOString(), account: filters.account
         })
     }, [filters])
+    useEffect(() => historyTransactions.mutate(filters), [filters])
 
     return (
         <Card>
@@ -64,7 +71,9 @@ export default function Index() {
                     mutation={pendingTransactions} setOpen={setOpen} setTransaction={setTransaction}
                 />
             </Accordion>
-            <TransactionsHistory filters={filters} setOpen={setOpen} setTransaction={setTransaction} />
+            <TransactionsHistory
+                mutation={historyTransactions} setOpen={setOpen} setTransaction={setTransaction}
+            />
         </Card>
     )
 }
