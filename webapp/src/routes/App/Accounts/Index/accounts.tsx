@@ -118,23 +118,16 @@ export function CapitalAccountsTable({ }) {
                     ? <div className="flex justify-center p-4 gap-2">
                         <Throbber /><span>Fetching</span>
                     </div>
-                    : <>
-                        <p className="text-zinc-500">
-                            Represents your bank account, cash or savings accounts
-                        </p>
-                        {
-                            isNil(active) || isEmpty(active)
-                                ? <>
-                                    <p>You have no active capital accounts</p>
-                                    <Button variant="outline" asChild={true}>
-                                        <Link to="/accounts/new">Create New Account</Link>
-                                    </Button>
-                                </>
-                                : <div className="rounded-md border dark:border-zinc-800">
-                                    <CapitalTable accounts={active} navigate={navigate} />
-                                </div>
-                        }
-                    </>
+                    : isNil(active) || isEmpty(active)
+                        ? <>
+                            <p>You have no active capital accounts</p>
+                            <Button variant="outline" asChild={true}>
+                                <Link to="/accounts/new">Create New Account</Link>
+                            </Button>
+                        </>
+                        : <div className="rounded-md border dark:border-zinc-800">
+                            <CapitalTable accounts={active} navigate={navigate} />
+                        </div>
             }
             {
                 archivedIsFetching
@@ -275,23 +268,16 @@ export function DebtAccountsTable({ }) {
                     ? <div className="flex justify-center p-4 gap-2">
                         <Throbber /><span>Fetching</span>
                     </div>
-                    : <>
-                        <p className="text-zinc-500">
-                            Represent loans of any kind, debts between you and your friends or any kind of credit line, like credit cards
-                        </p>
-                        {
-                            isNil(active) || isEmpty(active)
-                                ? <>
-                                    <p>You have no active capital accounts</p>
-                                    <Button variant="outline" asChild={true}>
-                                        <Link to="/accounts/new">Create New Account</Link>
-                                    </Button>
-                                </>
-                                : <div className="rounded-md border dark:border-zinc-800">
-                                    <DebtTable accounts={active} navigate={navigate} />
-                                </div>
-                        }
-                    </>
+                    : isNil(active) || isEmpty(active)
+                        ? <>
+                            <p>You have no active capital accounts</p>
+                            <Button variant="outline" asChild={true}>
+                                <Link to="/accounts/new">Create New Account</Link>
+                            </Button>
+                        </>
+                        : <div className="rounded-md border dark:border-zinc-800">
+                            <DebtTable accounts={active} navigate={navigate} />
+                        </div>
             }
             {
                 archivedIsFetching
@@ -418,23 +404,16 @@ export function IncomeAccountsTable({ }) {
                     ? <div className="flex justify-center p-4 gap-2">
                         <Throbber /><span>Fetching</span>
                     </div>
-                    : <>
-                        <p className="text-zinc-500">
-                            Represent any possible incoming source of currency
-                        </p>
-                        {
-                            isNil(active) || isEmpty(active)
-                                ? <>
-                                    <p>You have no active capital accounts</p>
-                                    <Button variant="outline" asChild={true}>
-                                        <Link to="/accounts/new">Create New Account</Link>
-                                    </Button>
-                                </>
-                                : <div className="rounded-md border dark:border-zinc-800">
-                                    <ExternalTable accounts={active} navigate={navigate} />
-                                </div>
-                        }
-                    </>
+                    : isNil(active) || isEmpty(active)
+                        ? <>
+                            <p>You have no active capital accounts</p>
+                            <Button variant="outline" asChild={true}>
+                                <Link to="/accounts/new">Create New Account</Link>
+                            </Button>
+                        </>
+                        : <div className="rounded-md border dark:border-zinc-800">
+                            <ExternalTable accounts={active} navigate={navigate} />
+                        </div>
             }
             {
                 archivedIsFetching
@@ -491,23 +470,16 @@ export function ExpenseAccountsTable({ }) {
                     ? <div className="flex justify-center p-4 gap-2">
                         <Throbber /><span>Fetching</span>
                     </div>
-                    : <>
-                        <p className="text-zinc-500">
-                            Represent any possible incoming source of currency
-                        </p>
-                        {
-                            isNil(active) || isEmpty(active)
-                                ? <>
-                                    <p>You have no active capital accounts</p>
-                                    <Button variant="outline" asChild={true}>
-                                        <Link to="/accounts/new">Create New Account</Link>
-                                    </Button>
-                                </>
-                                : <div className="rounded-md border dark:border-zinc-800">
-                                    <ExternalTable accounts={active} navigate={navigate} />
-                                </div>
-                        }
-                    </>
+                    : isNil(active) || isEmpty(active)
+                        ? <>
+                            <p>You have no active capital accounts</p>
+                            <Button variant="outline" asChild={true}>
+                                <Link to="/accounts/new">Create New Account</Link>
+                            </Button>
+                        </>
+                        : <div className="rounded-md border dark:border-zinc-800">
+                            <ExternalTable accounts={active} navigate={navigate} />
+                        </div>
             }
             {
                 archivedIsFetching

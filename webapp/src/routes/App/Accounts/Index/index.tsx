@@ -19,6 +19,7 @@ import {
     AccordionItem,
     AccordionTrigger
 } from "@components/ui/accordion";
+import { Card, CardContent, CardDescription } from "@components/ui/card";
 
 export function loader(_queryClient: QueryClient): LoaderFunction {
     return async (_props: LoaderFunctionArgs) => {
@@ -35,32 +36,54 @@ export default function Index() {
                 <SummaryNetWorth className="grow" key="summary:netWorth" />
                 <SummaryAvailableCredit className="grow" key="summary:availableCredit" />
             </div>
-            <Accordion type="single" defaultValue={"capital"} collapsible>
-                <AccordionItem value="capital">
-                    <AccordionTrigger>Capital</AccordionTrigger>
-                    <AccordionContent>
-                        <CapitalAccountsTable />
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="debt">
-                    <AccordionTrigger>Debts and Credit Lines</AccordionTrigger>
-                    <AccordionContent>
-                        <DebtAccountsTable />
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="income">
-                    <AccordionTrigger>Income Sources and Incoming Transactions</AccordionTrigger>
-                    <AccordionContent>
-                        <IncomeAccountsTable />
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="expenses">
-                    <AccordionTrigger>Expenses and Outgoing Transactions</AccordionTrigger>
-                    <AccordionContent>
-                        <ExpenseAccountsTable />
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
+            <Card>
+                <Accordion type="single" defaultValue={"capital"} collapsible>
+                    <AccordionItem value="capital">
+                        <AccordionTrigger className="px-6">Capital and Savings</AccordionTrigger>
+                        <AccordionContent>
+                            <CardContent>
+                                <CardDescription>
+                                    Represents your bank account, cash or savings accounts
+                                </CardDescription>
+                            </CardContent>
+                            <CapitalAccountsTable />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="debt">
+                        <AccordionTrigger className="px-6">Debts and Credit Lines</AccordionTrigger>
+                        <AccordionContent>
+                            <CardContent>
+                                <CardDescription>
+                                    Represent loans of any kind, debts between you and your friends or any kind of credit line, like credit cards
+                                </CardDescription>
+                            </CardContent>
+                            <DebtAccountsTable />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="income">
+                        <AccordionTrigger className="px-6">Income Sources and Incoming Transactions</AccordionTrigger>
+                        <AccordionContent>
+                            <CardContent>
+                                <CardDescription>
+                                    Represent any possible incoming source of currency
+                                </CardDescription>
+                            </CardContent>
+                            <IncomeAccountsTable />
+                        </AccordionContent>
+                    </AccordionItem>
+                    <AccordionItem value="expenses">
+                        <AccordionTrigger className="px-6">Expenses and Outgoing Transactions</AccordionTrigger>
+                        <AccordionContent>
+                            <CardContent>
+                                <CardDescription>
+                                    Represent any possible incoming source of currency
+                                </CardDescription>
+                            </CardContent>
+                            <ExpenseAccountsTable />
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
+            </Card>
         </>
     )
 }
