@@ -6,10 +6,7 @@ export function getTransaction(id: string): () => Promise<Transaction> {
     return async () => {
         const response = await fetch(`/api/transactions/${id}`)
 
-        if (!response.ok) {
-            console.error(response)
-            throw new Error('Network response was not ok')
-        }
+        if (!response.ok) throw response
 
         return response.json()
     }
@@ -29,10 +26,7 @@ export function getTransactions(filters: ListFilters): () => Promise<Transaction
         )
         const response = await fetch(`/api/transactions?${params.toString()}`)
 
-        if (!response.ok) {
-            console.error(response)
-            throw new Error('Network response was not ok')
-        }
+        if (!response.ok) throw response
 
         return response.json()
     }
@@ -51,10 +45,7 @@ export function getUpcomingTransactions(filters: UpcomingFilters): () => Promise
         )
         const response = await fetch(`/api/transactions/upcoming?${params.toString()}`)
 
-        if (!response.ok) {
-            console.error(response)
-            throw new Error('Network response was not ok')
-        }
+        if (!response.ok) throw response
 
         return response.json()
     }
@@ -71,10 +62,7 @@ export function getPendingTransactions(filters: PendingFilters): () => Promise<T
         )
         const response = await fetch(`/api/transactions/pending?${params.toString()}`)
 
-        if (!response.ok) {
-            console.error(response)
-            throw new Error('Network response was not ok')
-        }
+        if (!response.ok) throw response
 
         return response.json()
     }
@@ -87,10 +75,7 @@ export async function createTransaction(data: Create): Promise<Transaction> {
         body: JSON.stringify(data)
     })
 
-    if (!response.ok) {
-        console.error(response)
-        throw new Error('Network response was not ok')
-    }
+    if (!response.ok) throw response
 
     return response.json()
 }
@@ -102,10 +87,7 @@ export async function updateTransaction(id: number, data: Update): Promise<Trans
         body: JSON.stringify(data)
     })
 
-    if (!response.ok) {
-        console.error(response)
-        throw new Error('Network response was not ok')
-    }
+    if (!response.ok) throw response
 
     return response.json()
 }
@@ -113,10 +95,7 @@ export async function updateTransaction(id: number, data: Update): Promise<Trans
 export async function deleteTransaction(id: number): Promise<Transaction> {
     const response = await fetch(`/api/transactions/${id}`, { method: "DELETE" })
 
-    if (!response.ok) {
-        console.error(response)
-        throw new Error('Network response was not ok')
-    }
+    if (!response.ok) throw response
 
     return response.json()
 }

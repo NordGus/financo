@@ -5,10 +5,7 @@ export function getAccount(id: number): () => Promise<Detailed> {
     return async () => {
         const response = await fetch(`/api/accounts/${id}`)
 
-        if (!response.ok) {
-            console.error(response)
-            throw new Error('Network response was not ok')
-        }
+        if (!response.ok) throw response
 
         return response.json()
     }
@@ -26,10 +23,7 @@ export function getAccounts(filters: ListFilters): () => Promise<Preview[]> {
         )
         const response = await fetch(`/api/accounts?${params.toString()}`)
 
-        if (!response.ok) {
-            console.error(response)
-            throw new Error('Network response was not ok')
-        }
+        if (!response.ok) throw response
 
         return response.json()
     }
@@ -38,10 +32,7 @@ export function getAccounts(filters: ListFilters): () => Promise<Preview[]> {
 export async function getSelectableAccounts(): Promise<Select[]> {
     const response = await fetch(`/api/accounts/select`)
 
-    if (!response.ok) {
-        console.error(response)
-        throw new Error('Network response was not ok')
-    }
+    if (!response.ok) throw response
 
     return response.json()
 }
@@ -53,10 +44,7 @@ export async function createAccount(data: Create): Promise<CreateResponse> {
         body: JSON.stringify(data)
     })
 
-    if (!response.ok) {
-        console.error(response)
-        throw new Error('Network response was not ok')
-    }
+    if (!response.ok) throw response
 
     return response.json()
 }
@@ -68,10 +56,7 @@ export async function updateAccount(id: number, data: Update): Promise<Detailed>
         body: JSON.stringify(data)
     })
 
-    if (!response.ok) {
-        console.error(response)
-        throw new Error('Network response was not ok')
-    }
+    if (!response.ok) throw response
 
     return response.json()
 }
@@ -79,10 +64,7 @@ export async function updateAccount(id: number, data: Update): Promise<Detailed>
 export async function deleteAccount(id: number): Promise<Detailed> {
     const response = await fetch(`/api/accounts/${id}`, { method: "DELETE" })
 
-    if (!response.ok) {
-        console.error(response)
-        throw new Error('Network response was not ok')
-    }
+    if (!response.ok) throw response
 
     return response.json()
 }
