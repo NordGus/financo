@@ -103,6 +103,22 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
                             }
                         </TableCell>
                         <TableCell
+                            className={cn(
+                                "flex flex-row gap-4 justify-end font-semibold w-[9rem]",
+                                currencySourceAmountColor(transaction.source.kind, transaction.target.kind)
+                            )}
+                        >
+                            {
+                                transaction.target.currency !== transaction.source.currency && (
+                                    <span>
+                                        {currencyAmountToHuman(
+                                            transaction.sourceAmount, transaction.source.currency
+                                        )}
+                                    </span>
+                                )
+                            }
+                        </TableCell>
+                        <TableCell
                             className="w-[5rem] text-center"
                             style={{
                                 backgroundColor: transaction.target.color,
@@ -124,22 +140,13 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
                         </TableCell>
                         <TableCell
                             className={cn(
-                                "flex flex-row gap-4 justify-end font-semibold",
+                                "flex flex-row gap-4 justify-end font-semibold w-[9rem]",
                                 currencySourceAmountColor(transaction.source.kind, transaction.target.kind)
                             )}
                         >
                             <span>
-                                {currencyAmountToHuman(transaction.sourceAmount, transaction.source.currency)}
+                                {currencyAmountToHuman(transaction.targetAmount, transaction.target.currency)}
                             </span>
-                            {
-                                transaction.target.currency !== transaction.source.currency && (
-                                    <span>
-                                        {currencyAmountToHuman(
-                                            transaction.targetAmount, transaction.target.currency
-                                        )}
-                                    </span>
-                                )
-                            }
                         </TableCell>
                     </TableRow>
                 ))
