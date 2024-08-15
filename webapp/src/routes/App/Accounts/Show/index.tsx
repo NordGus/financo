@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { QueryClient, useMutation, useSuspenseQuery } from "@tanstack/react-query"
+import { useState } from "react"
+import { QueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { isEqual } from "lodash"
 import {
     LoaderFunctionArgs,
@@ -7,49 +7,30 @@ import {
     redirect,
     useLoaderData
 } from "react-router-dom"
-import moment from "moment"
 import { CheckIcon } from "lucide-react"
 
 import { Kind } from "@/types/Account"
 
-import {
-    accountQueryOptions,
-    pendingTransactionsQueryOptions,
-    upcomingTransactionsQueryOptions
-} from "@queries/accounts"
+import { accountQueryOptions } from "@queries/accounts"
 import { deleteAccount } from "@api/accounts"
-import { getTransactions, ListFilters } from "@api/transactions"
 
 import isExternalAccount from "@helpers/account/isExternalAccount"
 import isCapitalAccount from "@helpers/account/isCapitalAccount"
 import isDebtAccount from "@helpers/account/isDebtAccount"
 import { cn } from "@/lib/utils"
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs"
 import { Progress } from "@components/Progress"
 import { CardSummary } from "@components/card"
 import { toast } from "@components/ui/use-toast"
-import { TransactionHistory, PendingTransactions, UpcomingTransactions } from "./transactions"
-import { UpdateAccountForm } from "./form"
 
-function defaultHistoryFilters(accountID: number): ListFilters {
-    return {
-        executedFrom: moment().startOf('month').startOf('day').toISOString(),
-        executedUntil: moment().endOf('day').toISOString(),
-        account: [accountID]
-    }
-}
+import { Transactions } from "./transactions"
+import { UpdateAccountForm } from "./form"
 
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
     if (!params.id) throw new Error('No account ID provided')
-
     const id = Number(params.id)
 
-    const [account] = await Promise.all([
-        queryClient.ensureQueryData(accountQueryOptions(id)),
-        queryClient.ensureQueryData(pendingTransactionsQueryOptions(id)),
-        queryClient.ensureQueryData(upcomingTransactionsQueryOptions(id))
-    ])
+    const account = await queryClient.ensureQueryData(accountQueryOptions(id))
 
     return { id: account.id, breadcrumb: "Edit Account" }
 }
@@ -64,13 +45,10 @@ export const action = (queryClient: QueryClient) => async ({
         case "delete":
             const deleted = await deleteAccount(id)
 
-            queryClient.invalidateQueries({
-                predicate: ({ queryKey }) => {
-                    return isEqual(queryKey, ["transactions", "pending", "account", id]) ||
-                        isEqual(queryKey, ["transactions", "pending", "account", id]) ||
-                        isEqual(queryKey, ['accounts', 'account', id])
-                }
-            })
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["accounts"] }),
+                queryClient.invalidateQueries({ queryKey: ["transactions"] })
+            ])
 
             toast({
                 title: "Deleted",
@@ -85,21 +63,10 @@ export const action = (queryClient: QueryClient) => async ({
 
 export default function Show() {
     const { id } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
-    const [historyFilters, setHistoryFilters] = useState<ListFilters>(defaultHistoryFilters(id))
 
     const { data: account, isFetching, isError, error } = useSuspenseQuery(accountQueryOptions(id))
-    const pendingTransactionsQuery = useSuspenseQuery(pendingTransactionsQueryOptions(id))
-    const upcomingTransactionsQuery = useSuspenseQuery(upcomingTransactionsQueryOptions(id))
-    const historyTransactionsMutation = useMutation({
-        mutationKey: ["transactions", "account", id],
-        mutationFn: (filters: ListFilters) => getTransactions(filters)()
-    })
 
     if (isError) throw error
-
-    useEffect(() => {
-        historyTransactionsMutation.mutate(historyFilters)
-    }, [historyFilters, account.updatedAt])
 
     return (
         <div className="grid grid-cols-4 grid-rows-[20dvh_minmax(0,_1fr)] gap-4">
@@ -160,27 +127,7 @@ export default function Show() {
                     : null
             }
             <UpdateAccountForm account={account} loading={isFetching} className="col-span-2" />
-            <Tabs defaultValue="pending" className="flex flex-col gap-4 col-span-2">
-                <TabsList>
-                    <TabsTrigger value="pending" className="grow">Pending</TabsTrigger>
-                    <TabsTrigger value="upcoming" className="grow">Upcoming</TabsTrigger>
-                    <TabsTrigger value="history" className="grow">History</TabsTrigger>
-                </TabsList>
-                <TabsContent value="pending" className="m-0">
-                    <PendingTransactions account={account} query={pendingTransactionsQuery} />
-                </TabsContent>
-                <TabsContent value="upcoming" className="m-0">
-                    <UpcomingTransactions account={account} query={upcomingTransactionsQuery} />
-                </TabsContent>
-                <TabsContent value="history" className="m-0 space-y-4">
-                    <TransactionHistory
-                        account={account}
-                        mutation={historyTransactionsMutation}
-                        filtersState={[historyFilters, setHistoryFilters]}
-                        defaultFilters={() => defaultHistoryFilters(account.id)}
-                    />
-                </TabsContent>
-            </Tabs>
+            <Transactions account={account} className="col-span-2" />
         </div >
     )
 }

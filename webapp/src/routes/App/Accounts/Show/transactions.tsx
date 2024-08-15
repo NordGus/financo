@@ -1,19 +1,21 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { UseMutationResult, UseSuspenseQueryResult } from "@tanstack/react-query";
+import { useMutation, UseMutationResult, useSuspenseQuery, UseSuspenseQueryResult } from "@tanstack/react-query";
 import { groupBy, isEmpty, isEqual, isNil } from "lodash";
 import { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import moment from "moment";
 
+import Detailed from "@/types/Account"
 import Transaction from "@/types/Transaction";
 
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import { cn } from "@/lib/utils";
 
-import { ListFilters } from "@api/transactions";
+import { getTransactions, ListFilters } from "@api/transactions";
+import { pendingTransactionsQueryOptions, upcomingTransactionsQueryOptions } from "@queries/accounts";
 
 import { Throbber } from "@components/Throbber";
 import {
@@ -28,6 +30,42 @@ import { Table, TableBody, TableCell, TableRow } from "@components/ui/table";
 import { Button } from "@components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
 import { Calendar } from "@components/ui/calendar";
+
+interface Props {
+    account: Detailed
+    className?: string
+}
+
+function defaultHistoryFilters(account: Detailed): ListFilters {
+    return {
+        executedFrom: moment().startOf('month').startOf('day').toISOString(),
+        executedUntil: moment().endOf('day').toISOString(),
+        account: [account.id]
+    }
+}
+
+export function Transactions({ account, className }: Props) {
+    const [filters, setFilters] = useState<ListFilters>(defaultHistoryFilters(account))
+
+    const pendingQuery = useSuspenseQuery(pendingTransactionsQueryOptions(account.id))
+    const upcomingQuery = useSuspenseQuery(upcomingTransactionsQueryOptions(account.id))
+    const historyMutation = useMutation({
+        mutationKey: ["transactions", "account", account.id],
+        mutationFn: (filters: ListFilters) => getTransactions(filters)()
+    })
+
+    useEffect(() => historyMutation.mutate(filters), [filters, account.updatedAt])
+
+    return (
+        <div className={cn("", className)}>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Transactions</CardTitle>
+                </CardHeader>
+            </Card>
+        </div>
+    )
+}
 
 export function PendingTransactions({
     account: { id: accountID },
