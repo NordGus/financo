@@ -36,7 +36,7 @@ export default function Index() {
                 <SummaryNetWorth className="grow" key="summary:netWorth" />
                 <SummaryAvailableCredit className="grow" key="summary:availableCredit" />
             </div>
-            <Card>
+            <Card className="overflow-clip">
                 <Accordion type="single" defaultValue={"capital"} collapsible>
                     <AccordionItem value="capital">
                         <AccordionTrigger className="px-6">Capital and Savings</AccordionTrigger>
@@ -71,7 +71,7 @@ export default function Index() {
                             <IncomeAccountsTable />
                         </AccordionContent>
                     </AccordionItem>
-                    <AccordionItem value="expenses">
+                    <AccordionItem value="expenses" className="border-none">
                         <AccordionTrigger className="px-6">Expenses and Outgoing Transactions</AccordionTrigger>
                         <AccordionContent>
                             <CardContent>
