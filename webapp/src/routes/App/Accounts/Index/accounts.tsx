@@ -32,6 +32,7 @@ import {
 } from "@components/ui/accordion";
 import { Progress } from "@components/Progress";
 import { Button } from "@components/ui/button";
+import { Card } from "@components/ui/card";
 
 function CapitalTable({ accounts, navigate }: { accounts: Preview[], navigate: NavigateFunction }) {
     return (
@@ -112,7 +113,7 @@ export function CapitalAccountsTable({ }) {
     if (archivedIsError) throw archivedError
 
     return (
-        <div className="flex flex-col gap-4 px-4">
+        <div className="flex flex-col gap-4 px-6">
             {
                 activeIsFetching
                     ? <div className="flex justify-center p-4 gap-2">
@@ -125,9 +126,9 @@ export function CapitalAccountsTable({ }) {
                                 <Link to="/accounts/new">Create New Account</Link>
                             </Button>
                         </>
-                        : <div className="rounded-md border dark:border-zinc-800">
+                        : <Card>
                             <CapitalTable accounts={active} navigate={navigate} />
-                        </div>
+                        </Card>
             }
             {
                 archivedIsFetching
@@ -140,9 +141,9 @@ export function CapitalAccountsTable({ }) {
                             <AccordionItem value="archived">
                                 <AccordionTrigger>Archive</AccordionTrigger>
                                 <AccordionContent>
-                                    <div className="rounded-md border dark:border-zinc-800">
+                                    <Card>
                                         <CapitalTable accounts={archived} navigate={navigate} />
-                                    </div>
+                                    </Card>
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
@@ -262,7 +263,7 @@ export function DebtAccountsTable({ }) {
     if (archivedIsError) throw archivedError
 
     return (
-        <div className="flex flex-col gap-4 px-4">
+        <div className="flex flex-col gap-4 px-6">
             {
                 activeIsFetching
                     ? <div className="flex justify-center p-4 gap-2">
@@ -275,9 +276,9 @@ export function DebtAccountsTable({ }) {
                                 <Link to="/accounts/new">Create New Account</Link>
                             </Button>
                         </>
-                        : <div className="rounded-md border dark:border-zinc-800">
+                        : <Card>
                             <DebtTable accounts={active} navigate={navigate} />
-                        </div>
+                        </Card>
             }
             {
                 archivedIsFetching
@@ -290,9 +291,9 @@ export function DebtAccountsTable({ }) {
                             <AccordionItem value="archived">
                                 <AccordionTrigger>Archive</AccordionTrigger>
                                 <AccordionContent>
-                                    <div className="rounded-md border dark:border-zinc-800">
+                                    <Card>
                                         <DebtTable accounts={archived} navigate={navigate} />
-                                    </div>
+                                    </Card>
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
@@ -398,7 +399,7 @@ export function IncomeAccountsTable({ }) {
     if (archivedIsError) throw archivedError
 
     return (
-        <div className="flex flex-col gap-4 px-4">
+        <div className="flex flex-col gap-4 px-6">
             {
                 activeIsFetching
                     ? <div className="flex justify-center p-4 gap-2">
@@ -411,9 +412,9 @@ export function IncomeAccountsTable({ }) {
                                 <Link to="/accounts/new">Create New Account</Link>
                             </Button>
                         </>
-                        : <div className="rounded-md border dark:border-zinc-800">
+                        : <Card>
                             <ExternalTable accounts={active} navigate={navigate} />
-                        </div>
+                        </Card>
             }
             {
                 archivedIsFetching
@@ -426,9 +427,9 @@ export function IncomeAccountsTable({ }) {
                             <AccordionItem value="archived">
                                 <AccordionTrigger>Archive</AccordionTrigger>
                                 <AccordionContent>
-                                    <div className="rounded-md border dark:border-zinc-800">
+                                    <Card>
                                         <ExternalTable accounts={archived} navigate={navigate} />
-                                    </div>
+                                    </Card>
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
@@ -464,7 +465,7 @@ export function ExpenseAccountsTable({ }) {
     if (archivedIsError) throw archivedError
 
     return (
-        <div className="flex flex-col gap-4 px-4">
+        <div className="flex flex-col gap-4 px-6">
             {
                 activeIsFetching
                     ? <div className="flex justify-center p-4 gap-2">
@@ -477,9 +478,9 @@ export function ExpenseAccountsTable({ }) {
                                 <Link to="/accounts/new">Create New Account</Link>
                             </Button>
                         </>
-                        : <div className="rounded-md border dark:border-zinc-800">
+                        : <Card>
                             <ExternalTable accounts={active} navigate={navigate} />
-                        </div>
+                        </Card>
             }
             {
                 archivedIsFetching
@@ -492,9 +493,9 @@ export function ExpenseAccountsTable({ }) {
                             <AccordionItem value="archived">
                                 <AccordionTrigger>Archive</AccordionTrigger>
                                 <AccordionContent>
-                                    <div className="rounded-md border dark:border-zinc-800">
+                                    <Card>
                                         <ExternalTable accounts={archived} navigate={navigate} />
-                                    </div>
+                                    </Card>
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
