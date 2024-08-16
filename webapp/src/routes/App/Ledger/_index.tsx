@@ -99,7 +99,7 @@ export default function Layout() {
 
     return (
         <div className="gap-4 flex flex-col">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
                 <Breadcrumbs />
                 <span className="grow contents-['']"></span>
                 {
@@ -107,17 +107,10 @@ export default function Layout() {
                         <Button variant="outline" onClick={() => { dispatch({ type: "CLEAR" }) }}>Clear Filters</Button>
                     )
                 }
-                <Button size="icon" variant="outline" onClick={() => setOpenFilters(true)}>
-                    <SlidersHorizontalIcon />
+                <Button variant="secondary" onClick={() => setOpenFilters(true)}>
+                    <SlidersHorizontalIcon className="mr-2 h-4 w-4" /> Filter
                 </Button>
-                <Button
-                    onClick={() => {
-                        setTransaction({})
-                        setOpenForm(true)
-                    }}
-                >
-                    New
-                </Button>
+                <Button onClick={() => { setTransaction({}); setOpenForm(true); }}>New</Button>
             </div>
             <Sheet open={openFilters} onOpenChange={setOpenFilters}>
                 <SheetContent className="sm:w-fit sm:max-w-[600px] overflow-y-auto">

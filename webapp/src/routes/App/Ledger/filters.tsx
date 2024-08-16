@@ -23,7 +23,11 @@ export function Filters({ state, dispatch }: Props) {
         staleTime: staleTimeDefault,
     })
 
-    useEffect(() => dispatch({ type: "UPDATE_DATES", range: range ?? { from: undefined, to: undefined } }), [range])
+    useEffect(() => {
+        if (state.filters.from === range?.from && state.filters.to === range?.to) return
+
+        dispatch({ type: "UPDATE_DATES", range: range ?? { from: undefined, to: undefined } })
+    }, [range])
 
     if (isError) throw error
 
