@@ -55,7 +55,7 @@ export default function Index() {
 
     useEffect(() => {
         upcomingTransactions.mutate({
-            executedFrom: moment().toISOString(),
+            executedFrom: moment().add({ days: 1 }).toISOString(),
             executedUntil: moment().add({ month: 1 }).toISOString(),
             account: filters.accounts
         })

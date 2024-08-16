@@ -4,6 +4,7 @@ import { useReducer, useState } from "react";
 import { isEqual } from "lodash";
 import moment from "moment";
 import { SlidersHorizontalIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
 
 import Transaction from "@/types/Transaction";
 
@@ -34,8 +35,8 @@ export function loader(_queryClient: QueryClient): LoaderFunction {
 
 const actionTypes = {
     UPDATE_DATES: "UPDATE_DATES",
-    ADD_ACCOUNT: "ADD_ACCOUNT",
-    REMOVE_ACCOUNT: "REMOVE_ACCOUNT",
+    ADD_ACCOUNTS: "ADD_ACCOUNTS",
+    REMOVE_ACCOUNTS: "REMOVE_ACCOUNTS",
     CLEAR: "CLEAR"
 } as const
 
@@ -48,15 +49,15 @@ export type FiltersState = { clearable: boolean, filters: Filters }
 export type FiltersAction =
     | {
         type: FiltersActionType["UPDATE_DATES"]
-        range: { from: Date | undefined, to: Date | undefined }
+        range: DateRange
     }
     | {
-        type: FiltersActionType["ADD_ACCOUNT"]
-        id: number
+        type: FiltersActionType["ADD_ACCOUNTS"]
+        ids: number[]
     }
     | {
-        type: FiltersActionType["REMOVE_ACCOUNT"]
-        id: number
+        type: FiltersActionType["REMOVE_ACCOUNTS"]
+        ids: number[]
     }
     | {
         type: FiltersActionType["CLEAR"]
@@ -69,20 +70,20 @@ function reducer(state: FiltersState, action: FiltersAction): FiltersState {
                 clearable: true,
                 filters: { ...state.filters, ...action.range }
             }
-        case "ADD_ACCOUNT":
+        case "ADD_ACCOUNTS":
             return {
                 clearable: true,
                 filters: {
                     ...state.filters,
-                    accounts: [...state.filters.accounts, action.id]
+                    accounts: [...state.filters.accounts, ...action.ids]
                 }
             }
-        case "REMOVE_ACCOUNT":
+        case "REMOVE_ACCOUNTS":
             return {
                 clearable: true,
                 filters: {
                     ...state.filters,
-                    accounts: [...state.filters.accounts.filter((id) => id !== action.id)]
+                    accounts: [...state.filters.accounts.filter((id) => !action.ids.includes(id))]
                 }
             }
         case "CLEAR":
@@ -106,7 +107,7 @@ export default function Layout() {
                         <Button variant="outline" onClick={() => { dispatch({ type: "CLEAR" }) }}>Clear Filters</Button>
                     )
                 }
-                <Button className="p-2.5" variant={"outline"} onClick={() => setOpenFilters(true)}>
+                <Button size="icon" variant="outline" onClick={() => setOpenFilters(true)}>
                     <SlidersHorizontalIcon />
                 </Button>
                 <Button
@@ -119,7 +120,7 @@ export default function Layout() {
                 </Button>
             </div>
             <Sheet open={openFilters} onOpenChange={setOpenFilters}>
-                <SheetContent className="w-[400px] sm:w-[540px] sm:max-w-[540px] overflow-y-auto">
+                <SheetContent className="sm:w-fit sm:max-w-[600px] overflow-y-auto">
                     <SheetHeader>
                         <SheetTitle>Filter Transactions</SheetTitle>
                     </SheetHeader>

@@ -31,7 +31,7 @@ export interface Account {
     currency: Currency
     color: string
     icon: Icon
-    archivedAt: string
+    archivedAt: string | null
     createdAt: string
     updatedAt: string
     parent?: Account | null
