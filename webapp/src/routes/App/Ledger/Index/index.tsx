@@ -8,10 +8,8 @@ import Transaction from "@/types/Transaction";
 import {
     getPendingTransactions,
     getTransactions,
-    getUpcomingTransactions,
     ListFilters,
     PendingFilters,
-    UpcomingFilters
 } from "@api/transactions";
 
 import { Card, CardHeader, CardTitle } from "@components/ui/card";
@@ -19,9 +17,10 @@ import { Accordion } from "@components/ui/accordion";
 import { TransactionsHistory } from "./history";
 import { TransactionsPending } from "./pending"
 import { TransactionsUpcoming } from "./upcoming";
+import { FiltersState } from "../_index";
 
 interface OutletContext {
-    filters: ListFilters
+    filters: FiltersState
     setOpen: Dispatch<SetStateAction<boolean>>
     setTransaction: Dispatch<SetStateAction<Transaction | {}>>
 }
@@ -33,30 +32,42 @@ export function loader(_queryClient: QueryClient): LoaderFunction {
 }
 
 export default function Index() {
-    const { filters, setOpen, setTransaction } = useOutletContext<OutletContext>()
+    const { filters: { filters }, setOpen, setTransaction } = useOutletContext<OutletContext>()
 
     const pendingTransactions = useMutation({
         mutationKey: ['transactions', 'pending'],
-        mutationFn: (filters: PendingFilters) => getPendingTransactions(filters)()
+        mutationFn: (data: PendingFilters) => getPendingTransactions(data)()
     })
 
     const upcomingTransactions = useMutation({
         mutationKey: ['transactions', 'upcoming'],
-        mutationFn: (filters: UpcomingFilters) => getUpcomingTransactions(filters)()
+        mutationFn: (data: ListFilters) => getTransactions(data)()
     })
 
     const historyTransactions = useMutation({
         mutationKey: ["transactions", "history"],
-        mutationFn: (filters: ListFilters) => getTransactions(filters)()
+        mutationFn: (data: ListFilters) => getTransactions(data)()
     })
 
-    useEffect(() => pendingTransactions.mutate({ account: filters.account }), [filters])
+    useEffect(() => {
+        pendingTransactions.mutate({ account: filters.accounts })
+    }, [filters])
+
     useEffect(() => {
         upcomingTransactions.mutate({
-            executedUntil: moment().add({ month: 1 }).toISOString(), account: filters.account
+            executedFrom: moment().toISOString(),
+            executedUntil: moment().add({ month: 1 }).toISOString(),
+            account: filters.accounts
         })
     }, [filters])
-    useEffect(() => historyTransactions.mutate(filters), [filters])
+
+    useEffect(() => {
+        historyTransactions.mutate({
+            executedFrom: filters.from?.toISOString(),
+            executedUntil: filters.to?.toISOString(),
+            account: filters.accounts
+        })
+    }, [filters])
 
     return (
         <Card>
