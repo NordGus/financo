@@ -17,7 +17,7 @@ import { Accordion } from "@components/ui/accordion";
 import { TransactionsHistory } from "./history";
 import { TransactionsPending } from "./pending"
 import { TransactionsUpcoming } from "./upcoming";
-import { FiltersState } from "../_index";
+import { FiltersState } from "@components/filters/transactions";
 
 interface OutletContext {
     filters: FiltersState
