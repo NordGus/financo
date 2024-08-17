@@ -24,18 +24,7 @@ func ListForAccount(w http.ResponseWriter, r *http.Request) {
 		to   nullable.Type[time.Time]
 	)
 
-	urlID := chi.URLParam(r, "accountID")
-	if urlID == "" {
-		log.Println("failed to retrieved accountID url param")
-		http.Error(
-			w,
-			http.StatusText(http.StatusNotFound),
-			http.StatusNotFound,
-		)
-		return
-	}
-
-	id, err := strconv.ParseInt(urlID, 10, 64)
+	id, err := strconv.ParseInt(chi.URLParam(r, "accountID"), 10, 64)
 	if err != nil {
 		log.Println("failed to parsed id", err)
 		http.Error(
