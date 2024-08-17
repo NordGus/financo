@@ -106,6 +106,12 @@ export function TransactionsFilters({ state, dispatch, open, setOpen, excludeAcc
         dispatch({ type: "UPDATE_DATES", range: range ?? { from: undefined, to: undefined } })
     }, [range])
 
+    useEffect(() => {
+        if (state.filters.from === range?.from && state.filters.to === range?.to) return
+
+        setRange({ from: state.filters.from, to: state.filters.to })
+    }, [state.filters.from, state.filters.to])
+
     if (isError) throw error
     if (isErrorArchived) throw archivedError
 
