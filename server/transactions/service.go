@@ -8,8 +8,10 @@ import (
 
 func Routes(r chi.Router) {
 	r.Get("/", handlers.List)
+	r.Get("/for_account/{accountID}", handlers.ListForAccount)
 
 	r.Route("/pending", func(r chi.Router) {
 		r.Get("/", handlers.Pending)
+		r.Get("/for_account/{accountID}", handlers.PendingForAccount)
 	})
 }

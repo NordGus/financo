@@ -30,15 +30,15 @@ SELECT
     src.archived_at,
     src.created_at,
     src.updated_at,
-    src_p.id,
-    src_p.kind,
-    src_p.currency,
-    src_p.name,
-    src_p.color,
-    src_p.icon,
-    src_p.archived_at,
-    src_p.created_at,
-    src_p.updated_at,
+    srcp.id,
+    srcp.kind,
+    srcp.currency,
+    srcp.name,
+    srcp.color,
+    srcp.icon,
+    srcp.archived_at,
+    srcp.created_at,
+    srcp.updated_at,
     trg.id,
     trg.kind,
     trg.currency,
@@ -60,7 +60,7 @@ SELECT
 FROM
     transactions tr
     INNER JOIN accounts src ON src.id = tr.source_id
-    LEFT JOIN accounts src_p ON src_p.id = src.parent_id
+    LEFT JOIN accounts srcp ON srcp.id = src.parent_id
     INNER JOIN accounts trg ON trg.id = tr.target_id
     LEFT JOIN accounts trgp ON trgp.id = trg.parent_id
 WHERE
