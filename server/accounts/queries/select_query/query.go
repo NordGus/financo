@@ -46,7 +46,6 @@ WITH
         WHERE
             acc.parent_id IS NOT NULL
 			AND acc.deleted_at IS NULL
-            AND acc.archived_at IS NULL
             AND acc.kind != $1
     )
 SELECT
