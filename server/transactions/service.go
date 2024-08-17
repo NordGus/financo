@@ -14,4 +14,8 @@ func Routes(r chi.Router) {
 		r.Get("/", handlers.Pending)
 		r.Get("/for_account/{accountID}", handlers.PendingForAccount)
 	})
+
+	r.Route("/{id}", func(r chi.Router) {
+		r.Delete("/", handlers.Destroy)
+	})
 }
