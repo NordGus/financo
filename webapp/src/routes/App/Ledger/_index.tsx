@@ -3,6 +3,7 @@ import { QueryClient } from "@tanstack/react-query";
 import { useReducer, useState } from "react";
 import { isEqual } from "lodash";
 import { SlidersHorizontalIcon } from "lucide-react";
+import moment from "moment";
 
 import Transaction from "@/types/Transaction";
 
@@ -28,6 +29,7 @@ export default function Layout() {
     const [openForm, setOpenForm] = useState(false)
     const [openFilters, setOpenFilters] = useState(false)
     const [transaction, setTransaction] = useState<Transaction | {}>({})
+    const [reloadSignal, setReloadSignal] = useState(moment().toISOString())
 
     return (
         <div className="gap-4 flex flex-col">
@@ -56,7 +58,7 @@ export default function Layout() {
                             }
                         </SheetTitle>
                     </SheetHeader>
-                    <Transactions.Form transaction={transaction} setOpen={setOpenForm} />
+                    <Transactions.Form transaction={transaction} setOpen={setOpenForm} forceReload={setReloadSignal} />
                 </SheetContent>
             </Sheet>
             <Outlet
@@ -64,6 +66,7 @@ export default function Layout() {
                     filters,
                     setTransaction,
                     setOpen: setOpenForm,
+                    reload: reloadSignal
                 }}
             />
         </div>

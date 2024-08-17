@@ -140,9 +140,10 @@ function executedAtDefault(transaction: Transaction | {}): Date | undefined {
 interface Props {
     transaction: Transaction | {}
     setOpen: Dispatch<SetStateAction<boolean>>
+    forceReload: Dispatch<SetStateAction<string>>
 }
 
-export default function TransactionForm({ transaction, setOpen }: Props) {
+export default function TransactionForm({ transaction, setOpen, forceReload }: Props) {
     const queryClient = useQueryClient()
     const { toast } = useToast()
     const form = useForm<z.infer<typeof schema>>({
@@ -197,6 +198,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                 title: "Saved!",
                 description: `Transaction between ${tr.source.name} and ${tr.target.name} has been saved`
             })
+            forceReload(moment().toISOString())
         } catch (e) {
             console.error(e)
 
@@ -668,6 +670,9 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                             if (!confirm(`Do you want to delete this transaction?`)) {
                                 event.preventDefault()
                             }
+
+                            setOpen(false)
+                            forceReload(moment().toISOString())
                         }}
                     >
                         <Button type="submit" variant="destructive" className="grow">

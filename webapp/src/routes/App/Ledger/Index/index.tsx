@@ -1,5 +1,5 @@
 import { LoaderFunction, LoaderFunctionArgs, useOutletContext } from "react-router-dom";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import moment from "moment";
 
@@ -23,6 +23,7 @@ interface OutletContext {
     filters: FiltersState
     setOpen: Dispatch<SetStateAction<boolean>>
     setTransaction: Dispatch<SetStateAction<Transaction | {}>>
+    reload: string
 }
 
 export function loader(_queryClient: QueryClient): LoaderFunction {
@@ -32,7 +33,7 @@ export function loader(_queryClient: QueryClient): LoaderFunction {
 }
 
 export default function Index() {
-    const { filters: { filters }, setOpen, setTransaction } = useOutletContext<OutletContext>()
+    const { filters: { filters }, setOpen, setTransaction, reload } = useOutletContext<OutletContext>()
 
     const pendingTransactions = useMutation({
         mutationKey: ['transactions', 'pending'],
@@ -51,7 +52,7 @@ export default function Index() {
 
     useEffect(() => {
         pendingTransactions.mutate({ account: filters.accounts })
-    }, [filters])
+    }, [filters, reload])
 
     useEffect(() => {
         upcomingTransactions.mutate({
@@ -59,7 +60,7 @@ export default function Index() {
             executedUntil: moment().add({ month: 1 }).toISOString(),
             account: filters.accounts
         })
-    }, [filters])
+    }, [filters, reload])
 
     useEffect(() => {
         historyTransactions.mutate({
@@ -67,7 +68,7 @@ export default function Index() {
             executedUntil: filters.to?.toISOString(),
             account: filters.accounts
         })
-    }, [filters])
+    }, [filters, reload])
 
     return (
         <Card>
