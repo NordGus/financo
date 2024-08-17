@@ -37,6 +37,14 @@ export async function getSelectableAccounts(): Promise<Select[]> {
     return response.json()
 }
 
+export async function getArchivedSelectableAccounts(): Promise<Select[]> {
+    const response = await fetch(`/api/accounts/select?archived=true`)
+
+    if (!response.ok) throw response
+
+    return response.json()
+}
+
 export async function createAccount(data: Create): Promise<CreateResponse> {
     const response = await fetch(`/api/accounts`, {
         method: "POST",

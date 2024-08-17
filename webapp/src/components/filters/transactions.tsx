@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { Calendar } from "@components/ui/calendar"
 import { useQuery } from "@tanstack/react-query"
 import { staleTimeDefault } from "@queries/Client"
-import { getSelectableAccounts } from "@api/accounts"
+import { getArchivedSelectableAccounts, getSelectableAccounts } from "@api/accounts"
 import { Throbber } from "@components/Throbber"
 import { isEmpty, isNil } from "lodash"
 import { Kind, Select } from "@/types/Account"
@@ -92,6 +92,13 @@ export function TransactionsFilters({ state, dispatch, open, setOpen, excludeAcc
         queryFn: getSelectableAccounts,
         staleTime: staleTimeDefault,
     })
+    const {
+        data: archived, isFetching: isFetchingArchived, isError: isErrorArchived, error: archivedError
+    } = useQuery({
+        queryKey: ["accounts", "select", "archived"],
+        queryFn: getArchivedSelectableAccounts,
+        staleTime: staleTimeDefault,
+    })
 
     useEffect(() => {
         if (state.filters.from === range?.from && state.filters.to === range?.to) return
@@ -100,6 +107,7 @@ export function TransactionsFilters({ state, dispatch, open, setOpen, excludeAcc
     }, [range])
 
     if (isError) throw error
+    if (isErrorArchived) throw archivedError
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
@@ -123,6 +131,19 @@ export function TransactionsFilters({ state, dispatch, open, setOpen, excludeAcc
                             </div>
                             : <AccountsFilter
                                 accounts={(accounts || []).filter(({ id }) => !excluded.includes(id))}
+                                state={state}
+                                dispatch={dispatch}
+                            />
+
+                    }
+                    {
+                        isFetchingArchived
+                            ? <div className="flex justify-center items-center gap-2">
+                                <Throbber variant="small" />
+                                <span>Fetching</span>
+                            </div>
+                            : <ArchivedAccountsFilter
+                                accounts={(archived || []).filter(({ id }) => !excluded.includes(id))}
                                 state={state}
                                 dispatch={dispatch}
                             />
@@ -288,6 +309,52 @@ function AccountsFilter({ accounts, state: { filters }, dispatch }: AccountsProp
                         <div className="flex flex-wrap gap-2">
                             {
                                 expenses.map((acc) => {
+                                    const active = !isNil(filters.accounts.find((id) => id === acc.id))
+
+                                    return (
+                                        <AccountFilter
+                                            key={`account:filter:${acc.id}`}
+                                            account={acc}
+                                            active={active}
+                                            onClick={onClick(acc, active)}
+                                        />
+                                    )
+                                })
+                            }
+                        </div>
+                    </>
+                )
+            }
+        </>
+    )
+}
+
+function ArchivedAccountsFilter({ accounts, state: { filters }, dispatch }: AccountsProps) {
+    if (isNil(accounts) || isEmpty(accounts)) return null
+
+    const onClick = (acc: Select, active: boolean) => () => {
+        if (active) {
+            dispatch({
+                type: "REMOVE_ACCOUNTS",
+                ids: [acc.id, ...(acc.children || []).map(({ id }) => id)]
+            })
+        } else {
+            dispatch({
+                type: "ADD_ACCOUNTS",
+                ids: [acc.id, ...(acc.children || []).map(({ id }) => id)]
+            })
+        }
+    }
+
+    return (
+        <>
+            {
+                !isEmpty(accounts) && (
+                    <>
+                        <h3 className="font-semibold">Archived</h3>
+                        <div className="flex flex-wrap gap-2">
+                            {
+                                accounts.map((acc) => {
                                     const active = !isNil(filters.accounts.find((id) => id === acc.id))
 
                                     return (
