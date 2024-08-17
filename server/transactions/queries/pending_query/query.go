@@ -44,15 +44,15 @@ func (q *query) Find(ctx context.Context) ([]response.Detailed, error) {
 
 	if q.from.Valid && q.to.Valid {
 		filters = append(filters, q.from.Val, q.to.Val)
-		query += " AND (tr.executed_at BETWEEN $1 AND $2)"
+		query += fmt.Sprintf(" AND (tr.executed_at BETWEEN $%d AND $%d)", filter, filter+1)
 		filter += 2
 	} else if q.from.Valid {
 		filters = append(filters, q.from.Val)
-		query += " AND tr.executed_at >= $1"
+		query += fmt.Sprintf(" AND tr.executed_at >= $%d", filter)
 		filter++
 	} else if q.to.Valid {
 		filters = append(filters, q.to.Val)
-		query += " AND tr.executed_at <= $1"
+		query += fmt.Sprintf(" AND tr.executed_at <= $%d", filter)
 		filter++
 	}
 
