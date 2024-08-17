@@ -36,17 +36,17 @@ export default function Index() {
 
     const pendingTransactions = useMutation({
         mutationKey: ['transactions', 'pending'],
-        mutationFn: (data: PendingFilters) => getPendingTransactions(data)()
+        mutationFn: (data: PendingFilters) => getPendingTransactions(data)
     })
 
     const upcomingTransactions = useMutation({
         mutationKey: ['transactions', 'upcoming'],
-        mutationFn: (data: ListFilters) => getTransactions(data)()
+        mutationFn: (data: ListFilters) => getTransactions(data)
     })
 
     const historyTransactions = useMutation({
         mutationKey: ["transactions", "history"],
-        mutationFn: (data: ListFilters) => getTransactions(data)()
+        mutationFn: (data: ListFilters) => getTransactions(data)
     })
 
     useEffect(() => {

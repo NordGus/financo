@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
-import { groupBy, isEmpty, isEqual, isNil } from "lodash";
-import { DateRange } from "react-day-picker";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { groupBy, isEmpty, isNil } from "lodash";
+import { SlidersHorizontalIcon } from "lucide-react";
 import moment from "moment";
 
 import Detailed from "@/types/Account"
@@ -17,8 +15,8 @@ import kindToHuman from "@helpers/account/kindToHuman";
 import { cn } from "@/lib/utils";
 
 import {
-    getPendingTransactions,
-    getTransactions,
+    getPendingTransactionsForAccount,
+    getTransactionsForAccount,
     ListFilters,
     PendingFilters
 } from "@api/transactions";
@@ -33,68 +31,44 @@ import {
 } from "@components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@components/ui/table";
 import { Button } from "@components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
-import { Calendar } from "@components/ui/calendar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@components/ui/accordion";
+import { defaultFilters, reducer, TransactionsFilters } from "@components/filters/transactions";
 
 interface Props {
     account: Detailed
     className?: string
 }
 
-function historyFilters(account: Detailed, filters: ListFilters): ListFilters {
-    return {
-        executedFrom: filters.executedFrom || moment().startOf('month').startOf('day').toISOString(),
-        executedUntil: filters.executedUntil || moment().endOf('day').toISOString(),
-        account: [account.id, ...(filters.account || [])]
-    }
-}
-
-function upcomingFilters(account: Detailed, filters: ListFilters): ListFilters {
-    return {
-        executedFrom: moment().toISOString(),
-        executedUntil: moment().add({ month: 1 }).toISOString(),
-        account: [account.id, ...(filters.account || [])]
-    }
-}
-
-function pendingFilters(account: Detailed, filters: ListFilters): PendingFilters {
-    return {
-        account: [account.id, ...(filters.account || [])]
-    }
-}
-
 // [ ] make endpoints specialized to retrieved transactions for a given account
 export function Transactions({ account, className }: Props) {
-    const [filters, setFilters] = useState<ListFilters>(historyFilters(account, {}))
-    const [date, setDate] = useState<DateRange>({
-        from: moment(filters.executedFrom).toDate(),
-        to: moment(filters.executedUntil).toDate()
-    })
-    const [clearable, setClearable] = useState(
-        !isEqual(
-            { from: date.from?.toISOString(), to: date.to?.toISOString() },
-            { from: historyFilters(account, {}).executedFrom, to: historyFilters(account, {}).executedUntil }
-        )
-    )
+    const [filters, dispatch] = useReducer(reducer, { clearable: false, filters: defaultFilters() })
+    const [openFilters, setOpenFilters] = useState(false)
 
     const pendingMutation = useMutation({
         mutationKey: ["transactions", "pending", "account", account.id],
-        mutationFn: (filters: ListFilters) => getPendingTransactions(pendingFilters(account, filters))()
+        mutationFn: (filters: PendingFilters) => getPendingTransactionsForAccount(account.id, filters)
     })
     const upcomingMutation = useMutation({
         mutationKey: ["transactions", "upcoming", "account", account.id],
-        mutationFn: (filters: ListFilters) => getTransactions(upcomingFilters(account, filters))()
+        mutationFn: (filters: ListFilters) => getTransactionsForAccount(account.id, filters)
     })
     const historyMutation = useMutation({
         mutationKey: ["transactions", "account", account.id],
-        mutationFn: (filters: ListFilters) => getTransactions(filters)()
+        mutationFn: (filters: ListFilters) => getTransactionsForAccount(account.id, filters)
     })
 
     useEffect(() => {
-        historyMutation.mutate(historyFilters(account, filters))
-        pendingMutation.mutate(pendingFilters(account, filters))
-        upcomingMutation.mutate(upcomingFilters(account, filters))
+        pendingMutation.mutate({ account: [...filters.filters.accounts] })
+        upcomingMutation.mutate({
+            executedFrom: moment().add({ days: 1 }).toISOString(),
+            executedUntil: moment().add({ month: 1 }).toISOString(),
+            account: filters.filters.accounts
+        })
+        historyMutation.mutate({
+            executedFrom: filters.filters.from?.toISOString(),
+            executedUntil: filters.filters.to?.toISOString(),
+            account: filters.filters.accounts
+        })
     }, [filters, account.updatedAt])
 
     return (
@@ -109,68 +83,22 @@ export function Transactions({ account, className }: Props) {
                     </div>
                     <div className={cn("flex justify-end gap-4")}>
                         {
-                            clearable && <Button
-                                variant="link"
-                                onClick={() => {
-                                    const reset = historyFilters(account, {})
-
-                                    setDate({
-                                        from: moment(reset.executedFrom).toDate(),
-                                        to: moment(reset.executedUntil).toDate()
-                                    })
-                                    setFilters(reset)
-                                    setClearable(false)
-                                }}
-                            >
+                            filters.clearable && <Button variant="link" onClick={() => dispatch({ type: "CLEAR" })}>
                                 Clear
                             </Button>
                         }
-                        <Popover>
-                            <PopoverTrigger asChild={true}>
-                                <Button
-                                    id="date"
-                                    variant="outline"
-                                    className={cn(
-                                        "min-w-[10rem] justify-start text-left font-normal",
-                                        !date && "text-zinc-500"
-                                    )}
-                                >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {date?.from ? (
-                                        date.to ? (
-                                            <>
-                                                {format(date.from, "LLL dd, y")} -{" "}
-                                                {format(date.to, "LLL dd, y")}
-                                            </>
-                                        ) : (
-                                            format(date.from, "LLL dd, y")
-                                        )
-                                    ) : (
-                                        <span>Pick a date</span>
-                                    )}
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                    initialFocus={true}
-                                    mode="range"
-                                    defaultMonth={date?.from}
-                                    selected={date}
-                                    onSelect={(value) => {
-                                        setDate(value!)
-                                        setFilters(historyFilters(account, {
-                                            ...filters,
-                                            executedFrom: value!.from!.toISOString(),
-                                            executedUntil: value!.to!.toISOString(),
-                                        }))
-                                        setClearable(true)
-                                    }}
-                                    numberOfMonths={2}
-                                />
-                            </PopoverContent>
-                        </Popover>
+                        <Button variant="secondary" onClick={() => setOpenFilters(true)}>
+                            <SlidersHorizontalIcon className="mr-2 h-4 w-4" /> Filter
+                        </Button>
                     </div>
                 </CardHeader>
+                <TransactionsFilters
+                    state={filters}
+                    dispatch={dispatch}
+                    open={openFilters}
+                    setOpen={setOpenFilters}
+                    excludeAccountIds={[account.id]}
+                />
                 <Accordion type="multiple">
                     <Pending account={account} mutation={pendingMutation} />
                     <Upcoming account={account} mutation={upcomingMutation} />

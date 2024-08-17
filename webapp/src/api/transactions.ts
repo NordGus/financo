@@ -2,16 +2,6 @@ import Transaction, { Create, Update } from "@/types/Transaction"
 
 import isEmptyParam from "@helpers/isEmptyParam"
 
-export function getTransaction(id: string): () => Promise<Transaction> {
-    return async () => {
-        const response = await fetch(`/api/transactions/${id}`)
-
-        if (!response.ok) throw response
-
-        return response.json()
-    }
-}
-
 export interface ListFilters {
     executedFrom?: string
     executedUntil?: string
@@ -19,53 +9,44 @@ export interface ListFilters {
     account?: number[]
 }
 
-export function getTransactions(filters: ListFilters): () => Promise<Transaction[]> {
-    return async () => {
-        const params = new URLSearchParams(
-            Object.entries(filters).filter(([_, value]) => !isEmptyParam(value))
-        )
-        const response = await fetch(`/api/transactions?${params.toString()}`)
+export async function getTransactions(filters: ListFilters): Promise<Transaction[]> {
+    const params = new URLSearchParams(Object.entries(filters).filter(([_, value]) => !isEmptyParam(value)))
+    const response = await fetch(`/api/transactions?${params.toString()}`)
 
-        if (!response.ok) throw response
+    if (!response.ok) throw response
 
-        return response.json()
-    }
+    return response.json()
 }
 
-export interface UpcomingFilters {
-    executedUntil?: string
+export async function getTransactionsForAccount(id: number, filters: ListFilters): Promise<Transaction[]> {
+    const params = new URLSearchParams(Object.entries(filters).filter(([_, value]) => !isEmptyParam(value)))
+    const response = await fetch(`/api/transactions/for_account/${id}?${params.toString()}`)
 
-    account?: number[]
-}
+    if (!response.ok) throw response
 
-export function getUpcomingTransactions(filters: UpcomingFilters): () => Promise<Transaction[]> {
-    return async () => {
-        const params = new URLSearchParams(
-            Object.entries(filters).filter(([_, value]) => !isEmptyParam(value))
-        )
-        const response = await fetch(`/api/transactions/upcoming?${params.toString()}`)
-
-        if (!response.ok) throw response
-
-        return response.json()
-    }
+    return response.json()
 }
 
 export interface PendingFilters {
     account?: number[]
 }
 
-export function getPendingTransactions(filters: PendingFilters): () => Promise<Transaction[]> {
-    return async () => {
-        const params = new URLSearchParams(
-            Object.entries(filters).filter(([_, value]) => !isEmptyParam(value))
-        )
-        const response = await fetch(`/api/transactions/pending?${params.toString()}`)
+export async function getPendingTransactions(filters: PendingFilters): Promise<Transaction[]> {
+    const params = new URLSearchParams(Object.entries(filters).filter(([_, value]) => !isEmptyParam(value)))
+    const response = await fetch(`/api/transactions/pending?${params.toString()}`)
 
-        if (!response.ok) throw response
+    if (!response.ok) throw response
 
-        return response.json()
-    }
+    return response.json()
+}
+
+export async function getPendingTransactionsForAccount(id: number, filters: ListFilters): Promise<Transaction[]> {
+    const params = new URLSearchParams(Object.entries(filters).filter(([_, value]) => !isEmptyParam(value)))
+    const response = await fetch(`/api/transactions/pending/for_account/${id}?${params.toString()}`)
+
+    if (!response.ok) throw response
+
+    return response.json()
 }
 
 export async function createTransaction(data: Create): Promise<Transaction> {
