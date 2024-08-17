@@ -39,6 +39,7 @@ export interface Select {
     description?: string | null
     color: string
     icon: Icon
+    archivedAt: string | null
     createdAt: string
     updatedAt: string
     children?: Select[] | null

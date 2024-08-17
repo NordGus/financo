@@ -27,6 +27,7 @@ WITH
         description,
         color,
         icon,
+		archived_at,
         created_at,
         updated_at
     ) AS (
@@ -39,6 +40,7 @@ WITH
             acc.description,
             acc.color,
             acc.icon,
+			acc.archived_at,
             acc.created_at,
             acc.updated_at
         FROM
@@ -56,6 +58,7 @@ SELECT
     acc.description,
     acc.color,
     acc.icon,
+	acc.archived_at,
     acc.created_at,
     acc.updated_at,
     child.id,
@@ -65,6 +68,7 @@ SELECT
     child.description,
     child.color,
     child.icon,
+	child.archived_at,
     child.created_at,
     child.updated_at
 FROM
@@ -85,6 +89,7 @@ type row struct {
 	description      nullable.Type[string]
 	color            string
 	icon             string
+	archivedAt       nullable.Type[time.Time]
 	createdAt        time.Time
 	updatedAt        time.Time
 	childId          nullable.Type[int64]
@@ -94,6 +99,7 @@ type row struct {
 	childDescription nullable.Type[string]
 	childColor       nullable.Type[string]
 	childIcon        nullable.Type[string]
+	childArchivedAt  nullable.Type[time.Time]
 	childCreatedAt   nullable.Type[time.Time]
 	childUpdatedAt   nullable.Type[time.Time]
 }
@@ -145,6 +151,7 @@ func (q *query) Find(ctx context.Context) ([]response.Select, error) {
 			&r.description,
 			&r.color,
 			&r.icon,
+			&r.archivedAt,
 			&r.createdAt,
 			&r.updatedAt,
 			&r.childId,
@@ -154,6 +161,7 @@ func (q *query) Find(ctx context.Context) ([]response.Select, error) {
 			&r.childDescription,
 			&r.childColor,
 			&r.childIcon,
+			&r.childArchivedAt,
 			&r.childCreatedAt,
 			&r.childUpdatedAt,
 		)
@@ -224,6 +232,7 @@ func buildSelect(r row) response.Select {
 		Description: r.description,
 		Color:       color.Type(r.color),
 		Icon:        icon.Type(r.icon),
+		ArchivedAt:  r.archivedAt,
 		CreatedAt:   r.createdAt,
 		UpdatedAt:   r.updatedAt,
 		Children:    make([]response.SelectChild, 0, 10),
@@ -239,6 +248,7 @@ func buildSelectChild(r row) response.SelectChild {
 		Description: r.childDescription,
 		Color:       color.Type(r.childColor.Val),
 		Icon:        icon.Type(r.childIcon.Val),
+		ArchivedAt:  r.childArchivedAt,
 		CreatedAt:   r.childCreatedAt.Val,
 		UpdatedAt:   r.childUpdatedAt.Val,
 	}

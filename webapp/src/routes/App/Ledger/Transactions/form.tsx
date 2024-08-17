@@ -104,6 +104,7 @@ function mapAccountToSelect(account: Account): Select {
         kind: account.kind,
         color: account.color,
         icon: account.icon,
+        archivedAt: account.archivedAt,
         createdAt: account.createdAt,
         updatedAt: account.updatedAt
     }
@@ -226,7 +227,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                 if (account.children) {
                     return [
                         account,
-                        ...account.children.map((child) => ({
+                        ...account.children.filter(({ archivedAt }) => !!archivedAt).map((child) => ({
                             ...child, name: `${account.name} (${child.name})`
                         }))
                     ]
@@ -245,7 +246,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                     if (account.children) {
                         return [
                             account,
-                            ...account.children.map((child) => ({
+                            ...account.children.filter(({ archivedAt }) => !!archivedAt).map((child) => ({
                                 ...child, name: `${account.name} (${child.name})`
                             }))
                         ]
