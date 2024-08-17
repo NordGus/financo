@@ -43,7 +43,7 @@ export type FiltersAction =
 
 export function defaultFilters(): Filters {
     return {
-        from: moment().subtract({ months: 1 }).toDate(),
+        from: moment().startOf('month').toDate(),
         to: moment().toDate(),
         accounts: []
     }
