@@ -10,7 +10,7 @@ import { z } from "zod";
 import { format } from "date-fns";
 import { Form as RouterForm, useNavigate } from "react-router-dom";
 
-import Transaction, { Account, Create, Update } from "@/types/Transaction";
+import Transaction, { Account } from "@/types/Transaction";
 import { Kind, Select } from "@/types/Account";
 
 import { getSelectableAccounts } from "@api/accounts";
@@ -176,7 +176,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                     sourceAmount,
                     targetAmount,
                     notes: notes ? notes : null
-                } as Create)
+                })
                 : await updateTransaction(id, {
                     id,
                     sourceID,
@@ -186,7 +186,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                     sourceAmount,
                     targetAmount,
                     notes: notes ? notes : null
-                } as Update);
+                });
 
             Promise.all([
                 queryClient.invalidateQueries({ queryKey: ["transactions"] }),

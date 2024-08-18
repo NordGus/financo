@@ -2,7 +2,6 @@ import { Currency } from "dinero.js"
 import { Icon, Kind } from "./Account"
 
 export interface Create {
-    kind: Kind
     issuedAt: string
     executedAt: string | null
     notes: string | null
@@ -14,7 +13,6 @@ export interface Create {
 
 export interface Update {
     id: number
-    kind: Kind
     issuedAt: string
     executedAt: string | null
     notes: string | null
