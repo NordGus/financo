@@ -18,5 +18,6 @@ func Routes(r chi.Router) {
 
 	r.Route("/{id}", func(r chi.Router) {
 		r.Delete("/", handlers.Destroy)
+		r.Put("/", handlers.Update)
 	})
 }
