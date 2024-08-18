@@ -1,9 +1,8 @@
-import { LoaderFunction, LoaderFunctionArgs, Outlet } from "react-router-dom";
+import { LoaderFunctionArgs, Outlet } from "react-router-dom";
 import { QueryClient } from "@tanstack/react-query";
 import { useReducer, useState } from "react";
 import { isEqual } from "lodash";
 import { SlidersHorizontalIcon } from "lucide-react";
-import moment from "moment";
 
 import Transaction from "@/types/Transaction";
 
@@ -18,10 +17,8 @@ import {
 import Transactions from "./Transactions";
 import { reducer, defaultFilters, TransactionsFilters } from "@components/filters/transactions";
 
-export function loader(_queryClient: QueryClient): LoaderFunction {
-    return async (_props: LoaderFunctionArgs) => {
-        return { breadcrumb: "Ledger" }
-    }
+export const loader = (_queryClient: QueryClient) => async (_props: LoaderFunctionArgs) => {
+    return { breadcrumb: "Ledger" }
 }
 
 export default function Layout() {
@@ -29,7 +26,6 @@ export default function Layout() {
     const [openForm, setOpenForm] = useState(false)
     const [openFilters, setOpenFilters] = useState(false)
     const [transaction, setTransaction] = useState<Transaction | {}>({})
-    const [reloadSignal, setReloadSignal] = useState(moment().toISOString())
 
     return (
         <div className="gap-4 flex flex-col">
@@ -58,15 +54,14 @@ export default function Layout() {
                             }
                         </SheetTitle>
                     </SheetHeader>
-                    <Transactions.Form transaction={transaction} setOpen={setOpenForm} forceReload={setReloadSignal} />
+                    <Transactions.Form transaction={transaction} setOpen={setOpenForm} />
                 </SheetContent>
             </Sheet>
             <Outlet
                 context={{
                     filters,
                     setTransaction,
-                    setOpen: setOpenForm,
-                    reload: reloadSignal
+                    setOpen: setOpenForm
                 }}
             />
         </div>

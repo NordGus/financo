@@ -1,5 +1,5 @@
-import { LoaderFunction, LoaderFunctionArgs, useOutletContext } from "react-router-dom";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { LoaderFunctionArgs, useLoaderData, useOutletContext } from "react-router-dom";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { QueryClient, useMutation } from "@tanstack/react-query";
 import moment from "moment";
 
@@ -23,17 +23,15 @@ interface OutletContext {
     filters: FiltersState
     setOpen: Dispatch<SetStateAction<boolean>>
     setTransaction: Dispatch<SetStateAction<Transaction | {}>>
-    reload: string
 }
 
-export function loader(_queryClient: QueryClient): LoaderFunction {
-    return async (_props: LoaderFunctionArgs) => {
-        return {}
-    }
+export const loader = (_queryClient: QueryClient) => async (_props: LoaderFunctionArgs) => {
+    return { timestamp: moment().toISOString() }
 }
 
 export default function Index() {
-    const { filters: { filters }, setOpen, setTransaction, reload } = useOutletContext<OutletContext>()
+    const { filters: { filters }, setOpen, setTransaction } = useOutletContext<OutletContext>()
+    const { timestamp } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
 
     const pendingTransactions = useMutation({
         mutationKey: ['transactions', 'pending'],
@@ -52,7 +50,7 @@ export default function Index() {
 
     useEffect(() => {
         pendingTransactions.mutate({ account: filters.accounts })
-    }, [filters, reload])
+    }, [filters, timestamp])
 
     useEffect(() => {
         upcomingTransactions.mutate({
@@ -60,7 +58,7 @@ export default function Index() {
             executedUntil: moment().add({ month: 1 }).toISOString(),
             account: filters.accounts
         })
-    }, [filters, reload])
+    }, [filters, timestamp])
 
     useEffect(() => {
         historyTransactions.mutate({
@@ -68,7 +66,7 @@ export default function Index() {
             executedUntil: filters.to?.toISOString(),
             account: filters.accounts
         })
-    }, [filters, reload])
+    }, [filters, timestamp])
 
     return (
         <Card>

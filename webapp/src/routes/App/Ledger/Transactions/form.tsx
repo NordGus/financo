@@ -8,7 +8,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-import { Form as RouterForm } from "react-router-dom";
+import { Form as RouterForm, useNavigate } from "react-router-dom";
 
 import Transaction, { Account, Create, Update } from "@/types/Transaction";
 import { Kind, Select } from "@/types/Account";
@@ -140,10 +140,10 @@ function executedAtDefault(transaction: Transaction | {}): Date | undefined {
 interface Props {
     transaction: Transaction | {}
     setOpen: Dispatch<SetStateAction<boolean>>
-    forceReload: Dispatch<SetStateAction<string>>
 }
 
-export default function TransactionForm({ transaction, setOpen, forceReload }: Props) {
+export default function TransactionForm({ transaction, setOpen }: Props) {
+    const navigate = useNavigate()
     const queryClient = useQueryClient()
     const { toast } = useToast()
     const form = useForm<z.infer<typeof schema>>({
@@ -198,7 +198,7 @@ export default function TransactionForm({ transaction, setOpen, forceReload }: P
                 title: "Saved!",
                 description: `Transaction between ${tr.source.name} and ${tr.target.name} has been saved`
             })
-            forceReload(moment().toISOString())
+            navigate("/ledger")
         } catch (e) {
             console.error(e)
 
@@ -672,7 +672,6 @@ export default function TransactionForm({ transaction, setOpen, forceReload }: P
                             }
 
                             setOpen(false)
-                            forceReload(moment().toISOString())
                         }}
                     >
                         <Button type="submit" variant="destructive" className="grow">
