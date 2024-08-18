@@ -31,7 +31,7 @@ export default function Layout() {
                 <span className="grow contents-['']"></span>
                 <Sheet open={openSheet} onOpenChange={setOpenSheet}>
                     <SheetTrigger asChild={true}>
-                        <Button>Add Account</Button>
+                        <Button>New</Button>
                     </SheetTrigger>
                     <SheetContent className="w-[400px] sm:w-[540px] sm:max-w-[540px]">
                         <SheetHeader>

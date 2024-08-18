@@ -39,7 +39,7 @@ interface Props {
     className?: string
 }
 
-// [ ] make endpoints specialized to retrieved transactions for a given account
+// [x] make endpoints specialized to retrieved transactions for a given account
 export function Transactions({ account, className }: Props) {
     const [filters, dispatch] = useReducer(reducer, { clearable: false, filters: defaultFilters() })
     const [openFilters, setOpenFilters] = useState(false)
