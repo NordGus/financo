@@ -63,7 +63,7 @@ export async function createTransaction(data: Create): Promise<Transaction> {
 
 export async function updateTransaction(id: number, data: Update): Promise<Transaction> {
     const response = await fetch(`/api/transactions/${id}`, {
-        method: "POST",
+        method: "PUT",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
