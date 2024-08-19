@@ -1,4 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-  
+
+.lucide {
+    stroke-width: 1.5;
+}
+
+.lucide * {
+    vector-effect: non-scaling-stroke;
+}
