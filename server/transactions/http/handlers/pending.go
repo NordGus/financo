@@ -16,7 +16,8 @@ import (
 
 func Pending(w http.ResponseWriter, r *http.Request) {
 	var (
-		ids = make([]int64, 0, 10)
+		accounts   = make([]int64, 0, 10)
+		categories = make([]int64, 0, 10)
 
 		from nullable.Type[time.Time]
 		to   nullable.Type[time.Time]
@@ -82,11 +83,34 @@ func Pending(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			ids = append(ids, parsed)
+			accounts = append(accounts, parsed)
 		}
 	}
 
-	res, err := pending_query.New(from, to, ids, conn).Find(r.Context())
+	if r.URL.Query().Has(categoryKey) {
+		raw := strings.Split(r.URL.Query().Get(categoryKey), ",")
+
+		for i := 0; i < len(raw); i++ {
+			if raw[i] == "" {
+				continue
+			}
+
+			parsed, err := strconv.ParseInt(raw[i], 10, 64)
+			if err != nil {
+				log.Println("failed to parsed id", err)
+				http.Error(
+					w,
+					http.StatusText(http.StatusInternalServerError),
+					http.StatusInternalServerError,
+				)
+				return
+			}
+
+			categories = append(categories, parsed)
+		}
+	}
+
+	res, err := pending_query.New(from, to, accounts, categories, conn).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(
