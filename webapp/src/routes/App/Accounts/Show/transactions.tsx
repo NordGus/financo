@@ -58,16 +58,18 @@ export function Transactions({ account, className }: Props) {
     })
 
     useEffect(() => {
-        pendingMutation.mutate({ account: [...filters.filters.accounts] })
+        pendingMutation.mutate({ account: filters.filters.accounts, category: filters.filters.categories })
         upcomingMutation.mutate({
             executedFrom: moment().add({ days: 1 }).toISOString(),
             executedUntil: moment().add({ month: 1 }).toISOString(),
-            account: filters.filters.accounts
+            account: filters.filters.accounts,
+            category: filters.filters.categories
         })
         historyMutation.mutate({
             executedFrom: filters.filters.from?.toISOString(),
             executedUntil: filters.filters.to?.toISOString(),
-            account: filters.filters.accounts
+            account: filters.filters.accounts,
+            category: filters.filters.categories
         })
     }, [filters, account.updatedAt])
 
