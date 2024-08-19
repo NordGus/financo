@@ -49,14 +49,15 @@ export default function Index() {
     })
 
     useEffect(() => {
-        pendingTransactions.mutate({ account: filters.accounts })
+        pendingTransactions.mutate({ account: filters.accounts, category: filters.categories })
     }, [filters, timestamp])
 
     useEffect(() => {
         upcomingTransactions.mutate({
             executedFrom: moment().add({ days: 1 }).toISOString(),
             executedUntil: moment().add({ month: 1 }).toISOString(),
-            account: filters.accounts
+            account: filters.accounts,
+            category: filters.categories
         })
     }, [filters, timestamp])
 
@@ -64,7 +65,8 @@ export default function Index() {
         historyTransactions.mutate({
             executedFrom: filters.from?.toISOString(),
             executedUntil: filters.to?.toISOString(),
-            account: filters.accounts
+            account: filters.accounts,
+            category: filters.categories
         })
     }, [filters, timestamp])
 
