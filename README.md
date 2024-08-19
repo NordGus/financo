@@ -47,7 +47,7 @@ A simple personal finances application to bring order to the chaos of your perso
 - [x] Refactor Account list endpoint.
 - [x] Develop an Account list endpoint for selects in the app.
 - [ ] Migrate elements from this list to a Notion project.
-- [ ] Migrate to `shadcn/ui` for ui
+- [x] Migrate to `shadcn/ui` for ui
   - [x] Layout
   - [x] Accounts
     - [x] Redesign index

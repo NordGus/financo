@@ -69,11 +69,8 @@ export default function Index() {
     }, [filters, timestamp])
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Transactions</CardTitle>
-            </CardHeader>
-            <Accordion type="multiple">
+        <div className="flex flex-col">
+            <Accordion type="multiple" className="flex flex-col">
                 <TransactionsUpcoming
                     mutation={upcomingTransactions} setOpen={setOpen} setTransaction={setTransaction}
                 />
@@ -81,9 +78,11 @@ export default function Index() {
                     mutation={pendingTransactions} setOpen={setOpen} setTransaction={setTransaction}
                 />
             </Accordion>
-            <TransactionsHistory
-                mutation={historyTransactions} setOpen={setOpen} setTransaction={setTransaction}
-            />
-        </Card>
+            <Card>
+                <TransactionsHistory
+                    mutation={historyTransactions} setOpen={setOpen} setTransaction={setTransaction}
+                />
+            </Card>
+        </div>
     )
 }

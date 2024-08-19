@@ -6,7 +6,7 @@ import Transaction from "@/types/Transaction"
 
 import { ListFilters } from "@api/transactions"
 
-import { CardContent, CardFooter } from "@components/ui/card"
+import { CardContent, CardFooter, CardHeader } from "@components/ui/card"
 import { Throbber } from "@components/Throbber"
 import { TransactionTable } from "./table"
 
@@ -30,6 +30,7 @@ export function TransactionsHistory({ mutation: { data, isPending, isError, erro
 
     if (isEmpty(data) || isNil(data)) return (
         <>
+            <CardHeader></CardHeader>
             <CardContent className="flex flex-row gap-4 justify-center items-center">
                 <p>There's no <span className="font-bold">Transactions</span> for the given filters</p>
             </CardContent>

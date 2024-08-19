@@ -6,7 +6,7 @@ import Transaction from "@/types/Transaction"
 
 import { ListFilters } from "@api/transactions"
 
-import { CardContent, CardDescription } from "@components/ui/card"
+import { Card, CardContent, CardDescription } from "@components/ui/card"
 import { Throbber } from "@components/Throbber"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@components/ui/accordion"
 import { TransactionTable } from "./table"
@@ -23,31 +23,35 @@ export function TransactionsUpcoming({
     if (isError) throw error
 
     if (isPending) return (
-        <CardContent className="flex flex-row gap-4 justify-center items-center">
-            <Throbber /> <p>Fetching</p>
-        </CardContent>
+        <Card className="mb-4 overflow-clip">
+            <CardContent className="flex flex-row gap-4 justify-center items-center">
+                <Throbber /> <p>Fetching</p>
+            </CardContent>
+        </Card>
     )
 
     if (isEmpty(data) || isNil(data)) return null
 
     return (
-        <AccordionItem value="upcoming" className="border-none">
-            <AccordionTrigger className="px-5">Upcoming</AccordionTrigger>
-            <AccordionContent className="pb-0 mb-4 border-b dark:border-zinc-800">
-                <CardContent>
-                    <CardDescription>
-                        Transactions that will become effective in the next month
-                    </CardDescription>
-                </CardContent>
-                <TransactionTable
-                    transactions={data}
-                    sortByFn={(a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)}
-                    groupByFn={({ executedAt }) => executedAt!}
-                    setOpen={setOpen}
-                    setTransaction={setTransaction}
-                    withUpcoming={false}
-                />
-            </AccordionContent>
-        </AccordionItem>
+        <Card className="mb-4 overflow-clip">
+            <AccordionItem value="upcoming" className="border-none">
+                <AccordionTrigger className="px-5">Upcoming</AccordionTrigger>
+                <AccordionContent className="pb-0">
+                    <CardContent>
+                        <CardDescription>
+                            Transactions that will become effective in the next month
+                        </CardDescription>
+                    </CardContent>
+                    <TransactionTable
+                        transactions={data}
+                        sortByFn={(a, b) => Date.parse(b.executedAt!) - Date.parse(a.executedAt!)}
+                        groupByFn={({ executedAt }) => executedAt!}
+                        setOpen={setOpen}
+                        setTransaction={setTransaction}
+                        withUpcoming={false}
+                    />
+                </AccordionContent>
+            </AccordionItem>
+        </Card>
     )
 }
