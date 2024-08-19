@@ -14,23 +14,26 @@ import (
 )
 
 type query struct {
-	from     nullable.Type[time.Time]
-	to       nullable.Type[time.Time]
-	accounts []int64
-	conn     *pgxpool.Conn
+	from       nullable.Type[time.Time]
+	to         nullable.Type[time.Time]
+	accounts   []int64
+	categories []int64
+	conn       *pgxpool.Conn
 }
 
 func New(
 	from nullable.Type[time.Time],
 	to nullable.Type[time.Time],
 	accounts []int64,
+	categories []int64,
 	conn *pgxpool.Conn,
 ) queries.Query[[]response.Detailed] {
 	return &query{
-		from:     from,
-		to:       to,
-		accounts: accounts,
-		conn:     conn,
+		from:       from,
+		to:         to,
+		accounts:   accounts,
+		categories: categories,
+		conn:       conn,
 	}
 }
 
@@ -56,15 +59,15 @@ func (q *query) Find(ctx context.Context) ([]response.Detailed, error) {
 		filter++
 	}
 
-	if len(q.accounts) == 1 {
+	if len(q.accounts) > 0 {
 		query += fmt.Sprintf(" AND (tr.source_id = ANY ($%d) OR tr.target_id = ANY ($%d))", filter, filter)
 		filters = append(filters, q.accounts)
 		filter++
 	}
 
-	if len(q.accounts) > 1 {
-		query += fmt.Sprintf(" AND (tr.source_id = ANY ($%d) AND tr.target_id = ANY ($%d))", filter, filter)
-		filters = append(filters, q.accounts)
+	if len(q.categories) > 0 {
+		query += fmt.Sprintf(" AND (tr.source_id = ANY ($%d) OR tr.target_id = ANY ($%d))", filter, filter)
+		filters = append(filters, q.categories)
 		filter++
 	}
 

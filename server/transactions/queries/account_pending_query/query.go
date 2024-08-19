@@ -14,11 +14,12 @@ import (
 )
 
 type query struct {
-	id       int64
-	from     nullable.Type[time.Time]
-	to       nullable.Type[time.Time]
-	accounts []int64
-	conn     *pgxpool.Conn
+	id         int64
+	from       nullable.Type[time.Time]
+	to         nullable.Type[time.Time]
+	accounts   []int64
+	categories []int64
+	conn       *pgxpool.Conn
 }
 
 func New(
@@ -26,20 +27,23 @@ func New(
 	from nullable.Type[time.Time],
 	to nullable.Type[time.Time],
 	accounts []int64,
+	categories []int64,
 	conn *pgxpool.Conn,
 ) queries.Query[[]response.Detailed] {
 	return &query{
-		id:       id,
-		from:     from,
-		to:       to,
-		accounts: accounts,
-		conn:     conn,
+		id:         id,
+		from:       from,
+		to:         to,
+		accounts:   accounts,
+		categories: categories,
+		conn:       conn,
 	}
 }
 
 func (q *query) Find(ctx context.Context) ([]response.Detailed, error) {
 	var (
 		query   = base.BaseQueryList + " AND tr.executed_at IS NULL"
+		ids     = make([]int64, 0, len(q.accounts)+len(q.categories))
 		res     = make([]response.Detailed, 0, 20)
 		filters = make([]any, 0, 3)
 		filter  = 1
@@ -69,9 +73,12 @@ func (q *query) Find(ctx context.Context) ([]response.Detailed, error) {
 		filter++
 	}
 
-	if len(q.accounts) > 0 {
+	ids = append(ids, q.accounts...)
+	ids = append(ids, q.categories...)
+
+	if len(ids) > 0 {
 		query += fmt.Sprintf(" AND (tr.source_id = ANY ($%d) OR tr.target_id = ANY ($%d))", filter, filter)
-		filters = append(filters, q.accounts)
+		filters = append(filters, ids)
 		filter++
 	}
 
