@@ -21,6 +21,7 @@ export function TransactionsHistory({ mutation: { data, isPending, isError, erro
 
     if (isPending) return (
         <>
+            <CardHeader></CardHeader>
             <CardContent className="flex flex-row gap-4 justify-center items-center">
                 <Throbber /> <p>Fetching</p>
             </CardContent>
