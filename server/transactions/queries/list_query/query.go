@@ -56,8 +56,14 @@ func (q *query) Find(ctx context.Context) ([]response.Detailed, error) {
 		filter++
 	}
 
-	if len(q.accounts) > 0 {
+	if len(q.accounts) == 1 {
 		query += fmt.Sprintf(" AND (tr.source_id = ANY ($%d) OR tr.target_id = ANY ($%d))", filter, filter)
+		filters = append(filters, q.accounts)
+		filter++
+	}
+
+	if len(q.accounts) > 1 {
+		query += fmt.Sprintf(" AND (tr.source_id = ANY ($%d) AND tr.target_id = ANY ($%d))", filter, filter)
 		filters = append(filters, q.accounts)
 		filter++
 	}
