@@ -6,7 +6,7 @@ import Transaction from "@/types/Transaction"
 
 import { ListFilters } from "@api/transactions"
 
-import { CardContent, CardFooter, CardHeader } from "@components/ui/card"
+import { CardContent } from "@components/ui/card"
 import { Throbber } from "@components/Throbber"
 import { TransactionTable } from "./table"
 
@@ -20,23 +20,15 @@ export function TransactionsHistory({ mutation: { data, isPending, isError, erro
     if (isError) throw error
 
     if (isPending) return (
-        <>
-            <CardHeader></CardHeader>
-            <CardContent className="flex flex-row gap-4 justify-center items-center">
-                <Throbber /> <p>Fetching</p>
-            </CardContent>
-            <CardFooter></CardFooter>
-        </>
+        <CardContent className="flex flex-row gap-4 justify-center items-center py-4">
+            <Throbber variant="small" /> <p>Fetching</p>
+        </CardContent>
     )
 
     if (isEmpty(data) || isNil(data)) return (
-        <>
-            <CardHeader></CardHeader>
-            <CardContent className="flex flex-row gap-4 justify-center items-center">
-                <p>There's no <span className="font-bold">Transactions</span> for the given filters</p>
-            </CardContent>
-            <CardFooter></CardFooter>
-        </>
+        <CardContent className="flex flex-row gap-4 justify-center items-center py-4">
+            <p>There's no <span className="font-bold">Transactions</span> for the given filters</p>
+        </CardContent>
     )
 
     return (

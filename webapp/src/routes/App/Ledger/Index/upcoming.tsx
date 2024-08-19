@@ -24,8 +24,8 @@ export function TransactionsUpcoming({
 
     if (isPending) return (
         <Card className="mb-4 overflow-clip">
-            <CardContent className="flex flex-row gap-4 justify-center items-center">
-                <Throbber /> <p>Fetching</p>
+            <CardContent className="flex flex-row gap-4 justify-center items-center py-4">
+                <Throbber variant="small" /> <p>Fetching</p>
             </CardContent>
         </Card>
     )
