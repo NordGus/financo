@@ -7,6 +7,7 @@ export interface ListFilters {
     executedUntil?: string
 
     account?: number[]
+    categories?: number[]
 }
 
 export async function getTransactions(filters: ListFilters): Promise<Transaction[]> {
@@ -29,6 +30,7 @@ export async function getTransactionsForAccount(id: number, filters: ListFilters
 
 export interface PendingFilters {
     account?: number[]
+    categories?: number[]
 }
 
 export async function getPendingTransactions(filters: PendingFilters): Promise<Transaction[]> {
