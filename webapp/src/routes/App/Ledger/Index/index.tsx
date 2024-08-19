@@ -12,7 +12,7 @@ import {
     PendingFilters,
 } from "@api/transactions";
 
-import { Card, CardHeader, CardTitle } from "@components/ui/card";
+import { Card } from "@components/ui/card";
 import { Accordion } from "@components/ui/accordion";
 import { TransactionsHistory } from "./history";
 import { TransactionsPending } from "./pending"
