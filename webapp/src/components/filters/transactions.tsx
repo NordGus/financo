@@ -157,11 +157,7 @@ export function TransactionsFilters({ state, dispatch, open, setOpen, excludeAcc
                         onSelect={setRange}
                         numberOfMonths={2}
                     />
-                    <Accordion
-                        type="multiple"
-                        className="flex flex-col gap-2"
-                        defaultValue={["accounts", "categories"]}
-                    >
+                    <Accordion type="multiple" defaultValue={["accounts", "categories"]}>
                         {
                             isFetching
                                 ? <div className="flex justify-center items-center gap-2">
