@@ -5,11 +5,11 @@ import { cva } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const linkVariants = cva(
-    "flex h-8 w-8 items-center justify-center rounded transition-colors",
+    "flex p-0 m-0 items-center justify-center rounded transition-colors",
     {
         variants: {
             variant: {
-                active: "bg-zinc-950 dark:bg-zinc-50 text-zinc-50 dark:text-zinc-950",
+                active: "text-zinc-950 dark:text-zinc-50",
                 pending: "bg-zinc-950 dark:bg-zinc-50 text-zinc-950 dark:text-zinc-50 animate-pulse",
                 default: "text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50"
             }
