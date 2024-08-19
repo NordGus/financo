@@ -29,7 +29,7 @@ export default function Layout() {
 
     return (
         <div className="gap-4 flex flex-col">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
                 <Breadcrumbs />
                 <span className="grow contents-['']"></span>
                 {
