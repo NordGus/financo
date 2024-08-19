@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react"
 import { groupBy, isNil } from "lodash"
+import { ArchiveIcon } from "@radix-ui/react-icons"
 import moment from "moment"
 
 import Transaction from "@/types/Transaction"
@@ -66,7 +67,7 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
 
     return (
         <>
-            <TableRow className="border-t dark:border-zinc-800">
+            <TableRow className="dark:border-zinc-800">
                 <TableHead colSpan={8}>
                     {date.toLocaleDateString(undefined, {
                         weekday: "long",
@@ -97,11 +98,18 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
                             {kindToHuman(transaction.source.kind).at(0)}
                         </TableCell>
                         <TableCell className="w-[40dvw]">
-                            {
-                                isNil(transaction.source.parent)
-                                    ? `${transaction.source.name}`
-                                    : `${transaction.source.parent.name} (${transaction.source.name})`
-                            }
+                            <div className="flex flex-row gap-2 items-center">
+                                <span>
+                                    {
+                                        isNil(transaction.source.parent)
+                                            ? `${transaction.source.name}`
+                                            : `${transaction.source.parent.name} (${transaction.source.name})`
+                                    }
+                                </span>
+                                {
+                                    !isNil(transaction.source.archivedAt) && <ArchiveIcon />
+                                }
+                            </div>
                         </TableCell>
                         <TableCell
                             className={cn(
@@ -130,7 +138,7 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
                             {kindToHuman(transaction.target.kind).at(0)}
                         </TableCell>
                         <TableCell className="w-[40dvw]">
-                            <div className="flex flex-row gap-4">
+                            <div className="flex flex-row gap-2 items-center">
                                 <span>
                                     {
                                         isNil(transaction.target.parent)
@@ -138,6 +146,9 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
                                             : `${transaction.target.parent.name} (${transaction.target.name})`
                                     }
                                 </span>
+                                {
+                                    !isNil(transaction.target.archivedAt) && <ArchiveIcon />
+                                }
                             </div>
                         </TableCell>
                         <TableCell
@@ -150,7 +161,7 @@ function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setT
                                 {currencyAmountToHuman(transaction.targetAmount, transaction.target.currency)}
                             </span>
                         </TableCell>
-                    </TableRow>
+                    </TableRow >
                 ))
             }
         </>
