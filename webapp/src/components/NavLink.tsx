@@ -5,7 +5,7 @@ import { cva } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const linkVariants = cva(
-    "flex h-9 w-10 items-center justify-center rounded-lg transition-colors md:h-10 md:w-10",
+    "flex h-8 w-8 items-center justify-center rounded transition-colors",
     {
         variants: {
             variant: {
