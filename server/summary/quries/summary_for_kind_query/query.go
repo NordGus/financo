@@ -47,6 +47,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 				acc.kind = ANY ($1)
 				AND tr.deleted_at IS NULL
 				AND acc.deleted_at IS NULL
+				AND acc.archived_at IS NULL
 				AND tr.executed_at IS NOT NULL
 				AND tr.executed_at <= NOW()
 			GROUP BY
@@ -84,6 +85,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 				acc.kind = ANY ($1)
 				AND tr.deleted_at IS NULL
 				AND acc.deleted_at IS NULL
+				AND acc.archived_at IS NULL
 				AND tr.issued_at <= NOW()
 			GROUP BY
 				acc.currency
@@ -159,6 +161,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 							AND acc.currency = $2
 							AND tr.deleted_at IS NULL
 							AND acc.deleted_at IS NULL
+							AND acc.archived_at IS NULL
 							AND tr.executed_at IS NOT NULL
 							AND tr.executed_at BETWEEN (NOW() - INTERVAL '29' DAY)::DATE AND NOW()
 						GROUP BY
@@ -213,6 +216,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 							AND acc.currency = $2
 							AND tr.deleted_at IS NULL
 							AND acc.deleted_at IS NULL
+							AND acc.archived_at IS NULL
 							AND tr.issued_at BETWEEN (NOW() - INTERVAL '29' DAY)::DATE AND NOW()
 						GROUP BY
 							tr.issued_at, acc.currency
@@ -252,6 +256,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 				AND acc.currency = $2
 				AND tr.deleted_at IS NULL
 				AND acc.deleted_at IS NULL
+				AND acc.archived_at IS NULL
 				AND tr.executed_at IS NOT NULL
 				AND tr.executed_at <= (NOW() - INTERVAL '30' DAY)
 			GROUP BY
@@ -292,6 +297,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 				AND acc.currency = $2
 				AND tr.deleted_at IS NULL
 				AND acc.deleted_at IS NULL
+				AND acc.archived_at IS NULL
 				AND tr.issued_at <= (NOW() - INTERVAL '30' DAY)
 			GROUP BY
 				acc.currency

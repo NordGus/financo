@@ -3,51 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"financo/server/summary/quries/summary_for_kind_query"
-	"financo/server/summary/types/response"
 	"financo/server/types/generic/context_key"
 	"financo/server/types/records/account"
-	"financo/server/types/shared/currency"
 	"log"
 	"net/http"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
-
-const (
-	creditsQuery = `
-SELECT acc.currency, SUM(tr.target_amount)
-FROM transactions tr
-    INNER JOIN accounts acc ON acc.id = tr.target_id
-WHERE
-    acc.kind = ANY ($1)
-    AND tr.deleted_at IS NULL
-    AND acc.deleted_at IS NULL
-    AND tr.executed_at IS NOT NULL
-    AND tr.executed_at <= NOW()
-GROUP BY
-    acc.currency
-ORDER BY acc.currency
-`
-	debitsQuery = `
-SELECT acc.currency, SUM(- tr.source_amount)
-FROM transactions tr
-    INNER JOIN accounts acc ON acc.id = tr.source_id
-WHERE
-    acc.kind = ANY ($1)
-    AND tr.deleted_at IS NULL
-    AND acc.deleted_at IS NULL
-    AND tr.issued_at <= NOW()
-GROUP BY
-    acc.currency
-ORDER BY acc.currency
-	`
-)
-
-type Balance struct {
-	Currency currency.Type          `json:"currency"`
-	Amount   int64                  `json:"amount"`
-	Series   []response.SeriesEntry `json:"series"`
-}
 
 func Capital(w http.ResponseWriter, r *http.Request) {
 	var (
