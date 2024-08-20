@@ -1,4 +1,4 @@
-package capital_query
+package summary_for_kind_query
 
 import (
 	"context"
@@ -23,10 +23,10 @@ type query struct {
 	timestamp time.Time
 }
 
-func New(conn *pgxpool.Conn) queries.Query[[]response.Global] {
+func New(kinds []account.Kind, conn *pgxpool.Conn) queries.Query[[]response.Global] {
 	return &query{
 		conn:      conn,
-		kinds:     []account.Kind{account.CapitalNormal, account.CapitalSavings},
+		kinds:     kinds,
 		timestamp: time.Now().UTC(),
 	}
 }

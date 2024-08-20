@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
-import { Area, AreaChart, Label, ReferenceLine, XAxis } from "recharts";
+import { Area, AreaChart, ReferenceLine, XAxis } from "recharts";
 import moment from "moment";
 import { Currency } from "dinero.js";
 import { format } from "date-fns";
@@ -113,6 +113,7 @@ export function CardSummary({
                             y={0}
                             className="text-zinc-950 dark:text-zinc-50"
                             strokeWidth={1}
+                            opacity={0.4}
                             strokeDasharray="3 3"
                         ></ReferenceLine>
                     </AreaChart>

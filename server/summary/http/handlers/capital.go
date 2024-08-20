@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"financo/server/summary/quries/capital_query"
+	"financo/server/summary/quries/summary_for_kind_query"
 	"financo/server/summary/types/response"
 	"financo/server/types/generic/context_key"
+	"financo/server/types/records/account"
 	"financo/server/types/shared/currency"
 	"log"
 	"net/http"
@@ -49,6 +50,10 @@ type Balance struct {
 }
 
 func Capital(w http.ResponseWriter, r *http.Request) {
+	var (
+		kinds = []account.Kind{account.CapitalNormal, account.CapitalSavings}
+	)
+
 	conn, ok := r.Context().Value(context_key.DB).(*pgxpool.Conn)
 	if !ok {
 		log.Println("failed to retrieved database connection")
@@ -60,7 +65,7 @@ func Capital(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := capital_query.New(conn).Find(r.Context())
+	res, err := summary_for_kind_query.New(kinds, conn).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(
