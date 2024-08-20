@@ -30,7 +30,7 @@ export function loader(_queryClient: QueryClient): LoaderFunction {
 export default function Index() {
     return (
         <>
-            <div className="grid grid-cols-4 gap-4 h-[20dvh] items-stretch">
+            <div className="grid grid-cols-4 gap-4 items-stretch">
                 <SummaryCapital className="grow" key="summary:capital" />
                 <SummaryDebt className="grow" key="summary:debt" />
                 <SummaryNetWorth className="grow" key="summary:netWorth" />

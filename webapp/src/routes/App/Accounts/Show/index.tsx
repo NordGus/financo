@@ -87,7 +87,7 @@ export default function Show() {
                             ? "This month's balance"
                             : "Balance"
                 }
-                balances={[{ amount: account.balance, currency: account.currency }]}
+                summaries={[{ amount: account.balance, currency: account.currency }]}
                 className={
                     cn("grow",
                         isCapitalAccount(account.kind) && "col-span-4",
@@ -100,7 +100,7 @@ export default function Show() {
                     ? <CardSummary
                         key={`summary:account:${id}:paid`}
                         title={account.kind === Kind.DebtCredit ? "Available Credit" : "Paid"}
-                        balances={[
+                        summaries={[
                             {
                                 amount: account.capital + account.balance,
                                 currency: account.currency
@@ -115,7 +115,7 @@ export default function Show() {
                     ? <CardSummary
                         key={`summary:account:${id}:capital`}
                         title={account.kind === Kind.DebtCredit ? "Credit" : "Amount"}
-                        balances={
+                        summaries={
                             account.kind === Kind.DebtCredit
                                 ? [{ amount: account.capital, currency: account.currency }]
                                 : [{ amount: -account.capital, currency: account.currency }]

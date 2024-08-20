@@ -20,7 +20,7 @@ export function SummaryCapital({ className }: { className?: string }) {
     if (isError) throw error
     if (isFetching) return null
 
-    return <CardSummary className={className} title="Capital" balances={balances || []} />
+    return <CardSummary className={className} title="Capital" summaries={balances || []} />
 }
 
 export function SummaryDebt({ className }: { className?: string }) {
@@ -33,7 +33,7 @@ export function SummaryDebt({ className }: { className?: string }) {
     if (isError) throw error
     if (isFetching) return null
 
-    return <CardSummary className={className} title="Debt" balances={balances || []} />
+    return <CardSummary className={className} title="Debt" summaries={balances || []} />
 }
 
 export function SummaryNetWorth({ className }: { className?: string }) {
@@ -46,7 +46,7 @@ export function SummaryNetWorth({ className }: { className?: string }) {
     if (isError) throw error
     if (isFetching) return null
 
-    return <CardSummary className={className} title="Net Worth" balances={balances || []} />
+    return <CardSummary className={className} title="Net Worth" summaries={balances || []} />
 }
 
 export function SummaryAvailableCredit({ className }: { className?: string }) {
@@ -59,5 +59,5 @@ export function SummaryAvailableCredit({ className }: { className?: string }) {
     if (isError) throw error
     if (isFetching) return null
 
-    return <CardSummary className={className} title="Available Credit" balances={balances || []} />
+    return <CardSummary className={className} title="Available Credit" summaries={balances || []} />
 }
