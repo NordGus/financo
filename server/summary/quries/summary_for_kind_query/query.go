@@ -36,20 +36,28 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 		res = make([]response.Global, 0, 5)
 	)
 
-	// credits
+	// total amount per currency
 	rows, err := q.conn.Query(
 		ctx,
 		`
-			SELECT acc.currency, SUM(tr.target_amount)
+			SELECT
+				acc.currency,
+				SUM(
+					CASE
+						WHEN tr.target_id = acc.id THEN tr.target_amount
+						WHEN tr.source_id = acc.id THEN - tr.source_amount
+						ELSE 0
+					END
+				)
 			FROM transactions tr
-				INNER JOIN accounts acc ON acc.id = tr.target_id
+				INNER JOIN accounts acc ON acc.id = tr.target_id OR acc.id = tr.source_id
 			WHERE
 				acc.kind = ANY ($1)
 				AND tr.deleted_at IS NULL
 				AND acc.deleted_at IS NULL
 				AND acc.archived_at IS NULL
-				AND tr.executed_at IS NOT NULL
-				AND tr.executed_at <= NOW()
+				AND (tr.executed_at IS NULL OR tr.executed_at <= NOW())
+				AND tr.issued_at <= NOW()
 			GROUP BY
 				acc.currency
 			ORDER BY acc.currency
@@ -74,70 +82,10 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 
 	rows.Close()
 
-	// debits
-	rows, err = q.conn.Query(
-		ctx,
-		`
-			SELECT acc.currency, SUM(tr.source_amount)
-			FROM transactions tr
-				INNER JOIN accounts acc ON acc.id = tr.source_id
-			WHERE
-				acc.kind = ANY ($1)
-				AND tr.deleted_at IS NULL
-				AND acc.deleted_at IS NULL
-				AND acc.archived_at IS NULL
-				AND tr.issued_at <= NOW()
-			GROUP BY
-				acc.currency
-			ORDER BY acc.currency
-		`,
-		q.kinds,
-	)
-	if err != nil {
-		return res, errors.Join(errors.New("failed to calculate balances"), err)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var (
-			r     balance
-			found = false
-		)
-
-		err = rows.Scan(&r.currency, &r.amount)
-		if err != nil {
-			return res, errors.Join(errors.New("failed to scan balances"), err)
-		}
-
-		for i := 0; i < len(res); i++ {
-			if res[i].Currency == r.currency {
-				res[i].Amount -= r.amount
-				found = true
-				break
-			}
-		}
-
-		if found {
-			continue
-		}
-
-		res = append(res, response.Global{
-			Currency: r.currency,
-			Amount:   -r.amount,
-			Series:   make([]response.SeriesEntry, 0, 30),
-		})
-	}
-
-	rows.Close()
-
 	for i := 0; i < len(res); i++ {
-		var (
-			debits  = make([]response.SeriesEntry, 0, 30)
-			credits = make([]response.SeriesEntry, 0, 30)
-			blc     balance
-		)
+		var blc balance
 
-		// credits
+		// total
 		rows, err = q.conn.Query(
 			ctx,
 			`
@@ -153,19 +101,30 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 				SELECT bd.date::DATE, SUM(COALESCE(blc.amount, 0))
 				FROM balance_day bd
 					LEFT JOIN (
-						SELECT tr.executed_at AS date, acc.currency AS currency, SUM(tr.target_amount) AS amount
+						SELECT
+							COALESCE(tr.executed_at, tr.issued_at) AS date,
+							acc.currency AS currency,
+							SUM(
+								CASE
+									WHEN tr.target_id = acc.id THEN tr.target_amount
+									WHEN tr.source_id = acc.id THEN - tr.source_amount
+									ELSE 0
+								END
+							) AS amount
 						FROM transactions tr
-							INNER JOIN accounts acc ON acc.id = tr.target_id
+							INNER JOIN accounts acc ON acc.id = tr.target_id OR acc.id = tr.source_id
 						WHERE
 							acc.kind = ANY ($1)
 							AND acc.currency = $2
 							AND tr.deleted_at IS NULL
 							AND acc.deleted_at IS NULL
 							AND acc.archived_at IS NULL
-							AND tr.executed_at IS NOT NULL
-							AND tr.executed_at BETWEEN (NOW() - INTERVAL '29' DAY)::DATE AND NOW()
+							AND (
+								tr.executed_at IS NULL
+								OR tr.executed_at BETWEEN (NOW() - INTERVAL '29' DAY)::DATE AND NOW())
+							AND tr.issued_at BETWEEN (NOW() - INTERVAL '29' DAY)::DATE AND NOW()
 						GROUP BY
-							tr.executed_at, acc.currency
+							tr.executed_at, tr.issued_at, acc.currency
 						ORDER BY acc.currency
 					) AS blc ON blc.date = bd.date::DATE
 				GROUP BY bd.date
@@ -187,117 +146,33 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 				return res, errors.Join(errors.New("failed to scan series entry for currency"), err)
 			}
 
-			credits = append(credits, r)
+			res[i].Series = append(res[i].Series, r)
 		}
 
 		rows.Close()
 
-		// debits
-		rows, err = q.conn.Query(
-			ctx,
-			`
-				WITH RECURSIVE
-					balance_day AS (
-						SELECT NOW() as date
-						UNION ALL
-						SELECT date - INTERVAL '1' DAY
-						FROM balance_day
-						WHERE
-							date > NOW() - INTERVAL '29' DAY
-					)
-				SELECT bd.date::DATE, SUM(COALESCE(blc.amount, 0))
-				FROM balance_day bd
-					LEFT JOIN (
-						SELECT tr.issued_at AS date, acc.currency AS currency, SUM(tr.target_amount) AS amount
-						FROM transactions tr
-							INNER JOIN accounts acc ON acc.id = tr.source_id
-						WHERE
-							acc.kind = ANY ($1)
-							AND acc.currency = $2
-							AND tr.deleted_at IS NULL
-							AND acc.deleted_at IS NULL
-							AND acc.archived_at IS NULL
-							AND tr.issued_at BETWEEN (NOW() - INTERVAL '29' DAY)::DATE AND NOW()
-						GROUP BY
-							tr.issued_at, acc.currency
-						ORDER BY acc.currency
-					) AS blc ON blc.date = bd.date::DATE
-				GROUP BY bd.date
-				ORDER BY bd.date
-			`,
-			q.kinds,
-			res[i].Currency,
-		)
-		if err != nil {
-			return res, errors.Join(errors.New("failed to find series for currency"), err)
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var r response.SeriesEntry
-
-			err = rows.Scan(&r.Date, &r.Amount)
-			if err != nil {
-				return res, errors.Join(errors.New("failed to scan series entry for currency"), err)
-			}
-
-			debits = append(debits, r)
-		}
-
-		// balance credits
+		// balance before data
 		rows, err := q.conn.Query(
 			ctx,
 			`
-			SELECT acc.currency, SUM(tr.target_amount)
+			SELECT
+				acc.currency,
+				SUM(
+					CASE
+						WHEN tr.target_id = acc.id THEN tr.target_amount
+						WHEN tr.source_id = acc.id THEN - tr.source_amount
+						ELSE 0
+					END
+				)
 			FROM transactions tr
-				INNER JOIN accounts acc ON acc.id = tr.target_id
+				INNER JOIN accounts acc ON acc.id = tr.target_id OR acc.id = tr.source_id
 			WHERE
 				acc.kind = ANY ($1)
 				AND acc.currency = $2
 				AND tr.deleted_at IS NULL
 				AND acc.deleted_at IS NULL
 				AND acc.archived_at IS NULL
-				AND tr.executed_at IS NOT NULL
-				AND tr.executed_at <= (NOW() - INTERVAL '30' DAY)
-			GROUP BY
-				acc.currency
-			ORDER BY acc.currency
-		`,
-			q.kinds,
-			res[i].Currency,
-		)
-		if err != nil {
-			return res, errors.Join(errors.New("failed to calculate balances"), err)
-		}
-		defer rows.Close()
-
-		for rows.Next() {
-			var r balance
-
-			err = rows.Scan(&r.currency, &r.amount)
-			if err != nil {
-				return res, errors.Join(errors.New("failed to scan balances"), err)
-			}
-
-			blc.currency = r.currency
-			blc.amount += r.amount
-		}
-
-		rows.Close()
-
-		// balance debits
-		rows, err = q.conn.Query(
-			ctx,
-			`
-			SELECT acc.currency, SUM(tr.source_amount)
-			FROM transactions tr
-				INNER JOIN accounts acc ON acc.id = tr.source_id
-			WHERE
-				acc.kind = ANY ($1)
-				AND acc.currency = $2
-				AND tr.deleted_at IS NULL
-				AND acc.deleted_at IS NULL
-				AND acc.archived_at IS NULL
+				AND (tr.executed_at IS NULL OR tr.executed_at <= (NOW() - INTERVAL '30' DAY))
 				AND tr.issued_at <= (NOW() - INTERVAL '30' DAY)
 			GROUP BY
 				acc.currency
@@ -319,23 +194,16 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 				return res, errors.Join(errors.New("failed to scan balances"), err)
 			}
 
-			blc.currency = r.currency
-			blc.amount -= r.amount
+			blc.amount += r.amount
 		}
 
 		rows.Close()
 
-		for j := 0; j < len(debits); j++ {
+		for j := 0; j < len(res[i].Series); j++ {
 			if j == 0 {
-				res[i].Series = append(res[i].Series, response.SeriesEntry{
-					Date:   debits[j].Date,
-					Amount: credits[j].Amount - debits[j].Amount + blc.amount,
-				})
+				res[i].Series[j].Amount += blc.amount
 			} else {
-				res[i].Series = append(res[i].Series, response.SeriesEntry{
-					Date:   debits[j].Date,
-					Amount: credits[j].Amount - debits[j].Amount + res[i].Series[j-1].Amount,
-				})
+				res[i].Series[j].Amount += res[i].Series[j-1].Amount
 			}
 		}
 	}
