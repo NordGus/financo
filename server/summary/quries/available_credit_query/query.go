@@ -91,7 +91,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 		res[i].Amount += c.capital
 
 		for j := 0; j < len(res[i].Series); j++ {
-			res[i].Series[j].Amount += c.capital
+			res[i].Series[j].Amount = -res[i].Series[j].Amount
 		}
 	}
 
