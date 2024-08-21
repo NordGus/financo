@@ -38,8 +38,8 @@ WITH
         FROM transactions
         WHERE
             deleted_at IS NULL
-            AND executed_at IS NOT NULL
-            AND executed_at <= NOW()
+            AND (executed_at IS NULL OR executed_at <= NOW())
+			AND issued_at <= NOW()
     ),
     children (
         id,

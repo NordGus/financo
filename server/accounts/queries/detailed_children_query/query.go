@@ -50,8 +50,8 @@ func (q *query) Find(ctx context.Context) ([]response.DetailedChild, error) {
 			FROM transactions
 			WHERE
 				deleted_at IS NULL
-				AND executed_at IS NOT NULL
-				AND executed_at <= NOW()
+				AND (executed_at IS NULL OR executed_at <= NOW())
+				AND issued_at <= NOW()
 		),
 		history_accounts (id, parent_id, balance, at) AS (
 			SELECT
