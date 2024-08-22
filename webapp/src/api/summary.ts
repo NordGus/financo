@@ -39,3 +39,11 @@ export async function getBalanceForAccountSummary(id: number): Promise<Summary[]
 
     return response.json()
 }
+
+export async function getPaidForAccountSummary(id: number): Promise<Summary[]> {
+    const response = await fetch(`/api/summary/for_account/${id}/paid`)
+
+    if (!response.ok) throw response
+
+    return response.json()
+}

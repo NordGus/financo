@@ -5,7 +5,6 @@ import {
     redirect,
     useLoaderData
 } from "react-router-dom"
-import { CheckIcon } from "lucide-react"
 
 import { Kind } from "@/types/Account"
 
@@ -17,13 +16,12 @@ import isCapitalAccount from "@helpers/account/isCapitalAccount"
 import isDebtAccount from "@helpers/account/isDebtAccount"
 import { cn } from "@/lib/utils"
 
-import { Progress } from "@components/Progress"
 import { CardSummary } from "@components/card"
 import { toast } from "@components/ui/use-toast"
 
 import { Transactions } from "./transactions"
 import { UpdateAccountForm } from "./form"
-import { SummaryBalanceForAccount } from "@components/widgets/summaries"
+import { SummaryBalanceForAccount, SummaryDebtForAccount, SummaryPaidForAccount } from "@components/widgets/summaries"
 
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
     if (!params.id) throw new Error('No account ID provided')
@@ -84,30 +82,24 @@ export default function Show() {
                 )
             }
             {
-                isDebtAccount(account.kind)
-                    ? <Progress
-                        className="h-[15dvh] w-[15dvh] m-auto text-5xl"
+                isDebtAccount(account.kind) && (
+                    <SummaryPaidForAccount
                         color={account.color}
-                        progress={Math.abs((account.capital + account.balance) / account.capital)}
-                        icon={<CheckIcon size={50} />}
+                        paid={account.capital + account.balance}
+                        amount={account.capital}
+                        currency={account.currency}
+                        kind={account.kind}
                     />
-                    : null
+                )
             }
             {
-                isDebtAccount(account.kind)
-                    ? <CardSummary
-                        key={`summary:account:${id}:paid`}
-                        title={account.kind === Kind.DebtCredit ? "Available Credit" : "Paid"}
-                        summaries={[
-                            {
-                                amount: account.capital + account.balance,
-                                currency: account.currency,
-                                series: null
-                            }
-                        ]}
-                        className="grow"
+                isDebtAccount(account.kind) && (
+                    <SummaryDebtForAccount
+                        key={`summary:account:${id}:debt`}
+                        id={account.id}
+                        className="grow col-span-2"
                     />
-                    : null
+                )
             }
             {
                 isDebtAccount(account.kind)
