@@ -11,4 +11,8 @@ func Routes(r chi.Router) {
 	r.Get("/debts", handlers.Debts)
 	r.Get("/net_worth", handlers.NetWorth)
 	r.Get("/available_credit", handlers.AvailableCredit)
+
+	r.Route("/for_account/{id}", func(r chi.Router) {
+		r.Get("/balance", handlers.BalanceForAccount)
+	})
 }

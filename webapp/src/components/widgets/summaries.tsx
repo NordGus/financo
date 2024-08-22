@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { staleTimeDefault } from "@queries/Client";
 import {
     getAvailableCreditSummary,
+    getBalanceForAccountSummary,
     getCapitalSummary,
     getDebtsSummary,
     getNetWorthSummary
@@ -60,4 +61,17 @@ export function SummaryAvailableCredit({ className }: { className?: string }) {
     if (isFetching) return null
 
     return <CardSummary className={className} title="Available Credit" summaries={balances || []} />
+}
+
+export function SummaryBalanceForAccount({ id, className }: { id: number, className?: string }) {
+    const { data: balances, isFetching, isError, error } = useQuery({
+        queryKey: ['summary', 'balance', 'account', id],
+        queryFn: () => getBalanceForAccountSummary(id),
+        staleTime: staleTimeDefault
+    })
+
+    if (isError) throw error
+    if (isFetching) return null
+
+    return <CardSummary className={className} title="Balance" summaries={balances || []} />
 }

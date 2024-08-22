@@ -31,3 +31,11 @@ export async function getAvailableCreditSummary(): Promise<Summary[]> {
 
     return response.json()
 }
+
+export async function getBalanceForAccountSummary(id: number): Promise<Summary[]> {
+    const response = await fetch(`/api/summary/for_account/${id}/balance`)
+
+    if (!response.ok) throw response
+
+    return response.json()
+}

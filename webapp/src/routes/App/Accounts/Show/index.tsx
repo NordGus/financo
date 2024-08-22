@@ -23,6 +23,7 @@ import { toast } from "@components/ui/use-toast"
 
 import { Transactions } from "./transactions"
 import { UpdateAccountForm } from "./form"
+import { SummaryBalanceForAccount } from "@components/widgets/summaries"
 
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
     if (!params.id) throw new Error('No account ID provided')
@@ -67,7 +68,21 @@ export default function Show() {
     if (isError) throw error
 
     return (
-        <div className="grid grid-cols-4 grid-rows-[20dvh_minmax(0,_1fr)] gap-4">
+        <div className="grid grid-cols-4 grid-rows-[fit-content_minmax(0,_1fr)] gap-4">
+            {
+                isCapitalAccount(account.kind) && (
+                    <SummaryBalanceForAccount
+                        key={`summary:account:${id}:balance`}
+                        id={account.id}
+                        className={
+                            cn("grow",
+                                isCapitalAccount(account.kind) && "col-span-4",
+                                isExternalAccount(account.kind) && "col-span-4",
+                            )
+                        }
+                    />
+                )
+            }
             {
                 isDebtAccount(account.kind)
                     ? <Progress
@@ -78,23 +93,6 @@ export default function Show() {
                     />
                     : null
             }
-            <CardSummary
-                key={`summary:account:${id}:balance`}
-                title={
-                    isDebtAccount(account.kind)
-                        ? "Debt"
-                        : isExternalAccount(account.kind)
-                            ? "This month's balance"
-                            : "Balance"
-                }
-                summaries={[{ amount: account.balance, currency: account.currency, series: null }]}
-                className={
-                    cn("grow",
-                        isCapitalAccount(account.kind) && "col-span-4",
-                        isExternalAccount(account.kind) && "col-span-4",
-                    )
-                }
-            />
             {
                 isDebtAccount(account.kind)
                     ? <CardSummary
