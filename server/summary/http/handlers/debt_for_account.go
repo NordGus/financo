@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"financo/server/summary/quries/paid_for_account"
+	"financo/server/summary/quries/debt_for_account"
 	"financo/server/types/generic/context_key"
 	"log"
 	"net/http"
@@ -35,7 +35,7 @@ func DebtForAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := paid_for_account.New(id, conn).Find(r.Context())
+	res, err := debt_for_account.New(id, conn).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

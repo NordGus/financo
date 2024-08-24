@@ -1,4 +1,4 @@
-package paid_for_account
+package debt_for_account
 
 import (
 	"context"
