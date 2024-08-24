@@ -18,10 +18,15 @@ import { cn } from "@/lib/utils"
 
 import { CardSummary } from "@components/card"
 import { toast } from "@components/ui/use-toast"
+import {
+    SummaryBalanceForAccount,
+    SummaryDailyBalanceForAccount,
+    SummaryDebtForAccount,
+    SummaryPaidForAccount,
+} from "@components/widgets/summaries"
 
 import { Transactions } from "./transactions"
 import { UpdateAccountForm } from "./form"
-import { SummaryBalanceForAccount, SummaryDebtForAccount, SummaryPaidForAccount } from "@components/widgets/summaries"
 
 export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
     if (!params.id) throw new Error('No account ID provided')
@@ -72,12 +77,7 @@ export default function Show() {
                     <SummaryBalanceForAccount
                         key={`summary:account:${id}:balance`}
                         id={account.id}
-                        className={
-                            cn("grow",
-                                isCapitalAccount(account.kind) && "col-span-4",
-                                isExternalAccount(account.kind) && "col-span-4",
-                            )
-                        }
+                        className={cn("grow", isCapitalAccount(account.kind) && "col-span-4")}
                     />
                 )
             }
@@ -102,8 +102,8 @@ export default function Show() {
                 )
             }
             {
-                isDebtAccount(account.kind)
-                    ? <CardSummary
+                isDebtAccount(account.kind) && (
+                    <CardSummary
                         key={`summary:account:${id}:capital`}
                         title={account.kind === Kind.DebtCredit ? "Credit" : "Amount"}
                         summaries={
@@ -113,7 +113,16 @@ export default function Show() {
                         }
                         className="grow"
                     />
-                    : null
+                )
+            }
+            {
+                isExternalAccount(account.kind) && (
+                    <SummaryDailyBalanceForAccount
+                        key={`summary:account:${id}:dailyBalance`}
+                        id={account.id}
+                        className={cn("grow", isExternalAccount(account.kind) && "col-span-4")}
+                    />
+                )
             }
             <UpdateAccountForm account={account} loading={isFetching} className="col-span-2" />
             <Transactions account={account} className="col-span-2" />

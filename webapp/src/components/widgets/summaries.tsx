@@ -5,6 +5,7 @@ import {
     getAvailableCreditSummary,
     getBalanceForAccountSummary,
     getCapitalSummary,
+    getDailyBalanceForAccountSummary,
     getDebtsSummary,
     getNetWorthSummary,
     getPaidForAccountSummary
@@ -153,4 +154,17 @@ export function SummaryPaidForAccount({
             </ChartContainer>
         </CardContent>
     </Card>
+}
+
+export function SummaryDailyBalanceForAccount({ id, className }: { id: number, className?: string }) {
+    const { data: balances, isFetching, isError, error } = useQuery({
+        queryKey: ['summary', 'balance', 'daily', 'account', id],
+        queryFn: () => getDailyBalanceForAccountSummary(id),
+        staleTime: staleTimeDefault
+    })
+
+    if (isError) throw error
+    if (isFetching) return null
+
+    return <CardSummary className={className} title="Daily Balance" summaries={balances || []} />
 }
