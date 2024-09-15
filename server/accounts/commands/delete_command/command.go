@@ -29,8 +29,8 @@ func New(conn *pgxpool.Conn, id int64) commands.Command[response.Detailed] {
 
 func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 	var (
-		findAccountQuery  = detailed_query.New(c.id, c.conn)
-		findChildrenQuery = detailed_children_query.New(c.id, c.conn)
+		findAccountQuery  = detailed_query.New(c.id)
+		findChildrenQuery = detailed_children_query.New(c.id)
 		ids               = make([]int64, 0, 10)
 
 		res response.Detailed

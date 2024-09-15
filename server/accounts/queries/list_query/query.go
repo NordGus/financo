@@ -11,7 +11,6 @@ import (
 	"financo/server/types/shared/color"
 	"financo/server/types/shared/currency"
 	"financo/server/types/shared/icon"
-	"log"
 	"time"
 )
 
@@ -196,12 +195,7 @@ func (q *query) Find(ctx context.Context) ([]response.Preview, error) {
 	if err != nil {
 		return res, errors.Join(errors.New("failed to get database connection"), err)
 	}
-	defer func() {
-		err := conn.Close()
-		if err != nil {
-			log.Println("failed to close database connection", err)
-		}
-	}()
+	defer conn.Close()
 
 	rows, err := conn.QueryContext(ctx, queryStr, account.SystemHistoric, kinds)
 	if err != nil {

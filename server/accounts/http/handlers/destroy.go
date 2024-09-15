@@ -24,7 +24,7 @@ func Destroy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := strconv.ParseInt(chi.URLParam(r, "accountID"), 10, 64)
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		log.Println("failed to parse account id", err)
 		http.Error(
