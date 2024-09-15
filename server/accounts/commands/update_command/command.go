@@ -2,64 +2,67 @@ package update_command
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"financo/server/accounts/types/request"
 	"financo/server/accounts/types/response"
+	"financo/server/services/postgres_database"
 	"financo/server/types/commands"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
 	"financo/server/types/records/transaction"
 	"time"
-
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type command struct {
 	req       request.Update
-	conn      *pgxpool.Conn
 	timestamp time.Time
 }
 
-func New(conn *pgxpool.Conn, req request.Update) commands.Command[response.Detailed] {
+func New(req request.Update) commands.Command[response.Detailed] {
 	return &command{
 		req:       req,
-		conn:      conn,
 		timestamp: time.Now().UTC(),
 	}
 }
 
 func (c *command) Run(ctx context.Context) (response.Detailed, error) {
-	records, err := c.findOrInitializeRecords(ctx)
+	conn, err := postgres_database.New().Conn(ctx)
+	if err != nil {
+		return response.Detailed{}, errors.Join(errors.New("failed to retrieve database connection"), err)
+	}
+	defer conn.Close()
+
+	records, err := c.findOrInitializeRecords(ctx, conn)
 	if err != nil {
 		return response.Detailed{}, err
 	}
 
-	tx, err := c.conn.Begin(ctx)
+	tx, err := conn.BeginTx(ctx, nil)
 	if err != nil {
 		return response.Detailed{}, err
 	}
 
 	err = c.updateRecords(ctx, records, tx)
 	if err != nil {
-		tx.Rollback(ctx)
+		tx.Rollback()
 		return response.Detailed{}, err
 	}
 
 	if !account.IsExternal(c.req.Kind) {
 		err = c.updateAccountHistory(ctx, tx)
 		if err != nil {
-			tx.Rollback(ctx)
+			tx.Rollback()
 			return response.Detailed{}, err
 		}
 	}
 
-	tx.Commit(ctx)
+	tx.Commit()
 
-	return c.buildResponse(ctx)
+	return c.buildResponse(ctx, conn)
 }
 
-func (c *command) findOrInitializeRecords(ctx context.Context) ([]account.Record, error) {
+func (c *command) findOrInitializeRecords(ctx context.Context, conn *sql.Conn) ([]account.Record, error) {
 	var (
 		records    = make([]account.Record, 0, len(c.req.Children)+1)
 		indexes    = make([]int, 0, len(c.req.Children))
@@ -101,7 +104,7 @@ func (c *command) findOrInitializeRecords(ctx context.Context) ([]account.Record
 		}
 	}
 
-	rows, err := c.conn.Query(
+	rows, err := conn.QueryContext(
 		ctx,
 		`
 	SELECT
@@ -199,12 +202,12 @@ func (c *command) findOrInitializeRecords(ctx context.Context) ([]account.Record
 	return records, nil
 }
 
-func (c *command) updateRecords(ctx context.Context, records []account.Record, tx pgx.Tx) error {
+func (c *command) updateRecords(ctx context.Context, records []account.Record, tx *sql.Tx) error {
 	for i := 0; i < len(records); i++ {
 		record := records[i]
 
 		if record.ID > 0 {
-			_, err := tx.Exec(
+			_, err := tx.ExecContext(
 				ctx,
 				`
 					UPDATE accounts
@@ -241,7 +244,7 @@ func (c *command) updateRecords(ctx context.Context, records []account.Record, t
 		if record.ID <= 0 {
 			var id int64
 
-			err := tx.QueryRow(
+			err := tx.QueryRowContext(
 				ctx,
 				`
 					INSERT INTO accounts(
@@ -282,13 +285,13 @@ func (c *command) updateRecords(ctx context.Context, records []account.Record, t
 	return nil
 }
 
-func (c *command) updateAccountHistory(ctx context.Context, tx pgx.Tx) error {
-	h, err := c.findHistoryAccount(ctx)
+func (c *command) updateAccountHistory(ctx context.Context, tx *sql.Tx) error {
+	h, err := c.findHistoryAccount(ctx, tx)
 	if err != nil {
 		return err
 	}
 
-	t, err := c.findOrInitializeHistoryTransaction(ctx, h)
+	t, err := c.findOrInitializeHistoryTransaction(ctx, h, tx)
 	if err != nil {
 		return err
 	}
@@ -296,7 +299,7 @@ func (c *command) updateAccountHistory(ctx context.Context, tx pgx.Tx) error {
 	return c.updateHistoryTransaction(ctx, tx, h, t)
 }
 
-func (c *command) findHistoryAccount(ctx context.Context) (account.Record, error) {
+func (c *command) findHistoryAccount(ctx context.Context, tx *sql.Tx) (account.Record, error) {
 	var (
 		query = `
 	SELECT
@@ -321,7 +324,7 @@ func (c *command) findHistoryAccount(ctx context.Context) (account.Record, error
 		record account.Record
 	)
 
-	err := c.conn.QueryRow(ctx, query, c.req.ID, account.SystemHistoric).Scan(
+	err := tx.QueryRowContext(ctx, query, c.req.ID, account.SystemHistoric).Scan(
 		&record.ID,
 		&record.ParentID,
 		&record.Kind,
@@ -343,7 +346,7 @@ func (c *command) findHistoryAccount(ctx context.Context) (account.Record, error
 	return record, err
 }
 
-func (c *command) findOrInitializeHistoryTransaction(ctx context.Context, history account.Record) (transaction.Record, error) {
+func (c *command) findOrInitializeHistoryTransaction(ctx context.Context, history account.Record, tx *sql.Tx) (transaction.Record, error) {
 	var (
 		present = false
 		record  = transaction.Record{
@@ -359,7 +362,7 @@ func (c *command) findOrInitializeHistoryTransaction(ctx context.Context, histor
 		}
 	)
 
-	err := c.conn.QueryRow(
+	err := tx.QueryRowContext(
 		ctx,
 		`
 	SELECT
@@ -376,7 +379,7 @@ func (c *command) findOrInitializeHistoryTransaction(ctx context.Context, histor
 	}
 
 	if present {
-		err = c.conn.QueryRow(
+		err = tx.QueryRowContext(
 			ctx,
 			`
 	SELECT
@@ -415,7 +418,7 @@ func (c *command) findOrInitializeHistoryTransaction(ctx context.Context, histor
 	return record, err
 }
 
-func (c *command) updateHistoryTransaction(ctx context.Context, tx pgx.Tx, hist account.Record, tr transaction.Record) error {
+func (c *command) updateHistoryTransaction(ctx context.Context, tx *sql.Tx, hist account.Record, tr transaction.Record) error {
 	if !c.req.History.Present {
 		tr.DeletedAt = nullable.New(c.timestamp)
 	}
@@ -443,7 +446,7 @@ func (c *command) updateHistoryTransaction(ctx context.Context, tx pgx.Tx, hist 
 	tr.UpdatedAt = c.timestamp
 
 	if tr.ID > 0 {
-		_, err := tx.Exec(
+		_, err := tx.ExecContext(
 			ctx,
 			`
 				UPDATE transactions
@@ -476,7 +479,7 @@ func (c *command) updateHistoryTransaction(ctx context.Context, tx pgx.Tx, hist 
 	}
 
 	if tr.ID <= 0 {
-		_, err := tx.Exec(
+		_, err := tx.ExecContext(
 			ctx,
 			`
 				INSERT INTO transactions (
@@ -508,7 +511,7 @@ func (c *command) updateHistoryTransaction(ctx context.Context, tx pgx.Tx, hist 
 		}
 	}
 
-	_, err := tx.Exec(
+	_, err := tx.ExecContext(
 		ctx,
 		"UPDATE accounts SET currency = $2, updated_at = $3 WHERE id = $1",
 		hist.ID,
@@ -519,7 +522,7 @@ func (c *command) updateHistoryTransaction(ctx context.Context, tx pgx.Tx, hist 
 	return err
 }
 
-func (c *command) buildResponse(ctx context.Context) (response.Detailed, error) {
+func (c *command) buildResponse(ctx context.Context, conn *sql.Conn) (response.Detailed, error) {
 	var (
 		res = response.Detailed{
 			ID:          c.req.ID,
@@ -541,7 +544,7 @@ func (c *command) buildResponse(ctx context.Context) (response.Detailed, error) 
 		histAt      nullable.Type[time.Time]
 	)
 
-	err := c.conn.QueryRow(
+	err := conn.QueryRowContext(
 		ctx,
 		`
 			WITH
@@ -639,7 +642,7 @@ func (c *command) buildResponse(ctx context.Context) (response.Detailed, error) 
 		})
 	}
 
-	rows, err := c.conn.Query(
+	rows, err := conn.QueryContext(
 		ctx,
 		`
 			WITH
