@@ -4,16 +4,18 @@ import (
 	"context"
 	"errors"
 	"financo/server/accounts/types/response"
+	"financo/server/services/postgres_database"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/queries"
 	"financo/server/types/records/account"
 	"financo/server/types/shared/color"
 	"financo/server/types/shared/currency"
 	"financo/server/types/shared/icon"
+	"log"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+// TODO: Refactor to use math/big package
 
 const (
 	sqlQuery = `
@@ -162,14 +164,12 @@ type row struct {
 type query struct {
 	kinds    []account.Kind
 	archived bool
-	conn     *pgxpool.Conn
 }
 
-func New(kinds []account.Kind, archived bool, conn *pgxpool.Conn) queries.Query[[]response.Preview] {
+func New(kinds []account.Kind, archived bool) queries.Query[[]response.Preview] {
 	return &query{
 		kinds:    kinds,
 		archived: archived,
-		conn:     conn,
 	}
 }
 
@@ -179,6 +179,7 @@ func (q *query) Find(ctx context.Context) ([]response.Preview, error) {
 		kinds    = q.filterKinds()
 		res      = make([]response.Preview, 0, 10)
 		idx      = -1
+		postgres = postgres_database.New()
 	)
 
 	if q.archived {
@@ -191,7 +192,18 @@ func (q *query) Find(ctx context.Context) ([]response.Preview, error) {
 
 	queryStr += " GROUP BY child.id, acc.id"
 
-	rows, err := q.conn.Query(ctx, queryStr, account.SystemHistoric, kinds)
+	conn, err := postgres.Conn(ctx)
+	if err != nil {
+		return res, errors.Join(errors.New("failed to get database connection"), err)
+	}
+	defer func() {
+		err := conn.Close()
+		if err != nil {
+			log.Println("failed to close database connection", err)
+		}
+	}()
+
+	rows, err := conn.QueryContext(ctx, queryStr, account.SystemHistoric, kinds)
 	if err != nil {
 		return res, errors.Join(errors.New("failed to execute query"), err)
 	}
