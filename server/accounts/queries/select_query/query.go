@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"financo/server/accounts/types/response"
+	"financo/server/services/postgres_database"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/queries"
 	"financo/server/types/records/account"
@@ -11,8 +12,6 @@ import (
 	"financo/server/types/shared/currency"
 	"financo/server/types/shared/icon"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
@@ -107,14 +106,12 @@ type row struct {
 type query struct {
 	kinds    []account.Kind
 	archived bool
-	conn     *pgxpool.Conn
 }
 
-func New(kinds []account.Kind, archived bool, conn *pgxpool.Conn) queries.Query[[]response.Select] {
+func New(kinds []account.Kind, archived bool) queries.Query[[]response.Select] {
 	return &query{
 		kinds:    kinds,
 		archived: archived,
-		conn:     conn,
 	}
 }
 
@@ -124,6 +121,7 @@ func (q *query) Find(ctx context.Context) ([]response.Select, error) {
 		kinds    = q.filterKinds()
 		res      = make([]response.Select, 0, 10)
 		idx      = -1
+		postgres = postgres_database.New()
 	)
 
 	if q.archived {
@@ -134,7 +132,13 @@ func (q *query) Find(ctx context.Context) ([]response.Select, error) {
 		queryStr += " AND acc.archived_at IS NULL"
 	}
 
-	rows, err := q.conn.Query(ctx, queryStr, account.SystemHistoric, kinds)
+	conn, err := postgres.Conn(ctx)
+	if err != nil {
+		return res, errors.Join(errors.New("failed to retrieve database connection"), err)
+	}
+	defer conn.Close()
+
+	rows, err := conn.QueryContext(ctx, queryStr, account.SystemHistoric, kinds)
 	if err != nil {
 		return res, errors.Join(errors.New("failed to execute query"), err)
 	}
