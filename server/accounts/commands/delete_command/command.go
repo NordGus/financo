@@ -2,27 +2,24 @@ package delete_command
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"financo/server/accounts/queries/detailed_children_query"
 	"financo/server/accounts/queries/detailed_query"
 	"financo/server/accounts/types/response"
+	"financo/server/services/postgres_database"
 	"financo/server/types/commands"
-	"log"
 	"time"
-
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type command struct {
 	id        int64
-	conn      *pgxpool.Conn
 	timestamp time.Time
 }
 
-func New(conn *pgxpool.Conn, id int64) commands.Command[response.Detailed] {
+func New(id int64) commands.Command[response.Detailed] {
 	return &command{
 		id:        id,
-		conn:      conn,
 		timestamp: time.Now().UTC(),
 	}
 }
@@ -32,6 +29,7 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 		findAccountQuery  = detailed_query.New(c.id)
 		findChildrenQuery = detailed_children_query.New(c.id)
 		ids               = make([]int64, 0, 10)
+		postgres          = postgres_database.New()
 
 		res response.Detailed
 	)
@@ -46,16 +44,16 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 		return res, err
 	}
 
-	tx, err := c.conn.Begin(ctx)
+	conn, err := postgres.Conn(ctx)
+	if err != nil {
+		return res, errors.Join(errors.New("failed to retrieve database connection"), err)
+	}
+	defer conn.Close()
+
+	tx, err := conn.BeginTx(ctx, nil)
 	if err != nil {
 		return res, err
 	}
-	defer func() {
-		err := tx.Commit(ctx)
-		if err != nil {
-			log.Println("failed to commit transaction", err)
-		}
-	}()
 
 	ids = append(ids, res.ID)
 	res.UpdatedAt = c.timestamp
@@ -67,21 +65,24 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 
 	err = c.markAccountsAsDeleted(ctx, tx)
 	if err != nil {
-		tx.Rollback(ctx)
-		return res, err
+		return res, errors.Join(err, tx.Rollback())
 	}
 
 	err = c.markTransactionsAsDeleted(ctx, tx, ids)
 	if err != nil {
-		tx.Rollback(ctx)
-		return res, err
+		return res, errors.Join(err, tx.Rollback())
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return res, errors.Join(err, tx.Rollback())
 	}
 
 	return res, nil
 }
 
-func (c *command) markAccountsAsDeleted(ctx context.Context, tx pgx.Tx) error {
-	_, err := tx.Exec(
+func (c *command) markAccountsAsDeleted(ctx context.Context, tx *sql.Tx) error {
+	_, err := tx.ExecContext(
 		ctx,
 		`
 			UPDATE accounts
@@ -95,8 +96,8 @@ func (c *command) markAccountsAsDeleted(ctx context.Context, tx pgx.Tx) error {
 	return err
 }
 
-func (c *command) markTransactionsAsDeleted(ctx context.Context, tx pgx.Tx, ids []int64) error {
-	_, err := tx.Exec(
+func (c *command) markTransactionsAsDeleted(ctx context.Context, tx *sql.Tx, ids []int64) error {
+	_, err := tx.ExecContext(
 		ctx,
 		`
 			UPDATE transactions
