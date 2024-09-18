@@ -3,13 +3,12 @@ package summary_for_kind_query
 import (
 	"context"
 	"errors"
+	"financo/server/services/postgres_database"
 	"financo/server/summary/types/response"
 	"financo/server/types/queries"
 	"financo/server/types/records/account"
 	"financo/server/types/shared/currency"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type balance struct {
@@ -18,14 +17,12 @@ type balance struct {
 }
 
 type query struct {
-	conn      *pgxpool.Conn
 	kinds     []account.Kind
 	timestamp time.Time
 }
 
-func New(kinds []account.Kind, conn *pgxpool.Conn) queries.Query[[]response.Global] {
+func New(kinds []account.Kind) queries.Query[[]response.Global] {
 	return &query{
-		conn:      conn,
 		kinds:     kinds,
 		timestamp: time.Now().UTC(),
 	}
@@ -33,11 +30,18 @@ func New(kinds []account.Kind, conn *pgxpool.Conn) queries.Query[[]response.Glob
 
 func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 	var (
-		res = make([]response.Global, 0, 5)
+		res      = make([]response.Global, 0, 5)
+		postgres = postgres_database.New()
 	)
 
+	conn, err := postgres.Conn(ctx)
+	if err != nil {
+		return res, errors.Join(errors.New("failed to retrieve database connection"), err)
+	}
+	defer conn.Close()
+
 	// total amount per currency
-	rows, err := q.conn.Query(
+	rows, err := conn.QueryContext(
 		ctx,
 		`
 			SELECT
@@ -86,7 +90,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 		var blc balance
 
 		// total
-		rows, err = q.conn.Query(
+		rows, err = conn.QueryContext(
 			ctx,
 			`
 				WITH RECURSIVE
@@ -152,7 +156,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 		rows.Close()
 
 		// balance before data
-		rows, err := q.conn.Query(
+		rows, err := conn.QueryContext(
 			ctx,
 			`
 			SELECT
