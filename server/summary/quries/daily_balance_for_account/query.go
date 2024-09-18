@@ -3,22 +3,19 @@ package daily_balance_for_account
 import (
 	"context"
 	"errors"
+	"financo/server/services/postgres_database"
 	"financo/server/summary/types/response"
 	"financo/server/types/queries"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type query struct {
-	conn      *pgxpool.Conn
 	id        int64
 	timestamp time.Time
 }
 
-func New(id int64, conn *pgxpool.Conn) queries.Query[[]response.Global] {
+func New(id int64) queries.Query[[]response.Global] {
 	return &query{
-		conn:      conn,
 		id:        id,
 		timestamp: time.Now().UTC(),
 	}
@@ -26,11 +23,18 @@ func New(id int64, conn *pgxpool.Conn) queries.Query[[]response.Global] {
 
 func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 	var (
-		res = make([]response.Global, 0, 5)
+		res      = make([]response.Global, 0, 5)
+		postgres = postgres_database.New()
 	)
 
+	conn, err := postgres.Conn(ctx)
+	if err != nil {
+		return res, errors.Join(errors.New("failed to retrieve database connection"), err)
+	}
+	defer conn.Close()
+
 	// total amount per currency
-	rows, err := q.conn.Query(
+	rows, err := conn.QueryContext(
 		ctx,
 		`
 			SELECT
@@ -75,7 +79,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 
 	for i := 0; i < len(res); i++ {
 		// total
-		rows, err = q.conn.Query(
+		rows, err = conn.QueryContext(
 			ctx,
 			`
 				WITH RECURSIVE
