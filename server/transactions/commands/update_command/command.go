@@ -9,6 +9,7 @@ import (
 	"financo/server/transactions/types/request"
 	"financo/server/transactions/types/response"
 	"financo/server/types/commands"
+	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
 	"financo/server/types/records/transaction"
 	"time"
@@ -58,13 +59,16 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 	record.TargetID = c.req.TargetID
 	record.SourceAmount = c.req.SourceAmount
 	record.TargetAmount = c.req.TargetAmount
-	record.IssuedAt = c.req.IssuedAt
-	record.ExecutedAt = c.req.ExecutedAt
+	record.IssuedAt = c.req.IssuedAt.UTC()
 	record.Notes = c.req.Notes
 	record.UpdatedAt = c.timestamp
 
 	if source.Currency == target.Currency {
 		record.TargetAmount = record.SourceAmount
+	}
+
+	if c.req.ExecutedAt.Valid {
+		record.ExecutedAt = nullable.New(c.req.ExecutedAt.Val.UTC())
 	}
 
 	tx, err := conn.BeginTx(ctx, nil)
