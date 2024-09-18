@@ -2,28 +2,25 @@ package create_command
 
 import (
 	"context"
+	"errors"
 	"financo/server/accounts/types/request"
 	"financo/server/accounts/types/response"
+	"financo/server/services/postgres_database"
 	"financo/server/types/commands"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
 	"financo/server/types/shared/icon"
-	"log"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type command struct {
 	req       request.Create
-	conn      *pgxpool.Conn
 	timestamp time.Time
 }
 
-func New(conn *pgxpool.Conn, req request.Create) commands.Command[response.Created] {
+func New(req request.Create) commands.Command[response.Created] {
 	return &command{
 		req:       req,
-		conn:      conn,
 		timestamp: time.Now().UTC(),
 	}
 }
@@ -81,24 +78,25 @@ func (c *command) buildAccounts() ([2]account.Record, error) {
 
 func (c *command) saveAccounts(ctx context.Context, records [2]account.Record) (response.Created, error) {
 	var (
-		res response.Created
+		parent   = records[0]
+		history  = records[1]
+		postgres = postgres_database.New()
 
-		parent  = records[0]
-		history = records[1]
+		res response.Created
 	)
 
-	tx, err := c.conn.Begin(ctx)
+	conn, err := postgres.Conn(ctx)
+	if err != nil {
+		return res, errors.Join(errors.New("failed to acquire database connection"), err)
+	}
+	defer conn.Close()
+
+	tx, err := conn.BeginTx(ctx, nil)
 	if err != nil {
 		return res, err
 	}
-	defer func() {
-		err := tx.Commit(ctx)
-		if err != nil {
-			log.Println("failed to commit transaction", err)
-		}
-	}()
 
-	err = tx.QueryRow(
+	err = tx.QueryRowContext(
 		ctx,
 		`
 			INSERT INTO accounts(
@@ -126,13 +124,13 @@ func (c *command) saveAccounts(ctx context.Context, records [2]account.Record) (
 		parent.UpdatedAt,
 	).Scan(&parent.ID)
 	if err != nil {
-		return res, err
+		return res, errors.Join(err, tx.Rollback())
 	}
 
 	if !account.IsExternal(c.req.Kind) {
 		history.ParentID = nullable.New(parent.ID)
 
-		err = tx.QueryRow(
+		err = tx.QueryRowContext(
 			ctx,
 			`
 				INSERT INTO accounts(
@@ -162,12 +160,17 @@ func (c *command) saveAccounts(ctx context.Context, records [2]account.Record) (
 			history.UpdatedAt,
 		).Scan(&history.ID)
 		if err != nil {
-			return res, err
+			return res, errors.Join(err, tx.Rollback())
 		}
 	}
 
 	res.ID = parent.ID
 	res.Name = parent.Name
+
+	err = tx.Commit()
+	if err != nil {
+		return res, errors.Join(err, tx.Rollback())
+	}
 
 	return res, nil
 }

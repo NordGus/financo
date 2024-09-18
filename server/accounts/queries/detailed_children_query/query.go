@@ -2,31 +2,38 @@ package detailed_children_query
 
 import (
 	"context"
+	"errors"
 	"financo/server/accounts/types/response"
+	"financo/server/services/postgres_database"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/queries"
 	"financo/server/types/records/account"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type query struct {
 	parentID int64
-	conn     *pgxpool.Conn
 }
 
-func New(parentID int64, conn *pgxpool.Conn) queries.Query[[]response.DetailedChild] {
+func New(parentID int64) queries.Query[[]response.DetailedChild] {
 	return &query{
 		parentID: parentID,
-		conn:     conn,
 	}
 }
 
 func (q *query) Find(ctx context.Context) ([]response.DetailedChild, error) {
-	children := make([]response.DetailedChild, 0, 10)
+	var (
+		children = make([]response.DetailedChild, 0, 10)
+		postgres = postgres_database.New()
+	)
 
-	rows, err := q.conn.Query(
+	conn, err := postgres.Conn(ctx)
+	if err != nil {
+		return children, errors.Join(errors.New("failed to get database connection"), err)
+	}
+	defer conn.Close()
+
+	rows, err := conn.QueryContext(
 		ctx,
 		`
 	WITH

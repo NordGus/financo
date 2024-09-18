@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"financo/server/transactions/queries/account_pending_query"
-	"financo/server/types/generic/context_key"
 	"financo/server/types/generic/nullable"
 	"log"
 	"net/http"
@@ -12,7 +11,6 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func PendingForAccount(w http.ResponseWriter, r *http.Request) {
@@ -28,17 +26,6 @@ func PendingForAccount(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "accountID"), 10, 64)
 	if err != nil {
 		log.Println("failed to parsed id", err)
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	conn, ok := r.Context().Value(context_key.DB).(*pgxpool.Conn)
-	if !ok {
-		log.Println("failed to retrieved database connection")
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
@@ -123,7 +110,7 @@ func PendingForAccount(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	res, err := account_pending_query.New(id, from, to, accounts, categories, conn).Find(r.Context())
+	res, err := account_pending_query.New(id, from, to, accounts, categories).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

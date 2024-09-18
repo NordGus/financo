@@ -2,35 +2,40 @@ package detailed_query
 
 import (
 	"context"
+	"errors"
 	"financo/server/accounts/types/response"
+	"financo/server/services/postgres_database"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/queries"
 	"financo/server/types/records/account"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type query struct {
-	id   int64
-	conn *pgxpool.Conn
+	id int64
 }
 
-func New(id int64, conn *pgxpool.Conn) queries.Query[response.Detailed] {
+func New(id int64) queries.Query[response.Detailed] {
 	return &query{
-		id:   id,
-		conn: conn,
+		id: id,
 	}
 }
 
 func (q *query) Find(ctx context.Context) (response.Detailed, error) {
 	var (
-		res     response.Detailed
-		histBlc nullable.Type[int64]
-		histAt  nullable.Type[time.Time]
+		res      response.Detailed
+		histBlc  nullable.Type[int64]
+		histAt   nullable.Type[time.Time]
+		postgres = postgres_database.New()
 	)
 
-	err := q.conn.QueryRow(
+	conn, err := postgres.Conn(ctx)
+	if err != nil {
+		return res, errors.Join(errors.New("failed to get database connection"), err)
+	}
+	defer conn.Close()
+
+	err = conn.QueryRowContext(
 		ctx,
 		`
 	WITH

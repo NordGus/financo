@@ -3,13 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"financo/server/accounts/queries/select_query"
-	"financo/server/types/generic/context_key"
 	"financo/server/types/records/account"
 	"log"
 	"net/http"
 	"strings"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func Select(w http.ResponseWriter, r *http.Request) {
@@ -18,22 +15,11 @@ func Select(w http.ResponseWriter, r *http.Request) {
 		archived = r.URL.Query().Get("archived") == "true"
 	)
 
-	conn, ok := r.Context().Value(context_key.DB).(*pgxpool.Conn)
-	if !ok {
-		log.Println("failed to retrieved database connection")
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
 	for _, k := range strings.Split(r.URL.Query().Get("kind"), ",") {
 		kinds = append(kinds, account.Kind(k))
 	}
 
-	res, err := select_query.New(kinds, archived, conn).Find(r.Context())
+	res, err := select_query.New(kinds, archived).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

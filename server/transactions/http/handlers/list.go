@@ -3,15 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"financo/server/transactions/queries/list_query"
-	"financo/server/types/generic/context_key"
 	"financo/server/types/generic/nullable"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func List(w http.ResponseWriter, r *http.Request) {
@@ -22,17 +19,6 @@ func List(w http.ResponseWriter, r *http.Request) {
 		from nullable.Type[time.Time]
 		to   nullable.Type[time.Time]
 	)
-
-	conn, ok := r.Context().Value(context_key.DB).(*pgxpool.Conn)
-	if !ok {
-		log.Println("failed to retrieved database connection")
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
 
 	if r.URL.Query().Has(executedFromKey) {
 		raw, err := time.Parse(time.RFC3339, r.URL.Query().Get(executedFromKey))
@@ -110,7 +96,7 @@ func List(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	res, err := list_query.New(from, to, accounts, categories, conn).Find(r.Context())
+	res, err := list_query.New(from, to, accounts, categories).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

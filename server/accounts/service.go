@@ -12,7 +12,7 @@ func Routes(r chi.Router) {
 
 	r.Get("/select", handlers.Select)
 
-	r.Route("/{accountID}", func(r chi.Router) {
+	r.Route("/{id}", func(r chi.Router) {
 		r.Get("/", handlers.Show)
 		r.Delete("/", handlers.Destroy)
 		r.Put("/", handlers.Update)

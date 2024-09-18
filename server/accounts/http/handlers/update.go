@@ -4,28 +4,14 @@ import (
 	"encoding/json"
 	"financo/server/accounts/commands/update_command"
 	"financo/server/accounts/types/request"
-	"financo/server/types/generic/context_key"
 	"log"
 	"net/http"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func Update(w http.ResponseWriter, r *http.Request) {
 	var (
 		req = request.Update{Children: make([]request.UpdateChild, 0, 10)}
 	)
-
-	conn, ok := r.Context().Value(context_key.DB).(*pgxpool.Conn)
-	if !ok {
-		log.Println("db connection not found")
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
 
 	body := r.Body
 	defer func() {
@@ -46,7 +32,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := update_command.New(conn, req).Run(r.Context())
+	res, err := update_command.New(req).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(
