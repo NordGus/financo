@@ -3,14 +3,13 @@ package available_credit_query
 import (
 	"context"
 	"errors"
+	"financo/server/services/postgres_database"
 	"financo/server/summary/quries/summary_for_kind_query"
 	"financo/server/summary/types/response"
 	"financo/server/types/queries"
 	"financo/server/types/records/account"
 	"financo/server/types/shared/currency"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type capital struct {
@@ -19,14 +18,12 @@ type capital struct {
 }
 
 type query struct {
-	conn      *pgxpool.Conn
 	kinds     []account.Kind
 	timestamp time.Time
 }
 
-func New(conn *pgxpool.Conn) queries.Query[[]response.Global] {
+func New() queries.Query[[]response.Global] {
 	return &query{
-		conn:      conn,
 		kinds:     []account.Kind{account.DebtCredit},
 		timestamp: time.Now().UTC(),
 	}
@@ -34,15 +31,22 @@ func New(conn *pgxpool.Conn) queries.Query[[]response.Global] {
 
 func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 	var (
-		cap = make([]capital, 0, 10)
+		cap      = make([]capital, 0, 10)
+		postgres = postgres_database.New()
 	)
 
-	res, err := summary_for_kind_query.New(q.kinds, q.conn).Find(ctx)
+	res, err := summary_for_kind_query.New(q.kinds).Find(ctx)
 	if err != nil {
 		return res, errors.Join(errors.New("query failed"), err)
 	}
 
-	rows, err := q.conn.Query(
+	conn, err := postgres.Conn(ctx)
+	if err != nil {
+		return res, errors.Join(errors.New("failed to retrieve database connection"), err)
+	}
+	defer conn.Close()
+
+	rows, err := conn.QueryContext(
 		ctx,
 		`
 			SELECT currency, SUM(capital)
