@@ -4,13 +4,11 @@ import (
 	"encoding/json"
 	"financo/server/transactions/commands/update_command"
 	"financo/server/transactions/types/request"
-	"financo/server/types/generic/context_key"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func Update(w http.ResponseWriter, r *http.Request) {
@@ -19,17 +17,6 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		log.Println("id not found")
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	conn, ok := r.Context().Value(context_key.DB).(*pgxpool.Conn)
-	if !ok {
-		log.Println("db connection not found")
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
@@ -67,7 +54,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := update_command.New(conn, req).Run(r.Context())
+	res, err := update_command.New(req).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(
