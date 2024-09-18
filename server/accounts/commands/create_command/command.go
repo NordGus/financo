@@ -89,6 +89,7 @@ func (c *command) saveAccounts(ctx context.Context, records [2]account.Record) (
 	if err != nil {
 		return res, errors.Join(errors.New("failed to acquire database connection"), err)
 	}
+	defer conn.Close()
 
 	tx, err := conn.BeginTx(ctx, nil)
 	if err != nil {
