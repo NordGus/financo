@@ -3,14 +3,13 @@ package account_list_query
 import (
 	"context"
 	"errors"
+	"financo/server/services/postgres_database"
 	base "financo/server/transactions/queries"
 	"financo/server/transactions/types/response"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/queries"
 	"fmt"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type query struct {
@@ -19,7 +18,6 @@ type query struct {
 	to         nullable.Type[time.Time]
 	accounts   []int64
 	categories []int64
-	conn       *pgxpool.Conn
 }
 
 func New(
@@ -28,7 +26,6 @@ func New(
 	to nullable.Type[time.Time],
 	accounts []int64,
 	categories []int64,
-	conn *pgxpool.Conn,
 ) queries.Query[[]response.Detailed] {
 	return &query{
 		id:         id,
@@ -36,18 +33,24 @@ func New(
 		to:         to,
 		accounts:   accounts,
 		categories: categories,
-		conn:       conn,
 	}
 }
 
 func (q *query) Find(ctx context.Context) ([]response.Detailed, error) {
 	var (
-		query   = base.BaseQueryList + " AND tr.executed_at IS NOT NULL"
-		ids     = make([]int64, 0, len(q.accounts)+len(q.categories))
-		res     = make([]response.Detailed, 0, 20)
-		filters = make([]any, 0, 3)
-		filter  = 1
+		query    = base.BaseQueryList + " AND tr.executed_at IS NOT NULL"
+		ids      = make([]int64, 0, len(q.accounts)+len(q.categories))
+		res      = make([]response.Detailed, 0, 20)
+		filters  = make([]any, 0, 3)
+		filter   = 1
+		postgres = postgres_database.New()
 	)
+
+	conn, err := postgres.Conn(ctx)
+	if err != nil {
+		return res, errors.Join(errors.New("failed to retrieve database connection"), err)
+	}
+	defer conn.Close()
 
 	query += fmt.Sprintf(
 		" AND (src.id = $%d OR srcp.id = $%d OR trg.id = $%d OR trgp.id = $%d)",
@@ -82,7 +85,7 @@ func (q *query) Find(ctx context.Context) ([]response.Detailed, error) {
 		filter++
 	}
 
-	rows, err := q.conn.Query(ctx, query, filters...)
+	rows, err := conn.QueryContext(ctx, query, filters...)
 	if err != nil {
 		return res, errors.Join(errors.New("failed to execute query"), err)
 	}
