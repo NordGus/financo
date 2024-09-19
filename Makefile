@@ -1,7 +1,7 @@
 WEBAPP_WORKSPACE=webapp
 SERVER_CMD = server/cmd
 
-.PHONY: webapp webapp-server webapp-lint db-setup db-migrate db-rollback db-reset db-create db-seed server
+.PHONY: webapp webapp-server webapp-lint db-setup db-migrate db-rollback db-reset db-create db-seed server db-drop
 
 # Webapp targets
 webapp:
@@ -27,6 +27,9 @@ db-seed:
 db-create:
 	@echo "creating database"
 	@go run ${SERVER_CMD}/database/create/main.go
+db-drop:
+	@echo "dropping database"
+	@go run ${SERVER_CMD}/database/drop/main.go
 
 # Server targets
 server:
