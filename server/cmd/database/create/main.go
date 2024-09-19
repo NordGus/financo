@@ -49,6 +49,6 @@ func errCreateDatabase(err error) {
 	if strings.Contains(err.Error(), fmt.Sprintf("database \"%s\" already exists", database)) {
 		log.Printf("\"%s\" already exists\n", database)
 	} else {
-		log.Fatalln("failed to create data base:", err.Error())
+		log.Fatalln("failed to create database:", err.Error())
 	}
 }
