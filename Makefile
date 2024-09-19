@@ -1,7 +1,7 @@
 WEBAPP_WORKSPACE=webapp
 SERVER_CMD = server/cmd
 
-.PHONY: webapp webapp-server webapp-lint db-setup db-migrate db-rollback db-reset db-create db-seed server db-drop
+.PHONY: webapp webapp-server webapp-lint db-setup db-migrate db-rollback db-reset db-create db-seed db-migration-reset server db-drop
 
 # Webapp targets
 webapp:
@@ -11,14 +11,15 @@ webapp-lint:
 
 
 # Database targets
-db-setup: db-create db-reset db-migrate db-seed
+db-setup: db-create db-migrate db-seed
+db-reset: db-migration-reset db-migrate db-seed
 db-migrate:
 	@echo "running migrations"
 	@goose up
 db-rollback:
 	@echo "rolling back last migration"
 	@goose down
-db-reset:
+db-migration-reset:
 	@echo "reseting database"
 	@goose reset
 db-seed:
