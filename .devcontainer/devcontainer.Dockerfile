@@ -5,8 +5,8 @@ ARG GO_VERSION
 ARG ALPINE_VERSION
 ARG NODE_VERSION
 
-FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} as node
-FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION}
+FROM node:20-alpine3.20 AS js-tooling
+FROM golang:1.23-alpine3.20
 ARG NPM_VERSION
 ARG GO_AIR_VERSION
 ARG GO_GOOSE_VERSION
@@ -16,12 +16,12 @@ ARG USER_GID=1000
 
 # Node setup
 
-COPY --from=node /usr/lib /usr/lib
-COPY --from=node /usr/local/share /usr/local/share
-COPY --from=node /usr/local/lib /usr/local/lib
-COPY --from=node /usr/local/include /usr/local/include
-COPY --from=node /usr/local/bin /usr/local/bin
-COPY --from=node /opt /opt
+COPY --from=js-tooling /usr/lib /usr/lib
+COPY --from=js-tooling /usr/local/share /usr/local/share
+COPY --from=js-tooling /usr/local/lib /usr/local/lib
+COPY --from=js-tooling /usr/local/include /usr/local/include
+COPY --from=js-tooling /usr/local/bin /usr/local/bin
+COPY --from=js-tooling /opt /opt
 
 # User setup
 
