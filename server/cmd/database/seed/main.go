@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+	"financo/server/services/postgres_database"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
 	"financo/server/types/records/transaction"
@@ -10,10 +12,7 @@ import (
 	"financo/server/types/shared/icon"
 	"fmt"
 	"log"
-	"os"
 	"time"
-
-	"github.com/jackc/pgx/v5"
 )
 
 const (
@@ -49,26 +48,20 @@ func main() {
 		start      = time.Now()
 	)
 
-	conn, err := pgx.Connect(ctx, os.Getenv("DATABASE_URL"))
+	conn, err := postgres_database.New().Conn(ctx)
 	if err != nil {
 		log.Fatalf("failed to connect to database:\n\t err: %v\n", err)
 	}
+	defer conn.Close()
 
-	defer func() {
-		if err := conn.Close(context.TODO()); err != nil {
-			log.Printf("failed to create capital normal accounts:\n\t err: %v\n", err)
-		}
-	}()
-
-	tx, err := conn.Begin(ctx)
+	tx, err := conn.BeginTx(ctx, nil)
 	if err != nil {
 		log.Printf("failed to create capital normal accounts:\n\t err: %v\n", err)
 	}
-	defer tx.Rollback(context.TODO())
 
 	normalAccounts, err := createCapitalNormalAccounts(ctx, tx, executedAt)
 	if err != nil {
-		log.Fatalf("failed to create capital normal accounts:\n\t err: %v\n", err)
+		log.Fatalf("failed to create capital normal accounts:\n\t err: %v\n %v\n", err, tx.Rollback())
 	}
 
 	count := len(normalAccounts) * 2
@@ -76,7 +69,7 @@ func main() {
 
 	savingsAccounts, err := createCapitalSavingsAccounts(ctx, tx, executedAt)
 	if err != nil {
-		log.Fatalf("failed to create capital savings accounts:\n\t err: %v\n", err)
+		log.Fatalf("failed to create capital savings accounts:\n\t err: %v\n %v\n", err, tx.Rollback())
 	}
 
 	count = len(savingsAccounts) * 2
@@ -84,7 +77,7 @@ func main() {
 
 	loanAccounts, err := createDebtLoanAccounts(ctx, tx, executedAt)
 	if err != nil {
-		log.Fatalf("failed to create debt loan accounts:\n\t err: %v\n", err)
+		log.Fatalf("failed to create debt loan accounts:\n\t err: %v\n %v\n", err, tx.Rollback())
 	}
 
 	count = len(loanAccounts) * 2
@@ -92,7 +85,7 @@ func main() {
 
 	creditAccounts, err := createDebtCreditAccounts(ctx, tx, executedAt)
 	if err != nil {
-		log.Fatalf("failed to create debt credit accounts:\n\t err: %v\n", err)
+		log.Fatalf("failed to create debt credit accounts:\n\t err: %v\n %v\n", err, tx.Rollback())
 	}
 
 	count = len(creditAccounts) * 2
@@ -100,7 +93,7 @@ func main() {
 
 	incomeAccounts, err := createExternalIncomeAccounts(ctx, tx, executedAt)
 	if err != nil {
-		log.Fatalf("failed to create external income accounts:\n\t err: %v\n", err)
+		log.Fatalf("failed to create external income accounts:\n\t err: %v\n %v\n", err, tx.Rollback())
 	}
 
 	count = len(incomeAccounts)
@@ -111,7 +104,7 @@ func main() {
 
 	expenseAccounts, err := createExternalExpenseAccounts(ctx, tx, executedAt)
 	if err != nil {
-		log.Fatalf("failed to create external expense accounts:\n\t err: %v\n", err)
+		log.Fatalf("failed to create external expense accounts:\n\t err: %v\n %v\n", err, tx.Rollback())
 	}
 
 	count = len(expenseAccounts)
@@ -134,15 +127,15 @@ func main() {
 		executedAt,
 	)
 	if err != nil {
-		log.Fatalf("failed to create transactions:\n\t err: %v\n", err)
+		log.Fatalf("failed to create transactions:\n\t err: %v\n %v\n", err, tx.Rollback())
 	}
 
 	count = len(transactions)
 	log.Printf("transactions seeded, %d transactions added\n", count)
 
-	err = tx.Commit(ctx)
+	err = tx.Commit()
 	if err != nil {
-		log.Fatalf("failed to commit seeding:\n\t err: %v\n", err)
+		log.Fatalf("failed to commit seeding:\n\t err: %v\n %v\n", err, tx.Rollback())
 	}
 
 	log.Printf("database seeded (took %s)\n", time.Since(start))
@@ -150,7 +143,7 @@ func main() {
 
 func createCapitalNormalAccounts(
 	ctx context.Context,
-	tx pgx.Tx,
+	tx *sql.Tx,
 	executionTime time.Time,
 ) ([]accountWithHistory, error) {
 	accounts := []accountWithHistory{
@@ -236,7 +229,7 @@ func createCapitalNormalAccounts(
 
 func createCapitalSavingsAccounts(
 	ctx context.Context,
-	tx pgx.Tx,
+	tx *sql.Tx,
 	executionTime time.Time,
 ) ([]accountWithHistory, error) {
 	accounts := []accountWithHistory{
@@ -354,7 +347,7 @@ func createCapitalSavingsAccounts(
 
 func createDebtLoanAccounts(
 	ctx context.Context,
-	tx pgx.Tx,
+	tx *sql.Tx,
 	executionTime time.Time,
 ) ([]accountWithHistory, error) {
 	accounts := []accountWithHistory{
@@ -478,7 +471,7 @@ func createDebtLoanAccounts(
 
 func createDebtCreditAccounts(
 	ctx context.Context,
-	tx pgx.Tx,
+	tx *sql.Tx,
 	executionTime time.Time,
 ) ([]accountWithHistory, error) {
 	accounts := []accountWithHistory{
@@ -567,7 +560,7 @@ func createDebtCreditAccounts(
 
 func createExternalIncomeAccounts(
 	ctx context.Context,
-	tx pgx.Tx,
+	tx *sql.Tx,
 	executionTime time.Time,
 ) ([]accountWithChildrenAndNoHistory, error) {
 	accounts := []accountWithChildrenAndNoHistory{
@@ -667,7 +660,7 @@ func createExternalIncomeAccounts(
 
 func createExternalExpenseAccounts(
 	ctx context.Context,
-	tx pgx.Tx,
+	tx *sql.Tx,
 	executionTime time.Time,
 ) ([]accountWithChildrenAndNoHistory, error) {
 	accounts := []accountWithChildrenAndNoHistory{
@@ -768,7 +761,7 @@ func createExternalExpenseAccounts(
 
 func createAccountsWithHistory(
 	ctx context.Context,
-	tx pgx.Tx,
+	tx *sql.Tx,
 	accounts ...accountWithHistory,
 ) ([]accountWithHistory, error) {
 	for i := 0; i < len(accounts); i++ {
@@ -828,7 +821,7 @@ func createAccountsWithHistory(
 
 func createAccountWithChildrenAndNoHistory(
 	ctx context.Context,
-	tx pgx.Tx,
+	tx *sql.Tx,
 	accounts ...accountWithChildrenAndNoHistory,
 ) ([]accountWithChildrenAndNoHistory, error) {
 	for i := 0; i < len(accounts); i++ {
@@ -958,7 +951,7 @@ func mapAccounts(
 
 func createAllTransactions(
 	ctx context.Context,
-	tx pgx.Tx,
+	tx *sql.Tx,
 	accounts map[string]mappedAccount,
 	executionTime time.Time,
 ) ([]transaction.Record, error) {
@@ -1279,8 +1272,8 @@ func createAllTransactions(
 	return transactions, nil
 }
 
-func createAccount(ctx context.Context, tx pgx.Tx, acc account.Record) (account.Record, error) {
-	err := tx.QueryRow(
+func createAccount(ctx context.Context, tx *sql.Tx, acc account.Record) (account.Record, error) {
+	err := tx.QueryRowContext(
 		ctx,
 		insertQuery,
 		acc.ParentID,
@@ -1302,7 +1295,7 @@ func createAccount(ctx context.Context, tx pgx.Tx, acc account.Record) (account.
 
 func createTransaction(
 	ctx context.Context,
-	tx pgx.Tx,
+	tx *sql.Tx,
 	tr transaction.Record,
 ) (transaction.Record, error) {
 	if tr.SourceAmount < 0 {
@@ -1315,7 +1308,7 @@ func createTransaction(
 		tr.TargetAmount = -tr.TargetAmount
 	}
 
-	err := tx.QueryRow(
+	err := tx.QueryRowContext(
 		ctx,
 		insertHistoryTransactionQuery,
 		tr.SourceID,
