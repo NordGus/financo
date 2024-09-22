@@ -43,5 +43,5 @@ DROP INDEX account_archived_at_on_accounts_index;
 
 DROP INDEX account_deleted_at_on_accounts_index;
 
-DROP TABLE accounts;
+DROP TABLE IF EXISTS accounts;
 -- +goose StatementEnd
