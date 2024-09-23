@@ -4,7 +4,6 @@ package account
 type Kind string
 
 const (
-	// SystemHistoric is used to represent
 	SystemHistoric  Kind = "system_historic"
 	CapitalNormal   Kind = "capital_normal"
 	CapitalSavings  Kind = "capital_savings"
