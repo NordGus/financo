@@ -36,5 +36,5 @@ DROP INDEX transaction_executed_at_index;
 
 DROP INDEX transaction_deleted_at_on_transactions_index;
 
-DROP TABLE transactions;
+DROP TABLE IF EXISTS transactions;
 -- +goose StatementEnd
