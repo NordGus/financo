@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"financo/server/accounts/brokers"
+	"financo/server/accounts/types/message"
 	"financo/server/accounts/types/request"
 	"financo/server/accounts/types/response"
 	"financo/server/services/postgres_database"
@@ -45,19 +47,20 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 
 	err = c.updateRecords(ctx, records, tx)
 	if err != nil {
-		tx.Rollback()
-		return response.Detailed{}, err
+		return response.Detailed{}, errors.Join(err, tx.Rollback())
 	}
 
 	if !account.IsExternal(c.req.Kind) {
 		err = c.updateAccountHistory(ctx, tx)
 		if err != nil {
-			tx.Rollback()
-			return response.Detailed{}, err
+			return response.Detailed{}, errors.Join(err, tx.Rollback())
 		}
 	}
 
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		return response.Detailed{}, errors.Join(err, tx.Rollback())
+	}
 
 	return c.buildResponse(ctx, conn)
 }
@@ -203,6 +206,8 @@ func (c *command) findOrInitializeRecords(ctx context.Context, conn *sql.Conn) (
 }
 
 func (c *command) updateRecords(ctx context.Context, records []account.Record, tx *sql.Tx) error {
+	broker := brokers.New(nil)
+
 	for i := 0; i < len(records); i++ {
 		record := records[i]
 
@@ -239,11 +244,17 @@ func (c *command) updateRecords(ctx context.Context, records []account.Record, t
 			if err != nil {
 				return err
 			}
+
+			err = broker.PublishUpdated(message.Updated{
+				ID:           record.ID,
+				CurrentState: record,
+			})
+			if err != nil {
+				return err
+			}
 		}
 
 		if record.ID <= 0 {
-			var id int64
-
 			err := tx.QueryRowContext(
 				ctx,
 				`
@@ -275,7 +286,12 @@ func (c *command) updateRecords(ctx context.Context, records []account.Record, t
 				record.DeletedAt,
 				record.CreatedAt,
 				record.UpdatedAt,
-			).Scan(&id)
+			).Scan(&record.ID)
+			if err != nil {
+				return err
+			}
+
+			err = broker.PublishCreated(message.Created{Record: record})
 			if err != nil {
 				return err
 			}
