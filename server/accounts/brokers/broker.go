@@ -2,7 +2,6 @@ package brokers
 
 import (
 	"context"
-	"errors"
 	"financo/server/accounts/types/message"
 	"financo/server/types/message_bus"
 	"sync"
@@ -51,15 +50,15 @@ func New(ctx context.Context, wg *sync.WaitGroup) Broker {
 }
 
 func (b *broker) SubscribeToCreated(consumer message_bus.Consumer[message.Created]) error {
-	return errors.New("not implemented")
+	return b.createdBus.Subscribe(consumer)
 }
 
 func (b *broker) SubscribeToUpdated(consumer message_bus.Consumer[message.Updated]) error {
-	return errors.New("not implemented")
+	return b.updatedBus.Subscribe(consumer)
 }
 
 func (b *broker) SubscribeToDeleted(consumer message_bus.Consumer[message.Deleted]) error {
-	return errors.New("not implemented")
+	return b.deletedBus.Subscribe(consumer)
 }
 
 func (b *broker) Shutdown() error {
