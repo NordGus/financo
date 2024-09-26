@@ -11,6 +11,9 @@ type Broker interface {
 	SubscribeToCreated(consumer message_bus.Consumer[message.Created]) error
 	SubscribeToUpdated(consumer message_bus.Consumer[message.Updated]) error
 	SubscribeToDeleted(consumer message_bus.Consumer[message.Deleted]) error
+	PublishCreated(msg message.Created) error
+	PublishUpdated(msg message.Updated) error
+	PublishDeleted(msg message.Deleted) error
 	Shutdown() error
 }
 
@@ -59,6 +62,18 @@ func (b *broker) SubscribeToUpdated(consumer message_bus.Consumer[message.Update
 
 func (b *broker) SubscribeToDeleted(consumer message_bus.Consumer[message.Deleted]) error {
 	return b.deletedBus.Subscribe(consumer)
+}
+
+func (b *broker) PublishCreated(msg message.Created) error {
+	return b.createdBus.Publish(msg)
+}
+
+func (b *broker) PublishUpdated(msg message.Updated) error {
+	return b.updatedBus.Publish(msg)
+}
+
+func (b *broker) PublishDeleted(msg message.Deleted) error {
+	return b.deletedBus.Publish(msg)
 }
 
 func (b *broker) Shutdown() error {
