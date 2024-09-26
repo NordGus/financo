@@ -20,6 +20,8 @@ type Bus[Payload any] interface {
 }
 
 type messageBus[Payload any] struct {
+	sync.RWMutex
+
 	name          string
 	wg            *sync.WaitGroup
 	consumers     [math.MaxUint8]Consumer[Payload]
@@ -36,19 +38,26 @@ func New[Payload any](wg *sync.WaitGroup, name string) Bus[Payload] {
 }
 
 func (m *messageBus[Payload]) Subscribe(consumer Consumer[Payload]) error {
-	if m.consumerCount == math.MaxUint8 {
+	if m.consumerCount > math.MaxUint8 {
 		return fmt.Errorf("message_bus: %s can't handle more consumers", m.name)
 	}
 
 	m.wg.Add(1)
-	m.consumerCount++
+	defer m.wg.Done()
+
+	m.RWMutex.Lock()
+	defer m.RWMutex.Unlock()
+
 	m.consumers[m.consumerCount] = consumer
-	m.wg.Done()
+	m.consumerCount++
 
 	return nil
 }
 
 func (m *messageBus[Payload]) Publish(payload Payload) error {
+	m.RWMutex.RLock()
+	defer m.RWMutex.RUnlock()
+
 	m.wg.Add(m.consumerCount + 1)
 	defer m.wg.Done()
 

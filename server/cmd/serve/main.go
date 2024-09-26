@@ -27,15 +27,21 @@ const (
 
 func main() {
 	var (
-		pgService = postgres_database.New()
-
 		wg          = new(sync.WaitGroup)
 		ctx, cancel = context.WithCancel(context.Background())
+
+		pgService      = postgres_database.New()
+		accountsBroker = accounts.NewBroker(wg)
 	)
 
 	defer func() {
-		err := pgService.Close()
-		if err != nil {
+		if err := accountsBroker.Shutdown(); err != nil {
+			log.Printf("failed to shutdown accounts broker: %s\n", err)
+		}
+	}()
+
+	defer func() {
+		if err := pgService.Close(); err != nil {
 			log.Printf("failed to close database connections: %s\n", err)
 		}
 	}()
