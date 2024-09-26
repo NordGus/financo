@@ -4,6 +4,7 @@ import (
 	"context"
 	"financo/server/accounts/types/message"
 	"financo/server/types/message_bus"
+	"fmt"
 	"sync"
 )
 
@@ -53,33 +54,63 @@ func New(ctx context.Context, wg *sync.WaitGroup) Broker {
 }
 
 func (b *broker) SubscribeToCreated(consumer message_bus.Consumer[message.Created]) error {
-	return b.createdBus.Subscribe(consumer)
+	select {
+	case <-b.ctx.Done():
+		return fmt.Errorf("accounts: broker: %s", b.ctx.Err())
+	default:
+		return b.createdBus.Subscribe(consumer)
+	}
 }
 
 func (b *broker) SubscribeToUpdated(consumer message_bus.Consumer[message.Updated]) error {
-	return b.updatedBus.Subscribe(consumer)
+	select {
+	case <-b.ctx.Done():
+		return fmt.Errorf("accounts: broker: %s", b.ctx.Err())
+	default:
+		return b.updatedBus.Subscribe(consumer)
+	}
 }
 
 func (b *broker) SubscribeToDeleted(consumer message_bus.Consumer[message.Deleted]) error {
-	return b.deletedBus.Subscribe(consumer)
+	select {
+	case <-b.ctx.Done():
+		return fmt.Errorf("accounts: broker: %s", b.ctx.Err())
+	default:
+		return b.deletedBus.Subscribe(consumer)
+	}
 }
 
 func (b *broker) PublishCreated(msg message.Created) error {
-	return b.createdBus.Publish(msg)
+	select {
+	case <-b.ctx.Done():
+		return fmt.Errorf("accounts: broker: %s", b.ctx.Err())
+	default:
+		return b.createdBus.Publish(msg)
+	}
 }
 
 func (b *broker) PublishUpdated(msg message.Updated) error {
-	return b.updatedBus.Publish(msg)
+	select {
+	case <-b.ctx.Done():
+		return fmt.Errorf("accounts: broker: %s", b.ctx.Err())
+	default:
+		return b.updatedBus.Publish(msg)
+	}
 }
 
 func (b *broker) PublishDeleted(msg message.Deleted) error {
-	return b.deletedBus.Publish(msg)
+	select {
+	case <-b.ctx.Done():
+		return fmt.Errorf("accounts: broker: %s", b.ctx.Err())
+	default:
+		return b.deletedBus.Publish(msg)
+	}
 }
 
 func (b *broker) Shutdown() error {
 	select {
 	case <-b.ctx.Done():
-		return b.ctx.Err()
+		return fmt.Errorf("accounts: broker: %s", b.ctx.Err())
 	default:
 		b.cancel()
 
