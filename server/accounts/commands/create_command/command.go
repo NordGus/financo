@@ -3,6 +3,8 @@ package create_command
 import (
 	"context"
 	"errors"
+	"financo/server/accounts/brokers"
+	"financo/server/accounts/types/message"
 	"financo/server/accounts/types/request"
 	"financo/server/accounts/types/response"
 	"financo/server/services/postgres_database"
@@ -81,6 +83,7 @@ func (c *command) saveAccounts(ctx context.Context, records [2]account.Record) (
 		parent   = records[0]
 		history  = records[1]
 		postgres = postgres_database.New()
+		broker   = brokers.New(nil)
 
 		res response.Created
 	)
@@ -172,5 +175,5 @@ func (c *command) saveAccounts(ctx context.Context, records [2]account.Record) (
 		return res, errors.Join(err, tx.Rollback())
 	}
 
-	return res, nil
+	return res, broker.PublishCreated(message.Created{Record: parent})
 }

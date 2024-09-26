@@ -4,11 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"financo/server/accounts/brokers"
 	"financo/server/accounts/queries/detailed_children_query"
 	"financo/server/accounts/queries/detailed_query"
+	"financo/server/accounts/types/message"
 	"financo/server/accounts/types/response"
 	"financo/server/services/postgres_database"
 	"financo/server/types/commands"
+	"financo/server/types/records/account"
 	"time"
 )
 
@@ -78,7 +81,7 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 		return res, errors.Join(err, tx.Rollback())
 	}
 
-	return res, nil
+	return res, c.publishAccountsDeletion(ctx, conn, ids)
 }
 
 func (c *command) markAccountsAsDeleted(ctx context.Context, tx *sql.Tx) error {
@@ -109,4 +112,67 @@ func (c *command) markTransactionsAsDeleted(ctx context.Context, tx *sql.Tx, ids
 	)
 
 	return err
+}
+
+func (c *command) publishAccountsDeletion(ctx context.Context, conn *sql.Conn, ids []int64) error {
+	broker := brokers.New(nil)
+
+	rows, err := conn.QueryContext(
+		ctx,
+		`
+		SELECT
+			id,
+			parent_id,
+			kind,
+			currency,
+			name,
+			description,
+			color,
+			icon,
+			capital,
+			archived_at,
+			deleted_at,
+			created_at,
+			updated_at
+		FROM accounts
+		WHERE id = ANY($1)
+		`,
+		ids,
+	)
+	if err != nil {
+		return errors.Join(errors.New("failed to retrieve records from database"), err)
+	}
+
+	for rows.Next() {
+		var record account.Record
+
+		err = rows.Scan(
+			&record.ID,
+			&record.ParentID,
+			&record.Kind,
+			&record.Currency,
+			&record.Name,
+			&record.Description,
+			&record.Color,
+			&record.Icon,
+			&record.Capital,
+			&record.ArchivedAt,
+			&record.DeletedAt,
+			&record.CreatedAt,
+			&record.UpdatedAt,
+		)
+		if err != nil {
+			return errors.Join(errors.New("failed to scan record"), err)
+		}
+
+		err = broker.PublishDeleted(message.Deleted{
+			ID:           record.ID,
+			CurrentState: record,
+		})
+		if err != nil {
+			return errors.Join(errors.New("failed to publish message"), err)
+		}
+	}
+
+	return nil
 }
