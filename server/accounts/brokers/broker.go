@@ -12,7 +12,7 @@ type Broker interface {
 	SubscribeToCreated(consumer message_bus.Consumer[message.Created]) error
 	SubscribeToUpdated(consumer message_bus.Consumer[message.Updated]) error
 	SubscribeToDeleted(consumer message_bus.Consumer[message.Deleted]) error
-	Close() error
+	Shutdown() error
 }
 
 type broker struct {
@@ -28,12 +28,14 @@ var (
 	instance *broker
 )
 
-func New(ctx context.Context) Broker {
+// New returns a message [Broker]. If no instance has being memoize yet the
+// [*sync.WaitGroup] is required, please do this on program startup. If the
+// instance is already memoized, pass nil as [*sync.WaitGroup].
+func New(ctx context.Context, wg *sync.WaitGroup) Broker {
 	if instance != nil {
 		return instance
 	}
 
-	wg := new(sync.WaitGroup)
 	newCtx, cancel := context.WithCancel(ctx)
 
 	instance = &broker{
@@ -60,12 +62,11 @@ func (b *broker) SubscribeToDeleted(consumer message_bus.Consumer[message.Delete
 	return errors.New("not implemented")
 }
 
-func (b *broker) Close() error {
+func (b *broker) Shutdown() error {
 	select {
 	case <-b.ctx.Done():
 		return b.ctx.Err()
 	default:
-		b.wg.Wait()
 		b.cancel()
 
 		return nil
