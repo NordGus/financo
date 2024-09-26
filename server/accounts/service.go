@@ -1,7 +1,6 @@
 package accounts
 
 import (
-	"context"
 	"financo/server/accounts/brokers"
 	"financo/server/accounts/http/handlers"
 	"sync"
@@ -13,8 +12,8 @@ import (
 // being memoize yet the [*sync.WaitGroup] is required, please do this on
 // program startup. If the instance is already memoized, pass nil as
 // [*sync.WaitGroup].
-func NewBroker(ctx context.Context, wg *sync.WaitGroup) brokers.Broker {
-	return brokers.New(ctx, wg)
+func NewBroker(wg *sync.WaitGroup) brokers.Broker {
+	return brokers.New(wg)
 }
 
 func Routes(r chi.Router) {

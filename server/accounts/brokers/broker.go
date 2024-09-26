@@ -34,12 +34,12 @@ var (
 // New returns a message [Broker]. If no instance has being memoize yet the
 // [*sync.WaitGroup] is required, please do this on program startup. If the
 // instance is already memoized, pass nil as [*sync.WaitGroup].
-func New(ctx context.Context, wg *sync.WaitGroup) Broker {
+func New(wg *sync.WaitGroup) Broker {
 	if instance != nil {
 		return instance
 	}
 
-	newCtx, cancel := context.WithCancel(ctx)
+	newCtx, cancel := context.WithCancel(context.Background())
 
 	instance = &broker{
 		ctx:        newCtx,

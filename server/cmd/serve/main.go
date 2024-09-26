@@ -31,7 +31,7 @@ func main() {
 		ctx, cancel = context.WithCancel(context.Background())
 
 		pgService      = postgres_database.New()
-		accountsBroker = accounts.NewBroker(ctx, wg)
+		accountsBroker = accounts.NewBroker(wg)
 	)
 
 	defer func() {
