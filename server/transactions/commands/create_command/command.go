@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"financo/server/services/postgres_database"
+	"financo/server/transactions/brokers"
 	"financo/server/transactions/queries/detailed_query"
+	"financo/server/transactions/types/message"
 	"financo/server/transactions/types/request"
 	"financo/server/transactions/types/response"
 	"financo/server/types/commands"
@@ -43,6 +45,7 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 			UpdatedAt:    c.timestamp,
 		}
 		postgres = postgres_database.New()
+		broker   = brokers.New(nil)
 
 		source account.Record
 		target account.Record
@@ -97,7 +100,7 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 		return res, errors.Join(errors.New("failed to find persisted account"), err)
 	}
 
-	return res, nil
+	return res, broker.PublishCreated(message.Created{Record: record})
 }
 
 func (c *command) findAccount(ctx context.Context, conn *sql.Conn, id int64) (account.Record, error) {

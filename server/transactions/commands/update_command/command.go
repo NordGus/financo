@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"financo/server/services/postgres_database"
+	"financo/server/transactions/brokers"
 	"financo/server/transactions/queries/detailed_query"
+	"financo/server/transactions/types/message"
 	"financo/server/transactions/types/request"
 	"financo/server/transactions/types/response"
 	"financo/server/types/commands"
@@ -30,8 +32,10 @@ func New(req request.Update) commands.Command[response.Detailed] {
 func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 	var (
 		postgres = postgres_database.New()
+		broker   = brokers.New(nil)
 
 		res response.Detailed
+		msg message.Updated
 	)
 
 	conn, err := postgres.Conn(ctx)
@@ -44,6 +48,8 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 	if err != nil {
 		return res, errors.Join(errors.New("transaction not found"), err)
 	}
+
+	msg.PreviousState = record
 
 	source, err := c.findAccount(ctx, conn, c.req.SourceID)
 	if err != nil {
@@ -91,7 +97,10 @@ func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 		return res, errors.Join(errors.New("failed to retrieve response"), err)
 	}
 
-	return res, nil
+	msg.ID = record.ID
+	msg.CurrentState = record
+
+	return res, broker.PublishUpdated(msg)
 }
 
 func (c *command) findAccount(ctx context.Context, conn *sql.Conn, id int64) (account.Record, error) {
