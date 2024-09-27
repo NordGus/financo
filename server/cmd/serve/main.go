@@ -30,13 +30,20 @@ func main() {
 		wg          = new(sync.WaitGroup)
 		ctx, cancel = context.WithCancel(context.Background())
 
-		pgService      = postgres_database.New()
-		accountsBroker = accounts.NewBroker(wg)
+		pgService          = postgres_database.New()
+		accountsBroker     = accounts.NewBroker(wg)
+		transactionsBroker = transactions.NewBroker(wg)
 	)
 
 	defer func() {
 		if err := accountsBroker.Shutdown(); err != nil {
 			log.Printf("failed to shutdown accounts broker: %s\n", err)
+		}
+	}()
+
+	defer func() {
+		if err := transactionsBroker.Shutdown(); err != nil {
+			log.Printf("failed to shutdown transactions broker: %s\n", err)
 		}
 	}()
 
