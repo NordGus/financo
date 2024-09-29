@@ -39,8 +39,6 @@ export function CardSummary({
         val = { ...val, ...conf[i] };
     }
 
-    console.log(seriesSize)
-
     const chartConfig = { ...val } satisfies ChartConfig
 
     return (

@@ -640,14 +640,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                                     <Calendar
                                         mode="single"
                                         selected={field.value}
-                                        onSelect={(day, selectedDay, activeModifiers, event) => {
-                                            console.log("day:", day, selectedDay, activeModifiers, event)
-                                            console.log("selectedDay:", selectedDay)
-                                            console.log("activeModifiers:", activeModifiers)
-                                            console.log("event:", event)
-
-                                            field.onChange(day, selectedDay, activeModifiers, event)
-                                        }}
+                                        onSelect={field.onChange}
                                         disabled={(date) => date < moment(issuedAt).startOf('day').toDate()}
                                     />
                                 </PopoverContent>
