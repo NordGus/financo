@@ -63,3 +63,35 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 
 	return nil
 }
+
+// MarshalJSON returns the json encoding of [Kind]. So [Kind] satisfies the
+// [json.Marshaler] interface.
+//
+// It returns an error if [Kind] is an unsupported value or if json encoding
+// fails.
+func (k Kind) MarshalJSON() ([]byte, error) {
+	var s string
+
+	switch k {
+	default:
+		return []byte{}, fmt.Errorf("account: invalid account kind \"%s\"", k)
+	case SystemHistoric:
+		s = "system_historic"
+	case CapitalNormal:
+		s = "capital_normal"
+	case CapitalSavings:
+		s = "capital_savings"
+	case DebtPersonal:
+		s = "debt_personal"
+	case DebtLoan:
+		s = "debt_loan"
+	case DebtCredit:
+		s = "debt_credit"
+	case ExternalIncome:
+		s = "external_income"
+	case ExternalExpense:
+		s = "external_expense"
+	}
+
+	return json.Marshal(s)
+}
