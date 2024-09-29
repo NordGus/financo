@@ -60,6 +60,7 @@ import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 import { useToast } from "@components/ui/use-toast";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import currencyAmountColor from "@helpers/currencyAmountColor";
+import { normalizeDateForServer } from "@helpers/normalizeDate";
 
 const schema = z.object({
     id: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
@@ -100,10 +101,13 @@ const schema = z.object({
             (arg) => isNil(arg) ? 0 : Number(arg),
             z.number({ required_error: "is required", invalid_type_error: "must be a number" })
         ).optional(),
-        at: z.date({
-            required_error: "is required",
-            invalid_type_error: "must be a date"
-        }).optional()
+        at: z.preprocess(
+            (arg) => isNil(arg) ? arg : normalizeDateForServer(moment(arg as any).toDate()),
+            z.date({
+                required_error: "is required",
+                invalid_type_error: "must be a date"
+            }).optional()
+        ).optional()
     }),
     color: z.string({
         required_error: "is required",
@@ -167,10 +171,13 @@ const schema = z.object({
                 (arg) => isNil(arg) ? 0 : Number(arg),
                 z.number({ required_error: "is required", invalid_type_error: "must be a number" })
             ).optional(),
-            at: z.date({
-                required_error: "is required",
-                invalid_type_error: "must be a date"
-            }).optional()
+            at: z.preprocess(
+                (arg) => isNil(arg) ? arg : normalizeDateForServer(moment(arg as any).toDate()),
+                z.date({
+                    required_error: "is required",
+                    invalid_type_error: "must be a date"
+                }).optional()
+            ).optional()
         }),
         color: z.string({
             required_error: "is required",
