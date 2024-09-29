@@ -150,7 +150,7 @@ func buildSourceParentAccount(row BaseQueryListRow) nullable.Type[response.Accou
 		return nullable.New(response.AccountParent{
 			ID:         row.SrcParentID.Val,
 			Kind:       account.Kind(row.SrcParentKind.Val),
-			Currency:   currency.Type(row.SrcParentColor.Val),
+			Currency:   currency.Type(row.SrcParentCurrency.Val),
 			Name:       row.SrcParentName.Val,
 			Color:      color.Type(row.SrcParentColor.Val),
 			Icon:       icon.Type(row.SrcParentIcon.Val),
@@ -183,7 +183,7 @@ func buildTargetParentAccount(row BaseQueryListRow) nullable.Type[response.Accou
 		return nullable.New(response.AccountParent{
 			ID:         row.TrgParentID.Val,
 			Kind:       account.Kind(row.TrgParentKind.Val),
-			Currency:   currency.Type(row.TrgParentColor.Val),
+			Currency:   currency.Type(row.TrgParentCurrency.Val),
 			Name:       row.TrgParentName.Val,
 			Color:      color.Type(row.TrgParentColor.Val),
 			Icon:       icon.Type(row.TrgParentIcon.Val),
