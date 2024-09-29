@@ -20,6 +20,7 @@ import { staleTimeDefault } from "@queries/Client";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import kindToHuman from "@helpers/account/kindToHuman";
 import { accountContrastColor } from "@helpers/account/accountContrastColor";
+import { normalizeDateForServer } from "@helpers/normalizeDate";
 import { cn } from "@/lib/utils";
 
 import { Button } from "@components/ui/button";
@@ -55,8 +56,19 @@ const schema = z.object({
     id: z.number({ invalid_type_error: "must be a number" }).optional(),
     sourceID: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
     targetID: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
-    issuedAt: z.date({ required_error: "is required", invalid_type_error: "must be a date" }),
-    executedAt: z.date({ invalid_type_error: "must be a date" }).optional(),
+    issuedAt: z.preprocess(
+        (arg) => normalizeDateForServer(moment(arg as any).toDate()),
+        z.date({
+            required_error: "is required",
+            invalid_type_error: "must be a date"
+        })
+    ),
+    executedAt: z.preprocess(
+        (arg) => isNil(arg) ? arg : normalizeDateForServer(moment(arg as any).toDate()),
+        z.date({
+            invalid_type_error: "must be a date"
+        }).optional()
+    ).optional(),
     sourceAmount: z.preprocess(
         (arg) => isNil(arg) ? 0 : Number(arg),
         z.number({ required_error: "is required", invalid_type_error: "must be a number" })
@@ -628,7 +640,14 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                                     <Calendar
                                         mode="single"
                                         selected={field.value}
-                                        onSelect={field.onChange}
+                                        onSelect={(day, selectedDay, activeModifiers, event) => {
+                                            console.log("day:", day, selectedDay, activeModifiers, event)
+                                            console.log("selectedDay:", selectedDay)
+                                            console.log("activeModifiers:", activeModifiers)
+                                            console.log("event:", event)
+
+                                            field.onChange(day, selectedDay, activeModifiers, event)
+                                        }}
                                         disabled={(date) => date < moment(issuedAt).startOf('day').toDate()}
                                     />
                                 </PopoverContent>
