@@ -230,7 +230,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 		}
 	}
 
-	if acc.Capital >= 0 {
+	if acc.Capital >= 0 && len(res) > 0 {
 		for i := 0; i < len(res[0].Series); i++ {
 			res[0].Series[i].Amount = -res[0].Series[i].Amount
 		}
