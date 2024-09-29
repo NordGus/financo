@@ -32,7 +32,7 @@ func IsDebt(kind Kind) bool {
 // valid [Kind]. So [Kind] satisfies the [json.Unmarshaler] interface.
 //
 // It returns an error if the buffer can't be unmarshal into an string or the
-// provided value is not a valid [Kind].
+// provided value is not a supported [Kind].
 func (k *Kind) UnmarshalJSON(b []byte) error {
 	var s string
 
