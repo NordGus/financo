@@ -1,20 +1,17 @@
-import { Dispatch, SetStateAction } from "react"
-import { UseMutationResult } from "@tanstack/react-query"
-import { isEmpty, isNil } from "lodash"
-
-import Transaction from "@/types/Transaction"
-
+import { Transaction } from "@/types/Transaction"
 import { PendingFilters } from "@api/transactions"
-
-import { Card, CardContent, CardDescription } from "@components/ui/card"
 import { Throbber } from "@components/Throbber"
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@components/ui/accordion"
+import { Card, CardContent, CardDescription } from "@components/ui/card"
+import { UseMutationResult } from "@tanstack/react-query"
+import { isEmpty, isNil } from "lodash"
+import { Dispatch, SetStateAction } from "react"
 import { TransactionTable } from "./table"
 
 interface Props {
     mutation: UseMutationResult<Transaction[], Error, PendingFilters, unknown>
     setOpen: Dispatch<SetStateAction<boolean>>
-    setTransaction: Dispatch<SetStateAction<Transaction | {}>>
+    setTransaction: Dispatch<SetStateAction<Transaction | NonNullable<unknown>>>
 }
 
 export function TransactionsPending({ mutation: { data, isPending, isError, error }, setOpen, setTransaction }: Props) {

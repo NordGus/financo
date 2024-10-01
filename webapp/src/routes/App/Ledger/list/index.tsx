@@ -1,32 +1,26 @@
-import { LoaderFunctionArgs, useLoaderData, useOutletContext } from "react-router-dom";
-import { Dispatch, SetStateAction, useEffect } from "react";
-import { QueryClient, useMutation } from "@tanstack/react-query";
-import moment from "moment";
-
-import Transaction from "@/types/Transaction";
-
+import { Transaction } from "@/types/Transaction";
 import {
     getPendingTransactions,
     getTransactions,
     ListFilters,
     PendingFilters,
 } from "@api/transactions";
-
-import { Card } from "@components/ui/card";
-import { Accordion } from "@components/ui/accordion";
-import { TransactionsHistory } from "./history";
-import { TransactionsPending } from "./pending"
-import { TransactionsUpcoming } from "./upcoming";
 import { FiltersState } from "@components/filters/transactions";
+import { Accordion } from "@components/ui/accordion";
+import { Card } from "@components/ui/card";
+import { useMutation } from "@tanstack/react-query";
+import moment from "moment";
+import { Dispatch, SetStateAction, useEffect } from "react";
+import { useLoaderData, useOutletContext } from "react-router-dom";
+import { TransactionsHistory } from "./history";
+import { loader } from "./loader";
+import { TransactionsPending } from "./pending";
+import { TransactionsUpcoming } from "./upcoming";
 
 interface OutletContext {
     filters: FiltersState
     setOpen: Dispatch<SetStateAction<boolean>>
-    setTransaction: Dispatch<SetStateAction<Transaction | {}>>
-}
-
-export const loader = (_queryClient: QueryClient) => async (_props: LoaderFunctionArgs) => {
-    return { timestamp: moment().toISOString() }
+    setTransaction: Dispatch<SetStateAction<Transaction | NonNullable<unknown>>>
 }
 
 export default function Index() {
@@ -49,8 +43,11 @@ export default function Index() {
     })
 
     useEffect(() => {
-        pendingTransactions.mutate({ account: filters.accounts, category: filters.categories })
-    }, [filters, timestamp])
+        pendingTransactions.mutate({
+            account: filters.accounts,
+            category: filters.categories
+        })
+    }, [filters, timestamp, pendingTransactions])
 
     useEffect(() => {
         upcomingTransactions.mutate({
@@ -59,7 +56,7 @@ export default function Index() {
             account: filters.accounts,
             category: filters.categories
         })
-    }, [filters, timestamp])
+    }, [filters, timestamp, upcomingTransactions])
 
     useEffect(() => {
         historyTransactions.mutate({
@@ -68,7 +65,7 @@ export default function Index() {
             account: filters.accounts,
             category: filters.categories
         })
-    }, [filters, timestamp])
+    }, [filters, timestamp, historyTransactions])
 
     return (
         <div className="flex flex-col">

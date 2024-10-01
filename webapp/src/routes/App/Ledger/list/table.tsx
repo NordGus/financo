@@ -1,15 +1,13 @@
-import { Dispatch, SetStateAction } from "react"
-import { groupBy, isNil } from "lodash"
-import { ArchiveIcon } from "@radix-ui/react-icons"
-import moment from "moment"
-
-import Transaction from "@/types/Transaction"
-
-import { accountContrastColor } from "@helpers/account/accountContrastColor"
-import currencySourceAmountColor from "@helpers/transaction/currencySourceAmountColor"
-import currencyAmountToHuman from "@helpers/currencyAmountToHuman"
-import kindToHuman from "@helpers/account/kindToHuman"
 import { cn } from "@/lib/utils"
+import { Transaction } from "@/types/Transaction"
+import { accountContrastColor } from "@helpers/account/accountContrastColor"
+import kindToHuman from "@helpers/account/kindToHuman"
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman"
+import currencySourceAmountColor from "@helpers/transaction/currencySourceAmountColor"
+import { ArchiveIcon } from "@radix-ui/react-icons"
+import { groupBy, isNil } from "lodash"
+import moment from "moment"
+import { Dispatch, SetStateAction } from "react"
 
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@components/ui/table"
 
@@ -19,7 +17,7 @@ interface TableProps {
     groupByFn: (tr: Transaction) => string,
     withUpcoming: boolean
     setOpen: Dispatch<SetStateAction<boolean>>
-    setTransaction: Dispatch<SetStateAction<Transaction | {}>>
+    setTransaction: Dispatch<SetStateAction<Transaction | NonNullable<unknown>>>
 }
 
 export function TransactionTable({
@@ -59,7 +57,7 @@ interface SectionProps {
     withUpcoming: boolean
     upcomingDate: Date
     setOpen: Dispatch<SetStateAction<boolean>>
-    setTransaction: Dispatch<SetStateAction<Transaction | {}>>
+    setTransaction: Dispatch<SetStateAction<Transaction | NonNullable<unknown>>>
 }
 
 function Section({ date, transactions, withUpcoming, upcomingDate, setOpen, setTransaction }: SectionProps) {

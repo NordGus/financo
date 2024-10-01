@@ -1,19 +1,16 @@
-import { Dispatch, SetStateAction } from "react"
+import { Transaction } from "@/types/Transaction"
+import { ListFilters } from "@api/transactions"
+import { Throbber } from "@components/Throbber"
+import { CardContent } from "@components/ui/card"
 import { UseMutationResult } from "@tanstack/react-query"
 import { isEmpty, isNil } from "lodash"
-
-import Transaction from "@/types/Transaction"
-
-import { ListFilters } from "@api/transactions"
-
-import { CardContent } from "@components/ui/card"
-import { Throbber } from "@components/Throbber"
+import { Dispatch, SetStateAction } from "react"
 import { TransactionTable } from "./table"
 
 interface Props {
     mutation: UseMutationResult<Transaction[], Error, ListFilters, unknown>
     setOpen: Dispatch<SetStateAction<boolean>>
-    setTransaction: Dispatch<SetStateAction<Transaction | {}>>
+    setTransaction: Dispatch<SetStateAction<Transaction | NonNullable<unknown>>>
 }
 
 export function TransactionsHistory({ mutation: { data, isPending, isError, error }, setOpen, setTransaction }: Props) {
