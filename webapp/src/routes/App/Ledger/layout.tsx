@@ -1,5 +1,4 @@
-import { LoaderFunctionArgs, Outlet } from "react-router-dom";
-import { QueryClient } from "@tanstack/react-query";
+import { Outlet } from "react-router-dom";
 import { useReducer, useState } from "react";
 import { isEqual } from "lodash";
 import { SlidersHorizontalIcon } from "lucide-react";
@@ -17,15 +16,11 @@ import {
 import Transactions from "./Transactions";
 import { reducer, defaultFilters, TransactionsFilters } from "@components/filters/transactions";
 
-export const loader = (_queryClient: QueryClient) => async (_props: LoaderFunctionArgs) => {
-    return { breadcrumb: "Ledger" }
-}
-
 export default function Layout() {
     const [filters, dispatch] = useReducer(reducer, { clearable: false, filters: defaultFilters() })
     const [openForm, setOpenForm] = useState(false)
     const [openFilters, setOpenFilters] = useState(false)
-    const [transaction, setTransaction] = useState<Transaction | {}>({})
+    const [transaction, setTransaction] = useState<Transaction | NonNullable<unknown>>({})
 
     return (
         <div className="gap-4 flex flex-col">
