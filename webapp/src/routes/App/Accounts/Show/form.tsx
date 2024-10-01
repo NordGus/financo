@@ -98,7 +98,7 @@ const schema = z.object({
             z.number({ required_error: "is required", invalid_type_error: "must be a number" })
         ).optional(),
         at: z.preprocess(
-            (arg) => isNil(arg) ? arg : normalizeDateForServer(moment(arg as any).toDate()),
+            (arg) => isNil(arg) ? arg : normalizeDateForServer(moment(arg as Date).toDate()),
             z.date({
                 required_error: "is required",
                 invalid_type_error: "must be a date"
@@ -168,7 +168,7 @@ const schema = z.object({
                 z.number({ required_error: "is required", invalid_type_error: "must be a number" })
             ).optional(),
             at: z.preprocess(
-                (arg) => isNil(arg) ? arg : normalizeDateForServer(moment(arg as any).toDate()),
+                (arg) => isNil(arg) ? arg : normalizeDateForServer(moment(arg as Date).toDate()),
                 z.date({
                     required_error: "is required",
                     invalid_type_error: "must be a date"
@@ -314,7 +314,7 @@ export function UpdateAccountForm({
         if (!isEmpty(form.formState.errors)) console.error("errors:", form.formState.errors)
     }, [form.formState.errors])
 
-    useEffect(() => form.reset({ ...mapAccountToUpdateForm(account) }), [account.updatedAt])
+    useEffect(() => form.reset({ ...mapAccountToUpdateForm(account) }), [account, account.updatedAt, form])
 
     if (isError) throw error
 
