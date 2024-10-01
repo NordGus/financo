@@ -1,4 +1,4 @@
-import Goal from "@/types/Goal";
+import { Goal } from "@/types/Goal";
 
 export function getGoal(id: string): () => Promise<Goal> {
     return async () => {

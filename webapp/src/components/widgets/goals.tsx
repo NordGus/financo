@@ -1,20 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
-import { isEmpty, isNil } from "lodash";
-import { InfoIcon, TrophyIcon } from "lucide-react";
-import moment from "moment";
-
-import Goal from "@/types/Goal";
-
-import { staleTimeDefault } from "@queries/Client";
-import { getGoals } from "@api/goals";
-
+import { cn } from "@/lib/utils";
+import { Goal } from "@/types/Goal";
 import { Progress } from "@components/Progress";
 import { Throbber } from "@components/Throbber";
 import { Button } from "@components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@components/ui/card";
 import { Table, TableBody, TableCell, TableRow } from "@components/ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { isEmpty, isNil } from "lodash";
+import { InfoIcon, TrophyIcon } from "lucide-react";
+import moment from "moment";
 
 export function GoalsTracker({ className }: { className?: string }) {
     // [ ] Implement goals/achievements endpoints
