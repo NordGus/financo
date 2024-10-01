@@ -1,9 +1,9 @@
 import Accounts from "./Accounts";
-import Ledger from "./Ledger";
+import Dashboard from "./Dashboard";
 import ErrorBoundary from "./ErrorBoundary";
 import Layout from "./layout";
+import Ledger from "./ledger";
 import NotFound from "./NotFound";
-import Dashboard from "./Dashboard";
 
 export default {
     Layout,
