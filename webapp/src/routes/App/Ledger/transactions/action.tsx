@@ -11,8 +11,8 @@ export const action = (queryClient: QueryClient) => async ({
     if (!params.id) throw new Error('No account ID provided')
     const id = Number(params.id)
 
-    switch (request.method.toLowerCase()) {
-        case "delete":
+    const action = {
+        ["delete"]: async () => {
             const deleted = await deleteTransaction(id)
 
             await Promise.all([
@@ -26,8 +26,10 @@ export const action = (queryClient: QueryClient) => async ({
             })
 
             return redirect(`/ledger`)
-        default:
-            throw new Response("", { status: 405 })
-    }
-}
+        }
+    }[request.method.toLowerCase()]
 
+    if (action) return action()
+
+    throw new Response("", { status: 405 })
+}

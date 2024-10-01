@@ -13,7 +13,7 @@ import {
     SheetHeader,
     SheetTitle
 } from "@components/ui/sheet";
-import Transactions from "./Transactions";
+import Transactions from "./transactions";
 import { reducer, defaultFilters, TransactionsFilters } from "@components/filters/transactions";
 
 export default function Layout() {

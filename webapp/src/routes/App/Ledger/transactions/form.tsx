@@ -1,29 +1,11 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { isEmpty, isEqual, isNil } from "lodash";
-import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
-import moment from "moment";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { format } from "date-fns";
-import { Form as RouterForm, useNavigate } from "react-router-dom";
-
-import Transaction, { Account } from "@/types/Transaction";
+import { cn } from "@/lib/utils";
 import { Kind, Select } from "@/types/Account";
-
+import { Account, Transaction } from "@/types/Transaction";
 import { getSelectableAccounts } from "@api/accounts";
 import { createTransaction, updateTransaction } from "@api/transactions";
-import { staleTimeDefault } from "@queries/Client";
-
-import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
-import kindToHuman from "@helpers/account/kindToHuman";
-import { accountContrastColor } from "@helpers/account/accountContrastColor";
-import { normalizeDateForServer } from "@helpers/normalizeDate";
-import { cn } from "@/lib/utils";
-
+import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 import { Button } from "@components/ui/button";
+import { Calendar } from "@components/ui/calendar";
 import {
     Command,
     CommandEmpty,
@@ -41,30 +23,44 @@ import {
     FormLabel,
     FormMessage
 } from "@components/ui/form";
+import { Input } from "@components/ui/input";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger
 } from "@components/ui/popover";
-import { useToast } from "@components/ui/use-toast";
-import { Input } from "@components/ui/input";
-import { Calendar } from "@components/ui/calendar";
 import { Textarea } from "@components/ui/textarea";
-import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
+import { useToast } from "@components/ui/use-toast";
+import { accountContrastColor } from "@helpers/account/accountContrastColor";
+import kindToHuman from "@helpers/account/kindToHuman";
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import { normalizeDateForServer } from "@helpers/normalizeDate";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { staleTimeDefault } from "@queries/Client";
+import { CaretSortIcon } from "@radix-ui/react-icons";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { isEmpty, isEqual, isNil } from "lodash";
+import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
+import moment from "moment";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Form as RouterForm, useNavigate } from "react-router-dom";
+import { z } from "zod";
 
 const schema = z.object({
     id: z.number({ invalid_type_error: "must be a number" }).optional(),
     sourceID: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
     targetID: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),
     issuedAt: z.preprocess(
-        (arg) => normalizeDateForServer(moment(arg as any).toDate()),
+        (arg) => isNil(arg) ? arg : normalizeDateForServer(moment(arg! as Date).toDate()),
         z.date({
             required_error: "is required",
             invalid_type_error: "must be a date"
         })
     ),
     executedAt: z.preprocess(
-        (arg) => isNil(arg) ? arg : normalizeDateForServer(moment(arg as any).toDate()),
+        (arg) => isNil(arg) ? arg : normalizeDateForServer(moment(arg! as Date).toDate()),
         z.date({
             invalid_type_error: "must be a date"
         }).optional()
@@ -83,7 +79,7 @@ const schema = z.object({
         .optional()
 })
 
-function mapTransactionToForm(transaction: Transaction | {}): z.infer<typeof schema> | {} {
+function mapTransactionToForm(transaction: Transactionable): z.infer<typeof schema> | NonNullable<unknown> {
     if (isEqual(transaction, {})) return {}
     const {
         id,
@@ -122,35 +118,37 @@ function mapAccountToSelect(account: Account): Select {
     }
 }
 
-function anyAccountIsArchived(transaction: Transaction | {}): boolean {
+function anyAccountIsArchived(transaction: Transactionable): boolean {
     if (isEqual(transaction, {})) return false
 
     return !isNil((transaction as Transaction).target.archivedAt) ||
         !isNil((transaction as Transaction).source.archivedAt)
 }
 
-function isHistoryTransaction(transaction: Transaction | {}): boolean {
+function isHistoryTransaction(transaction: Transactionable): boolean {
     if (isEqual(transaction, {})) return false
 
     return (transaction as Transaction).target.kind === Kind.SystemHistoric ||
         (transaction as Transaction).source.kind === Kind.SystemHistoric
 }
 
-function issuedAtDefault(transaction: Transaction | {}): Date {
+function issuedAtDefault(transaction: Transactionable): Date {
     if (isEqual(transaction, {})) return moment().toDate()
 
     return moment((transaction as Transaction).issuedAt).toDate()
 }
 
-function executedAtDefault(transaction: Transaction | {}): Date | undefined {
+function executedAtDefault(transaction: Transactionable): Date | undefined {
     if (isEqual(transaction, {})) return undefined
-    if (!(transaction as Transaction).executedAt) return undefined
+    if (isNil((transaction as Transaction).executedAt)) return undefined
 
     return moment((transaction as Transaction).executedAt!).toDate()
 }
 
+type Transactionable = Transaction | NonNullable<unknown>;
+
 interface Props {
-    transaction: Transaction | {}
+    transaction: Transactionable
     setOpen: Dispatch<SetStateAction<boolean>>
 }
 
@@ -200,7 +198,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
                     notes: notes ? notes : null
                 });
 
-            Promise.all([
+            await Promise.allSettled([
                 queryClient.invalidateQueries({ queryKey: ["transactions"] }),
                 queryClient.invalidateQueries({ queryKey: ["accounts"] })
             ])
@@ -224,7 +222,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
 
     if (accounts.isError) throw accounts.error
 
-    useEffect(() => form.setValue("issuedAt", issuedAt), [])
+    useEffect(() => form.setValue("issuedAt", issuedAt))
 
     useEffect(() => {
         if (isNil(accounts.data)) return
@@ -232,7 +230,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
 
         setSource(mapAccountToSelect((transaction as Transaction).source))
         setTarget(mapAccountToSelect((transaction as Transaction).target))
-    }, [accounts.data])
+    }, [accounts.data, transaction])
 
     useEffect(() => {
         if (isNil(accounts.data)) return
@@ -274,7 +272,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
     useEffect(() => {
         if (!executedAt) return
         if (issuedAt > executedAt) setExecutedAt(undefined)
-    }, [issuedAt])
+    }, [issuedAt, executedAt])
 
     return (
         <Form {...form}>
