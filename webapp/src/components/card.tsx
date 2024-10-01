@@ -29,7 +29,8 @@ export function CardSummary({
     className,
 }: { title: string, summaries: Summary[], className?: string }) {
     const seriesSize = summaries.map(({ series }) => series).filter((val) => !!val).flat().length
-    const conf = Object.entries(summaries).filter(([key, _]: [string, any]) => key === "currency")
+    const conf = Object.entries(summaries)
+        .filter(([key, _values]: [string, Summary]) => key === "currency")
         .map((entry) => ({ [entry[1].toString().toLowerCase()]: { label: entry[1].toString() } }))
     let val = {}
 
