@@ -1,12 +1,13 @@
 package currency
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 	"strings"
 )
 
-// [ ] TODO: refactor to be able to use better constructions
+// [ ] TODO: refactor to be able to communicate more data to the frontend
 
 type Type string
 
@@ -44,7 +45,7 @@ var (
 //
 // It returns an error if the buffer can't be unmarshal into an string or the
 // provided value is not a supported [Type].
-func (c *Type) UnmarshalJSON(b []byte) error {
+func (t *Type) UnmarshalJSON(b []byte) error {
 	var s string
 
 	if err := json.Unmarshal(b, &s); err != nil {
@@ -55,39 +56,39 @@ func (c *Type) UnmarshalJSON(b []byte) error {
 	default:
 		return fmt.Errorf("currency: invalid currency \"%s\"", s)
 	case "CAD":
-		*c = CAD
+		*t = CAD
 	case "USD":
-		*c = USD
+		*t = USD
 	case "AUD":
-		*c = AUD
+		*t = AUD
 	case "EUR":
-		*c = EUR
+		*t = EUR
 	case "CHF":
-		*c = CHF
+		*t = CHF
 	case "GBP":
-		*c = GBP
+		*t = GBP
 	case "RUB":
-		*c = RUB
+		*t = RUB
 	case "JPY":
-		*c = JPY
+		*t = JPY
 	case "CNY":
-		*c = CNY
+		*t = CNY
 	}
 
 	return nil
 }
 
-// MarshalJSON returns the json encoding of [Type]. So [Type] satisfies the
-// [json.Marshaler] interface.
+// UnmarshalJSON receives a buffer b, and ensures that the provided value is a
+// valid [Type]. So [Type] satisfies the [json.Unmarshaler] interface.
 //
-// It returns an error if [Type] is an unsupported value or if json encoding
-// fails.
-func (c Type) MarshalJSON() ([]byte, error) {
+// It returns an error if the buffer can't be unmarshal into an string or the
+// provided value is not a supported [Type].
+func (t Type) MarshalJSON() ([]byte, error) {
 	var s string
 
-	switch c {
+	switch t {
 	default:
-		return []byte{}, fmt.Errorf("currency: invalid currency \"%s\"", s)
+		return []byte{}, fmt.Errorf("currency: invalid currency \"%s\"", string(t))
 	case CAD:
 		s = "CAD"
 	case USD:
@@ -109,4 +110,70 @@ func (c Type) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(s)
+}
+
+// Scan returns the json encoding of [Type]. So [Type] satisfies the
+// [sql.Scanner] interface.
+//
+// It returns an error if [Type] is an unsupported value or if json encoding
+// fails.
+func (t *Type) Scan(value string) error {
+	switch strings.ToUpper(value) {
+	default:
+		return fmt.Errorf("currency: invalid currency \"%s\"", value)
+	case "CAD":
+		*t = CAD
+	case "USD":
+		*t = USD
+	case "AUD":
+		*t = AUD
+	case "EUR":
+		*t = EUR
+	case "CHF":
+		*t = CHF
+	case "GBP":
+		*t = GBP
+	case "RUB":
+		*t = RUB
+	case "JPY":
+		*t = JPY
+	case "CNY":
+		*t = CNY
+	}
+
+	return nil
+}
+
+// Value returns the json encoding of [Type]. So [Type] satisfies the
+// [driver.Valuer] interface.
+//
+// It returns an error if [Type] is an unsupported value or if json encoding
+// fails.
+func (t Type) Value() (driver.Value, error) {
+	var s string
+
+	switch t {
+	default:
+		return s, fmt.Errorf("currency: invalid currency \"%s\"", string(t))
+	case CAD:
+		s = "CAD"
+	case USD:
+		s = "USD"
+	case AUD:
+		s = "AUD"
+	case EUR:
+		s = "EUR"
+	case CHF:
+		s = "CHF"
+	case GBP:
+		s = "GBP"
+	case RUB:
+		s = "RUB"
+	case JPY:
+		s = "JPY"
+	case CNY:
+		s = "CNY"
+	}
+
+	return s, nil
 }
