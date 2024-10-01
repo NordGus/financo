@@ -1,9 +1,7 @@
-import { Params, redirect } from "react-router-dom";
-import { QueryClient } from "@tanstack/react-query";
-
 import { deleteTransaction } from "@api/transactions";
-
-import { toast } from "@components/ui/use-toast"
+import { toast } from "@components/ui/use-toast";
+import { QueryClient } from "@tanstack/react-query";
+import { Params, redirect } from "react-router-dom";
 
 export const action = (queryClient: QueryClient) => async ({
     request, params

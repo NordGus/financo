@@ -1,11 +1,6 @@
-import { Outlet } from "react-router-dom";
-import { useReducer, useState } from "react";
-import { isEqual } from "lodash";
-import { SlidersHorizontalIcon } from "lucide-react";
-
-import Transaction from "@/types/Transaction";
-
+import { Transaction } from "@/types/Transaction";
 import Breadcrumbs from "@components/breadcrumbs";
+import { defaultFilters, reducer, TransactionsFilters } from "@components/filters/transactions";
 import { Button } from "@components/ui/button";
 import {
     Sheet,
@@ -13,8 +8,11 @@ import {
     SheetHeader,
     SheetTitle
 } from "@components/ui/sheet";
+import { isEqual } from "lodash";
+import { SlidersHorizontalIcon } from "lucide-react";
+import { useReducer, useState } from "react";
+import { Outlet } from "react-router-dom";
 import Transactions from "./transactions";
-import { reducer, defaultFilters, TransactionsFilters } from "@components/filters/transactions";
 
 export default function Layout() {
     const [filters, dispatch] = useReducer(reducer, { clearable: false, filters: defaultFilters() })
