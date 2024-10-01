@@ -1,29 +1,28 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Currency } from "dinero.js";
-import validateCurrencyCode from "validate-currency-code";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { isEmpty, isEqual, isNil } from "lodash";
-import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
-import { Form as RouterForm } from "react-router-dom";
-import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
-import { format } from "date-fns";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import moment from "moment";
-
-import Detailed, { Icon, Kind } from "@/types/Account";
+import { cn } from "@/lib/utils";
+import { Detailed, Icon, Kind } from "@/types/Account";
 import { Currency as ApiCurrency } from "@/types/currency";
-
 import { updateAccount } from "@api/accounts";
 import { getCurrencies } from "@api/currencies";
-import { staleTimeDefault } from "@queries/Client";
-
-import kindToHuman from "@helpers/account/kindToHuman";
-import isExternalAccount from "@helpers/account/isExternalAccount";
-import isDebtAccount, { isCreditAccount } from "@helpers/account/isDebtAccount";
-import { cn } from "@/lib/utils";
-
+import { Throbber } from "@components/Throbber";
+import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
+import { Button } from "@components/ui/button";
+import { Calendar } from "@components/ui/calendar";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle
+} from "@components/ui/card";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList
+} from "@components/ui/command";
 import {
     Form,
     FormControl,
@@ -33,34 +32,31 @@ import {
     FormLabel,
     FormMessage
 } from "@components/ui/form";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle
-} from "@components/ui/card";
-import { Throbber } from "@components/Throbber";
 import { Input } from "@components/ui/input";
-import { Button } from "@components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
-import { Calendar } from "@components/ui/calendar";
 import { Switch } from "@components/ui/switch";
 import { Textarea } from "@components/ui/textarea";
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList
-} from "@components/ui/command";
-import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert";
 import { useToast } from "@components/ui/use-toast";
-import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import isDebtAccount, { isCreditAccount } from "@helpers/account/isDebtAccount";
+import isExternalAccount from "@helpers/account/isExternalAccount";
+import kindToHuman from "@helpers/account/kindToHuman";
 import currencyAmountColor from "@helpers/currencyAmountColor";
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import { normalizeDateForServer } from "@helpers/normalizeDate";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { staleTimeDefault } from "@queries/Client";
+import { CaretSortIcon } from "@radix-ui/react-icons";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { Currency } from "dinero.js";
+import { isEmpty, isEqual, isNil } from "lodash";
+import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
+import moment from "moment";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
+import { Form as RouterForm } from "react-router-dom";
+import validateCurrencyCode from "validate-currency-code";
+import { z } from "zod";
 
 const schema = z.object({
     id: z.number({ required_error: "is required", invalid_type_error: "must be a number" }),

@@ -1,4 +1,12 @@
-import Detailed, { Create, CreateResponse, Kind, Preview, Select, Update } from "@/types/Account"
+import {
+    Create,
+    CreateResponse,
+    Detailed,
+    Kind,
+    Preview,
+    Select,
+    Update
+} from "@/types/Account"
 import isEmptyParam from "@helpers/isEmptyParam"
 
 export function getAccount(id: number): () => Promise<Detailed> {
@@ -19,7 +27,7 @@ export interface ListFilters {
 export function getAccounts(filters: ListFilters): () => Promise<Preview[]> {
     return async () => {
         const params = new URLSearchParams(
-            Object.entries(filters).filter(([_, value]) => !isEmptyParam(value))
+            Object.entries(filters).filter(([_key, value]) => !isEmptyParam(value))
         )
         const response = await fetch(`/api/accounts?${params.toString()}`)
 
