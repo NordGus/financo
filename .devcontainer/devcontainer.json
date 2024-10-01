@@ -32,7 +32,8 @@
         "firefox-devtools.vscode-firefox-debug",
         "cweijan.vscode-database-client2",
         "streetsidesoftware.code-spell-checker-spanish",
-        "enkia.tokyo-night"
+        "enkia.tokyo-night",
+        "dbaeumer.vscode-eslint"
       ],
       "settings": {
         "go.useLanguageServer": true,
@@ -63,6 +64,9 @@
         "markdown.preview.lineHeight": 1.1,
         "gopls": {
           "ui.semanticTokens": true
+        },
+        "editor.codeActionsOnSave": {
+          "source.fixAll": "explicit"
         }
       }
     }
