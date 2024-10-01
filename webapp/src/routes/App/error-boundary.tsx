@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card"
 import { useRouteError } from "react-router-dom"
 
 export default function ErrorBoundary() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const error: any = useRouteError()
 
     console.error(error)
