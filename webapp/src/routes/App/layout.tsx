@@ -1,4 +1,5 @@
-import { Outlet } from "react-router-dom";
+import NavLink from "@components/NavLink";
+import { Toaster } from "@components/ui/toaster";
 import {
     BookMarkedIcon,
     ChartCandlestickIcon,
@@ -8,9 +9,7 @@ import {
     TrophyIcon,
     VaultIcon
 } from "lucide-react";
-
-import NavLink from "@components/NavLink";
-import { Toaster } from "@components/ui/toaster";
+import { Outlet } from "react-router-dom";
 
 export default function Layout() {
     return (
