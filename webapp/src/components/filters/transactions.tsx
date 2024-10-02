@@ -1,119 +1,64 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
-import { Calendar } from "@components/ui/calendar"
-import { useQuery } from "@tanstack/react-query"
-import { staleTimeDefault } from "@queries/Client"
+import { Kind, Select } from "@/types/Account"
 import { getArchivedSelectableAccounts, getSelectableAccounts } from "@api/accounts"
 import { Throbber } from "@components/Throbber"
-import { isEmpty, isNil } from "lodash"
-import { Kind, Select } from "@/types/Account"
-import { accountContrastColor } from "@helpers/account/accountContrastColor"
-import { DateRange } from "react-day-picker"
-import moment from "moment"
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@components/ui/sheet"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@components/ui/accordion"
+import { Button } from "@components/ui/button"
+import { Calendar } from "@components/ui/calendar"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@components/ui/sheet"
+import { accountContrastColor } from "@helpers/account/accountContrastColor"
+import { staleTimeDefault } from "@queries/Client"
+import { useQuery } from "@tanstack/react-query"
+import { isEmpty, isNil } from "lodash"
+import { SlidersHorizontalIcon } from "lucide-react"
+import { Dispatch, PropsWithChildren, useContext, useEffect, useState } from "react"
+import { DateRange } from "react-day-picker"
+import {
+    FiltersAction,
+    FiltersState,
+    TransactionsFilterContext,
+    TransactionsFilterDispatchContext,
+    useTransactionsFilter,
+    useTransactionsFiltersCtx,
+    useTransactionsFiltersDispatch
+} from "./use-transactions-filters"
 
-const actionTypes = {
-    UPDATE_DATES: "UPDATE_DATES",
-    ADD_ACCOUNTS: "ADD_ACCOUNTS",
-    REMOVE_ACCOUNTS: "REMOVE_ACCOUNTS",
-    ADD_CATEGORIES: "ADD_CATEGORIES",
-    REMOVE_CATEGORIES: "REMOVE_CATEGORIES",
-    CLEAR: "CLEAR"
-} as const
+function Clear({ children }: PropsWithChildren) {
+    const { clearable } = useTransactionsFiltersCtx()
+    const dispatch = useTransactionsFiltersDispatch()
 
-export type FiltersActionType = typeof actionTypes
+    if (!clearable) return null
 
-export type Filters = { from: Date | undefined, to: Date | undefined, accounts: number[], categories: number[] }
-
-export type FiltersState = { clearable: boolean, filters: Filters }
-
-export type FiltersAction =
-    | {
-        type: FiltersActionType["UPDATE_DATES"]
-        range: DateRange
-    }
-    | {
-        type: FiltersActionType["ADD_ACCOUNTS"]
-        ids: number[]
-    }
-    | {
-        type: FiltersActionType["REMOVE_ACCOUNTS"]
-        ids: number[]
-    }
-    | {
-        type: FiltersActionType["ADD_CATEGORIES"]
-        ids: number[]
-    }
-    | {
-        type: FiltersActionType["REMOVE_CATEGORIES"]
-        ids: number[]
-    }
-    | {
-        type: FiltersActionType["CLEAR"]
-    }
-
-export function defaultFilters(): Filters {
-    return {
-        from: moment().startOf('month').toDate(),
-        to: moment().toDate(),
-        accounts: [],
-        categories: []
-    }
+    return (
+        <Button variant="outline" onClick={() => { dispatch({ type: "CLEAR" }) }}>
+            {
+                isNil(children)
+                    ? "Clear Filters"
+                    : children
+            }
+        </Button>
+    )
 }
 
-export function reducer(state: FiltersState, action: FiltersAction): FiltersState {
-    switch (action.type) {
-        case "UPDATE_DATES":
-            return {
-                clearable: true,
-                filters: { ...state.filters, ...action.range }
-            }
-        case "ADD_ACCOUNTS":
-            return {
-                clearable: true,
-                filters: {
-                    ...state.filters,
-                    accounts: [...state.filters.accounts, ...action.ids]
-                }
-            }
-        case "REMOVE_ACCOUNTS":
-            return {
-                clearable: true,
-                filters: {
-                    ...state.filters,
-                    accounts: [...state.filters.accounts.filter((id) => !action.ids.includes(id))]
-                }
-            }
-        case "ADD_CATEGORIES":
-            return {
-                clearable: true,
-                filters: {
-                    ...state.filters,
-                    categories: [...state.filters.categories, ...action.ids]
-                }
-            }
-        case "REMOVE_CATEGORIES":
-            return {
-                clearable: true,
-                filters: {
-                    ...state.filters,
-                    categories: [...state.filters.categories.filter((id) => !action.ids.includes(id))]
-                }
-            }
-        case "CLEAR":
-            return { clearable: false, filters: defaultFilters() }
-    }
+function Provider({ children }: PropsWithChildren) {
+    const { filters, dispatch } = useTransactionsFilter()
+
+    return (
+        <TransactionsFilterContext.Provider value={filters}>
+            <TransactionsFilterDispatchContext.Provider value={dispatch}>
+                {children}
+            </TransactionsFilterDispatchContext.Provider>
+        </TransactionsFilterContext.Provider>
+    )
 }
 
 interface Props {
-    state: FiltersState
-    dispatch: Dispatch<FiltersAction>
-    open: boolean
-    setOpen: Dispatch<SetStateAction<boolean>>
     excludeAccountIds?: number[]
 }
 
-export function TransactionsFilters({ state, dispatch, open, setOpen, excludeAccountIds: excluded = [] }: Props) {
+function Filters({ excludeAccountIds: excluded = [] }: Props) {
+    const dispatch = useContext(TransactionsFilterDispatchContext)
+    const state = useContext(TransactionsFilterContext)
+    const [open, setOpen] = useState(false);
     const [range, setRange] = useState<DateRange | undefined>({ from: state.filters.from, to: state.filters.to })
     const { data: accounts, isFetching, isError, error } = useQuery({
         queryKey: ["accounts", "select"],
@@ -144,63 +89,68 @@ export function TransactionsFilters({ state, dispatch, open, setOpen, excludeAcc
     if (isErrorArchived) throw archivedError
 
     return (
-        <Sheet open={open} onOpenChange={setOpen}>
-            <SheetContent className="sm:w-fit sm:max-w-[600px] overflow-y-auto">
-                <SheetHeader>
-                    <SheetTitle>Filter Transactions</SheetTitle>
-                </SheetHeader>
-                <div className="text-zinc-950 dark:text-zinc-50 py-4 flex flex-col gap-2">
-                    <h3 className="text-lg font-semibold">Date</h3>
-                    <Calendar
-                        mode="range"
-                        selected={range}
-                        onSelect={setRange}
-                        numberOfMonths={2}
-                    />
-                    <Accordion type="multiple" defaultValue={["accounts", "categories"]}>
-                        {
-                            isFetching
-                                ? <div className="flex justify-center items-center gap-2">
-                                    <Throbber variant="small" />
-                                    <span>Fetching</span>
-                                </div>
-                                : <>
-                                    <AccountsFilter
-                                        accounts={(accounts || []).filter(({ id }) => !excluded.includes(id))}
-                                        state={state}
-                                        dispatch={dispatch}
-                                    />
-                                    <CategoriesFilter
-                                        accounts={(accounts || []).filter(({ id }) => !excluded.includes(id))}
-                                        state={state}
-                                        dispatch={dispatch}
-                                    />
-                                </>
+        <>
+            <Button variant="secondary" onClick={() => setOpen(true)}>
+                <SlidersHorizontalIcon className="mr-2 h-4 w-4" /> Filter
+            </Button>
+            <Sheet open={open} onOpenChange={setOpen}>
+                <SheetContent className="sm:w-fit sm:max-w-[600px] overflow-y-auto">
+                    <SheetHeader>
+                        <SheetTitle>Filter Transactions</SheetTitle>
+                    </SheetHeader>
+                    <div className="text-zinc-950 dark:text-zinc-50 py-4 flex flex-col gap-2">
+                        <h3 className="text-lg font-semibold">Date</h3>
+                        <Calendar
+                            mode="range"
+                            selected={range}
+                            onSelect={setRange}
+                            numberOfMonths={2}
+                        />
+                        <Accordion type="multiple" defaultValue={["accounts", "categories"]}>
+                            {
+                                isFetching
+                                    ? <div className="flex justify-center items-center gap-2">
+                                        <Throbber variant="small" />
+                                        <span>Fetching</span>
+                                    </div>
+                                    : <>
+                                        <AccountsFilter
+                                            accounts={(accounts || []).filter(({ id }) => !excluded.includes(id))}
+                                            state={state}
+                                            dispatch={dispatch}
+                                        />
+                                        <CategoriesFilter
+                                            accounts={(accounts || []).filter(({ id }) => !excluded.includes(id))}
+                                            state={state}
+                                            dispatch={dispatch}
+                                        />
+                                    </>
 
-                        }
-                        {
-                            isFetchingArchived
-                                ? <div className="flex justify-center items-center gap-2">
-                                    <Throbber variant="small" />
-                                    <span>Fetching</span>
-                                </div>
-                                : <>
-                                    <ArchivedAccountsFilter
-                                        accounts={(archived || []).filter(({ id }) => !excluded.includes(id))}
-                                        state={state}
-                                        dispatch={dispatch}
-                                    />
-                                    <ArchivedCategoryFilter
-                                        accounts={(archived || []).filter(({ id }) => !excluded.includes(id))}
-                                        state={state}
-                                        dispatch={dispatch}
-                                    />
-                                </>
-                        }
-                    </Accordion>
-                </div>
-            </SheetContent>
-        </Sheet>
+                            }
+                            {
+                                isFetchingArchived
+                                    ? <div className="flex justify-center items-center gap-2">
+                                        <Throbber variant="small" />
+                                        <span>Fetching</span>
+                                    </div>
+                                    : <>
+                                        <ArchivedAccountsFilter
+                                            accounts={(archived || []).filter(({ id }) => !excluded.includes(id))}
+                                            state={state}
+                                            dispatch={dispatch}
+                                        />
+                                        <ArchivedCategoryFilter
+                                            accounts={(archived || []).filter(({ id }) => !excluded.includes(id))}
+                                            state={state}
+                                            dispatch={dispatch}
+                                        />
+                                    </>
+                            }
+                        </Accordion>
+                    </div>
+                </SheetContent>
+            </Sheet>
+        </>
     )
 }
 
@@ -738,4 +688,10 @@ function CategoryFilter({ account: { name, color }, active, onClick }: AccountPr
             <span>{name}</span>
         </span>
     )
+}
+
+export {
+    Clear,
+    Filters,
+    Provider
 }

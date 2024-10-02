@@ -1,15 +1,13 @@
-import Summary from "@/types/Summary";
-
+import { cn } from "@/lib/utils";
+import { Summary } from "@/types/Summary";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
-import { cn } from "@/lib/utils";
-
+import { format } from "date-fns";
+import { Currency } from "dinero.js";
+import moment from "moment";
+import { Area, AreaChart, XAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
-import { Area, AreaChart, XAxis } from "recharts";
-import moment from "moment";
-import { Currency } from "dinero.js";
-import { format } from "date-fns";
 
 function mapColor(currency: Currency): string {
     if (currency === "CAD") return "#a10303"
@@ -31,7 +29,8 @@ export function CardSummary({
     className,
 }: { title: string, summaries: Summary[], className?: string }) {
     const seriesSize = summaries.map(({ series }) => series).filter((val) => !!val).flat().length
-    const conf = Object.entries(summaries).filter(([key, _]: [string, any]) => key === "currency")
+    const conf = Object.entries(summaries)
+        .filter(([key, _values]: [string, Summary]) => key === "currency")
         .map((entry) => ({ [entry[1].toString().toLowerCase()]: { label: entry[1].toString() } }))
     let val = {}
 

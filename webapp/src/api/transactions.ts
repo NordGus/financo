@@ -1,5 +1,4 @@
-import Transaction, { Create, Update } from "@/types/Transaction"
-
+import { Create, Transaction, Update } from "@/types/Transaction"
 import isEmptyParam from "@helpers/isEmptyParam"
 
 export interface ListFilters {

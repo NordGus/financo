@@ -45,7 +45,7 @@ export interface Select {
     children?: Select[] | null
 }
 
-export default interface Detailed {
+export interface Detailed {
     id: number
     kind: Kind
     currency: Currency

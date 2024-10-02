@@ -1,7 +1,8 @@
 import { Account } from "@/types/Transaction";
+import { isNil } from "lodash";
 
 export default function accountNameText(account: Account): string {
-    if (!!account.parent) return `${account.parent.name} (${account.name})`;
+    if (isNil(account.parent)) return account.name
 
-    return account.name
+    return `${account.parent.name} (${account.name})`
 }

@@ -35,7 +35,7 @@ export interface Account {
     parent?: Account | null
 }
 
-export default interface Transaction {
+export interface Transaction {
     id: number
     issuedAt: string
     executedAt: string | null

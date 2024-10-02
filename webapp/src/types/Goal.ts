@@ -1,6 +1,6 @@
 import { Currency } from "dinero.js"
 
-export default interface Goal {
+export interface Goal {
     id: number
     name: string
     description: string | null
