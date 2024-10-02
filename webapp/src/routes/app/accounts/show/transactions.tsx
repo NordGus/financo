@@ -53,7 +53,13 @@ export function Transactions({ account, className }: Props) {
                             <TransactionsFilters.Filters excludeAccountIds={[account.id]} />
                         </div>
                     </CardHeader>
-                    <Suspense>
+                    <Suspense
+                        fallback={
+                            <div className="flex items-center justify-center">
+                                <Throbber />
+                            </div>
+                        }
+                    >
                         <Accordion type="multiple">
                             <Pending account={account} />
                             <Upcoming account={account} />
