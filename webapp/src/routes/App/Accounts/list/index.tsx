@@ -1,18 +1,3 @@
-import { LoaderFunction, LoaderFunctionArgs } from "react-router-dom";
-import { QueryClient } from "@tanstack/react-query";
-
-import {
-    CapitalAccountsTable,
-    DebtAccountsTable,
-    ExpenseAccountsTable,
-    IncomeAccountsTable
-} from "./accounts";
-import {
-    SummaryCapital,
-    SummaryDebt,
-    SummaryNetWorth,
-    SummaryAvailableCredit
-} from "@components/widgets/summaries";
 import {
     Accordion,
     AccordionContent,
@@ -20,12 +5,18 @@ import {
     AccordionTrigger
 } from "@components/ui/accordion";
 import { Card, CardContent, CardDescription } from "@components/ui/card";
-
-export function loader(_queryClient: QueryClient): LoaderFunction {
-    return async (_props: LoaderFunctionArgs) => {
-        return {}
-    }
-}
+import {
+    SummaryAvailableCredit,
+    SummaryCapital,
+    SummaryDebt,
+    SummaryNetWorth
+} from "@components/widgets/summaries";
+import {
+    CapitalAccountsTable,
+    DebtAccountsTable,
+    ExpenseAccountsTable,
+    IncomeAccountsTable
+} from "./accounts";
 
 export default function Index() {
     return (

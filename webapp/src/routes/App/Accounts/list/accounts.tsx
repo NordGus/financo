@@ -1,19 +1,16 @@
-import { Link, NavigateFunction, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import Color from "colorjs.io";
-import { isEmpty, isNil } from "lodash";
-
-import { Kind, Preview } from "@/types/Account";
-
-import kindToHuman from "@helpers/account/kindToHuman";
-import currencyAmountColor from "@helpers/currencyAmountColor";
-import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import { cn } from "@/lib/utils";
-
-import { staleTimeDefault } from "@queries/Client";
+import { Kind, Preview } from "@/types/Account";
 import { getAccounts } from "@api/accounts";
-
+import { Progress } from "@components/Progress";
 import { Throbber } from "@components/Throbber";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger
+} from "@components/ui/accordion";
+import { Button } from "@components/ui/button";
+import { Card } from "@components/ui/card";
 import {
     Table,
     TableBody,
@@ -22,15 +19,14 @@ import {
     TableHeader,
     TableRow
 } from "@components/ui/table";
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger
-} from "@components/ui/accordion";
-import { Progress } from "@components/Progress";
-import { Button } from "@components/ui/button";
-import { Card } from "@components/ui/card";
+import kindToHuman from "@helpers/account/kindToHuman";
+import currencyAmountColor from "@helpers/currencyAmountColor";
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import { staleTimeDefault } from "@queries/Client";
+import { useQuery } from "@tanstack/react-query";
+import Color from "colorjs.io";
+import { isEmpty, isNil } from "lodash";
+import { Link, NavigateFunction, useNavigate } from "react-router-dom";
 
 function CapitalTable({ accounts, navigate }: { accounts: Preview[], navigate: NavigateFunction }) {
     return (
@@ -84,7 +80,7 @@ function CapitalTable({ accounts, navigate }: { accounts: Preview[], navigate: N
     )
 }
 
-export function CapitalAccountsTable({ }) {
+export function CapitalAccountsTable() {
     const navigate = useNavigate()
     const {
         data: active,
@@ -232,7 +228,7 @@ function DebtTable({ accounts, navigate }: { accounts: Preview[], navigate: Navi
     )
 }
 
-export function DebtAccountsTable({ }) {
+export function DebtAccountsTable() {
     const navigate = useNavigate()
     const {
         data: active,
@@ -333,7 +329,7 @@ function ExternalRow({
     )
 }
 
-export function IncomeAccountsTable({ }) {
+export function IncomeAccountsTable() {
     const navigate = useNavigate()
     const {
         data: active,
@@ -399,7 +395,7 @@ export function IncomeAccountsTable({ }) {
     )
 }
 
-export function ExpenseAccountsTable({ }) {
+export function ExpenseAccountsTable() {
     const navigate = useNavigate()
     const {
         data: active,

@@ -1,5 +1,6 @@
-import Index, { loader as indexLoader } from "./Index";
 import Layout from "./layout";
+import Index from "./list";
+import { loader as indexLoader } from "./list/loader";
 import { loader as mainLoader } from "./loader";
 import Show from "./show";
 import { action as showAction } from "./show/action";
