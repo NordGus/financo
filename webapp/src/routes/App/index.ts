@@ -1,4 +1,4 @@
-import Accounts from "./Accounts";
+import Accounts from "./accounts";
 import Dashboard from "./Dashboard";
 import ErrorBoundary from "./error-boundary";
 import Layout from "./layout";
