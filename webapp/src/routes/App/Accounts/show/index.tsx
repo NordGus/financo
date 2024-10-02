@@ -1,67 +1,21 @@
-import { QueryClient, useSuspenseQuery } from "@tanstack/react-query"
-import {
-    LoaderFunctionArgs,
-    Params,
-    redirect,
-    useLoaderData
-} from "react-router-dom"
-
-import { Kind } from "@/types/Account"
-
-import { accountQueryOptions } from "@queries/accounts"
-import { deleteAccount } from "@api/accounts"
-
-import isExternalAccount from "@helpers/account/isExternalAccount"
-import isCapitalAccount from "@helpers/account/isCapitalAccount"
-import isDebtAccount from "@helpers/account/isDebtAccount"
 import { cn } from "@/lib/utils"
-
+import { Kind } from "@/types/Account"
 import { CardSummary } from "@components/card"
-import { toast } from "@components/ui/use-toast"
 import {
     SummaryBalanceForAccount,
     SummaryDailyBalanceForAccount,
     SummaryDebtForAccount,
     SummaryPaidForAccount,
 } from "@components/widgets/summaries"
-
-import { Transactions } from "./transactions"
+import isCapitalAccount from "@helpers/account/isCapitalAccount"
+import isDebtAccount from "@helpers/account/isDebtAccount"
+import isExternalAccount from "@helpers/account/isExternalAccount"
+import { accountQueryOptions } from "@queries/accounts"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { useLoaderData } from "react-router-dom"
 import { UpdateAccountForm } from "./form"
-
-export const loader = (queryClient: QueryClient) => async ({ params }: LoaderFunctionArgs) => {
-    if (!params.id) throw new Error('No account ID provided')
-    const id = Number(params.id)
-
-    const account = await queryClient.ensureQueryData(accountQueryOptions(id))
-
-    return { id: account.id, breadcrumb: "Edit Account" }
-}
-
-export const action = (queryClient: QueryClient) => async ({
-    request, params
-}: { request: Request, params: Params }) => {
-    if (!params.id) throw new Error('No account ID provided')
-    const id = Number(params.id)
-
-    switch (request.method.toLowerCase()) {
-        case "delete":
-            const deleted = await deleteAccount(id)
-
-            await Promise.all([
-                queryClient.invalidateQueries({ queryKey: ["accounts"] }),
-                queryClient.invalidateQueries({ queryKey: ["transactions"] })
-            ])
-
-            toast({
-                title: "Deleted",
-                description: `${deleted.name} and its children have been deleted`
-            })
-
-            return redirect(`/accounts`)
-        default:
-            throw new Response("", { status: 405 })
-    }
-}
+import { loader } from "./loader"
+import { Transactions } from "./transactions"
 
 export default function Show() {
     const { id } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
