@@ -1,5 +1,5 @@
 import Accounts from "./accounts";
-import Dashboard from "./Dashboard";
+import Dashboard from "./dashboard";
 import ErrorBoundary from "./error-boundary";
 import Layout from "./layout";
 import Ledger from "./ledger";
