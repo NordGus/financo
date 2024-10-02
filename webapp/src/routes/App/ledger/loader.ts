@@ -1,7 +1,8 @@
 import { QueryClient } from "@tanstack/react-query"
-import { LoaderFunctionArgs } from "react-router-dom"
+import { LoaderFunction, LoaderFunctionArgs } from "react-router-dom"
 
-export const loader = (_queryClient: QueryClient) =>
-    async (_props: LoaderFunctionArgs) => {
+export function loader(_queryClient: QueryClient): LoaderFunction {
+    return async (_props: LoaderFunctionArgs) => {
         return { breadcrumb: "Ledger" }
     }
+}
