@@ -68,7 +68,7 @@ export function Transactions({ account, className }: Props) {
             account: filters.filters.accounts,
             category: filters.filters.categories
         })
-    }, [filters, account.updatedAt, pendingMutation, upcomingMutation, historyMutation])
+    }, [filters, account.updatedAt])
 
     return (
         <div className={className}>

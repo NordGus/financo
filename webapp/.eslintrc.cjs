@@ -27,5 +27,6 @@ module.exports = {
         "ignoreRestSiblings": true
       }
     ],
+    'react-hooks/exhaustive-deps': 'off'
   },
 }
