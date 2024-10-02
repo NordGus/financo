@@ -5,11 +5,10 @@ import { accountContrastColor } from "@helpers/account/accountContrastColor";
 import kindToHuman from "@helpers/account/kindToHuman";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
-import { useMutation, UseMutationResult } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { groupBy, isEmpty, isNil } from "lodash";
-import { SlidersHorizontalIcon } from "lucide-react";
 import moment from "moment";
-import { useEffect, useReducer, useState } from "react";
+import { Suspense, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -19,7 +18,8 @@ import {
     PendingFilters
 } from "@api/transactions";
 
-import { defaultFilters, reducer, TransactionsFilters } from "@components/filters/transactions";
+import * as TransactionsFilters from "@components/filters/transactions";
+import { useTransactionsFiltersCtx } from "@components/filters/use-transactions-filters";
 import { Throbber } from "@components/Throbber";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@components/ui/accordion";
 import { Button } from "@components/ui/button";
@@ -38,80 +38,43 @@ interface Props {
 }
 
 export function Transactions({ account, className }: Props) {
-    const [filters, dispatch] = useReducer(reducer, { clearable: false, filters: defaultFilters() })
-    const [openFilters, setOpenFilters] = useState(false)
-
-    const pendingMutation = useMutation({
-        mutationKey: ["transactions", "pending", "account", account.id],
-        mutationFn: (filters: PendingFilters) => getPendingTransactionsForAccount(account.id, filters)
-    })
-    const upcomingMutation = useMutation({
-        mutationKey: ["transactions", "upcoming", "account", account.id],
-        mutationFn: (filters: ListFilters) => getTransactionsForAccount(account.id, filters)
-    })
-    const historyMutation = useMutation({
-        mutationKey: ["transactions", "account", account.id],
-        mutationFn: (filters: ListFilters) => getTransactionsForAccount(account.id, filters)
-    })
-
-    useEffect(() => {
-        pendingMutation.mutate({ account: filters.filters.accounts, category: filters.filters.categories })
-        upcomingMutation.mutate({
-            executedFrom: moment().add({ days: 1 }).toISOString(),
-            executedUntil: moment().add({ month: 1 }).toISOString(),
-            account: filters.filters.accounts,
-            category: filters.filters.categories
-        })
-        historyMutation.mutate({
-            executedFrom: filters.filters.from?.toISOString(),
-            executedUntil: filters.filters.to?.toISOString(),
-            account: filters.filters.accounts,
-            category: filters.filters.categories
-        })
-    }, [filters, account.updatedAt])
-
     return (
-        <div className={className}>
-            <Card className={className}>
-                <CardHeader
-                    className="flex flex-row justify-between items-start space-x-0 space-y-0"
-                >
-                    <div className="flex flex-row gap-2 items-center">
-                        <CardTitle>Transactions</CardTitle>
-                        {historyMutation.isPending && (<Throbber variant="small" className="inline-block" />)}
-                    </div>
-                    <div className={cn("flex justify-end gap-4")}>
-                        {
-                            filters.clearable && <Button variant="link" onClick={() => dispatch({ type: "CLEAR" })}>
-                                Clear
-                            </Button>
-                        }
-                        <Button variant="secondary" onClick={() => setOpenFilters(true)}>
-                            <SlidersHorizontalIcon className="mr-2 h-4 w-4" /> Filter
-                        </Button>
-                    </div>
-                </CardHeader>
-                <TransactionsFilters
-                    state={filters}
-                    dispatch={dispatch}
-                    open={openFilters}
-                    setOpen={setOpenFilters}
-                    excludeAccountIds={[account.id]}
-                />
-                <Accordion type="multiple">
-                    <Pending account={account} mutation={pendingMutation} />
-                    <Upcoming account={account} mutation={upcomingMutation} />
-                </Accordion>
-                <History account={account} mutation={historyMutation} />
-            </Card>
-        </div>
+        <TransactionsFilters.Provider>
+            <div className={className}>
+                <Card className={className}>
+                    <CardHeader
+                        className="flex flex-row justify-between items-start space-x-0 space-y-0"
+                    >
+                        <div className="flex flex-row gap-2 items-center">
+                            <CardTitle>Transactions</CardTitle>
+                        </div>
+                        <div className={cn("flex justify-end gap-4")}>
+                            <TransactionsFilters.Clear />
+                            <TransactionsFilters.Filters excludeAccountIds={[account.id]} />
+                        </div>
+                    </CardHeader>
+                    <Suspense>
+                        <Accordion type="multiple">
+                            <Pending account={account} />
+                            <Upcoming account={account} />
+                        </Accordion>
+                        <History account={account} />
+                    </Suspense>
+                </Card>
+            </div>
+        </TransactionsFilters.Provider>
     )
 }
 
-function Pending({ account, mutation: { data: transactions, isPending, isError, error }, }: {
-    account: Detailed,
-    mutation: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
-}) {
+function Pending({ account }: { account: Detailed }) {
+    const { filters } = useTransactionsFiltersCtx()
+    const { data: transactions, isPending, isError, error, mutate } = useMutation({
+        mutationKey: ["transactions", "pending", "account", account.id],
+        mutationFn: (filters: PendingFilters) => getPendingTransactionsForAccount(account.id, filters)
+    })
+
+    useEffect(() => mutate({ account: filters.accounts, category: filters.categories }), [filters, account.updatedAt])
+
     if (isError) throw error
     if ((isEmpty(transactions) || isNil(transactions)) && isPending) return null
     if ((isEmpty(transactions) || isNil(transactions)) && !isPending) return null
@@ -143,10 +106,22 @@ function Pending({ account, mutation: { data: transactions, isPending, isError, 
     )
 }
 
-function Upcoming({ account, mutation: { data: transactions, isPending, isError, error }, }: {
-    account: Detailed,
-    mutation: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
-}) {
+function Upcoming({ account }: { account: Detailed }) {
+    const { filters } = useTransactionsFiltersCtx()
+    const { data: transactions, isPending, isError, error, mutate } = useMutation({
+        mutationKey: ["transactions", "upcoming", "account", account.id],
+        mutationFn: (filters: ListFilters) => getTransactionsForAccount(account.id, filters)
+    })
+
+    useEffect(() => {
+        mutate({
+            executedFrom: moment().add({ days: 1 }).toISOString(),
+            executedUntil: moment().add({ month: 1 }).toISOString(),
+            account: filters.accounts,
+            category: filters.categories
+        })
+    }, [filters, account.updatedAt])
+
     if (isError) throw error
     if ((isEmpty(transactions) || isNil(transactions)) && isPending) return null
     if ((isEmpty(transactions) || isNil(transactions)) && !isPending) return null
@@ -178,13 +153,22 @@ function Upcoming({ account, mutation: { data: transactions, isPending, isError,
     )
 }
 
-function History({
-    account,
-    mutation: { data: transactions, isPending, isError, error },
-}: {
-    account: Detailed,
-    mutation: UseMutationResult<Transaction[], Error, ListFilters, unknown>,
-}) {
+function History({ account }: { account: Detailed }) {
+    const { filters } = useTransactionsFiltersCtx()
+    const { data: transactions, isPending, isError, error, mutate } = useMutation({
+        mutationKey: ["transactions", "account", account.id],
+        mutationFn: (filters: ListFilters) => getTransactionsForAccount(account.id, filters)
+    })
+
+    useEffect(() => {
+        mutate({
+            executedFrom: filters.from?.toISOString(),
+            executedUntil: filters.to?.toISOString(),
+            account: filters.accounts,
+            category: filters.categories
+        })
+    }, [filters, account.updatedAt])
+
     if (isError) throw error
     if (isPending) return null
     if (isEmpty(transactions) || isNil(transactions)) return (
