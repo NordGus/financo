@@ -49,7 +49,7 @@ const initialFilters: FiltersState = {
         accounts: [],
         categories: []
     },
-    clearable: true
+    clearable: false
 }
 
 function reducer(state: FiltersState, action: FiltersAction): FiltersState {
