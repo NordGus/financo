@@ -1,5 +1,6 @@
-import Layout, { loader as mainLoader } from "./_index";
 import Index, { loader as indexLoader } from "./Index";
+import Layout from "./layout";
+import { loader as mainLoader } from "./loader";
 import Show, { action as showAction, loader as showLoader } from "./Show";
 
 export default {

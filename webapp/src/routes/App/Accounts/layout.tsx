@@ -1,10 +1,5 @@
-import { useState } from "react";
-import { QueryClient } from "@tanstack/react-query";
-import { LoaderFunction, LoaderFunctionArgs, Outlet } from "react-router-dom";
-
 import Breadcrumbs from "@components/breadcrumbs";
 import { Button } from "@components/ui/button";
-
 import {
     Sheet,
     SheetContent,
@@ -13,13 +8,9 @@ import {
     SheetTitle,
     SheetTrigger
 } from "@components/ui/sheet";
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
 import { NewAccountForm } from "./New";
-
-export function loader(_queryClient: QueryClient): LoaderFunction {
-    return async (_props: LoaderFunctionArgs) => {
-        return { breadcrumb: "Accounts" }
-    }
-}
 
 export default function Layout() {
     const [openSheet, setOpenSheet] = useState(false)
