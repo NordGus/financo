@@ -1,29 +1,16 @@
-import validateCurrencyCode from "validate-currency-code";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Currency } from "dinero.js";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { isEmpty, isNil } from "lodash";
-import { CheckIcon } from "lucide-react";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-
-import { Icon, Kind } from "@/types/Account";
-
-import { staleTimeDefault } from "@queries/Client";
-import { getCurrencies } from "@api/currencies";
-
-import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
-import currencyAmountColor from "@helpers/currencyAmountColor";
-import isDebtAccount, { isCreditAccount } from "@helpers/account/isDebtAccount";
 import { cn } from "@/lib/utils";
-
+import { Icon, Kind } from "@/types/Account";
+import { createAccount } from "@api/accounts";
+import { getCurrencies } from "@api/currencies";
 import { Button } from "@components/ui/button";
-import { useToast } from "@components/ui/use-toast";
-import { Input } from "@components/ui/input";
-import { Textarea } from "@components/ui/textarea";
-import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList
+} from "@components/ui/command";
 import {
     Form,
     FormControl,
@@ -33,16 +20,25 @@ import {
     FormLabel,
     FormMessage
 } from "@components/ui/form";
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList
-} from "@components/ui/command";
-import { createAccount } from "@api/accounts";
+import { Input } from "@components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
+import { Textarea } from "@components/ui/textarea";
+import { useToast } from "@components/ui/use-toast";
+import isDebtAccount, { isCreditAccount } from "@helpers/account/isDebtAccount";
+import currencyAmountColor from "@helpers/currencyAmountColor";
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { staleTimeDefault } from "@queries/Client";
+import { CaretSortIcon } from "@radix-ui/react-icons";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Currency } from "dinero.js";
+import { isEmpty } from "lodash";
+import { CheckIcon } from "lucide-react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import { schema } from "./schema";
 
 interface NewProps {
     setOpen: Dispatch<SetStateAction<boolean>>
@@ -55,54 +51,6 @@ type CreatableKinds = Kind.CapitalNormal |
     Kind.DebtCredit |
     Kind.ExternalExpense |
     Kind.ExternalIncome;
-
-const schema = z.object({
-    kind: z.nativeEnum(Kind,
-        {
-            required_error: "is required",
-            invalid_type_error: "must be a string",
-            message: "invalid"
-        }
-    ),
-    currency: z.custom<Currency>(
-        (value) => validateCurrencyCode(value),
-        { message: "must be a ISO 4217 currency code" }
-    ),
-    name: z.string({
-        required_error: "is required",
-        invalid_type_error: "must be a string"
-    }).trim()
-        .min(1, { message: 'must be present' })
-        .max(60, { message: 'must be 60 characters at most' }),
-    description: z.string()
-        .trim()
-        .max(128, { message: "must be 128 characters at most" })
-        .optional()
-        .optional(),
-    capital: z.preprocess(
-        (arg) => isNil(arg) ? 0 : Number(arg),
-        z.number({ required_error: "is required", invalid_type_error: "must be a number" })
-    ),
-    color: z.string({
-        required_error: "is required",
-        invalid_type_error: "must be a string"
-    }).refine(
-        (color) => {
-            const validator = new Option().style;
-            validator.color = color
-
-            return validator.color.length > 0
-        },
-        { message: `must be a valid color code` }
-    ),
-    icon: z.nativeEnum(Icon,
-        {
-            required_error: "is required",
-            invalid_type_error: "is invalid",
-            message: "not supported"
-        }
-    ),
-});
 
 const kinds: Array<{ code: CreatableKinds, name: string }> = [
     { code: Kind.CapitalNormal, name: "Bank or Cash Account" },

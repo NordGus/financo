@@ -10,7 +10,7 @@ import {
 } from "@components/ui/sheet";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { NewAccountForm } from "./New";
+import { NewAccountForm } from "./new";
 
 export default function Layout() {
     const [openSheet, setOpenSheet] = useState(false)
