@@ -74,7 +74,7 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 
 	switch k {
 	default:
-		return []byte{}, fmt.Errorf("account: invalid account kind \"%s\"", k)
+		return []byte{}, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
 	case SystemHistoric:
 		s = "system_historic"
 	case CapitalNormal:
@@ -94,4 +94,34 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(s)
+}
+
+// Scan returns the json encoding of [Kind]. So [Kind] satisfies the
+// [sql.Scanner] interface.
+//
+// It returns an error if [Kind] is an unsupported value or if json encoding
+// fails.
+func (k *Kind) Scan(value string) error {
+	switch strings.ToLower(value) {
+	default:
+		return fmt.Errorf("account: invalid account kind \"%s\"", value)
+	case "system_historic":
+		*k = SystemHistoric
+	case "capital_normal":
+		*k = CapitalNormal
+	case "capital_savings":
+		*k = CapitalSavings
+	case "debt_personal":
+		*k = DebtPersonal
+	case "debt_loan":
+		*k = DebtLoan
+	case "debt_credit":
+		*k = DebtCredit
+	case "external_income":
+		*k = ExternalIncome
+	case "external_expense":
+		*k = ExternalExpense
+	}
+
+	return nil
 }
