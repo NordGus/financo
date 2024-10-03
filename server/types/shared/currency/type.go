@@ -112,11 +112,10 @@ func (t Type) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s)
 }
 
-// Scan returns the json encoding of [Type]. So [Type] satisfies the
-// [sql.Scanner] interface.
+// Scan takes the value returned by the SQL database and maps it to [Type].
+// So [Type] satisfies the [sql.Scanner] interface.
 //
-// It returns an error if [Type] is an unsupported value or if json encoding
-// fails.
+// It returns an error if [Type] is an unsupported value.
 func (t *Type) Scan(value string) error {
 	switch strings.ToUpper(value) {
 	default:
@@ -144,11 +143,10 @@ func (t *Type) Scan(value string) error {
 	return nil
 }
 
-// Value returns the json encoding of [Type]. So [Type] satisfies the
-// [driver.Valuer] interface.
+// Value returns the value of [Type] to be stored in the SQL database. So [Type]
+// satisfies the [driver.Valuer] interface.
 //
-// It returns an error if [Type] is an unsupported value or if json encoding
-// fails.
+// It returns an error if [Type] is an unsupported value.
 func (t Type) Value() (driver.Value, error) {
 	var s string
 
