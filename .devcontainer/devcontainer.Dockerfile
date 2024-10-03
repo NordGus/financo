@@ -44,7 +44,7 @@ RUN go install github.com/air-verse/air@$GO_AIR_VERSION
 RUN go install github.com/pressly/goose/v3/cmd/goose@$GO_GOOSE_VERSION
 
 # installing go-delve/delve to debug go programs
-RUN github.com/go-delve/delve/cmd/dlv@$GO_DELVE_VERSION
+RUN go install github.com/go-delve/delve/cmd/dlv@$GO_DELVE_VERSION
 
 # Setup shell
 USER $USERNAME
