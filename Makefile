@@ -1,5 +1,5 @@
 WEBAPP_WORKSPACE=webapp
-SERVER_CMD = server/cmd
+SERVER_CMD = cmd
 
 .PHONY: webapp webapp-server webapp-lint db-setup db-migrate db-rollback db-reset db-create db-seed db-migration-reset server db-drop
 
