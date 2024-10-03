@@ -12,6 +12,7 @@ services:
         NPM_VERSION: "latest"
         GO_AIR_VERSION: "latest"
         GO_GOOSE_VERSION: "latest"
+        GO_DELVE_VERSION: "latest"
     user: vscode
     env_file: .env
     volumes:
