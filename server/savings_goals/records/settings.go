@@ -1,8 +1,11 @@
 package records
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"errors"
 	"financo/server/types/shared/currency"
+	"fmt"
 )
 
 type Settings struct {
@@ -20,8 +23,21 @@ type Settings struct {
 func (s *Settings) Scan(value []byte) error {
 
 	if err := json.Unmarshal(value, &s); err != nil {
-		return err
+		return errors.Join(fmt.Errorf("savings_goals: records: settings: can't be mapped"), err)
 	}
 
 	return nil
+}
+
+// Value returns the json encoding of [Setting] to be stored in the SQL database.
+// So [Settings] satisfies the [driver.Valuer] interface.
+//
+// It returns an error if [Settings] can't be marshaled into json.
+func (s Settings) Value() (driver.Value, error) {
+	b, err := json.Marshal(&s)
+	if err != nil {
+		return b, errors.Join(fmt.Errorf("savings_goals: records: settings: can't be marshaled"), err)
+	}
+
+	return b, nil
 }
