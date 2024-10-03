@@ -8,6 +8,8 @@ import (
 	"fmt"
 )
 
+// Settings is the struct representing the json stored inside the settings column
+// of every Achievement record with kind "achievement_goal".
 type Settings struct {
 	Position int16         `json:"position"` // unique
 	Target   int64         `json:"target"`
