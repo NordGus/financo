@@ -97,11 +97,10 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 	return json.Marshal(s)
 }
 
-// Scan returns the json encoding of [Kind]. So [Kind] satisfies the
-// [sql.Scanner] interface.
+// Scan takes the value returned by the SQL database and maps it to [Kind].
+// So [Kind] satisfies the [sql.Scanner] interface.
 //
-// It returns an error if [Kind] is an unsupported value or if json encoding
-// fails.
+// It returns an error if [Kind] is an unsupported value.
 func (k *Kind) Scan(value string) error {
 	switch strings.ToLower(value) {
 	default:
@@ -127,11 +126,10 @@ func (k *Kind) Scan(value string) error {
 	return nil
 }
 
-// Value returns the json encoding of [Kind]. So [Kind] satisfies the
-// [driver.Valuer] interface.
+// Value returns the value of [Kind] to be stored in the SQL database. So [Kind]
+// satisfies the [driver.Valuer] interface.
 //
-// It returns an error if [Kind] is an unsupported value or if json encoding
-// fails.
+// It returns an error if [Kind] is an unsupported value.
 func (k Kind) Value() (driver.Value, error) {
 	var s string
 
