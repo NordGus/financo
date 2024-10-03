@@ -1,6 +1,7 @@
 package achievement
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"strings"
 )
@@ -24,4 +25,21 @@ func (k *Kind) Scan(value string) error {
 	}
 
 	return nil
+}
+
+// Value returns the value of [Kind] to be stored in the SQL database. So [Kind]
+// satisfies the [driver.Valuer] interface.
+//
+// It returns an error if [Kind] is an unsupported value.
+func (k Kind) Value() (driver.Value, error) {
+	var s string
+
+	switch k {
+	default:
+		return s, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
+	case SavingsGoal:
+		s = "savings_goal"
+	}
+
+	return s, nil
 }
