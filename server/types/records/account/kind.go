@@ -1,6 +1,7 @@
 package account
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -74,7 +75,7 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 
 	switch k {
 	default:
-		return []byte{}, fmt.Errorf("account: invalid account kind \"%s\"", k)
+		return []byte{}, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
 	case SystemHistoric:
 		s = "system_historic"
 	case CapitalNormal:
@@ -94,4 +95,66 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(s)
+}
+
+// Scan returns the json encoding of [Kind]. So [Kind] satisfies the
+// [sql.Scanner] interface.
+//
+// It returns an error if [Kind] is an unsupported value or if json encoding
+// fails.
+func (k *Kind) Scan(value string) error {
+	switch strings.ToLower(value) {
+	default:
+		return fmt.Errorf("account: invalid account kind \"%s\"", value)
+	case "system_historic":
+		*k = SystemHistoric
+	case "capital_normal":
+		*k = CapitalNormal
+	case "capital_savings":
+		*k = CapitalSavings
+	case "debt_personal":
+		*k = DebtPersonal
+	case "debt_loan":
+		*k = DebtLoan
+	case "debt_credit":
+		*k = DebtCredit
+	case "external_income":
+		*k = ExternalIncome
+	case "external_expense":
+		*k = ExternalExpense
+	}
+
+	return nil
+}
+
+// Value returns the json encoding of [Kind]. So [Kind] satisfies the
+// [driver.Valuer] interface.
+//
+// It returns an error if [Kind] is an unsupported value or if json encoding
+// fails.
+func (k Kind) Value() (driver.Value, error) {
+	var s string
+
+	switch k {
+	default:
+		return s, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
+	case SystemHistoric:
+		s = "system_historic"
+	case CapitalNormal:
+		s = "capital_normal"
+	case CapitalSavings:
+		s = "capital_savings"
+	case DebtPersonal:
+		s = "debt_personal"
+	case DebtLoan:
+		s = "debt_loan"
+	case DebtCredit:
+		s = "debt_credit"
+	case ExternalIncome:
+		s = "external_income"
+	case ExternalExpense:
+		s = "external_expense"
+	}
+
+	return s, nil
 }
