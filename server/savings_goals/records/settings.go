@@ -23,7 +23,6 @@ type Settings struct {
 // It returns an error if [Settings] can't be mapped to the json given by the
 // SQL database.
 func (s *Settings) Scan(value []byte) error {
-
 	if err := json.Unmarshal(value, &s); err != nil {
 		return errors.Join(fmt.Errorf("savings_goals: records: settings: can't be mapped"), err)
 	}
