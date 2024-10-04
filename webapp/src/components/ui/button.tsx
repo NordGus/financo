@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils"
 import { Slot } from "@radix-ui/react-slot"
 import { type VariantProps } from "class-variance-authority"
 import * as React from "react"
+import { NavLink, NavLinkProps } from "react-router-dom"
 import { buttonVariants } from "./button-variants"
 
 export interface ButtonProps
@@ -24,4 +25,24 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 )
 Button.displayName = "Button"
 
-export { Button }
+const NavButton: React.FC<NavLinkProps & ButtonProps> = ({
+  to, className, children, variant = "outline", ...rest
+}) => {
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) => cn(
+        buttonVariants({ variant }),
+        (isActive && "bg-zinc-100 dark:bg-zinc-800"),
+        className,
+      )}
+      {...rest}
+    >
+      {children}
+    </NavLink>
+  )
+}
+
+NavButton.displayName = "NavButton"
+
+export { Button, NavButton }
