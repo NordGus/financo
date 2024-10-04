@@ -1,6 +1,6 @@
 import { Goal } from "@/types/Goal";
 import Breadcrumbs from "@components/breadcrumbs";
-import { Button } from "@components/ui/button";
+import { NavButton } from "@components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@components/ui/sheet";
 import { isEqual } from "lodash";
 import { useState } from "react";
@@ -16,7 +16,12 @@ export default function Layout() {
             <div className="flex items-center gap-4">
                 <Breadcrumbs />
                 <span className="grow contents-['']"></span>
-                <Button onClick={() => { setGoal({}); setOpenForm(true); }}>New</Button>
+                <NavButton to="." end>
+                    Progress
+                </NavButton>
+                <NavButton to="./my-journey" end>
+                    My Journey
+                </NavButton>
             </div>
             <Sheet open={openForm} onOpenChange={setOpenForm}>
                 <SheetContent className="w-[400px] sm:w-[540px] sm:max-w-[540px] overflow-y-auto">
