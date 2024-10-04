@@ -47,6 +47,18 @@ const router = createBrowserRouter([
                 ]
             },
             {
+                path: "savings-goals",
+                loader: App.SavingsGoals.loaders.main(Client),
+                element: <App.SavingsGoals.Layout />,
+                children: [
+                    {
+                        index: true,
+                        loader: App.SavingsGoals.loaders.goals(Client),
+                        element: <App.SavingsGoals.Index />
+                    }
+                ]
+            },
+            {
                 path: '*',
                 element: <App.NotFound />
             }

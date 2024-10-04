@@ -33,3 +33,11 @@ export async function getReachedGoals(): Promise<Goal[]> {
 
     return response.json()
 }
+
+export async function deleteGoal(id: number): Promise<Goal> {
+    const response = await fetch(`/api/savings-goals/${id}`, { method: "DELETE" })
+
+    if (!response.ok) throw response
+
+    return response.json()
+}

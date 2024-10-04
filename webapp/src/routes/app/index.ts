@@ -4,12 +4,14 @@ import ErrorBoundary from "./error-boundary";
 import Layout from "./layout";
 import Ledger from "./ledger";
 import NotFound from "./not-found";
+import SavingsGoals from "./savings-goals";
 
 export default {
-    Layout,
-    Dashboard,
-    Ledger,
     Accounts,
-    NotFound,
+    Dashboard,
     ErrorBoundary,
+    Layout,
+    Ledger,
+    NotFound,
+    SavingsGoals,
 }
