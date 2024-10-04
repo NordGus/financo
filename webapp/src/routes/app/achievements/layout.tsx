@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@components/ui/she
 import { isEqual } from "lodash";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Goals from "./goal";
+import Goals from "./savings-goals";
 
 export default function Layout() {
     const [openForm, setOpenForm] = useState(false)

@@ -53,9 +53,14 @@ const router = createBrowserRouter([
                 children: [
                     {
                         index: true,
-                        loader: App.Achievements.loaders.goals(Client),
-                        element: <App.Achievements.Index />
-                    }
+                        loader: App.Achievements.loaders.progress(Client),
+                        element: <App.Achievements.Progress />
+                    },
+                    {
+                        path: "my-journey",
+                        loader: App.Achievements.loaders.journey(Client),
+                        element: <App.Achievements.MyJourney />
+                    },
                 ]
             },
             {
