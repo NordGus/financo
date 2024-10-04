@@ -13,9 +13,8 @@ import { Outlet } from "react-router-dom";
 
 export default function Layout() {
     return (
-        <div className='w-full h-[100dvh] grid grid-cols-[min-content_1fr] dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 items-stretch'
-        >
-            <nav className='flex flex-col gap-4 p-4 h-full m-0 border-r border-zinc-200 dark:border-zinc-800 bg-transparent shadow-sm'>
+        <div className='w-full h-[100dvh] grid grid-cols-[min-content_1fr] items-stretch'>
+            <nav className='flex flex-col gap-4 p-4 h-full m-0 border-r border-zinc-200 dark:border-zinc-800  bg-transparent shadow-sm'>
                 <NavLink
                     name="Dashboard"
                     path=""
