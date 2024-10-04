@@ -13,7 +13,9 @@ export default {
         journey: journeyLoader,
     },
     actions: {
-        goal: savingsGoalsAction,
+        savingsGoals: {
+            goal: savingsGoalsAction,
+        }
     },
     Layout,
     MyJourney,
