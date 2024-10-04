@@ -47,14 +47,14 @@ const router = createBrowserRouter([
                 ]
             },
             {
-                path: "savings-goals",
-                loader: App.SavingsGoals.loaders.main(Client),
-                element: <App.SavingsGoals.Layout />,
+                path: "achievements",
+                loader: App.Achievements.loaders.main(Client),
+                element: <App.Achievements.Layout />,
                 children: [
                     {
                         index: true,
-                        loader: App.SavingsGoals.loaders.goals(Client),
-                        element: <App.SavingsGoals.Index />
+                        loader: App.Achievements.loaders.goals(Client),
+                        element: <App.Achievements.Index />
                     }
                 ]
             },

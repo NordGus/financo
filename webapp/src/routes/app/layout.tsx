@@ -6,7 +6,6 @@ import {
     NotebookTabsIcon,
     RouteIcon,
     SettingsIcon,
-    TargetIcon,
     TrophyIcon,
     VaultIcon
 } from "lucide-react";
@@ -36,11 +35,6 @@ export default function Layout() {
                     name="Budgets"
                     path="budgets"
                     icon={<NotebookTabsIcon />}
-                />
-                <NavLink
-                    name="Savings Goals"
-                    path="savings-goals"
-                    icon={<TargetIcon />}
                 />
                 <NavLink
                     name="Payment Plans"
