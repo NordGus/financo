@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Goal } from "@/types/Goal";
+import { SavingsGoal } from "@/types/SavingsGoal";
 import { Progress } from "@components/Progress";
 import { Throbber } from "@components/Throbber";
 import { Button } from "@components/ui/button";
@@ -20,7 +20,7 @@ export function GoalsTracker({ className }: { className?: string }) {
     // })
 
     const isFetching = false
-    const goals: Goal[] = [
+    const goals: SavingsGoal[] = [
         {
             id: 1,
             name: "My first emergency fund",

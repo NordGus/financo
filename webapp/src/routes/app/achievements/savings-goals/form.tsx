@@ -1,7 +1,7 @@
-import { Goal } from "@/types/Goal";
+import { SavingsGoal } from "@/types/SavingsGoal";
 
 interface Props {
-    goal: Goal | NonNullable<unknown>
+    goal: SavingsGoal | NonNullable<unknown>
     onSetOpenForm: (open: boolean) => void
 }
 

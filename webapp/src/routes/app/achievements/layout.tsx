@@ -1,4 +1,4 @@
-import { Goal } from "@/types/Goal";
+import { SavingsGoal } from "@/types/SavingsGoal";
 import Breadcrumbs from "@components/breadcrumbs";
 import { NavButton } from "@components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@components/ui/sheet";
@@ -17,7 +17,7 @@ type LayoutActionType = typeof actionTypes
 type LayoutActions =
     | {
         type: LayoutActionType["EDIT_SAVINGS_GOAL"],
-        payload: Goal
+        payload: SavingsGoal
     }
     | {
         type: LayoutActionType["CREATE_SAVINGS_GOAL"],
@@ -32,7 +32,7 @@ type LayoutFormType = "edit-savings-goal" | "new-savings-goal"
 
 interface LayoutState {
     openForm: boolean
-    achievement: Goal | NonNullable<unknown>
+    achievement: SavingsGoal | NonNullable<unknown>
     formType: LayoutFormType
 }
 
@@ -72,7 +72,7 @@ function init(props: NonNullable<unknown>): LayoutState {
 }
 
 export interface AchievementsOutletContext {
-    onSetSavingsGoal: (goal: Goal) => void
+    onSetSavingsGoal: (goal: SavingsGoal) => void
     onSetOpenForm: (open: boolean) => void
     onCreateSavingsGoal: () => void
 }
@@ -84,7 +84,7 @@ export default function Layout() {
         EDIT_SAVINGS_GOAL, OPEN_FORM_CHANGE, CREATE_SAVINGS_GOAL
     } = actionTypes
 
-    const onSetSavingsGoal = (goal: Goal) => dispatch({ type: EDIT_SAVINGS_GOAL, payload: goal })
+    const onSetSavingsGoal = (goal: SavingsGoal) => dispatch({ type: EDIT_SAVINGS_GOAL, payload: goal })
     const onSetOpenForm = (open: boolean) => dispatch({ type: OPEN_FORM_CHANGE, payload: open })
     const onCreateSavingsGoal = () => dispatch({ type: CREATE_SAVINGS_GOAL })
 
