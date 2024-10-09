@@ -1,11 +1,8 @@
 import { Goal } from "@/types/Goal";
-import { Dispatch, SetStateAction } from "react";
-
-type Recordable = Goal | NonNullable<unknown>;
 
 interface Props {
-    goal: Recordable
-    setOpen: Dispatch<SetStateAction<boolean>>
+    goal: Goal | NonNullable<unknown>
+    onSetOpenForm: (open: boolean) => void
 }
 
 function Form(_props: Props) {
