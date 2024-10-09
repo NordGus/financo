@@ -2,7 +2,7 @@ import { SavingsGoal } from "@/types/SavingsGoal";
 import Breadcrumbs from "@components/breadcrumbs";
 import { NavButton } from "@components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@components/ui/sheet";
-import { useReducer } from "react";
+import { useCallback, useReducer } from "react";
 import { Outlet } from "react-router-dom";
 import Goals from "./savings-goals";
 
@@ -17,15 +17,14 @@ type LayoutActionType = typeof actionTypes
 type LayoutActions =
     | {
         type: LayoutActionType["EDIT_SAVINGS_GOAL"],
-        payload: SavingsGoal
+        goal: SavingsGoal
     }
     | {
-        type: LayoutActionType["CREATE_SAVINGS_GOAL"],
-        payload?: null
+        type: LayoutActionType["CREATE_SAVINGS_GOAL"]
     }
     | {
         type: LayoutActionType["OPEN_FORM_CHANGE"],
-        payload: boolean
+        open: boolean
     }
 
 type LayoutFormType = "edit-savings-goal" | "new-savings-goal"
@@ -36,12 +35,12 @@ interface LayoutState {
     formType: LayoutFormType
 }
 
-function reducer(state: LayoutState, { type, payload }: LayoutActions): LayoutState {
-    switch (type) {
+function reducer(state: LayoutState, action: LayoutActions): LayoutState {
+    switch (action.type) {
         case "EDIT_SAVINGS_GOAL":
             return {
                 ...state,
-                achievement: payload,
+                achievement: action.goal,
                 openForm: true,
                 formType: "edit-savings-goal"
             }
@@ -55,10 +54,10 @@ function reducer(state: LayoutState, { type, payload }: LayoutActions): LayoutSt
         case "OPEN_FORM_CHANGE":
             return {
                 ...state,
-                openForm: payload
+                openForm: action.open
             }
         default:
-            throw Error(`Unknown action: ${type}`)
+            throw Error(`Unknown action`)
     }
 }
 
@@ -84,9 +83,9 @@ export default function Layout() {
         EDIT_SAVINGS_GOAL, OPEN_FORM_CHANGE, CREATE_SAVINGS_GOAL
     } = actionTypes
 
-    const onSetSavingsGoal = (goal: SavingsGoal) => dispatch({ type: EDIT_SAVINGS_GOAL, payload: goal })
-    const onSetOpenForm = (open: boolean) => dispatch({ type: OPEN_FORM_CHANGE, payload: open })
-    const onCreateSavingsGoal = () => dispatch({ type: CREATE_SAVINGS_GOAL })
+    const onSetSavingsGoal = useCallback((goal: SavingsGoal) => dispatch({ type: EDIT_SAVINGS_GOAL, goal }), [])
+    const onSetOpenForm = useCallback((open: boolean) => dispatch({ type: OPEN_FORM_CHANGE, open }), [])
+    const onCreateSavingsGoal = useCallback(() => dispatch({ type: CREATE_SAVINGS_GOAL }), [])
 
     return (
         <div className="gap-4 flex flex-col">
