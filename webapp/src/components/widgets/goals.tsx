@@ -25,7 +25,7 @@ export function GoalsTracker({ className }: { className?: string }) {
             id: 1,
             name: "My first emergency fund",
             description: "A journey of a thousand kilometers start with a single step",
-            goal: 100000,
+            target: 100000,
             currency: "EUR",
             balance: 100000,
             position: 1,
@@ -38,7 +38,7 @@ export function GoalsTracker({ className }: { className?: string }) {
             id: 2,
             name: "This is not even my final form",
             description: "Take the emergency fund to 3 month's income",
-            goal: 600000,
+            target: 600000,
             currency: "EUR",
             balance: 600000,
             position: 2,
@@ -51,7 +51,7 @@ export function GoalsTracker({ className }: { className?: string }) {
             id: 3,
             name: "Inner Peace",
             description: "Your emergency fund gives you 3 month's runway",
-            goal: 1200000,
+            target: 1200000,
             currency: "EUR",
             balance: 1200000,
             position: 3,
@@ -64,7 +64,7 @@ export function GoalsTracker({ className }: { className?: string }) {
             id: 4,
             name: "Harmony within, Hurricane without",
             description: "Now your emergency fund has 12 month's income",
-            goal: 2400000,
+            target: 2400000,
             currency: "EUR",
             balance: 1200000,
             position: 4,
@@ -77,7 +77,7 @@ export function GoalsTracker({ className }: { className?: string }) {
             id: 5,
             name: "Upgrades for my Desktop",
             description: null,
-            goal: 100000,
+            target: 100000,
             currency: "EUR",
             balance: 0,
             position: 5,
@@ -90,7 +90,7 @@ export function GoalsTracker({ className }: { className?: string }) {
             id: 6,
             name: "Investment for the Studio",
             description: "Buying some hardware to create games better",
-            goal: 600000,
+            target: 600000,
             currency: "EUR",
             balance: 0,
             position: 6,
@@ -103,7 +103,7 @@ export function GoalsTracker({ className }: { className?: string }) {
             id: 7,
             name: "Honeymoon",
             description: "A little treat for my spouse",
-            goal: 2000000,
+            target: 2000000,
             currency: "EUR",
             balance: 0,
             position: 7,
@@ -136,7 +136,7 @@ export function GoalsTracker({ className }: { className?: string }) {
                             <TableBody>
                                 {
                                     goals.sort((a, b) => a.position - b.position).map((goal) => {
-                                        const progress = goal.balance / goal.goal
+                                        const progress = goal.balance / goal.target
                                         const color = "#22c55e"
 
                                         return <TableRow key={`goal:${goal.id}`}>
@@ -178,7 +178,7 @@ export function GoalsTracker({ className }: { className?: string }) {
                             <TableBody>
                                 {
                                     goals.sort((a, b) => a.position - b.position).map((goal) => {
-                                        const progress = goal.balance / goal.goal
+                                        const progress = goal.balance / goal.target
                                         const color = "#22c55e"
 
                                         return <TableRow key={`goal:${goal.id}`}>

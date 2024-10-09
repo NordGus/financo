@@ -4,7 +4,7 @@ export interface Goal {
     id: number
     name: string
     description: string | null
-    goal: number
+    target: number
     currency: Currency
     balance: number
     position: number
