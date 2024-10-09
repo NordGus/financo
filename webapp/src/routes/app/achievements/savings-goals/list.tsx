@@ -35,7 +35,7 @@ interface EntryProps {
 }
 
 function Entry({ goal, onSetGoal }: EntryProps) {
-    const progress = goal.balance / goal.target
+    const progress = goal.settings.saved / goal.settings.target
     const color = "#22c55e"
 
     return (

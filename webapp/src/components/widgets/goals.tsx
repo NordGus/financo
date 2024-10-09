@@ -41,8 +41,9 @@ export function GoalsTracker({ className }: { className?: string }) {
                         : <Table>
                             <TableBody>
                                 {
-                                    placeholder.sort((a, b) => a.position - b.position).map((goal) => {
-                                        const progress = goal.balance / goal.target
+                                    placeholder.sort((a, b) => a.settings.position - b.settings.position).map((goal) => {
+                                        const { target, saved } = goal.settings
+                                        const progress = saved / target
                                         const color = "#22c55e"
 
                                         return <TableRow key={`goal:${goal.id}`}>
@@ -83,8 +84,8 @@ export function GoalsTracker({ className }: { className?: string }) {
                         : <Table>
                             <TableBody>
                                 {
-                                    placeholder.sort((a, b) => a.position - b.position).map((goal) => {
-                                        const progress = goal.balance / goal.target
+                                    placeholder.sort((a, b) => a.settings.position - b.settings.position).map((goal) => {
+                                        const progress = goal.settings.saved / goal.settings.target
                                         const color = "#22c55e"
 
                                         return <TableRow key={`goal:${goal.id}`}>
