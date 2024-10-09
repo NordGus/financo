@@ -116,7 +116,7 @@ function Entry({ goal, onSetGoal, id }: EntryProps) {
         <div
             className={
                 cn(
-                    "flex flex-row items-center py-2 px-6 gap-4 dark:hover:bg-zinc-800 hover:bg-zinc-200",
+                    "flex flex-row items-center py-2 px-6 gap-4 dark:hover:bg-zinc-900 hover:bg-zinc-100",
                     ((isDragging || isSorting || isOver) && "cursor-grabbing")
                 )
             }
@@ -126,7 +126,7 @@ function Entry({ goal, onSetGoal, id }: EntryProps) {
         >
             <div
                 className={cn(
-                    "p-1.5 border rounded-lg",
+                    "p-1.5 border rounded-lg border-zinc-200 dark:border-zinc-800",
                     (isDragging || isSorting || isOver ? "cursor-grabbing" : "cursor-grab")
                 )}
                 ref={setActivatorNodeRef}
