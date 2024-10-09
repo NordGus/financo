@@ -23,9 +23,7 @@ function List({ onCreateSavingsGoal, onSetSavingsGoal }: Props) {
                 </Button>
             </CardHeader>
             <div className="flex flex-col gap-4 pb-6">
-                {
-                    placeholder.map((goal) => <Entry goal={goal} onSetGoal={onSetSavingsGoal} />)
-                }
+                {placeholder.map((goal) => <Entry goal={goal} onSetGoal={onSetSavingsGoal} />)}
             </div>
         </Card>
     )
