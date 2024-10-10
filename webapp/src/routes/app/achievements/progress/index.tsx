@@ -11,7 +11,10 @@ export default function Index() {
     return (
         <div className="flex flex-row justify-center gap-4">
             <div className="flex flex-col gap-4 w-[30%]">
-                <SavingsGoals.List onCreateSavingsGoal={onCreateSavingsGoal} onSetSavingsGoal={onSetSavingsGoal} />
+                <SavingsGoals.List
+                    onCreateSavingsGoal={onCreateSavingsGoal}
+                    onSetSavingsGoal={onSetSavingsGoal}
+                />
             </div>
             <div className="flex flex-col gap-4 w-[30%]">
                 <Alert>
