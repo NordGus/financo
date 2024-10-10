@@ -47,6 +47,27 @@ const router = createBrowserRouter([
                 ]
             },
             {
+                path: "achievements",
+                loader: App.Achievements.loaders.main(Client),
+                element: <App.Achievements.Layout />,
+                children: [
+                    {
+                        index: true,
+                        loader: App.Achievements.loaders.progress(Client),
+                        element: <App.Achievements.Progress />,
+                    },
+                    {
+                        path: "my-journey",
+                        loader: App.Achievements.loaders.journey(Client),
+                        element: <App.Achievements.MyJourney />
+                    },
+                    {
+                        path: "savings-goals",
+                        loader: App.Achievements.actions.savingsGoals.goal(Client)
+                    }
+                ]
+            },
+            {
                 path: '*',
                 element: <App.NotFound />
             }
