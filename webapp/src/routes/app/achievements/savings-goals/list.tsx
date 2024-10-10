@@ -117,7 +117,7 @@ function Entry({ goal, onSetGoal, id }: EntryProps) {
         <div
             className={
                 cn(
-                    "flex flex-row items-center py-2 px-6 gap-4 dark:hover:bg-zinc-900 hover:bg-zinc-100",
+                    "flex flex-row items-stretch py-2 px-6 gap-4 dark:hover:bg-zinc-900 hover:bg-zinc-100",
                     ((isDragging || isSorting || isOver) && "cursor-grabbing")
                 )
             }
@@ -128,6 +128,7 @@ function Entry({ goal, onSetGoal, id }: EntryProps) {
             <div
                 className={cn(
                     "p-1.5 border rounded-lg border-zinc-200 dark:border-zinc-800",
+                    "flex items-center justify-center",
                     (isDragging || isSorting || isOver ? "cursor-grabbing" : "cursor-grab")
                 )}
                 ref={setActivatorNodeRef}
@@ -137,7 +138,7 @@ function Entry({ goal, onSetGoal, id }: EntryProps) {
             </div>
             <div
                 className={cn(
-                    "flex flex-row items-stretch gap-4 grow",
+                    "flex flex-row items-center gap-4 grow",
                     (!(isDragging || isSorting || isOver) && "cursor-pointer")
                 )}
                 onClick={() => onSetGoal(goal)}
