@@ -106,6 +106,21 @@ export const placeholder: SavingsGoal[] = [
         archivedAt: null,
         createdAt: moment().add({ month: -3 }).toDate().toISOString(),
         updatedAt: moment().add({ month: -3 }).toDate().toISOString()
+    },
+    {
+        id: 8,
+        name: "To the forest",
+        description: "For that mountain cabin",
+        settings: {
+            position: 7,
+            target: 2000000,
+            saved: 0,
+            currency: "EUR",
+        },
+        achievedAt: null,
+        archivedAt: null,
+        createdAt: moment().add({ month: -3 }).toDate().toISOString(),
+        updatedAt: moment().add({ month: -3 }).toDate().toISOString()
     }
 ]
 
