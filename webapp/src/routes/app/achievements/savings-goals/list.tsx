@@ -136,7 +136,7 @@ function Entry({ goal, onSetGoal, id }: EntryProps) {
             </div>
             <div
                 className={cn(
-                    "flex flex-row items-center gap-4 grow",
+                    "flex flex-row items-stretch gap-4 grow",
                     (!(isDragging || isSorting || isOver) && "cursor-pointer")
                 )}
                 onClick={() => onSetGoal(goal)}
