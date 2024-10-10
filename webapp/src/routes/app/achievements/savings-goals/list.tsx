@@ -23,7 +23,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { isNil } from "lodash";
 import { GripVerticalIcon, InfoIcon, TrophyIcon } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 function keyFor({ id }: SavingsGoal) {
     return `savings-goal:${id}`
@@ -97,6 +97,9 @@ interface EntryProps {
 }
 
 function Entry({ goal, onSetGoal, id }: EntryProps) {
+    const progress = useMemo(() => goal.settings.saved / goal.settings.target, [goal.updatedAt])
+    const color = useMemo(() => "#22c55e", [])
+
     const {
         attributes,
         listeners,
@@ -109,8 +112,6 @@ function Entry({ goal, onSetGoal, id }: EntryProps) {
         isOver
     } = useSortable({ id })
     const style = { transform: CSS.Transform.toString(transform), transition }
-    const progress = goal.settings.saved / goal.settings.target
-    const color = "#22c55e"
 
     return (
         <div
