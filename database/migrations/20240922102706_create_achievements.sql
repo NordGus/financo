@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS achievements (
     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     kind VARCHAR NOT NULL,
     name TEXT NOT NULL,
+    description TEXT,
     settings JSONB NOT NULL,
     achieved_at TIMESTAMP WITH TIME ZONE,
     deleted_at TIMESTAMP WITH TIME ZONE,
