@@ -22,7 +22,7 @@ type transactionsSeed struct {
 }
 
 var (
-	data = []transactionsSeed{
+	transactions = []transactionsSeed{
 		{ // Paycheck
 			Source: accountKey{
 				Key:       "day_job",
