@@ -188,5 +188,24 @@ var (
 				return nullable.Type[time.Time]{}
 			},
 		},
+		{
+			Record: savings_goal.Record{
+				Kind:        achievement.SavingsGoal,
+				Name:        "USD First Emergency Fund",
+				Description: nullable.New("An emergency fund for the family outside of Europe."),
+				Settings: savings_goal.Settings{
+					Position: 1,
+					Target:   1_000_00,
+					Saved:    0,
+					Currency: currency.USD,
+				},
+			},
+			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
+				return nullable.Type[time.Time]{}
+			},
+			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
+				return nullable.Type[time.Time]{}
+			},
+		},
 	}
 )
