@@ -12,6 +12,11 @@ import (
 	"time"
 )
 
+type AccountRecord struct {
+	Account  account.Record
+	Children map[string]account.Record
+}
+
 func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map[string]AccountRecord, error) {
 	var (
 		out        = make(map[string]AccountRecord, 10)

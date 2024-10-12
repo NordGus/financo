@@ -31,11 +31,6 @@ type childAccountSeed struct {
 	MapKey string
 }
 
-type AccountRecord struct {
-	Account  account.Record
-	Children map[string]account.Record
-}
-
 var (
 	accounts = []accountSeed{
 		{
