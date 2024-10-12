@@ -21,16 +21,7 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 	var (
 		out           = make(map[string]AccountRecord, 10)
 		tSummary uint = 0
-		summary       = map[account.Kind]uint{
-			account.CapitalNormal:   0,
-			account.CapitalSavings:  0,
-			account.DebtCredit:      0,
-			account.DebtLoan:        0,
-			account.DebtPersonal:    0,
-			account.ExternalExpense: 0,
-			account.ExternalIncome:  0,
-			account.SystemHistoric:  0,
-		}
+		summary       = make(map[account.Kind]uint, 8)
 	)
 
 	log.Println("\tseeding accounts")

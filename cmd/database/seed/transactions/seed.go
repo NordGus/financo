@@ -27,7 +27,6 @@ func SeedTransactions(
 	}
 	defer tx.Rollback()
 
-	// implemented seeding
 	for i := 0; i < len(transactions); i++ {
 		var (
 			data   = transactions[i]
