@@ -40,7 +40,7 @@ func SeedTransactions(
 		}
 
 		if data.Target.ParentKey.Valid {
-			source = seeds[data.Target.ParentKey.Val].Children[data.Target.Key]
+			target = seeds[data.Target.ParentKey.Val].Children[data.Target.Key]
 		}
 
 		tr := transaction.Record{
