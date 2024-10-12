@@ -17,7 +17,7 @@ type AccountRecord struct {
 	Children map[string]account.Record
 }
 
-func SeedAccounts(ctx context.Context, tx *sql.Tx, timestamp time.Time) (map[string]AccountRecord, error) {
+func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map[string]AccountRecord, error) {
 	var (
 		out        = make(map[string]AccountRecord, 10)
 		tSumm uint = 0
@@ -35,6 +35,12 @@ func SeedAccounts(ctx context.Context, tx *sql.Tx, timestamp time.Time) (map[str
 
 	log.Println("seeding accounts")
 
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return out, errors.Join(errors.New("accounts: failed to seed"), err)
+	}
+	defer tx.Rollback()
+
 	for i := 0; i < len(accounts); i++ {
 		key := accounts[i].MapKey
 
@@ -50,6 +56,11 @@ func SeedAccounts(ctx context.Context, tx *sql.Tx, timestamp time.Time) (map[str
 		}
 
 		tSumm += tc
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return out, errors.Join(errors.New("accounts: failed to seed"), err)
 	}
 
 	// printing summary
