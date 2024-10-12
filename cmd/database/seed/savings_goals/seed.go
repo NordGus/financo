@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"financo/server/types/records/account"
 	"financo/server/types/records/achievement/savings_goal"
 	"financo/server/types/shared/currency"
 	"fmt"
@@ -24,6 +25,11 @@ func SeedSavingsGoals(ctx context.Context, conn *sql.Conn, timestamp time.Time) 
 		return errors.Join(errors.New("savings_goals: failed to seed"), err)
 	}
 	defer tx.Rollback()
+
+	savings, err = getSavings(ctx, savings, tx)
+	if err != nil {
+		return errors.Join(errors.New("savings_goals: failed to retrieve savings"), err)
+	}
 
 	for i := 0; i < len(achievements); i++ {
 		var (
@@ -89,4 +95,32 @@ func create(ctx context.Context, goal savings_goal.Record, tx *sql.Tx) error {
 		goal.CreatedAt,
 		goal.UpdatedAt,
 	).Scan(&goal.ID)
+}
+
+func getSavings(ctx context.Context, savings map[currency.Type]int64, tx *sql.Tx) (map[currency.Type]int64, error) {
+	rows, err := tx.QueryContext(
+		ctx,
+		``,
+		account.CapitalSavings,
+	)
+	if err != nil {
+		return savings, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			cur currency.Type
+			sav int64
+		)
+
+		err = rows.Scan(&cur, &sav)
+		if err != nil {
+			return savings, err
+		}
+
+		savings[cur] = sav
+	}
+
+	return savings, nil
 }
