@@ -84,9 +84,11 @@ func seed(
 		ac             = make(map[account.Kind]uint, 3)
 		children       = make(map[string]account.Record, 0)
 		historyAt      = s.HistoryAt(timestamp)
+		history        = historyTemplate
+		parent         = s.Account
+		pKey           = s.MapKey
 	)
 
-	parent := s.Account
 	parent.ArchivedAt = s.ArchivedAt(timestamp)
 	parent.DeletedAt = s.DeletedAt(timestamp)
 	parent.CreatedAt = timestamp
@@ -94,14 +96,12 @@ func seed(
 
 	parent, err := createAccount(ctx, parent, tx)
 	if err != nil {
-		return AccountRecord{}, ac, tc, errors.Join(fmt.Errorf("accounts: failed to seed %s", s.MapKey), err)
+		return AccountRecord{}, ac, tc, errors.Join(fmt.Errorf("accounts: failed to seed %s", pKey), err)
 	}
 
 	ac[parent.Kind] += 1
 
 	if !account.IsExternal(parent.Kind) {
-		history := historyTemplate
-
 		history.ParentID = nullable.New(parent.ID)
 		history.Currency = parent.Currency
 		history.ArchivedAt = parent.ArchivedAt
@@ -114,39 +114,39 @@ func seed(
 			return AccountRecord{},
 				ac,
 				tc,
-				errors.Join(fmt.Errorf("accounts: failed to seed %s history", s.MapKey), err)
+				errors.Join(fmt.Errorf("accounts: failed to seed %s history", pKey), err)
 		}
 
 		ac[history.Kind] += 1
+	}
 
-		if historyAt.Valid {
-			tr := historyTransactionTemplate
+	if !account.IsExternal(parent.Kind) && historyAt.Valid {
+		tr := historyTransactionTemplate
 
-			tr.SourceID = parent.ID
-			tr.TargetID = history.ID
-			tr.SourceAmount = s.HistoryCapital
-			tr.TargetAmount = s.HistoryCapital
-			tr.IssuedAt = historyAt.Val
-			tr.ExecutedAt = historyAt
-			tr.CreatedAt = timestamp
-			tr.UpdatedAt = timestamp
+		tr.SourceID = parent.ID
+		tr.TargetID = history.ID
+		tr.SourceAmount = s.HistoryCapital
+		tr.TargetAmount = s.HistoryCapital
+		tr.IssuedAt = historyAt.Val
+		tr.ExecutedAt = historyAt
+		tr.CreatedAt = timestamp
+		tr.UpdatedAt = timestamp
 
-			if tr.SourceAmount < 0 {
-				tr.SourceID, tr.TargetID = tr.TargetID, tr.SourceID
-				tr.SourceAmount = -tr.SourceAmount
-				tr.TargetAmount = -tr.TargetAmount
-			}
-
-			tr, err = createTransaction(ctx, tr, tx)
-			if err != nil {
-				return AccountRecord{},
-					ac,
-					tc,
-					errors.Join(fmt.Errorf("accounts: failed to seed %s history transaction", s.MapKey), err)
-			}
-
-			tc += 1
+		if tr.SourceAmount < 0 {
+			tr.SourceID, tr.TargetID = tr.TargetID, tr.SourceID
+			tr.SourceAmount = -tr.SourceAmount
+			tr.TargetAmount = -tr.TargetAmount
 		}
+
+		tr, err = createTransaction(ctx, tr, tx)
+		if err != nil {
+			return AccountRecord{},
+				ac,
+				tc,
+				errors.Join(fmt.Errorf("accounts: failed to seed %s history transaction", pKey), err)
+		}
+
+		tc += 1
 	}
 
 	for i := 0; i < len(s.Children); i++ {
@@ -167,7 +167,7 @@ func seed(
 			return AccountRecord{},
 				ac,
 				tc,
-				errors.Join(fmt.Errorf("accounts: failed to seed %s child %s", s.MapKey, key), err)
+				errors.Join(fmt.Errorf("accounts: failed to seed %s child %s", pKey, key), err)
 		}
 
 		ac[child.Kind] += 1
