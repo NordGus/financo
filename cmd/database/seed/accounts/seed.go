@@ -65,10 +65,10 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 
 	// printing summary
 	for kind, count := range summ {
-		log.Printf("\t\t%d %v accounts seed\n", count, kind)
+		log.Printf("\t\t%d %v accounts seeded\n", count, kind)
 	}
 
-	log.Printf("\t\t%d historic transactions seed\n", tSumm)
+	log.Printf("\t\t%d historic transactions seeded\n", tSumm)
 
 	return out, nil
 }
