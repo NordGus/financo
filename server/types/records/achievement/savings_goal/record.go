@@ -1,4 +1,4 @@
-package records
+package savings_goal
 
 import (
 	"financo/server/types/records/achievement"
