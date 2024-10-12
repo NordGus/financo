@@ -19,9 +19,9 @@ type AccountRecord struct {
 
 func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map[string]AccountRecord, error) {
 	var (
-		out        = make(map[string]AccountRecord, 10)
-		tSumm uint = 0
-		summ       = map[account.Kind]uint{
+		out           = make(map[string]AccountRecord, 10)
+		tSummary uint = 0
+		summary       = map[account.Kind]uint{
 			account.CapitalNormal:   0,
 			account.CapitalSavings:  0,
 			account.DebtCredit:      0,
@@ -44,18 +44,18 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 	for i := 0; i < len(accounts); i++ {
 		key := accounts[i].MapKey
 
-		record, summary, tc, err := seed(ctx, tx, accounts[i], timestamp)
+		record, sum, tc, err := seed(ctx, tx, accounts[i], timestamp)
 		if err != nil {
 			return out, errors.Join(fmt.Errorf("accounts: failed to seed %s", key), err)
 		}
 
 		out[key] = record
 
-		for kind, count := range summary {
-			summ[kind] += count
+		for kind, count := range sum {
+			summary[kind] += count
 		}
 
-		tSumm += tc
+		tSummary += tc
 	}
 
 	err = tx.Commit()
@@ -64,11 +64,11 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 	}
 
 	// printing summary
-	for kind, count := range summ {
+	for kind, count := range summary {
 		log.Printf("\t\t%d %v accounts seeded\n", count, kind)
 	}
 
-	log.Printf("\t\t%d historic transactions seeded\n", tSumm)
+	log.Printf("\t\t%d historic transactions seeded\n", tSummary)
 
 	return out, nil
 }
