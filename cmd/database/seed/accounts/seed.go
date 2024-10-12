@@ -33,7 +33,7 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 		}
 	)
 
-	log.Println("seeding accounts")
+	log.Println("\tseeding accounts")
 
 	tx, err := conn.BeginTx(ctx, nil)
 	if err != nil {
@@ -65,10 +65,10 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 
 	// printing summary
 	for kind, count := range summ {
-		log.Printf("%d %v accounts seed", count, kind)
+		log.Printf("\t\t%d %v accounts seed\n", count, kind)
 	}
 
-	log.Printf("%d historic transactions seed", tSumm)
+	log.Printf("\t\t%d historic transactions seed\n", tSumm)
 
 	return out, nil
 }
