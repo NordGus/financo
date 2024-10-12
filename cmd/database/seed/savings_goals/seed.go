@@ -12,7 +12,10 @@ import (
 )
 
 func SeedSavingsGoals(ctx context.Context, conn *sql.Conn, timestamp time.Time) error {
-	summary := make(map[currency.Type]uint, 10)
+	var (
+		summary = make(map[currency.Type]uint, 10)
+		savings = make(map[currency.Type]int64, 10)
+	)
 
 	log.Println("\tseeding savings goals achievements")
 
@@ -27,12 +30,27 @@ func SeedSavingsGoals(ctx context.Context, conn *sql.Conn, timestamp time.Time) 
 			goal       = achievements[i].Record
 			achievedAt = achievements[i].AchievedAt
 			deletedAt  = achievements[i].DeletedAt
+			saved      = savings[goal.Settings.Currency]
+			touched    = false
 		)
 
 		goal.AchievedAt = achievedAt(timestamp)
 		goal.DeletedAt = deletedAt(timestamp)
 		goal.CreatedAt = timestamp
 		goal.UpdatedAt = timestamp
+
+		if !goal.AchievedAt.Valid && !goal.DeletedAt.Valid && saved > 0 {
+			if saved >= goal.Settings.Target {
+				goal.Settings.Saved = goal.Settings.Target
+				touched = true
+			}
+
+			if goal.Settings.Target > saved && !touched {
+				goal.Settings.Saved = saved
+			}
+
+			savings[goal.Settings.Currency] -= goal.Settings.Saved
+		}
 
 		err := create(ctx, goal, tx)
 		if err != nil {
