@@ -1,4 +1,4 @@
-import { deleteGoal } from "@api/goals"
+import { deleteGoal } from "@api/savings-goals"
 import { toast } from "@components/ui/use-toast"
 import { QueryClient } from "@tanstack/react-query"
 import { Params, redirect } from "react-router-dom"
