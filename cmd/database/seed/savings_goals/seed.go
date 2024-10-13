@@ -85,7 +85,22 @@ func SeedSavingsGoals(ctx context.Context, conn *sql.Conn, timestamp time.Time) 
 func create(ctx context.Context, goal savings_goal.Record, tx *sql.Tx) error {
 	return tx.QueryRowContext(
 		ctx,
-		``,
+		`
+		INSERT INTO
+			achievements(
+				kind,
+				name,
+				description,
+				settings,
+				achieved_at,
+				deleted_at,
+				created_at,
+				updated_at
+			)
+		VALUES
+			($1, $2, $3, $4, $5, $6, $7, $8)
+		RETURNING id
+		`,
 		goal.Kind,
 		goal.Name,
 		goal.Description,
@@ -100,7 +115,32 @@ func create(ctx context.Context, goal savings_goal.Record, tx *sql.Tx) error {
 func getSavings(ctx context.Context, savings map[currency.Type]int64, tx *sql.Tx) (map[currency.Type]int64, error) {
 	rows, err := tx.QueryContext(
 		ctx,
-		``,
+		`
+		SELECT SUM(
+				CASE
+					WHEN tr.target_id = acc.id THEN tr.target_amount
+					WHEN tr.source_id = acc.id THEN - tr.source_amount
+					ELSE 0
+				END
+			), acc.currency
+		FROM
+			transactions tr
+			INNER JOIN accounts acc ON acc.id = tr.target_id
+			OR acc.id = tr.source_id
+		WHERE
+			acc.kind = $1
+			AND tr.deleted_at IS NULL
+			AND acc.deleted_at IS NULL
+			AND acc.archived_at IS NULL
+			AND (
+				tr.executed_at IS NULL
+				OR tr.executed_at <= NOW()
+			)
+			AND tr.issued_at <= NOW()
+		GROUP BY
+			acc.currency
+		ORDER BY acc.currency
+		`,
 		account.CapitalSavings,
 	)
 	if err != nil {
@@ -114,7 +154,7 @@ func getSavings(ctx context.Context, savings map[currency.Type]int64, tx *sql.Tx
 			sav int64
 		)
 
-		err = rows.Scan(&cur, &sav)
+		err = rows.Scan(&sav, &cur)
 		if err != nil {
 			return savings, err
 		}
