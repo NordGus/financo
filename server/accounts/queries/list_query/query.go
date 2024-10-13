@@ -132,11 +132,14 @@ WHERE
 	`
 )
 
-// [ ] change when nullable parsing implementation for custom type is done
+// [x] change account.Kind when nullable parsing implementation for custom type is done
+// [x] change currency.Type when nullable parsing implementation for custom type is done
+// [ ] change color.Type when nullable parsing implementation for custom type is done
+// [ ] change icon.Type when nullable parsing implementation for custom type is done
 type row struct {
 	id               int64
-	kind             string
-	currency         string
+	kind             account.Kind
+	currency         currency.Type
 	name             string
 	description      nullable.Type[string]
 	balance          int64
@@ -147,8 +150,8 @@ type row struct {
 	createdAt        time.Time
 	updatedAt        time.Time
 	childId          nullable.Type[int64]
-	childKind        nullable.Type[string]
-	childCurrency    nullable.Type[string]
+	childKind        nullable.Type[account.Kind]
+	childCurrency    nullable.Type[currency.Type]
 	childName        nullable.Type[string]
 	childDescription nullable.Type[string]
 	childBalance     nullable.Type[int64]
@@ -293,8 +296,8 @@ func (q *query) filterKinds() []account.Kind {
 func buildPreview(r row) response.Preview {
 	return response.Preview{
 		ID:          r.id,
-		Kind:        account.Kind(r.kind),
-		Currency:    currency.Type(r.currency),
+		Kind:        r.kind,
+		Currency:    r.currency,
 		Name:        r.name,
 		Description: r.description,
 		Balance:     r.balance,
@@ -311,8 +314,8 @@ func buildPreview(r row) response.Preview {
 func buildPreviewChild(r row) response.PreviewChild {
 	return response.PreviewChild{
 		ID:          r.childId.Val,
-		Kind:        account.Kind(r.childKind.Val),
-		Currency:    currency.Type(r.childCurrency.Val),
+		Kind:        r.childKind.Val,
+		Currency:    r.childCurrency.Val,
 		Name:        r.childName.Val,
 		Description: r.childDescription,
 		Balance:     r.childBalance.Val,
