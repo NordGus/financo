@@ -3,6 +3,7 @@ package currency
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -116,8 +117,13 @@ func (t Type) MarshalJSON() ([]byte, error) {
 // So [Type] satisfies the [sql.Scanner] interface.
 //
 // It returns an error if [Type] is an unsupported value.
-func (t *Type) Scan(value string) error {
-	switch strings.ToUpper(value) {
+func (t *Type) Scan(value any) error {
+	s, ok := value.(string)
+	if !ok {
+		return errors.New("achievement: invalid column type")
+	}
+
+	switch strings.ToUpper(s) {
 	default:
 		return fmt.Errorf("currency: invalid currency \"%s\"", value)
 	case "CAD":
