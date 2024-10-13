@@ -1,14 +1,18 @@
 import { cn } from "@/lib/utils";
-import { placeholder, SavingsGoal } from "@/types/SavingsGoal";
+import { Active, SavingsGoal } from "@/types/SavingsGoal";
+import { getActiveSavingsGoals } from "@api/savings-goals";
 import { Progress } from "@components/Progress";
+import { Throbber } from "@components/Throbber";
 import { Button } from "@components/ui/button";
-import { Card, CardHeader, CardTitle } from "@components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip";
 import {
     closestCenter,
     DndContext,
     KeyboardSensor,
     PointerSensor,
+    SensorDescriptor,
+    SensorOptions,
     useSensor,
     useSensors
 } from "@dnd-kit/core";
@@ -21,7 +25,9 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from '@dnd-kit/utilities';
-import { isNil } from "lodash";
+import { staleTimeDefault } from "@queries/client";
+import { useQuery } from "@tanstack/react-query";
+import { isEmpty, isNil } from "lodash";
 import { GripVerticalIcon, InfoIcon, TrophyIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -36,13 +42,19 @@ interface Props {
 
 // TODO: save after sorting
 function List({ onCreateSavingsGoal, onSetSavingsGoal }: Props) {
-    const [goals, setGoals] = useState(placeholder)
+    const { data, isFetching, isError, error } = useQuery({
+        queryKey: ["achievements", "savings-goals", "active"],
+        queryFn: getActiveSavingsGoals,
+        staleTime: staleTimeDefault
+    })
     const sensors = useSensors(
         useSensor(PointerSensor),
         useSensor(KeyboardSensor, {
             coordinateGetter: sortableKeyboardCoordinates
         })
     )
+
+    if (isError) throw error
 
     return (
         <Card className="overflow-clip">
@@ -54,7 +66,43 @@ function List({ onCreateSavingsGoal, onSetSavingsGoal }: Props) {
                     New
                 </Button>
             </CardHeader>
-            <div className="flex flex-col pb-6">
+            {
+                isNil(data) && isFetching
+                    ? <div className="pb-6">
+                        <Throbber />
+                    </div>
+                    : isNil(data) || isEmpty(data)
+                        ? <NoResults onCreateSavingsGoal={onCreateSavingsGoal} />
+                        : <div className="flex flex-col pb-6 gap-4">
+                            {data.map((data) => (
+                                <CurrencySection
+                                    key={data.currency}
+                                    data={data}
+                                    sensors={sensors}
+                                    onSetSavingsGoal={onSetSavingsGoal}
+                                />
+                            ))}
+                        </div>
+            }
+        </Card>
+    )
+}
+
+interface CurrencySectionProps {
+    data: Active
+    sensors: SensorDescriptor<SensorOptions>[]
+    onSetSavingsGoal: (goal: SavingsGoal) => void
+}
+
+function CurrencySection({ data: { currency, goals }, onSetSavingsGoal, sensors }: CurrencySectionProps) {
+    const [items, setItems] = useState(goals)
+
+    return (
+        <div className="flex flex-col">
+            <div className="px-6 pb-2">
+                <CardTitle>{currency}</CardTitle>
+            </div>
+            <div>
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -63,7 +111,7 @@ function List({ onCreateSavingsGoal, onSetSavingsGoal }: Props) {
                         if (!over) return
                         if (active.id === over.id) return
 
-                        setGoals((items) => {
+                        setItems((items) => {
                             const prevIdx = items.findIndex(({ id }) => id === active.id)
                             const nextIdx = items.findIndex(({ id }) => id === over.id)
 
@@ -72,10 +120,10 @@ function List({ onCreateSavingsGoal, onSetSavingsGoal }: Props) {
                     }}
                 >
                     <SortableContext
-                        items={goals}
+                        items={items}
                         strategy={verticalListSortingStrategy}
                     >
-                        {goals.map((goal) => (
+                        {items.map((goal) => (
                             <Entry
                                 key={keyFor(goal)}
                                 id={goal.id}
@@ -86,7 +134,7 @@ function List({ onCreateSavingsGoal, onSetSavingsGoal }: Props) {
                     </SortableContext>
                 </DndContext>
             </div>
-        </Card>
+        </div>
     )
 }
 
@@ -161,3 +209,18 @@ function Entry({ goal, onSetGoal, id }: EntryProps) {
 }
 
 export { List };
+
+interface NoResultsProps {
+    onCreateSavingsGoal: () => void
+}
+
+function NoResults({ onCreateSavingsGoal }: NoResultsProps) {
+    return (
+        <CardContent className="space-y-2">
+            <p>Looks like you don't have any active Savings Goals</p>
+            <Button onClick={() => onCreateSavingsGoal}>
+                Create a New Savings Goal
+            </Button>
+        </CardContent>
+    )
+}
