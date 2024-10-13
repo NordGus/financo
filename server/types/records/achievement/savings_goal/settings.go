@@ -1,4 +1,4 @@
-package records
+package savings_goal
 
 import (
 	"database/sql/driver"
