@@ -107,7 +107,7 @@ var (
 			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.New(moment.AddDate(0, -6, 0))
 			},
-			HistoryCapital: 42,
+			HistoryCapital: 420_69,
 
 			MapKey: "personal_savings_account",
 		},
