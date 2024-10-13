@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { staleTimeDefault } from "@queries/Client";
 import {
     getAvailableCreditSummary,
     getBalanceForAccountSummary,
@@ -10,16 +9,17 @@ import {
     getNetWorthSummary,
     getPaidForAccountSummary
 } from "@api/summary";
+import { staleTimeDefault } from "@queries/client";
 
-import { CardSummary } from "@components/card";
-import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@components/ui/chart";
-import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
 import { cn } from "@/lib/utils";
-import { Currency } from "dinero.js";
-import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
-import currencyAmountColor from "@helpers/currencyAmountColor";
 import { Kind } from "@/types/Account";
+import { CardSummary } from "@components/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@components/ui/chart";
+import currencyAmountColor from "@helpers/currencyAmountColor";
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import { Currency } from "dinero.js";
+import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts";
 
 export function SummaryCapital({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({

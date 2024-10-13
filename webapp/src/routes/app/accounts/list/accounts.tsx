@@ -22,7 +22,7 @@ import {
 import kindToHuman from "@helpers/account/kindToHuman";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
-import { staleTimeDefault } from "@queries/Client";
+import { staleTimeDefault } from "@queries/client";
 import { useQuery } from "@tanstack/react-query";
 import Color from "colorjs.io";
 import { isEmpty, isNil } from "lodash";

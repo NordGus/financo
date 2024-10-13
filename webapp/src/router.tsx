@@ -1,4 +1,4 @@
-import Client from "@queries/Client";
+import Client from "@queries/client";
 import App from "@routes/app";
 import { createBrowserRouter } from "react-router-dom";
 

@@ -28,7 +28,7 @@ import isDebtAccount, { isCreditAccount } from "@helpers/account/isDebtAccount";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { staleTimeDefault } from "@queries/Client";
+import { staleTimeDefault } from "@queries/client";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Currency } from "dinero.js";

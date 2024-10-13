@@ -1,5 +1,5 @@
 import { TooltipProvider } from '@components/ui/tooltip'
-import QueryClient from "@queries/Client"
+import QueryClient from "@queries/client"
 import { QueryClientProvider } from '@tanstack/react-query'
 import 'material-symbols/rounded.css'
 import React from 'react'

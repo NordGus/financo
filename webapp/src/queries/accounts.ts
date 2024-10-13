@@ -1,9 +1,9 @@
 import moment from "moment"
 
-import { staleTimeDefault } from "./Client"
+import { staleTimeDefault } from "./client"
 
-import { getPendingTransactions, getTransactions } from "@api/transactions"
 import { getAccount, getAccounts } from "@api/accounts"
+import { getPendingTransactions, getTransactions } from "@api/transactions"
 
 export const accountsForOtherContext = {
     queryKey: ['accounts', 'all', 'outside'],
