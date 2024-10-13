@@ -124,7 +124,7 @@ export const placeholder: SavingsGoal[] = [
     }
 ]
 
-export interface SavingsGoal {
+interface SavingsGoal {
     id: number
     name: string
     description: string | null
@@ -139,3 +139,10 @@ export interface SavingsGoal {
     createdAt: string
     updatedAt: string
 }
+
+interface Active {
+    currency: Currency
+    goals: SavingsGoal[]
+}
+
+export type { Active, SavingsGoal }
