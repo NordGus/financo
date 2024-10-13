@@ -185,7 +185,7 @@ var (
 			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.New(moment.AddDate(-1, 0, 0))
 			},
-			HistoryCapital: -3_000_00,
+			HistoryCapital: 3_000_00,
 
 			MapKey: "car_loan",
 		},
