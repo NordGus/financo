@@ -2,6 +2,7 @@ package achievement
 
 import (
 	"database/sql/driver"
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -16,8 +17,13 @@ const (
 // [Kind]. So [Kind] satisfies the [sql.Scanner] interface.
 //
 // It returns an error if [Kind] is an unsupported value.
-func (k *Kind) Scan(value string) error {
-	switch strings.ToLower(value) {
+func (k *Kind) Scan(value any) error {
+	s, ok := value.(string)
+	if !ok {
+		return errors.New("achievement: invalid column type")
+	}
+
+	switch strings.ToLower(s) {
 	default:
 		return fmt.Errorf("achievement: invalid achievement kind \"%s\"", value)
 	case "savings_goal":

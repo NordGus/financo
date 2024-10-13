@@ -39,6 +39,25 @@ var (
 		{
 			Record: savings_goal.Record{
 				Kind:        achievement.SavingsGoal,
+				Name:        "USD To the baby steps",
+				Description: nullable.New("A journey of a thousand kilometers start with a single step."),
+				Settings: savings_goal.Settings{
+					Position: 1,
+					Target:   100_00,
+					Saved:    100_00,
+					Currency: currency.USD,
+				},
+			},
+			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
+				return nullable.New(moment.AddDate(0, 0, -15).UTC())
+			},
+			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
+				return nullable.Type[time.Time]{}
+			},
+		},
+		{
+			Record: savings_goal.Record{
+				Kind:        achievement.SavingsGoal,
 				Name:        "My first emergency fund",
 				Description: nullable.New("Now an unexpected expense can't derail you."),
 				Settings: savings_goal.Settings{
@@ -49,7 +68,7 @@ var (
 				},
 			},
 			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.New(moment.AddDate(0, -1, 0).UTC())
+				return nullable.Type[time.Time]{}
 			},
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}

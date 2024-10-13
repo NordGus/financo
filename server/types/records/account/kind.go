@@ -3,6 +3,7 @@ package account
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -101,8 +102,13 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 // So [Kind] satisfies the [sql.Scanner] interface.
 //
 // It returns an error if [Kind] is an unsupported value.
-func (k *Kind) Scan(value string) error {
-	switch strings.ToLower(value) {
+func (k *Kind) Scan(value any) error {
+	s, ok := value.(string)
+	if !ok {
+		return errors.New("account: invalid column type")
+	}
+
+	switch strings.ToLower(s) {
 	default:
 		return fmt.Errorf("account: invalid account kind \"%s\"", value)
 	case "system_historic":
