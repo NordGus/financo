@@ -114,8 +114,8 @@ func seed(
 	if !account.IsExternal(parent.Kind) && historyAt.Valid {
 		tr := historyTransactionTemplate
 
-		tr.SourceID = parent.ID
-		tr.TargetID = history.ID
+		tr.SourceID = history.ID
+		tr.TargetID = parent.ID
 		tr.SourceAmount = s.HistoryCapital
 		tr.TargetAmount = s.HistoryCapital
 		tr.IssuedAt = historyAt.Val

@@ -185,7 +185,7 @@ var (
 			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.New(moment.AddDate(-1, 0, 0))
 			},
-			HistoryCapital: 3_000_00,
+			HistoryCapital: -3_000_00,
 
 			MapKey: "car_loan",
 		},
@@ -211,7 +211,7 @@ var (
 			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.New(moment.AddDate(0, -1, 0))
 			},
-			HistoryCapital: -300_00,
+			HistoryCapital: 300_00,
 
 			MapKey: "morgan_loan",
 		},
@@ -235,9 +235,9 @@ var (
 			},
 
 			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.New(moment.AddDate(0, 0, -7).UTC())
+				return nullable.New(moment.AddDate(0, 0, -1))
 			},
-			HistoryCapital: -80_00,
+			HistoryCapital: 80_00,
 
 			MapKey: "carlos_lunch",
 		},
@@ -263,7 +263,7 @@ var (
 			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.New(moment.AddDate(0, -3, 0))
 			},
-			HistoryCapital: 800_00,
+			HistoryCapital: -800_00,
 
 			MapKey: "credit_card",
 		},
@@ -289,7 +289,7 @@ var (
 			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.New(moment.AddDate(0, -8, 0))
 			},
-			HistoryCapital: 1_234_69,
+			HistoryCapital: -1_234_69,
 
 			MapKey: "laptop_credit",
 		},
