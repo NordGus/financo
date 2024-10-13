@@ -5,6 +5,7 @@ import (
 	"financo/server/accounts"
 	"financo/server/currency"
 	"financo/server/health"
+	"financo/server/savings_goals"
 	"financo/server/services/postgres_database"
 	"financo/server/summary"
 	"financo/server/transactions"
@@ -80,10 +81,11 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 	router.Use(middleware.Logger)
 
 	router.Route("/accounts", accounts.Routes)
-	router.Route("/summary", summary.Routes)
-	router.Route("/transactions", transactions.Routes)
 	router.Route("/currencies", currency.Routes)
 	router.Route("/health", health.Routes)
+	router.Route("/savings_goals", savings_goals.Routes)
+	router.Route("/summary", summary.Routes)
+	router.Route("/transactions", transactions.Routes)
 
 	// HTTP Server configuration
 	server := &http.Server{
