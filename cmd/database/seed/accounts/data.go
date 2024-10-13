@@ -235,9 +235,9 @@ var (
 			},
 
 			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
+				return nullable.New(moment.AddDate(0, 0, -7).UTC())
 			},
-			HistoryCapital: 0,
+			HistoryCapital: -80_00,
 
 			MapKey: "carlos_lunch",
 		},
@@ -289,7 +289,7 @@ var (
 			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.New(moment.AddDate(0, -8, 0))
 			},
-			HistoryCapital: -1_234_69,
+			HistoryCapital: 1_234_69,
 
 			MapKey: "laptop_credit",
 		},
