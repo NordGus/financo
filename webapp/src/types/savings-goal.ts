@@ -1,9 +1,11 @@
 import { Currency } from "dinero.js"
 import moment from "moment"
+import { Achievable, Kind } from "./achievable"
 
 export const placeholder: SavingsGoal[] = [
     {
         id: 1,
+        kind: Kind.SavingsGoal,
         name: "My first emergency fund",
         description: "A journey of a thousand kilometers start with a single step",
         settings: {
@@ -19,6 +21,7 @@ export const placeholder: SavingsGoal[] = [
     },
     {
         id: 2,
+        kind: Kind.SavingsGoal,
         name: "This is not even my final form",
         description: "Take the emergency fund to 3 month's income",
         settings: {
@@ -34,6 +37,7 @@ export const placeholder: SavingsGoal[] = [
     },
     {
         id: 3,
+        kind: Kind.SavingsGoal,
         name: "Inner Peace",
         description: "Your emergency fund gives you 3 month's runway",
         settings: {
@@ -49,6 +53,7 @@ export const placeholder: SavingsGoal[] = [
     },
     {
         id: 4,
+        kind: Kind.SavingsGoal,
         name: "Harmony within, Hurricane without",
         description: "Now your emergency fund has 12 month's income",
         settings: {
@@ -64,6 +69,7 @@ export const placeholder: SavingsGoal[] = [
     },
     {
         id: 5,
+        kind: Kind.SavingsGoal,
         name: "Upgrades for my Desktop",
         description: null,
         settings: {
@@ -79,6 +85,7 @@ export const placeholder: SavingsGoal[] = [
     },
     {
         id: 6,
+        kind: Kind.SavingsGoal,
         name: "Investment for the Studio",
         description: "Buying some hardware to create games better",
         settings: {
@@ -94,6 +101,7 @@ export const placeholder: SavingsGoal[] = [
     },
     {
         id: 7,
+        kind: Kind.SavingsGoal,
         name: "Honeymoon",
         description: "A little treat for my spouse",
         settings: {
@@ -109,6 +117,7 @@ export const placeholder: SavingsGoal[] = [
     },
     {
         id: 8,
+        kind: Kind.SavingsGoal,
         name: "To the forest",
         description: "For that mountain cabin",
         settings: {
@@ -124,25 +133,12 @@ export const placeholder: SavingsGoal[] = [
     }
 ]
 
-interface SavingsGoal {
-    id: number
-    name: string
-    description: string | null
-    settings: {
-        position: number
-        target: number
-        saved: number
-        currency: Currency
-    }
-    achievedAt: string | null
-    archivedAt: string | null
-    createdAt: string
-    updatedAt: string
-}
+type Settings = { position: number, target: number, saved: number, currency: Currency }
+type SavingsGoal = Achievable<Settings>
 
 interface Active {
     currency: Currency
     goals: SavingsGoal[]
 }
 
-export type { Active, SavingsGoal }
+export type { Active, SavingsGoal, Settings }
