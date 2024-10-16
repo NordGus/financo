@@ -1,4 +1,4 @@
-import { SavingsGoal } from "@/types/SavingsGoal";
+import { SavingsGoal } from "@/types/savings-goal";
 import Breadcrumbs from "@components/breadcrumbs";
 import { NavButton } from "@components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@components/ui/sheet";

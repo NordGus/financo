@@ -1,4 +1,4 @@
-import { Active, SavingsGoal } from "@/types/SavingsGoal";
+import { Active, SavingsGoal } from "@/types/savings-goal";
 
 async function getActiveSavingsGoals(): Promise<Active[]> {
     const response = await fetch("/api/savings_goals/active")

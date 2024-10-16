@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { placeholder } from "@/types/SavingsGoal";
+import { placeholder } from "@/types/savings-goal";
 import { Progress } from "@components/Progress";
 import { Throbber } from "@components/Throbber";
 import { Button } from "@components/ui/button";

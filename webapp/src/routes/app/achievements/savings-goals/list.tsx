@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Active, SavingsGoal } from "@/types/SavingsGoal";
+import { Active, SavingsGoal } from "@/types/savings-goal";
 import { getActiveSavingsGoals } from "@api/savings-goals";
 import { Progress } from "@components/Progress";
 import { Throbber } from "@components/Throbber";

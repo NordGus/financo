@@ -1,4 +1,4 @@
-import { SavingsGoal } from "@/types/SavingsGoal";
+import { SavingsGoal } from "@/types/savings-goal";
 
 interface Props {
     goal: SavingsGoal | NonNullable<unknown>
