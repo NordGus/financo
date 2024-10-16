@@ -3,7 +3,6 @@ package list_achieved_query
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"financo/server/services/postgres_database"
 	"financo/server/types/queries"
@@ -13,8 +12,6 @@ import (
 )
 
 type Achievable interface {
-	json.Marshaler
-
 	GetKind() achievement.Kind
 	AchieveTime() time.Time
 }
