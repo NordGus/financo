@@ -25,6 +25,7 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from '@dnd-kit/utilities';
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import { staleTimeDefault } from "@queries/client";
 import { useQuery } from "@tanstack/react-query";
 import { isEmpty, isNil } from "lodash";
@@ -145,7 +146,8 @@ interface EntryProps {
 }
 
 function Entry({ goal, onSetGoal, id }: EntryProps) {
-    const progress = useMemo(() => goal.settings.saved / goal.settings.target, [goal.updatedAt])
+    const { name, description, settings: { saved, target, currency }, updatedAt } = goal
+    const progress = useMemo(() => saved / target, [updatedAt])
     const color = useMemo(() => "#22c55e", [])
 
     const {
@@ -191,18 +193,29 @@ function Entry({ goal, onSetGoal, id }: EntryProps) {
                 )}
                 onClick={() => onSetGoal(goal)}
             >
-                <p className="grow">{goal.name}</p>
+                <p className="grow">{name}</p>
                 {
-                    !isNil(goal.description) && (
+                    !isNil(description) && (
                         <Tooltip delayDuration={250}>
                             <TooltipTrigger className="text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50">
                                 <InfoIcon className="w-5 h-5" />
                             </TooltipTrigger>
-                            <TooltipContent>{goal.description}</TooltipContent>
+                            <TooltipContent side="left">{description}</TooltipContent>
                         </Tooltip>
                     )
                 }
-                <Progress progress={progress} icon={<TrophyIcon className="w-5 h-5" />} color={color} />
+                <Tooltip delayDuration={250}>
+                    <TooltipTrigger>
+                        <Progress progress={progress} icon={<TrophyIcon className="w-5 h-5" />} color={color} />
+                    </TooltipTrigger>
+                    <TooltipContent side="left">
+                        <span>
+                            {currencyAmountToHuman(saved, currency)}
+                        </span> / <span>
+                            {currencyAmountToHuman(target, currency)}
+                        </span>
+                    </TooltipContent>
+                </Tooltip>
             </div>
         </div>
     )
