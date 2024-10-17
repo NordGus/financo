@@ -72,7 +72,7 @@ func (q *query) findSavingsGoals(ctx context.Context, conn *sql.Conn) ([]Achieva
 			AND kind = $1
 			AND achieved_at <= $2
 		ORDER BY
-			achieved_at
+			achieved_at DESC
 		`,
 		achievement.SavingsGoal,
 		q.timestamp,
