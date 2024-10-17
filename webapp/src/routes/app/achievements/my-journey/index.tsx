@@ -1,10 +1,13 @@
-import { Kind } from "@/types/achievable"
+import { Achievable, Kind, Settings } from "@/types/achievable"
 import { SavingsGoal } from "@/types/savings-goal"
 import { Throbber } from "@components/Throbber"
-import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card"
+import { Card } from "@components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableRow } from "@components/ui/table"
+import currencyAmountToHuman from "@helpers/currencyAmountToHuman"
 import { achievedAchievements } from "@queries/my-journey"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { isEmpty, isNil } from "lodash"
+import { groupBy, isEmpty, isNil } from "lodash"
+import moment from "moment"
 import { useLoaderData, useOutletContext } from "react-router-dom"
 import { AchievementsOutletContext } from "../layout"
 import { loader } from "./loader"
@@ -38,40 +41,92 @@ export default function MyJourney() {
 
     return (
         <div>
-            {
-                data.map((achievement) => {
-                    switch (achievement.kind) {
-                        case Kind.SavingsGoal:
-                            return <SavingsGoalEntry
-                                key={achievement.id}
-                                goal={achievement}
-                                onSetSavingsGoal={onSetSavingsGoal}
-                            />
-                        default:
-                            throw Error(`invalid achievable kind: ${achievement.kind}`)
-                    }
-                })
-            }
+            <Card>
+                <Table>
+                    <TableBody>
+                        {
+                            Object.entries(groupBy(
+                                data,
+                                (achievement) => achievement.achievedAt!
+                            )).map(([date, achievables]) => {
+                                const achievedAt = moment(date).toDate()
+
+                                return <DateRow
+                                    key={`achieved:${achievedAt.toISOString()}`}
+                                    date={achievedAt}
+                                    achievables={achievables}
+                                    onSetSavingsGoal={onSetSavingsGoal}
+                                />
+                            })
+                        }
+                    </TableBody>
+                </Table>
+            </Card>
         </div>
     )
 }
 
-interface SavingsGoalEntryProps {
+interface DateRowProps {
+    date: Date
+    achievables: Achievable<Settings>[]
+    onSetSavingsGoal: (goal: SavingsGoal) => void
+}
+
+function DateRow({ date, achievables, onSetSavingsGoal }: DateRowProps) {
+    return (
+        <>
+            <TableRow>
+                <TableHead colSpan={3}>
+                    {date.toLocaleDateString(undefined, {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric"
+                    })}
+                </TableHead>
+            </TableRow>
+            {
+                achievables.map((achievable) => {
+                    switch (achievable.kind) {
+                        case Kind.SavingsGoal:
+                            return <SavingsGoalRow
+                                key={achievable.id}
+                                goal={achievable as SavingsGoal}
+                                onSetSavingsGoal={onSetSavingsGoal}
+                            />
+                        default:
+                            throw Error(`Unknown achievable kind ${achievable.kind}`)
+                    }
+                })
+            }
+        </>
+    )
+}
+
+interface SavingsGoalRowProps {
     goal: SavingsGoal,
     onSetSavingsGoal: (goal: SavingsGoal) => void
 }
 
-function SavingsGoalEntry({ goal }: SavingsGoalEntryProps) {
+function SavingsGoalRow({ goal, onSetSavingsGoal }: SavingsGoalRowProps) {
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>
-                    {goal.name}
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p>{goal.description}</p>
-            </CardContent>
-        </Card>
+        <TableRow
+            className="cursor-pointer"
+            onClick={() => onSetSavingsGoal(goal)}
+        >
+            <TableCell className="w-[30%]">
+                {goal.name}
+            </TableCell>
+            <TableCell className="w-[40%]">
+                {goal.description}
+            </TableCell>
+            <TableCell className="text-right">
+                <span>
+                    Saved
+                </span> <span>
+                    {currencyAmountToHuman(goal.settings.saved, goal.settings.currency)}
+                </span>
+            </TableCell>
+        </TableRow>
     )
 }
