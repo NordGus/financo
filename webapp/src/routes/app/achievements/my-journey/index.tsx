@@ -1,25 +1,26 @@
 import { Kind } from "@/types/achievable"
 import { SavingsGoal } from "@/types/savings-goal"
-import { getAchieved } from "@api/my-journey"
 import { Throbber } from "@components/Throbber"
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card"
-import { staleTimeDefault } from "@queries/client"
-import { useQuery } from "@tanstack/react-query"
+import { achievedAchievements } from "@queries/my-journey"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import { isEmpty, isNil } from "lodash"
+import { useLoaderData, useOutletContext } from "react-router-dom"
+import { AchievementsOutletContext } from "../layout"
+import { loader } from "./loader"
 
 export default function MyJourney() {
-    // const { onSetSavingsGoal } = useOutletContext<AchievementsOutletContext>()
-    // const { timestamp } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
+    const { onSetSavingsGoal } = useOutletContext<AchievementsOutletContext>()
+    const { achievements } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
 
-    const { data, isFetching, isError, error } = useQuery({
-        queryKey: ["my-journey", "achievements"],
-        queryFn: getAchieved,
-        staleTime: staleTimeDefault,
+    const { data, isFetching, isError, error } = useSuspenseQuery({
+        ...achievedAchievements,
+        initialData: achievements,
     })
 
     if (isError) throw error
 
-    if (isFetching) {
+    if ((isEmpty(data) || isNil(data)) && isFetching) {
         return (
             <div className="m-auto">
                 <Throbber />
@@ -41,7 +42,11 @@ export default function MyJourney() {
                 data.map((achievement) => {
                     switch (achievement.kind) {
                         case Kind.SavingsGoal:
-                            return <SavingsGoalEntry key={achievement.id} goal={achievement} />
+                            return <SavingsGoalEntry
+                                key={achievement.id}
+                                goal={achievement}
+                                onSetSavingsGoal={onSetSavingsGoal}
+                            />
                         default:
                             throw Error(`invalid achievable kind: ${achievement.kind}`)
                     }
@@ -52,7 +57,8 @@ export default function MyJourney() {
 }
 
 interface SavingsGoalEntryProps {
-    goal: SavingsGoal
+    goal: SavingsGoal,
+    onSetSavingsGoal: (goal: SavingsGoal) => void
 }
 
 function SavingsGoalEntry({ goal }: SavingsGoalEntryProps) {
