@@ -1,28 +1,14 @@
-package handlers
+package summaries
 
 import (
 	"encoding/json"
-	"financo/server/summary/quries/balance_for_account"
+	"financo/server/summary/quries/available_credit_query"
 	"log"
 	"net/http"
-	"strconv"
-
-	"github.com/go-chi/chi/v5"
 )
 
-func BalanceForAccount(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
-	if err != nil {
-		log.Println("failed to parse account id", err)
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	res, err := balance_for_account.New(id).Find(r.Context())
+func AvailableCredit(w http.ResponseWriter, r *http.Request) {
+	res, err := available_credit_query.New().Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

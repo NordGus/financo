@@ -1,19 +1,28 @@
-package handlers
+package for_account
 
 import (
 	"encoding/json"
-	"financo/server/summary/quries/summary_for_kind_query"
-	"financo/server/types/records/account"
+	"financo/server/summary/quries/daily_balance_for_account"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
-func Capital(w http.ResponseWriter, r *http.Request) {
-	var (
-		kinds = []account.Kind{account.CapitalNormal, account.CapitalSavings}
-	)
+func daily(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		log.Println("failed to parse account id", err)
+		http.Error(
+			w,
+			http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError,
+		)
+		return
+	}
 
-	res, err := summary_for_kind_query.New(kinds).Find(r.Context())
+	res, err := daily_balance_for_account.New(id).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

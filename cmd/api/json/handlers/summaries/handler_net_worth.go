@@ -1,28 +1,25 @@
-package handlers
+package summaries
 
 import (
 	"encoding/json"
-	"financo/server/summary/quries/debt_for_account"
+	"financo/server/summary/quries/summary_for_kind_query"
+	"financo/server/types/records/account"
 	"log"
 	"net/http"
-	"strconv"
-
-	"github.com/go-chi/chi/v5"
 )
 
-func DebtForAccount(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
-	if err != nil {
-		log.Println("failed to parse account id", err)
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
+func NetWorth(w http.ResponseWriter, r *http.Request) {
+	var (
+		kinds = []account.Kind{
+			account.CapitalNormal,
+			account.CapitalSavings,
+			account.DebtLoan,
+			account.DebtPersonal,
+			account.DebtCredit,
+		}
+	)
 
-	res, err := debt_for_account.New(id).Find(r.Context())
+	res, err := summary_for_kind_query.New(kinds).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

@@ -1,7 +1,7 @@
 import { Summary } from "@/types/Summary";
 
 export async function getCapitalSummary(): Promise<Summary[]> {
-    const response = await fetch("/api/summary/capital")
+    const response = await fetch("/api/summaries/capital")
 
     if (!response.ok) throw response
 
@@ -9,7 +9,7 @@ export async function getCapitalSummary(): Promise<Summary[]> {
 }
 
 export async function getDebtsSummary(): Promise<Summary[]> {
-    const response = await fetch("/api/summary/debts")
+    const response = await fetch("/api/summaries/debts")
 
     if (!response.ok) throw response
 
@@ -17,7 +17,7 @@ export async function getDebtsSummary(): Promise<Summary[]> {
 }
 
 export async function getNetWorthSummary(): Promise<Summary[]> {
-    const response = await fetch("/api/summary/net_worth")
+    const response = await fetch("/api/summaries/net_worth")
 
     if (!response.ok) throw response
 
@@ -25,7 +25,7 @@ export async function getNetWorthSummary(): Promise<Summary[]> {
 }
 
 export async function getAvailableCreditSummary(): Promise<Summary[]> {
-    const response = await fetch("/api/summary/available_credit")
+    const response = await fetch("/api/summaries/available_credit")
 
     if (!response.ok) throw response
 
@@ -33,7 +33,7 @@ export async function getAvailableCreditSummary(): Promise<Summary[]> {
 }
 
 export async function getBalanceForAccountSummary(id: number): Promise<Summary[]> {
-    const response = await fetch(`/api/summary/for_account/${id}/balance`)
+    const response = await fetch(`/api/summaries/for_account/${id}/balance`)
 
     if (!response.ok) throw response
 
@@ -41,7 +41,7 @@ export async function getBalanceForAccountSummary(id: number): Promise<Summary[]
 }
 
 export async function getPaidForAccountSummary(id: number): Promise<Summary[]> {
-    const response = await fetch(`/api/summary/for_account/${id}/paid`)
+    const response = await fetch(`/api/summaries/for_account/${id}/paid`)
 
     if (!response.ok) throw response
 
@@ -49,7 +49,7 @@ export async function getPaidForAccountSummary(id: number): Promise<Summary[]> {
 }
 
 export async function getDailyBalanceForAccountSummary(id: number): Promise<Summary[]> {
-    const response = await fetch(`/api/summary/for_account/${id}/daily_balance`)
+    const response = await fetch(`/api/summaries/for_account/${id}/daily_balance`)
 
     if (!response.ok) throw response
 

@@ -1,4 +1,4 @@
-package handlers
+package summaries
 
 import (
 	"encoding/json"
@@ -8,9 +8,9 @@ import (
 	"net/http"
 )
 
-func Debts(w http.ResponseWriter, r *http.Request) {
+func Capital(w http.ResponseWriter, r *http.Request) {
 	var (
-		kinds = []account.Kind{account.DebtLoan, account.DebtPersonal, account.DebtCredit}
+		kinds = []account.Kind{account.CapitalNormal, account.CapitalSavings}
 	)
 
 	res, err := summary_for_kind_query.New(kinds).Find(r.Context())
@@ -22,12 +22,6 @@ func Debts(w http.ResponseWriter, r *http.Request) {
 			http.StatusInternalServerError,
 		)
 		return
-	}
-
-	for i := 0; i < len(res); i++ {
-		for j := 0; j < len(res[i].Series); j++ {
-			res[i].Series[j].Amount = -res[i].Series[j].Amount
-		}
 	}
 
 	response, err := json.Marshal(res)
