@@ -1,10 +1,10 @@
-package debt_for_account
+package summary_for_kind_query
 
 import (
 	"context"
 	"errors"
 	"financo/server/services/postgres_database"
-	"financo/server/summary/types/response"
+	"financo/server/summaries/types/response"
 	"financo/server/types/queries"
 	"financo/server/types/records/account"
 	"financo/server/types/shared/currency"
@@ -17,13 +17,13 @@ type balance struct {
 }
 
 type query struct {
-	id        int64
+	kinds     []account.Kind
 	timestamp time.Time
 }
 
-func New(id int64) queries.Query[[]response.Global] {
+func New(kinds []account.Kind) queries.Query[[]response.Global] {
 	return &query{
-		id:        id,
+		kinds:     kinds,
 		timestamp: time.Now().UTC(),
 	}
 }
@@ -32,8 +32,6 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 	var (
 		res      = make([]response.Global, 0, 5)
 		postgres = postgres_database.New()
-
-		acc account.Record
 	)
 
 	conn, err := postgres.Conn(ctx)
@@ -42,36 +40,12 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 	}
 	defer conn.Close()
 
-	// account record
-	err = conn.QueryRowContext(ctx, `SELECT * FROM accounts WHERE deleted_at IS NULL AND id = $1`, q.id).Scan(
-		&acc.ID,
-		&acc.ParentID,
-		&acc.Kind,
-		&acc.Currency,
-		&acc.Name,
-		&acc.Description,
-		&acc.Color,
-		&acc.Icon,
-		&acc.Capital,
-		&acc.ArchivedAt,
-		&acc.DeletedAt,
-		&acc.CreatedAt,
-		&acc.UpdatedAt,
-	)
-	if err != nil {
-		return res, errors.Join(errors.New("account record not found"), err)
-	}
-
-	if !account.IsDebt(acc.Kind) {
-		return res, errors.Join(errors.New("account is not debt"), err)
-	}
-
 	// total amount per currency
 	rows, err := conn.QueryContext(
 		ctx,
 		`
 			SELECT
-				MAX(acc.currency),
+				acc.currency,
 				SUM(
 					CASE
 						WHEN tr.target_id = acc.id THEN tr.target_amount
@@ -82,15 +56,17 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 			FROM transactions tr
 				INNER JOIN accounts acc ON acc.id = tr.target_id OR acc.id = tr.source_id
 			WHERE
-				acc.id = $1
+				acc.kind = ANY ($1)
 				AND tr.deleted_at IS NULL
 				AND acc.deleted_at IS NULL
+				AND acc.archived_at IS NULL
 				AND (tr.executed_at IS NULL OR tr.executed_at <= NOW())
 				AND tr.issued_at <= NOW()
 			GROUP BY
-				acc.id
+				acc.currency
+			ORDER BY acc.currency
 		`,
-		q.id,
+		q.kinds,
 	)
 	if err != nil {
 		return res, errors.Join(errors.New("failed to calculate balances"), err)
@@ -124,14 +100,14 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 						SELECT date - INTERVAL '1' DAY
 						FROM balance_day
 						WHERE
-							date > NOW() - INTERVAL '89' DAY
+							date > NOW() - INTERVAL '29' DAY
 					)
 				SELECT bd.date::DATE, SUM(COALESCE(blc.amount, 0))
 				FROM balance_day bd
 					LEFT JOIN (
 						SELECT
 							COALESCE(tr.executed_at, tr.issued_at) AS date,
-							MAX(acc.currency) AS currency,
+							acc.currency AS currency,
 							SUM(
 								CASE
 									WHEN tr.target_id = acc.id THEN tr.target_amount
@@ -142,21 +118,24 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 						FROM transactions tr
 							INNER JOIN accounts acc ON acc.id = tr.target_id OR acc.id = tr.source_id
 						WHERE
-							acc.id = $1
+							acc.kind = ANY ($1)
+							AND acc.currency = $2
 							AND tr.deleted_at IS NULL
 							AND acc.deleted_at IS NULL
+							AND acc.archived_at IS NULL
 							AND (
 								tr.executed_at IS NULL
-								OR tr.executed_at BETWEEN (NOW() - INTERVAL '89' DAY)::DATE AND NOW())
-							AND tr.issued_at BETWEEN (NOW() - INTERVAL '89' DAY)::DATE AND NOW()
+								OR tr.executed_at BETWEEN (NOW() - INTERVAL '29' DAY)::DATE AND NOW())
+							AND tr.issued_at BETWEEN (NOW() - INTERVAL '29' DAY)::DATE AND NOW()
 						GROUP BY
-							tr.executed_at, tr.issued_at, acc.id
+							tr.executed_at, tr.issued_at, acc.currency
 						ORDER BY acc.currency
 					) AS blc ON blc.date = bd.date::DATE
 				GROUP BY bd.date
 				ORDER BY bd.date
 			`,
-			q.id,
+			q.kinds,
+			res[i].Currency,
 		)
 		if err != nil {
 			return res, errors.Join(errors.New("failed to find series for currency"), err)
@@ -181,7 +160,7 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 			ctx,
 			`
 			SELECT
-				MAX(acc.currency),
+				acc.currency,
 				SUM(
 					CASE
 						WHEN tr.target_id = acc.id THEN tr.target_amount
@@ -192,16 +171,19 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 			FROM transactions tr
 				INNER JOIN accounts acc ON acc.id = tr.target_id OR acc.id = tr.source_id
 			WHERE
-				acc.id = $1
+				acc.kind = ANY ($1)
+				AND acc.currency = $2
 				AND tr.deleted_at IS NULL
 				AND acc.deleted_at IS NULL
-				AND (tr.executed_at IS NULL OR tr.executed_at <= (NOW() - INTERVAL '90' DAY))
-				AND tr.issued_at <= (NOW() - INTERVAL '90' DAY)
+				AND acc.archived_at IS NULL
+				AND (tr.executed_at IS NULL OR tr.executed_at <= (NOW() - INTERVAL '30' DAY))
+				AND tr.issued_at <= (NOW() - INTERVAL '30' DAY)
 			GROUP BY
-				acc.id
+				acc.currency
 			ORDER BY acc.currency
 		`,
-			q.id,
+			q.kinds,
+			res[i].Currency,
 		)
 		if err != nil {
 			return res, errors.Join(errors.New("failed to calculate balances"), err)
@@ -227,12 +209,6 @@ func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 			} else {
 				res[i].Series[j].Amount += res[i].Series[j-1].Amount
 			}
-		}
-	}
-
-	if acc.Capital >= 0 && len(res) > 0 {
-		for i := 0; i < len(res[0].Series); i++ {
-			res[0].Series[i].Amount = -res[0].Series[i].Amount
 		}
 	}
 

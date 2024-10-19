@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"financo/server/services/postgres_database"
-	"financo/server/summary/types/response"
+	"financo/server/summaries/types/response"
 	"financo/server/types/queries"
 	"financo/server/types/shared/currency"
 	"time"

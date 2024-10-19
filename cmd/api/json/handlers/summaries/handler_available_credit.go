@@ -2,7 +2,7 @@ package summaries
 
 import (
 	"encoding/json"
-	"financo/server/summary/quries/available_credit_query"
+	"financo/server/summaries/queries/available_credit_query"
 	"log"
 	"net/http"
 )

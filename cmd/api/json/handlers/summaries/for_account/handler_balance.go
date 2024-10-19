@@ -2,7 +2,7 @@ package for_account
 
 import (
 	"encoding/json"
-	"financo/server/summary/quries/balance_for_account"
+	"financo/server/summaries/queries/balance_for_account"
 	"log"
 	"net/http"
 	"strconv"
