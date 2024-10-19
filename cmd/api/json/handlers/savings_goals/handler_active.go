@@ -1,4 +1,4 @@
-package handlers
+package savings_goals
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func ListActive(w http.ResponseWriter, r *http.Request) {
+func active(w http.ResponseWriter, r *http.Request) {
 	var (
 		postgres = postgres_database.New()
 	)

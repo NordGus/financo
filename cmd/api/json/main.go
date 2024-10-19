@@ -6,11 +6,11 @@ import (
 	"financo/cmd/api/json/handlers/currencies"
 	"financo/cmd/api/json/handlers/health"
 	"financo/cmd/api/json/handlers/my_journey"
+	"financo/cmd/api/json/handlers/savings_goals"
 	"financo/cmd/api/json/handlers/summaries"
 	"financo/cmd/api/json/handlers/transactions"
 	accounts_service "financo/server/accounts"
-	"financo/server/savings_goals"
-	"financo/server/services/postgres_database"
+	postgres_service "financo/server/services/postgres_database"
 	transactions_service "financo/server/transactions"
 	"fmt"
 	"log"
@@ -34,7 +34,7 @@ func main() {
 		wg          = new(sync.WaitGroup)
 		ctx, cancel = context.WithCancel(context.Background())
 
-		pgService          = postgres_database.New()
+		pgService          = postgres_service.New()
 		accountsBroker     = accounts_service.NewBroker(wg)
 		transactionsBroker = transactions_service.NewBroker(wg)
 	)
