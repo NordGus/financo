@@ -20,24 +20,16 @@ type Entry struct {
 var (
 	CAD Type = "CAD"
 	USD Type = "USD"
-	AUD Type = "AUD"
 	EUR Type = "EUR"
 	CHF Type = "CHF"
 	GBP Type = "GBP"
-	RUB Type = "RUB"
-	JPY Type = "JPY"
-	CNY Type = "CNY"
 
 	List = []Entry{
 		{Name: "Canadian Dollar", Code: "CAD"},
 		{Name: "US Dollar", Code: "USD"},
-		{Name: "Australian Dollar", Code: "AUD"},
 		{Name: "Euro", Code: "EUR"},
 		{Name: "Swiss Franc", Code: "CHF"},
 		{Name: "Pound Sterling", Code: "GBP"},
-		{Name: "Russian Ruble", Code: "RUB"},
-		{Name: "Japanese Yen", Code: "JPY"},
-		{Name: "Chinese Yuan", Code: "CNY"},
 	}
 )
 
@@ -60,20 +52,12 @@ func (t *Type) UnmarshalJSON(b []byte) error {
 		*t = CAD
 	case "USD":
 		*t = USD
-	case "AUD":
-		*t = AUD
 	case "EUR":
 		*t = EUR
 	case "CHF":
 		*t = CHF
 	case "GBP":
 		*t = GBP
-	case "RUB":
-		*t = RUB
-	case "JPY":
-		*t = JPY
-	case "CNY":
-		*t = CNY
 	}
 
 	return nil
@@ -94,20 +78,12 @@ func (t Type) MarshalJSON() ([]byte, error) {
 		s = "CAD"
 	case USD:
 		s = "USD"
-	case AUD:
-		s = "AUD"
 	case EUR:
 		s = "EUR"
 	case CHF:
 		s = "CHF"
 	case GBP:
 		s = "GBP"
-	case RUB:
-		s = "RUB"
-	case JPY:
-		s = "JPY"
-	case CNY:
-		s = "CNY"
 	}
 
 	return json.Marshal(s)
@@ -130,20 +106,12 @@ func (t *Type) Scan(value any) error {
 		*t = CAD
 	case "USD":
 		*t = USD
-	case "AUD":
-		*t = AUD
 	case "EUR":
 		*t = EUR
 	case "CHF":
 		*t = CHF
 	case "GBP":
 		*t = GBP
-	case "RUB":
-		*t = RUB
-	case "JPY":
-		*t = JPY
-	case "CNY":
-		*t = CNY
 	}
 
 	return nil
@@ -163,20 +131,12 @@ func (t Type) Value() (driver.Value, error) {
 		s = "CAD"
 	case USD:
 		s = "USD"
-	case AUD:
-		s = "AUD"
 	case EUR:
 		s = "EUR"
 	case CHF:
 		s = "CHF"
 	case GBP:
 		s = "GBP"
-	case RUB:
-		s = "RUB"
-	case JPY:
-		s = "JPY"
-	case CNY:
-		s = "CNY"
 	}
 
 	return s, nil
