@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"financo/cmd/api/json/handlers/accounts"
+	"financo/cmd/api/json/handlers/transactions"
 	accounts_service "financo/server/accounts"
 	"financo/server/currency"
 	"financo/server/health"
@@ -10,7 +11,7 @@ import (
 	"financo/server/savings_goals"
 	"financo/server/services/postgres_database"
 	"financo/server/summary"
-	"financo/server/transactions"
+	transactions_service "financo/server/transactions"
 	"fmt"
 	"log"
 	"net/http"
@@ -35,7 +36,7 @@ func main() {
 
 		pgService          = postgres_database.New()
 		accountsBroker     = accounts_service.NewBroker(wg)
-		transactionsBroker = transactions.NewBroker(wg)
+		transactionsBroker = transactions_service.NewBroker(wg)
 	)
 
 	defer func() {
