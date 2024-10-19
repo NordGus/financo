@@ -1,4 +1,4 @@
-package handlers
+package currencies
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func List(w http.ResponseWriter, r *http.Request) {
+func index(w http.ResponseWriter, _ *http.Request) {
 	response, err := json.Marshal(currency.List)
 	if err != nil {
 		log.Println("failed json Marshal", err)

@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"financo/cmd/api/json/handlers/accounts"
+	"financo/cmd/api/json/handlers/currencies"
 	"financo/cmd/api/json/handlers/transactions"
 	accounts_service "financo/server/accounts"
-	"financo/server/currency"
 	"financo/server/health"
 	"financo/server/my_journey"
 	"financo/server/savings_goals"
@@ -84,7 +84,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 	router.Use(middleware.Logger)
 
 	router.Route("/accounts", accounts.Routes)
-	router.Route("/currencies", currency.Routes)
+	router.Route("/currencies", currencies.Routes)
 	router.Route("/health", health.Routes)
 	router.Route("/my_journey", my_journey.Routes)
 	router.Route("/savings_goals", savings_goals.Routes)
