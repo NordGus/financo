@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func index(w http.ResponseWriter, _ *http.Request) {
+func index(w http.ResponseWriter, r *http.Request) {
 	response, err := json.Marshal(currency.List)
 	if err != nil {
 		log.Println("failed json Marshal", err)

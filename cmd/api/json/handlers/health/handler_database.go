@@ -1,4 +1,4 @@
-package handlers
+package health
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func Database(w http.ResponseWriter, r *http.Request) {
+func database(w http.ResponseWriter, r *http.Request) {
 	message := postgres_database.New().Health()
 
 	response, err := json.Marshal(message)

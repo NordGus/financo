@@ -1,4 +1,4 @@
-package handlers
+package health
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Ping(w http.ResponseWriter, r *http.Request) {
+func ping(w http.ResponseWriter, r *http.Request) {
 	message := map[string]string{
 		"status":  "ok",
 		"message": "pong",
