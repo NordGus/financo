@@ -1,4 +1,4 @@
-package handlers
+package accounts
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Update(w http.ResponseWriter, r *http.Request) {
+func update(w http.ResponseWriter, r *http.Request) {
 	var (
 		req = request.Update{Children: make([]request.UpdateChild, 0, 10)}
 	)

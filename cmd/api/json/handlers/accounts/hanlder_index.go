@@ -1,15 +1,15 @@
-package handlers
+package accounts
 
 import (
 	"encoding/json"
-	"financo/server/accounts/queries/select_query"
+	"financo/server/accounts/queries/list_query"
 	"financo/server/types/records/account"
 	"log"
 	"net/http"
 	"strings"
 )
 
-func Select(w http.ResponseWriter, r *http.Request) {
+func index(w http.ResponseWriter, r *http.Request) {
 	var (
 		kinds    = make([]account.Kind, 0, 7)
 		archived = r.URL.Query().Get("archived") == "true"
@@ -19,7 +19,7 @@ func Select(w http.ResponseWriter, r *http.Request) {
 		kinds = append(kinds, account.Kind(k))
 	}
 
-	res, err := select_query.New(kinds, archived).Find(r.Context())
+	res, err := list_query.New(kinds, archived).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

@@ -1,4 +1,4 @@
-package handlers
+package accounts
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func Show(w http.ResponseWriter, r *http.Request) {
+func show(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		log.Println("failed to parse account id", err)

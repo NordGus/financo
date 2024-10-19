@@ -1,4 +1,4 @@
-package handlers
+package accounts
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Create(w http.ResponseWriter, r *http.Request) {
+func create(w http.ResponseWriter, r *http.Request) {
 	var req request.Create
 
 	body := r.Body

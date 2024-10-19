@@ -2,7 +2,8 @@ package main
 
 import (
 	"context"
-	"financo/server/accounts"
+	"financo/cmd/api/json/handlers/accounts"
+	accounts_service "financo/server/accounts"
 	"financo/server/currency"
 	"financo/server/health"
 	"financo/server/my_journey"
@@ -33,7 +34,7 @@ func main() {
 		ctx, cancel = context.WithCancel(context.Background())
 
 		pgService          = postgres_database.New()
-		accountsBroker     = accounts.NewBroker(wg)
+		accountsBroker     = accounts_service.NewBroker(wg)
 		transactionsBroker = transactions.NewBroker(wg)
 	)
 
