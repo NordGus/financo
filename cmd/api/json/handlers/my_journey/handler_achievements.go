@@ -1,4 +1,4 @@
-package handlers
+package my_journey
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func Achieved(w http.ResponseWriter, r *http.Request) {
+func achievements(w http.ResponseWriter, r *http.Request) {
 	var (
 		postgres = postgres_database.New()
 	)
