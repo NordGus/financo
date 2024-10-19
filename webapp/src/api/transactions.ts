@@ -43,7 +43,7 @@ export async function getPendingTransactions(filters: PendingFilters): Promise<T
 
 export async function getPendingTransactionsForAccount(id: number, filters: ListFilters): Promise<Transaction[]> {
     const params = new URLSearchParams(Object.entries(filters).filter(([_, value]) => !isEmptyParam(value)))
-    const response = await fetch(`/api/transactions/pending/for_account/${id}?${params.toString()}`)
+    const response = await fetch(`/api/transactions/for_account/${id}/pending?${params.toString()}`)
 
     if (!response.ok) throw response
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"financo/server/my_journey/types/response"
 	"financo/server/services/postgres_database"
 	"financo/server/types/queries"
 	"financo/server/types/records/achievement"
@@ -11,26 +12,21 @@ import (
 	"time"
 )
 
-type Achievable interface {
-	GetKind() achievement.Kind
-	AchieveTime() time.Time
-}
-
 type query struct {
 	db        postgres_database.Service
 	timestamp time.Time
 }
 
-func New(db postgres_database.Service) queries.Query[[]Achievable] {
+func New(db postgres_database.Service) queries.Query[[]response.Achievable] {
 	return &query{
 		db:        db,
 		timestamp: time.Now().UTC(),
 	}
 }
 
-func (q *query) Find(ctx context.Context) ([]Achievable, error) {
+func (q *query) Find(ctx context.Context) ([]response.Achievable, error) {
 	var (
-		res = make([]Achievable, 0, 20)
+		res = make([]response.Achievable, 0, 20)
 	)
 
 	conn, err := q.db.Conn(ctx)
@@ -49,8 +45,8 @@ func (q *query) Find(ctx context.Context) ([]Achievable, error) {
 	return res, nil
 }
 
-func (q *query) findSavingsGoals(ctx context.Context, conn *sql.Conn) ([]Achievable, error) {
-	res := make([]Achievable, 0, 10)
+func (q *query) findSavingsGoals(ctx context.Context, conn *sql.Conn) ([]response.Achievable, error) {
+	res := make([]response.Achievable, 0, 10)
 
 	rows, err := conn.QueryContext(
 		ctx,
