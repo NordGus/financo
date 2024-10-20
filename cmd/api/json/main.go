@@ -9,9 +9,6 @@ import (
 	"financo/cmd/api/json/handlers/savings_goals"
 	"financo/cmd/api/json/handlers/summaries"
 	"financo/cmd/api/json/handlers/transactions"
-	accounts_service "financo/server/accounts"
-	postgres_service "financo/server/services/postgres_database"
-	transactions_service "financo/server/transactions"
 	"fmt"
 	"log"
 	"net/http"
@@ -20,6 +17,10 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	accounts_broker "financo/core/accounts/infrastructure/broker_handler"
+	postgres_service "financo/server/services/postgres_database"
+	transactions_service "financo/server/transactions"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -35,7 +36,7 @@ func main() {
 		ctx, cancel = context.WithCancel(context.Background())
 
 		pgService          = postgres_service.New()
-		accountsBroker     = accounts_service.NewBroker(wg)
+		accountsBroker     = accounts_broker.Initialize(wg)
 		transactionsBroker = transactions_service.NewBroker(wg)
 	)
 
