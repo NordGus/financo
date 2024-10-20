@@ -11,11 +11,11 @@ import (
 )
 
 type repository struct {
-	db        databases.SQLDatabaseAdapter
+	db        databases.SQLAdapter
 	timestamp time.Time
 }
 
-func NewPostgreSQL(db databases.SQLDatabaseAdapter) repositories.CreateAccountRepository {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.CreateAccountRepository {
 	return &repository{
 		db:        db,
 		timestamp: time.Now().UTC(),

@@ -10,11 +10,11 @@ import (
 )
 
 type repository struct {
-	db        databases.SQLDatabaseAdapter
+	db        databases.SQLAdapter
 	timestamp time.Time
 }
 
-func NewPostgreSQL(db databases.SQLDatabaseAdapter) repositories.DeleteAccountRepository {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.DeleteAccountRepository {
 	return &repository{
 		db:        db,
 		timestamp: time.Now().UTC(),

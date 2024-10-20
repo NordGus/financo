@@ -5,6 +5,6 @@ import (
 	"database/sql"
 )
 
-type SQLDatabaseAdapter interface {
+type SQLAdapter interface {
 	Conn(ctx context.Context) (*sql.Conn, error)
 }
