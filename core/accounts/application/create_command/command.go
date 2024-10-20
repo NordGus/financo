@@ -5,8 +5,8 @@ import (
 	"financo/core/accounts/domain/brokers"
 	"financo/core/accounts/domain/messages"
 	"financo/core/accounts/domain/repositories"
+	"financo/core/accounts/domain/responses"
 	"financo/server/accounts/types/request"
-	"financo/server/accounts/types/response"
 	"financo/server/types/commands"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
@@ -23,7 +23,7 @@ func New(
 	req request.Create,
 	repo repositories.CreateAccountRepository,
 	broker brokers.CreatedBroker,
-) commands.Command[response.Created] {
+) commands.Command[responses.Created] {
 	return &command{
 		req:    req,
 		repo:   repo,
@@ -31,7 +31,7 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (response.Created, error) {
+func (c *command) Run(ctx context.Context) (responses.Created, error) {
 	args := repositories.CreateAccountSaveArgs{
 		Record:  c.buildRecord(),
 		History: c.buildHistory(),
@@ -39,15 +39,15 @@ func (c *command) Run(ctx context.Context) (response.Created, error) {
 
 	record, err := c.repo.Save(ctx, args)
 	if err != nil {
-		return response.Created{}, err
+		return responses.Created{}, err
 	}
 
 	err = c.broker.Publish(messages.Created{Record: record})
 	if err != nil {
-		return response.Created{}, err
+		return responses.Created{}, err
 	}
 
-	return response.Created{ID: record.ID, Name: record.Name}, nil
+	return responses.Created{ID: record.ID, Name: record.Name}, nil
 }
 
 func (c *command) buildRecord() account.Record {
