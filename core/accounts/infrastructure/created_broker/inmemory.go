@@ -2,16 +2,12 @@ package created_broker
 
 import (
 	"context"
+	"financo/core/accounts/domain/brokers"
 	"financo/core/accounts/domain/messages"
 	"financo/server/types/message_bus"
 	"fmt"
 	"sync"
 )
-
-type InMemoryBroker interface {
-	Subscribe(consumer message_bus.Consumer[messages.Created]) error
-	Publish(message messages.Created) error
-}
 
 type inMemoryBroker struct {
 	ctx context.Context
@@ -19,7 +15,7 @@ type inMemoryBroker struct {
 	bus message_bus.Bus[messages.Created]
 }
 
-func NewInMemory(ctx context.Context, wg *sync.WaitGroup) InMemoryBroker {
+func NewInMemory(ctx context.Context, wg *sync.WaitGroup) brokers.CreatedBroker {
 	return &inMemoryBroker{
 		ctx: ctx,
 		wg:  wg,
