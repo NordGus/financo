@@ -1,4 +1,4 @@
-package created_broker
+package deleted_broker
 
 import (
 	"context"
