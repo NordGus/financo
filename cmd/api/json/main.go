@@ -19,6 +19,7 @@ import (
 	"time"
 
 	accounts_broker "financo/core/accounts/infrastructure/broker_handler"
+	"financo/core/shared/infrastructure/postgresql_database"
 	postgres_service "financo/server/services/postgres_database"
 	transactions_service "financo/server/transactions"
 
@@ -35,7 +36,8 @@ func main() {
 		wg          = new(sync.WaitGroup)
 		ctx, cancel = context.WithCancel(context.Background())
 
-		pgService          = postgres_service.New()
+		sqlDBService       = postgresql_database.New()
+		pgService          = postgres_service.New() // TODO: refactor out of code after arch refactoring
 		accountsBroker     = accounts_broker.Initialize(wg)
 		transactionsBroker = transactions_service.NewBroker(wg)
 	)
@@ -52,8 +54,15 @@ func main() {
 		}
 	}()
 
+	// TODO: refactor out of code after arch refactoring
 	defer func() {
 		if err := pgService.Close(); err != nil {
+			log.Printf("failed to close database connections: %s\n", err)
+		}
+	}()
+
+	defer func() {
+		if err := sqlDBService.Close(); err != nil {
 			log.Printf("failed to close database connections: %s\n", err)
 		}
 	}()
