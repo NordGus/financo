@@ -4,18 +4,18 @@ import (
 	"context"
 	"database/sql"
 	"financo/core/accounts/domain/repositories"
-	"financo/server/services/postgres_database"
+	"financo/core/shared/domain/databases"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
 	"time"
 )
 
 type repository struct {
-	db        postgres_database.Service
+	db        databases.SQLDatabaseAdapter
 	timestamp time.Time
 }
 
-func NewPostgreSQL(db postgres_database.Service) repositories.CreateAccountRepository {
+func NewPostgreSQL(db databases.SQLDatabaseAdapter) repositories.CreateAccountRepository {
 	return &repository{
 		db:        db,
 		timestamp: time.Now().UTC(),
