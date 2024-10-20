@@ -5,8 +5,8 @@ import (
 	"financo/core/accounts/domain/brokers"
 	"financo/core/accounts/domain/messages"
 	"financo/core/accounts/domain/repositories"
+	"financo/core/accounts/domain/requests"
 	"financo/core/accounts/domain/responses"
-	"financo/server/accounts/types/request"
 	"financo/server/types/commands"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
@@ -14,13 +14,13 @@ import (
 )
 
 type command struct {
-	req    request.Create
+	req    requests.Create
 	repo   repositories.CreateAccountRepository
 	broker brokers.CreatedBroker
 }
 
 func New(
-	req request.Create,
+	req requests.Create,
 	repo repositories.CreateAccountRepository,
 	broker brokers.CreatedBroker,
 ) commands.Command[responses.Created] {

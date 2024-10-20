@@ -3,16 +3,16 @@ package accounts
 import (
 	"encoding/json"
 	"financo/core/accounts/application/create_command"
+	"financo/core/accounts/domain/requests"
 	"financo/core/accounts/infrastructure/broker_handler"
 	"financo/core/accounts/infrastructure/create_account_repository"
-	"financo/server/accounts/types/request"
 	"financo/server/services/postgres_database"
 	"log"
 	"net/http"
 )
 
 func create(w http.ResponseWriter, r *http.Request) {
-	var req request.Create
+	var req requests.Create
 
 	body := r.Body
 	defer func() {
