@@ -43,13 +43,13 @@ func (m *messageBus[Payload]) Subscribe(consumer Consumer[Payload]) error {
 	}
 
 	m.wg.Add(1)
-	defer m.wg.Done()
-
 	m.RWMutex.Lock()
-	defer m.RWMutex.Unlock()
 
 	m.consumers[m.consumerCount] = consumer
 	m.consumerCount++
+
+	m.RWMutex.Unlock()
+	m.wg.Done()
 
 	return nil
 }
@@ -62,7 +62,7 @@ func (m *messageBus[Payload]) Publish(payload Payload) error {
 	defer m.wg.Done()
 
 	for i := 0; i < m.consumerCount; i++ {
-		go m.consumers[i](m.wg, payload)
+		go m.consumers[i].Consume(m.wg, payload)
 	}
 
 	return nil
