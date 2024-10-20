@@ -1,4 +1,4 @@
-package create_account_repository
+package delete_account_repository
 
 import (
 	"context"
