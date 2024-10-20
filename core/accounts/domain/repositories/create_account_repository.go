@@ -6,6 +6,8 @@ import (
 	"financo/server/types/records/account"
 )
 
+// [ ] Refactor account.Record inside this domain
+
 type CreateAccountSaveArgs struct {
 	Record  account.Record
 	History nullable.Type[account.Record]
