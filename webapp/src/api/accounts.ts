@@ -1,6 +1,7 @@
 import {
     Create,
     CreateResponse,
+    DeleteResponse,
     Detailed,
     Kind,
     Preview,
@@ -77,7 +78,7 @@ export async function updateAccount(id: number, data: Update): Promise<Detailed>
     return response.json()
 }
 
-export async function deleteAccount(id: number): Promise<Detailed> {
+export async function deleteAccount(id: number): Promise<DeleteResponse> {
     const response = await fetch(`/api/accounts/${id}`, { method: "DELETE" })
 
     if (!response.ok) throw response

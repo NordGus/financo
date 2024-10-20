@@ -112,3 +112,8 @@ export interface CreateResponse {
     id: number
     name: string
 }
+
+export interface DeleteResponse {
+    id: number
+    name: string
+}
