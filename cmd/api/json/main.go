@@ -18,8 +18,8 @@ import (
 	"syscall"
 	"time"
 
-	accounts_broker "financo/core/accounts/infrastructure/broker_handler"
 	"financo/core/infrastructure/postgresql_database"
+	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
 	postgres_service "financo/server/services/postgres_database"
 	transactions_service "financo/server/transactions"
 

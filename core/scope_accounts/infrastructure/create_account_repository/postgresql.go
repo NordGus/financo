@@ -3,8 +3,8 @@ package create_account_repository
 import (
 	"context"
 	"database/sql"
-	"financo/core/accounts/domain/repositories"
 	"financo/core/domain/databases"
+	"financo/core/scope_accounts/domain/repositories"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
 	"time"

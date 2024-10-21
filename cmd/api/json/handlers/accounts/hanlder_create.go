@@ -2,11 +2,11 @@ package accounts
 
 import (
 	"encoding/json"
-	"financo/core/accounts/application/create_command"
-	"financo/core/accounts/domain/requests"
-	"financo/core/accounts/infrastructure/broker_handler"
-	"financo/core/accounts/infrastructure/create_account_repository"
 	"financo/core/infrastructure/postgresql_database"
+	"financo/core/scope_accounts/application/create_command"
+	"financo/core/scope_accounts/domain/requests"
+	"financo/core/scope_accounts/infrastructure/broker_handler"
+	"financo/core/scope_accounts/infrastructure/create_account_repository"
 	"log"
 	"net/http"
 )

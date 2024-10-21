@@ -1,7 +1,7 @@
 package brokers
 
 import (
-	"financo/core/accounts/domain/messages"
+	"financo/core/scope_accounts/domain/messages"
 	"financo/server/types/message_bus"
 )
 

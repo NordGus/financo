@@ -3,9 +3,9 @@ package broker_handler
 import (
 	"context"
 	"errors"
-	"financo/core/accounts/domain/brokers"
-	"financo/core/accounts/infrastructure/created_broker"
-	"financo/core/accounts/infrastructure/deleted_broker"
+	"financo/core/scope_accounts/domain/brokers"
+	"financo/core/scope_accounts/infrastructure/created_broker"
+	"financo/core/scope_accounts/infrastructure/deleted_broker"
 	"fmt"
 	"sync"
 )

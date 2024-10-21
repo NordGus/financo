@@ -2,8 +2,8 @@ package created_broker
 
 import (
 	"context"
-	"financo/core/accounts/domain/brokers"
-	"financo/core/accounts/domain/messages"
+	"financo/core/scope_accounts/domain/brokers"
+	"financo/core/scope_accounts/domain/messages"
 	"financo/server/types/message_bus"
 	"fmt"
 	"sync"
