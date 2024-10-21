@@ -6,7 +6,7 @@ import (
 	"financo/core/accounts/domain/requests"
 	"financo/core/accounts/infrastructure/broker_handler"
 	"financo/core/accounts/infrastructure/create_account_repository"
-	"financo/core/shared/infrastructure/postgresql_database"
+	"financo/core/infrastructure/postgresql_database"
 	"log"
 	"net/http"
 )

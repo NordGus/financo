@@ -3,7 +3,7 @@ package postgresql_database
 import (
 	"context"
 	"database/sql"
-	"financo/core/shared/domain/services"
+	"financo/core/domain/services"
 	"fmt"
 	"log"
 	"os"

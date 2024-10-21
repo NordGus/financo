@@ -19,7 +19,7 @@ import (
 	"time"
 
 	accounts_broker "financo/core/accounts/infrastructure/broker_handler"
-	"financo/core/shared/infrastructure/postgresql_database"
+	"financo/core/infrastructure/postgresql_database"
 	postgres_service "financo/server/services/postgres_database"
 	transactions_service "financo/server/transactions"
 
