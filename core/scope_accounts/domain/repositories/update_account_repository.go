@@ -2,12 +2,23 @@ package repositories
 
 import (
 	"context"
+	"financo/core/scope_accounts/domain/responses"
+	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
+	"financo/server/types/records/transaction"
 )
 
-// [ ] Refactor account.Record inside this domain
-// [ ] Refactor id type to use a domain defined one instead of primitive int64
+type AccountWithHistory struct {
+	Record  account.Record
+	History account.Record
+}
+
+type SaveAccountWithHistoryArgs struct {
+	Record      account.Record
+	Transaction nullable.Type[transaction.Record]
+}
 
 type UpdateAccountRepository interface {
-	FindAccount(ctx context.Context, id int64) (account.Record, error)
+	FindAccountWithHistory(ctx context.Context, id int64) (AccountWithHistory, error)
+	SaveAccountWithHistory(ctx context.Context, args SaveAccountWithHistoryArgs) (responses.Detailed, error)
 }
