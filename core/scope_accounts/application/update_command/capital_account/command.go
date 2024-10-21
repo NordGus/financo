@@ -62,7 +62,7 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	}
 
 	if records.Record.Kind != record.Kind {
-		return res, errors.New("update_command: can't change account's kind")
+		return res, errors.New("update_command: account's kind can't be changed")
 	}
 
 	history = c.mapHistoryTransaction(records)
