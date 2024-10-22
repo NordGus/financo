@@ -8,9 +8,7 @@ import (
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/domain/responses"
 	"financo/server/types/commands"
-	"financo/server/types/generic/nullable"
-	"financo/server/types/records/account"
-	"financo/server/types/shared/icon"
+	"time"
 )
 
 type command struct {
@@ -32,10 +30,13 @@ func New(
 }
 
 func (c *command) Run(ctx context.Context) (responses.Created, error) {
-	args := repositories.CreateAccountSaveArgs{
-		Record:  c.buildRecord(),
-		History: c.buildHistory(),
-	}
+	var (
+		timestamp = time.Now().UTC()
+		args      = repositories.CreateAccountSaveArgs{
+			Record:  requests.CreateToAccountRecord(c.req, timestamp),
+			History: requests.CreateToSystemHistoricAccountRecord(c.req, timestamp),
+		}
+	)
 
 	record, err := c.repo.Save(ctx, args)
 	if err != nil {
@@ -48,41 +49,4 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 	}
 
 	return responses.Created{ID: record.ID, Name: record.Name}, nil
-}
-
-func (c *command) buildRecord() account.Record {
-	record := account.Record{
-		ID:          -1,
-		Kind:        c.req.Kind,
-		Currency:    c.req.Currency,
-		Name:        c.req.Name,
-		Description: c.req.Description,
-		Color:       c.req.Color,
-		Icon:        c.req.Icon,
-		Capital:     0,
-	}
-
-	if account.IsDebt(c.req.Kind) {
-		record.Capital = c.req.Capital
-	}
-
-	return record
-}
-
-func (c *command) buildHistory() nullable.Type[account.Record] {
-	if !account.IsExternal(c.req.Kind) {
-		return nullable.Type[account.Record]{}
-	}
-
-	return nullable.New(account.Record{
-		ID: -1,
-		// ParentID will be added by repository
-		Kind:        account.SystemHistoric,
-		Currency:    c.req.Currency,
-		Name:        "History",
-		Description: nullable.New("This account was created by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
-		Color:       "#8c8c8c",
-		Icon:        icon.Base,
-		Capital:     0,
-	})
 }

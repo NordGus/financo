@@ -7,33 +7,22 @@ import (
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
-	"time"
 )
 
 type repository struct {
-	db        databases.SQLAdapter
-	timestamp time.Time
+	db databases.SQLAdapter
 }
 
 func NewPostgreSQL(db databases.SQLAdapter) repositories.CreateAccountRepository {
 	return &repository{
-		db:        db,
-		timestamp: time.Now().UTC(),
+		db: db,
 	}
 }
 
 func (r *repository) Save(ctx context.Context, args repositories.CreateAccountSaveArgs) (account.Record, error) {
 	var (
-		record = account.Record{
-			Kind:        args.Record.Kind,
-			Currency:    args.Record.Currency,
-			Name:        args.Record.Name,
-			Description: args.Record.Description,
-			Color:       args.Record.Color,
-			Capital:     args.Record.Capital,
-			CreatedAt:   r.timestamp,
-			UpdatedAt:   r.timestamp,
-		}
+		record  = args.Record
+		history = args.History.Val
 	)
 
 	conn, err := r.db.Conn(ctx)
@@ -54,17 +43,7 @@ func (r *repository) Save(ctx context.Context, args repositories.CreateAccountSa
 	}
 
 	if args.History.Valid {
-		history := account.Record{
-			ParentID:    nullable.New(record.ID),
-			Kind:        args.History.Val.Kind,
-			Currency:    args.History.Val.Currency,
-			Name:        args.History.Val.Name,
-			Description: args.History.Val.Description,
-			Color:       args.History.Val.Color,
-			Capital:     args.History.Val.Capital,
-			CreatedAt:   r.timestamp,
-			UpdatedAt:   r.timestamp,
-		}
+		history.ParentID = nullable.New(record.ID)
 
 		_, err := r.persist(ctx, tx, history)
 		if err != nil {
