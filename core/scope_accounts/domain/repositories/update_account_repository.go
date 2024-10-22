@@ -28,17 +28,17 @@ type SaveAccountWithChildrenArgs struct {
 	Children []account.Record
 }
 
-type AccountWithHistoryRepository interface {
+type UpdateAccountWithHistoryRepository interface {
 	FindWithHistory(ctx context.Context, id int64) (AccountWithHistory, error)
 	SaveWithHistory(ctx context.Context, args SaveAccountWithHistoryArgs) (responses.Detailed, error)
 }
 
-type AccountWithChildrenRepository interface {
+type UpdateAccountWithChildrenRepository interface {
 	FindWithChildren(ctx context.Context, id int64) (AccountWithChildren, error)
 	SaveWithChildren(ctx context.Context, args SaveAccountWithChildrenArgs) (responses.Detailed, error)
 }
 
 type UpdateAccountRepository interface {
-	AccountWithHistoryRepository
-	AccountWithChildrenRepository
+	UpdateAccountWithHistoryRepository
+	UpdateAccountWithChildrenRepository
 }
