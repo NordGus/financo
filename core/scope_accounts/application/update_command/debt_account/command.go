@@ -39,22 +39,8 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		history nullable.Type[transaction.Record]
 
 		timestamp = time.Now().UTC()
-		record    = account.Record{
-			ID:          c.req.ID,
-			Kind:        c.req.Kind,
-			Currency:    c.req.Currency,
-			Name:        c.req.Name,
-			Description: c.req.Description,
-			Capital:     c.req.Capital,
-			Color:       c.req.Color,
-			Icon:        c.req.Icon,
-			UpdatedAt:   timestamp,
-		}
+		record    = requests.UpdateToAccountRecord(c.req, timestamp)
 	)
-
-	if c.req.Archive {
-		record.ArchivedAt = nullable.New(timestamp)
-	}
 
 	if record.Kind == account.DebtCredit && record.Capital < 0 {
 		record.Capital = -record.Capital

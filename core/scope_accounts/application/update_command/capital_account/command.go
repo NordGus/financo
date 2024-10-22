@@ -10,7 +10,6 @@ import (
 	"financo/core/scope_accounts/domain/responses"
 	"financo/server/types/commands"
 	"financo/server/types/generic/nullable"
-	"financo/server/types/records/account"
 	"financo/server/types/records/transaction"
 	"time"
 )
@@ -39,22 +38,10 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		history nullable.Type[transaction.Record]
 
 		timestamp = time.Now().UTC()
-		record    = account.Record{
-			ID:          c.req.ID,
-			Kind:        c.req.Kind,
-			Currency:    c.req.Currency,
-			Name:        c.req.Name,
-			Description: c.req.Description,
-			Capital:     0,
-			Color:       c.req.Color,
-			Icon:        c.req.Icon,
-			UpdatedAt:   timestamp,
-		}
+		record    = requests.UpdateToAccountRecord(c.req, timestamp)
 	)
 
-	if c.req.Archive {
-		record.ArchivedAt = nullable.New(timestamp)
-	}
+	record.Capital = 0
 
 	records, err := c.repo.FindAccountWithHistory(ctx, record.ID)
 	if err != nil {
