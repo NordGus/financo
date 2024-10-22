@@ -17,13 +17,13 @@ import (
 
 type command struct {
 	req    requests.Update
-	repo   repositories.UpdateAccountRepository
+	repo   repositories.AccountWithHistoryRepository
 	broker brokers.UpdatedBroker
 }
 
 func New(
 	req requests.Update,
-	repo repositories.UpdateAccountRepository,
+	repo repositories.AccountWithHistoryRepository,
 	broker brokers.UpdatedBroker,
 ) commands.Command[responses.Detailed] {
 	return &command{
@@ -46,7 +46,7 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		record.Capital = -record.Capital
 	}
 
-	records, err := c.repo.FindAccountWithHistory(ctx, record.ID)
+	records, err := c.repo.FindWithHistory(ctx, record.ID)
 	if err != nil {
 		return res, err
 	}
@@ -58,7 +58,7 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	record.CreatedAt = records.Record.CreatedAt
 	history = requests.UpdateHistoryToTransactionRecord(c.req.History, records, timestamp)
 
-	res, err = c.repo.SaveAccountWithHistory(ctx, repositories.SaveAccountWithHistoryArgs{
+	res, err = c.repo.SaveWithHistory(ctx, repositories.SaveAccountWithHistoryArgs{
 		Record:      record,
 		Transaction: history,
 	})
