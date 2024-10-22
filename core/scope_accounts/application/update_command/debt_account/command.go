@@ -56,7 +56,7 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	}
 
 	record.CreatedAt = records.Record.CreatedAt
-	history = c.mapHistoryTransaction(records)
+	history = requests.UpdateHistoryToTransactionRecord(c.req.History, records, timestamp)
 
 	res, err = c.repo.SaveAccountWithHistory(ctx, repositories.SaveAccountWithHistoryArgs{
 		Record:      record,
@@ -75,30 +75,4 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	}
 
 	return res, nil
-}
-
-func (c *command) mapHistoryTransaction(records repositories.AccountWithHistory) nullable.Type[transaction.Record] {
-	if !c.req.History.Present {
-		return nullable.Type[transaction.Record]{}
-	}
-
-	timestamp := time.Now().UTC()
-	tr := transaction.Record{
-		SourceID:     records.Record.ID,
-		TargetID:     records.History.ID,
-		SourceAmount: c.req.History.Balance.Val,
-		TargetAmount: c.req.History.Balance.Val,
-		IssuedAt:     c.req.History.At.Val,
-		ExecutedAt:   c.req.History.At,
-		UpdatedAt:    timestamp,
-		CreatedAt:    timestamp,
-	}
-
-	if tr.SourceAmount < 0 {
-		tr.SourceID, tr.TargetID = tr.TargetID, tr.SourceID
-		tr.SourceAmount = -tr.SourceAmount
-		tr.TargetAmount = -tr.TargetAmount
-	}
-
-	return nullable.New(tr)
 }
