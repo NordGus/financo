@@ -13,12 +13,32 @@ type AccountWithHistory struct {
 	History account.Record
 }
 
+type AccountWithChildren struct {
+	Record   account.Record
+	Children []account.Record
+}
+
 type SaveAccountWithHistoryArgs struct {
 	Record      account.Record
 	Transaction nullable.Type[transaction.Record]
 }
 
+type SaveAccountWithChildrenArgs struct {
+	Record   account.Record
+	Children []account.Record
+}
+
+type AccountWithHistoryRepository interface {
+	FindWithHistory(ctx context.Context, id int64) (AccountWithHistory, error)
+	SaveWithHistory(ctx context.Context, args SaveAccountWithHistoryArgs) (responses.Detailed, error)
+}
+
+type AccountWithChildrenRepository interface {
+	FindWithChildren(ctx context.Context, id int64) (AccountWithChildren, error)
+	SaveWithChildren(ctx context.Context, args SaveAccountWithChildrenArgs) (responses.Detailed, error)
+}
+
 type UpdateAccountRepository interface {
-	FindAccountWithHistory(ctx context.Context, id int64) (AccountWithHistory, error)
-	SaveAccountWithHistory(ctx context.Context, args SaveAccountWithHistoryArgs) (responses.Detailed, error)
+	AccountWithHistoryRepository
+	AccountWithChildrenRepository
 }
