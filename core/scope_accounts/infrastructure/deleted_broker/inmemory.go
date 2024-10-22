@@ -29,7 +29,7 @@ func (b *inMemoryBroker) Subscribe(consumer message_bus.Consumer[messages.Delete
 
 	select {
 	case <-b.ctx.Done():
-		return fmt.Errorf("created_broker: failed to subscribe: %s", b.ctx.Err())
+		return fmt.Errorf("deleted_broker: failed to subscribe: %s", b.ctx.Err())
 	default:
 		return b.bus.Subscribe(consumer)
 	}
@@ -41,7 +41,7 @@ func (b *inMemoryBroker) Publish(message messages.Deleted) error {
 
 	select {
 	case <-b.ctx.Done():
-		return fmt.Errorf("created_broker: failed to publish: %s", b.ctx.Err())
+		return fmt.Errorf("deleted_broker: failed to publish: %s", b.ctx.Err())
 	default:
 		return b.bus.Publish(message)
 	}
