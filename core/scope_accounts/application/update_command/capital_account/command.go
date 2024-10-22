@@ -65,6 +65,7 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		return res, errors.New("update_command: account's kind can't be changed")
 	}
 
+	record.CreatedAt = records.Record.CreatedAt
 	history = c.mapHistoryTransaction(records)
 
 	res, err = c.repo.SaveAccountWithHistory(ctx, repositories.SaveAccountWithHistoryArgs{
