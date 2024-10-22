@@ -42,3 +42,48 @@ type Update struct {
 	Archive     bool                  `json:"archive"`
 	Children    []UpdateChild         `json:"children"`
 }
+
+func UpdateToAccountRecord(req Update, timestamp time.Time) account.Record {
+	record := account.Record{
+		ID:          req.ID,
+		Kind:        req.Kind,
+		Currency:    req.Currency,
+		Name:        req.Name,
+		Description: req.Description,
+		Capital:     req.Capital,
+		Color:       req.Color,
+		Icon:        req.Icon,
+		UpdatedAt:   timestamp,
+	}
+
+	if req.Archive {
+		record.ArchivedAt = nullable.New(timestamp)
+	}
+
+	return record
+}
+
+func UpdateChildToAccountRecord(parent account.Record, req UpdateChild, timestamp time.Time) account.Record {
+	record := account.Record{
+		ID:          req.ID.OrElse(-1),
+		ParentID:    nullable.New(parent.ID),
+		Kind:        parent.Kind,
+		Currency:    parent.Currency,
+		Name:        req.Name,
+		Description: req.Description,
+		Capital:     req.Capital,
+		Color:       parent.Color,
+		Icon:        req.Icon,
+		UpdatedAt:   timestamp,
+	}
+
+	if record.ID <= 0 {
+		record.CreatedAt = timestamp
+	}
+
+	if req.Archive {
+		record.ArchivedAt = nullable.New(timestamp)
+	}
+
+	return record
+}
