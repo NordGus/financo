@@ -1,8 +1,10 @@
 package requests
 
 import (
+	"financo/core/scope_accounts/domain/repositories"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
+	"financo/server/types/records/transaction"
 	"financo/server/types/shared/color"
 	"financo/server/types/shared/currency"
 	"financo/server/types/shared/icon"
@@ -86,4 +88,33 @@ func UpdateChildToAccountRecord(parent account.Record, req UpdateChild, timestam
 	}
 
 	return record
+}
+
+func UpdateHistoryToTransactionRecord(
+	req UpdateHistory,
+	records repositories.AccountWithHistory,
+	timestamp time.Time,
+) nullable.Type[transaction.Record] {
+	if !req.Present {
+		return nullable.Type[transaction.Record]{}
+	}
+
+	tr := transaction.Record{
+		SourceID:     records.Record.ID,
+		TargetID:     records.History.ID,
+		SourceAmount: req.Balance.Val,
+		TargetAmount: req.Balance.Val,
+		IssuedAt:     req.At.OrElse(timestamp),
+		ExecutedAt:   nullable.New(req.At.OrElse(timestamp)),
+		UpdatedAt:    timestamp,
+		CreatedAt:    timestamp,
+	}
+
+	if tr.SourceAmount < 0 {
+		tr.SourceID, tr.TargetID = tr.TargetID, tr.SourceID
+		tr.SourceAmount = -tr.SourceAmount
+		tr.TargetAmount = -tr.TargetAmount
+	}
+
+	return nullable.New(tr)
 }
