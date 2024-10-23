@@ -13,8 +13,8 @@ func updateAccountRecord(ctx context.Context, tx *sql.Tx, record account.Record)
 		`
 		UPDATE accounts
 		SET
-			parent_id = $2, kind = $3, currency = $4, name = $5, description = $5,
-			color = $6, icon = $7, capital = $8, archived_at = $9, updated_at = $10
+			parent_id = $2, kind = $3, currency = $4, name = $5, description = $6,
+			color = $7, icon = $8, capital = $9, archived_at = $10, updated_at = $11
 		WHERE id = $1
 		`,
 		record.ID,
