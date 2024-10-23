@@ -6,6 +6,7 @@ import (
 	"financo/core/scope_accounts/domain/brokers"
 	"financo/core/scope_accounts/infrastructure/created_broker"
 	"financo/core/scope_accounts/infrastructure/deleted_broker"
+	"financo/core/scope_accounts/infrastructure/updated_broker"
 	"fmt"
 	"sync"
 )
@@ -13,6 +14,7 @@ import (
 type BrokerHandler interface {
 	CreatedBroker() brokers.CreatedBroker
 	DeletedBroker() brokers.DeletedBroker
+	UpdatedBroker() brokers.UpdatedBroker
 	Shutdown() error
 }
 
@@ -22,6 +24,7 @@ type handler struct {
 	cancel        context.CancelFunc
 	createdBroker brokers.CreatedBroker
 	deletedBroker brokers.DeletedBroker
+	updatedBroker brokers.UpdatedBroker
 }
 
 var (
@@ -47,6 +50,7 @@ func Initialize(wg *sync.WaitGroup) BrokerHandler {
 		wg:            wg,
 		createdBroker: created_broker.NewInMemory(ctx, wg),
 		deletedBroker: deleted_broker.NewInMemory(ctx, wg),
+		updatedBroker: updated_broker.NewInMemory(ctx, wg),
 	}
 
 	return instance
@@ -66,6 +70,10 @@ func (b *handler) CreatedBroker() brokers.CreatedBroker {
 
 func (b *handler) DeletedBroker() brokers.DeletedBroker {
 	return b.deletedBroker
+}
+
+func (b *handler) UpdatedBroker() brokers.UpdatedBroker {
+	return b.updatedBroker
 }
 
 // [ ] TODO rethink the whole shutdown mechanism.
