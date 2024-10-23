@@ -2,9 +2,9 @@ package update_command
 
 import (
 	"errors"
-	"financo/core/scope_accounts/application/update_command/capital_account"
-	"financo/core/scope_accounts/application/update_command/debt_account"
-	"financo/core/scope_accounts/application/update_command/external_account"
+	"financo/core/scope_accounts/application/commands/update_command/capital_account"
+	"financo/core/scope_accounts/application/commands/update_command/debt_account"
+	"financo/core/scope_accounts/application/commands/update_command/external_account"
 	"financo/core/scope_accounts/domain/brokers"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/requests"

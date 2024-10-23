@@ -3,7 +3,7 @@ package accounts
 import (
 	"encoding/json"
 	"financo/core/infrastructure/postgresql_database"
-	"financo/core/scope_accounts/application/create_command"
+	"financo/core/scope_accounts/application/commands/create_command"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/infrastructure/broker_handler"
 	"financo/core/scope_accounts/infrastructure/create_account_repository"

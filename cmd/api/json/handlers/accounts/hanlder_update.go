@@ -2,7 +2,7 @@ package accounts
 
 import (
 	"encoding/json"
-	"financo/core/scope_accounts/application/update_command"
+	"financo/core/scope_accounts/application/commands/update_command"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/infrastructure/broker_handler"
 	"financo/core/scope_accounts/infrastructure/update_account_repository"
