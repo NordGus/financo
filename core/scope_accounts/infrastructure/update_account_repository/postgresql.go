@@ -38,7 +38,7 @@ func (r *repository) FindWithChildren(ctx context.Context, id int64) (repositori
 		return out, err
 	}
 
-	children, err = findChildren(ctx, conn, record.ID)
+	children, err = findChildrenRecords(ctx, conn, record.ID)
 	if err != nil {
 		return out, err
 	}
@@ -51,9 +51,35 @@ func (r *repository) FindWithChildren(ctx context.Context, id int64) (repositori
 	return out, nil
 }
 
-// FindWithHistory implements repositories.UpdateAccountRepository.
 func (r *repository) FindWithHistory(ctx context.Context, id int64) (repositories.AccountWithHistory, error) {
-	return repositories.AccountWithHistory{}, errors.New("not implemented")
+	var (
+		record  account.Record
+		history account.Record
+		out     repositories.AccountWithHistory
+	)
+
+	conn, err := r.db.Conn(ctx)
+	if err != nil {
+		return out, err
+	}
+	defer conn.Close()
+
+	record, err = findRecord(ctx, conn, id)
+	if err != nil {
+		return out, err
+	}
+
+	history, err = findHistoryRecord(ctx, conn, record.ID)
+	if err != nil {
+		return out, err
+	}
+
+	out = repositories.AccountWithHistory{
+		Record:  record,
+		History: history,
+	}
+
+	return out, nil
 }
 
 // SaveWithChildren implements repositories.UpdateAccountRepository.
@@ -120,7 +146,7 @@ func findRecord(ctx context.Context, conn *sql.Conn, id int64) (account.Record, 
 	return record, err
 }
 
-func findChildren(ctx context.Context, conn *sql.Conn, parentID int64) ([]account.Record, error) {
+func findChildrenRecords(ctx context.Context, conn *sql.Conn, parentID int64) ([]account.Record, error) {
 	children := make([]account.Record, 0, 10)
 
 	rows, err := conn.QueryContext(
@@ -180,4 +206,51 @@ func findChildren(ctx context.Context, conn *sql.Conn, parentID int64) ([]accoun
 	}
 
 	return children, nil
+}
+
+func findHistoryRecord(ctx context.Context, conn *sql.Conn, parentID int64) (account.Record, error) {
+	var record account.Record
+
+	err := conn.QueryRowContext(
+		ctx,
+		`
+		SELECT
+			id,
+			parent_id,
+			kind,
+			currency,
+			name,
+			description,
+			color,
+			icon,
+			capital,
+			archived_at,
+			deleted_at,
+			created_at,
+			updated_at
+		FROM accounts
+		WHERE
+			parent_id = $1 AND
+			kind = $2 AND
+			deleted_at IS NULL
+		`,
+		parentID,
+		account.SystemHistoric,
+	).Scan(
+		&record.ID,
+		&record.ParentID,
+		&record.Kind,
+		&record.Currency,
+		&record.Name,
+		&record.Description,
+		&record.Color,
+		&record.Icon,
+		&record.Capital,
+		&record.ArchivedAt,
+		&record.DeletedAt,
+		&record.CreatedAt,
+		&record.UpdatedAt,
+	)
+
+	return record, err
 }
