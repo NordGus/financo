@@ -3,12 +3,12 @@ package update_account_repository
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"financo/core/domain/databases"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/responses"
 	"financo/server/types/generic/nullable"
 	"financo/server/types/records/account"
+	"financo/server/types/records/transaction"
 	"time"
 )
 
@@ -57,6 +57,7 @@ func (r *repository) FindWithHistory(ctx context.Context, id int64) (repositorie
 	var (
 		record  account.Record
 		history account.Record
+		tr      nullable.Type[transaction.Record]
 		out     repositories.AccountWithHistory
 	)
 
@@ -76,17 +77,22 @@ func (r *repository) FindWithHistory(ctx context.Context, id int64) (repositorie
 		return out, err
 	}
 
+	tr, err = findHistoryTransactionRecord(ctx, conn, record.ID, history.ID)
+	if err != nil {
+		return out, err
+	}
+
 	out = repositories.AccountWithHistory{
-		Record:  record,
-		History: history,
+		Record:      record,
+		History:     history,
+		Transaction: tr,
 	}
 
 	return out, nil
 }
 
 func (r *repository) SaveWithChildren(
-	ctx context.Context,
-	args repositories.SaveAccountWithChildrenArgs,
+	ctx context.Context, args repositories.SaveAccountWithChildrenArgs,
 ) (responses.Detailed, error) {
 	var res responses.Detailed
 
@@ -102,16 +108,16 @@ func (r *repository) SaveWithChildren(
 	}
 	defer tx.Rollback()
 
-	err = updateAccount(ctx, tx, args.Record)
+	err = updateAccountRecord(ctx, tx, args.Record)
 	if err != nil {
 		return res, err
 	}
 
 	for _, child := range args.Children {
 		if child.ID <= 0 {
-			err = createAccount(ctx, tx, child)
+			err = createAccountRecord(ctx, tx, child)
 		} else {
-			err = updateAccount(ctx, tx, child)
+			err = updateAccountRecord(ctx, tx, child)
 		}
 
 		if err != nil {
@@ -132,12 +138,51 @@ func (r *repository) SaveWithChildren(
 	return res, nil
 }
 
-// SaveWithHistory implements repositories.UpdateAccountRepository.
 func (r *repository) SaveWithHistory(
-	ctx context.Context,
-	args repositories.SaveAccountWithHistoryArgs,
+	ctx context.Context, args repositories.SaveAccountWithHistoryArgs,
 ) (responses.Detailed, error) {
-	return responses.Detailed{}, errors.New("not implemented")
+	var res responses.Detailed
+
+	conn, err := r.db.Conn(ctx)
+	if err != nil {
+		return res, err
+	}
+	defer conn.Close()
+
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return res, err
+	}
+	defer tx.Rollback()
+
+	err = updateAccountRecord(ctx, tx, args.Record)
+	if err != nil {
+		return res, err
+	}
+
+	if args.Transaction.Valid && args.Transaction.Val.ID <= 0 {
+		err = createTransactionRecord(ctx, tx, args.Transaction.Val)
+	} else if args.Transaction.Valid {
+		err = updateTransactionRecord(ctx, tx, args.Transaction.Val)
+	} else {
+		err = deleteTransactionRecord(ctx, tx, args.Record, args.History)
+	}
+
+	if err != nil {
+		return res, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return res, err
+	}
+
+	res, err = findResponseDetailed(ctx, conn, args.Record)
+	if err != nil {
+		return res, err
+	}
+
+	return res, nil
 }
 
 func findRecord(ctx context.Context, conn *sql.Conn, id int64) (account.Record, error) {
@@ -264,7 +309,66 @@ func findHistoryRecord(ctx context.Context, conn *sql.Conn, parentID int64) (acc
 	return record, err
 }
 
-func updateAccount(ctx context.Context, tx *sql.Tx, record account.Record) error {
+func findHistoryTransactionRecord(
+	ctx context.Context, conn *sql.Conn, recordID int64, historyID int64,
+) (nullable.Type[transaction.Record], error) {
+	var record transaction.Record
+
+	rows, err := conn.QueryContext(
+		ctx,
+		`
+		SELECT
+			id,
+			source_id,
+			target_id,
+			source_amount,
+			target_amount,
+			notes,
+			issued_at,
+			executed_at,
+			deleted_at,
+			created_at,
+			updated_at
+		FROM transactions
+		WHERE
+			(source_id = $1 AND target_id = $2) OR
+			(source_id = $2 AND target_id = $1)
+		`,
+		recordID,
+		historyID,
+	)
+	if err != nil {
+		return nullable.New(record), err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(
+			&record.ID,
+			&record.SourceID,
+			&record.TargetID,
+			&record.SourceAmount,
+			&record.TargetAmount,
+			&record.Notes,
+			&record.IssuedAt,
+			&record.ExecutedAt,
+			&record.DeletedAt,
+			&record.CreatedAt,
+			&record.UpdatedAt,
+		)
+		if err != nil {
+			return nullable.New(record), err
+		}
+
+		if record.ID > 0 {
+			return nullable.New(record), nil
+		}
+	}
+
+	return nullable.Type[transaction.Record]{}, nil
+}
+
+func updateAccountRecord(ctx context.Context, tx *sql.Tx, record account.Record) error {
 	_, err := tx.ExecContext(
 		ctx,
 		`
@@ -290,7 +394,7 @@ func updateAccount(ctx context.Context, tx *sql.Tx, record account.Record) error
 	return err
 }
 
-func createAccount(ctx context.Context, tx *sql.Tx, record account.Record) error {
+func createAccountRecord(ctx context.Context, tx *sql.Tx, record account.Record) error {
 	_, err := tx.ExecContext(
 		ctx,
 		`
@@ -325,6 +429,86 @@ func createAccount(ctx context.Context, tx *sql.Tx, record account.Record) error
 		record.DeletedAt,
 		record.CreatedAt,
 		record.UpdatedAt,
+	)
+
+	return err
+}
+
+func createTransactionRecord(ctx context.Context, tx *sql.Tx, record transaction.Record) error {
+	_, err := tx.ExecContext(
+		ctx,
+		`
+		INSERT INTO transactions (
+			source_id,
+			target_id,
+			source_amount,
+			target_amount,
+			notes,
+			issued_at,
+			executed_at,
+			deleted_at,
+			created_at,
+			updated_at
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		`,
+		record.SourceID,
+		record.TargetID,
+		record.SourceAmount,
+		record.TargetAmount,
+		record.Notes,
+		record.IssuedAt,
+		record.ExecutedAt,
+		record.DeletedAt,
+		record.CreatedAt,
+		record.UpdatedAt,
+	)
+
+	return err
+}
+
+func updateTransactionRecord(ctx context.Context, tx *sql.Tx, record transaction.Record) error {
+	_, err := tx.ExecContext(
+		ctx,
+		`
+		UPDATE transactions
+		SET
+			source_id = $2,
+			target_id = $3,
+			source_amount = $4,
+			target_amount = $5,
+			notes = $6,
+			issued_at = $7,
+			executed_at = $8,
+			deleted_at = $9,
+			updated_at = $10
+		WHERE id = $1
+		`,
+		record.ID,
+		record.SourceID,
+		record.TargetID,
+		record.SourceAmount,
+		record.TargetAmount,
+		record.Notes,
+		record.IssuedAt,
+		record.ExecutedAt,
+		record.DeletedAt,
+		record.UpdatedAt,
+	)
+
+	return err
+}
+
+func deleteTransactionRecord(ctx context.Context, tx *sql.Tx, record account.Record, history account.Record) error {
+	_, err := tx.ExecContext(
+		ctx,
+		`
+		UPDATE transactions
+		SET deleted_at = $1, updated_at = $2
+		WHERE (source_id = $2 AND target_id = $3) OR (source_id = $3 AND target_id = $2)
+		`,
+		record.UpdatedAt,
+		record.ID,
+		history.ID,
 	)
 
 	return err

@@ -99,6 +99,14 @@ func UpdateHistoryToTransactionRecord(
 		return nullable.Type[transaction.Record]{}
 	}
 
+	if !req.Present {
+		return nullable.Type[transaction.Record]{}
+	}
+
+	if !req.Balance.Valid {
+		return nullable.Type[transaction.Record]{}
+	}
+
 	tr := transaction.Record{
 		SourceID:     records.Record.ID,
 		TargetID:     records.History.ID,

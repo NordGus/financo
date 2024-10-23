@@ -9,8 +9,9 @@ import (
 )
 
 type AccountWithHistory struct {
-	Record  account.Record
-	History account.Record
+	Record      account.Record
+	History     account.Record
+	Transaction nullable.Type[transaction.Record]
 }
 
 type AccountWithChildren struct {
@@ -20,6 +21,7 @@ type AccountWithChildren struct {
 
 type SaveAccountWithHistoryArgs struct {
 	Record      account.Record
+	History     account.Record
 	Transaction nullable.Type[transaction.Record]
 }
 

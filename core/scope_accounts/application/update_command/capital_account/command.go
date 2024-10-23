@@ -55,8 +55,13 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	record.CreatedAt = records.Record.CreatedAt
 	history = requests.UpdateHistoryToTransactionRecord(c.req.History, records, timestamp)
 
+	if history.Valid && records.Transaction.Valid {
+		history.Val.ID = records.Transaction.Val.ID
+	}
+
 	res, err = c.repo.SaveWithHistory(ctx, repositories.SaveAccountWithHistoryArgs{
 		Record:      record,
+		History:     records.History,
 		Transaction: history,
 	})
 	if err != nil {
