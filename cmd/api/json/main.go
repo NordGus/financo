@@ -105,7 +105,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 	server := &http.Server{
 		Addr:              ":3000",
 		Handler:           router,
-		ReadHeaderTimeout: 500 * time.Millisecond,
+		ReadHeaderTimeout: 1 * time.Second,
 		ReadTimeout:       1 * time.Second,
 		WriteTimeout:      1 * time.Second,
 	}
