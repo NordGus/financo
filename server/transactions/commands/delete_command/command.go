@@ -6,12 +6,12 @@ import (
 	"errors"
 	"financo/lib/nullable"
 	"financo/models/transaction"
-	"financo/server/services/postgres_database"
 	"financo/server/transactions/brokers"
 	"financo/server/transactions/queries/detailed_query"
 	"financo/server/transactions/types/message"
 	"financo/server/transactions/types/response"
 	"financo/server/types/commands"
+	"financo/services/postgresql_database"
 	"time"
 )
 
@@ -30,7 +30,7 @@ func New(id int64) commands.Command[response.Detailed] {
 func (c *command) Run(ctx context.Context) (response.Detailed, error) {
 	var (
 		findTransactionQuery = detailed_query.New(c.id)
-		postgres             = postgres_database.New()
+		postgres             = postgresql_database.New()
 		broker               = brokers.New(nil)
 
 		res response.Detailed

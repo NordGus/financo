@@ -7,17 +7,17 @@ import (
 	"financo/models/achievement"
 	"financo/models/achievement/savings_goal"
 	"financo/server/my_journey/types/response"
-	"financo/server/services/postgres_database"
 	"financo/server/types/queries"
+	"financo/services/postgresql_database"
 	"time"
 )
 
 type query struct {
-	db        postgres_database.Service
+	db        postgresql_database.Service
 	timestamp time.Time
 }
 
-func New(db postgres_database.Service) queries.Query[[]response.Achievable] {
+func New(db postgresql_database.Service) queries.Query[[]response.Achievable] {
 	return &query{
 		db:        db,
 		timestamp: time.Now().UTC(),

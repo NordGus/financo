@@ -3,7 +3,6 @@ package postgresql_database
 import (
 	"context"
 	"database/sql"
-	"financo/core/domain/services"
 	"fmt"
 	"log"
 	"os"
@@ -13,6 +12,25 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/joho/godotenv/autoload"
 )
+
+// Service represents a service that interacts with a database.
+type Service interface {
+	// Health returns a map of health status information.
+	// The keys and values in the map are service-specific.
+	//
+	// It can panic and terminate the program.
+	Health() map[string]string
+
+	// Close terminates the database connection.
+	// It returns an error if the connection cannot be closed.
+	Close() error
+
+	// Conn returns a new connection to the database.
+	// It returns an error if a connection can't be acquire.
+	//
+	// Every Conn must be returned to the database pool after use by calling [Conn.Close].
+	Conn(ctx context.Context) (*sql.Conn, error)
+}
 
 type service struct {
 	db *sql.DB
@@ -34,7 +52,7 @@ var (
 // It will panic if it fails to initialize a new instance.
 //
 // Every Conn must be returned to the database pool after use by calling [Conn.Close].
-func New() services.SQLDatabaseService {
+func New() Service {
 	if instance != nil {
 		return instance
 	}

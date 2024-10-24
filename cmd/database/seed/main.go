@@ -5,7 +5,7 @@ import (
 	"financo/cmd/database/seed/accounts"
 	"financo/cmd/database/seed/savings_goals"
 	"financo/cmd/database/seed/transactions"
-	"financo/server/services/postgres_database"
+	"financo/services/postgresql_database"
 	"log"
 	"time"
 )
@@ -18,7 +18,7 @@ func main() {
 
 	log.Println("seeding database")
 
-	conn, err := postgres_database.New().Conn(ctx)
+	conn, err := postgresql_database.New().Conn(ctx)
 	if err != nil {
 		log.Fatalf("seed: failed to connect to database:\n\t err: %v\n", err)
 	}

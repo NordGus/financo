@@ -3,14 +3,14 @@ package savings_goals
 import (
 	"encoding/json"
 	"financo/server/savings_goals/queries/list_active_query"
-	"financo/server/services/postgres_database"
+	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 )
 
 func active(w http.ResponseWriter, r *http.Request) {
 	var (
-		postgres = postgres_database.New()
+		postgres = postgresql_database.New()
 	)
 
 	res, err := list_active_query.New(postgres).Find(r.Context())

@@ -6,15 +6,15 @@ import (
 	"financo/models/achievement"
 	"financo/models/achievement/savings_goal"
 	"financo/server/savings_goals/types/response"
-	"financo/server/services/postgres_database"
 	"financo/server/types/queries"
+	"financo/services/postgresql_database"
 )
 
 type query struct {
-	db postgres_database.Service
+	db postgresql_database.Service
 }
 
-func New(db postgres_database.Service) queries.Query[[]response.Active] {
+func New(db postgresql_database.Service) queries.Query[[]response.Active] {
 	return &query{
 		db: db,
 	}

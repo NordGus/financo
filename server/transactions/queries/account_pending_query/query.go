@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"financo/lib/nullable"
-	"financo/server/services/postgres_database"
 	base "financo/server/transactions/queries"
 	"financo/server/transactions/types/response"
 	"financo/server/types/queries"
+	"financo/services/postgresql_database"
 	"fmt"
 	"time"
 )
@@ -43,7 +43,7 @@ func (q *query) Find(ctx context.Context) ([]response.Detailed, error) {
 		res      = make([]response.Detailed, 0, 20)
 		filters  = make([]any, 0, 3)
 		filter   = 1
-		postgres = postgres_database.New()
+		postgres = postgresql_database.New()
 	)
 
 	conn, err := postgres.Conn(ctx)

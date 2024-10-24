@@ -5,9 +5,9 @@ import (
 	"errors"
 	"financo/lib/currency"
 	"financo/models/account"
-	"financo/server/services/postgres_database"
 	"financo/server/summaries/types/response"
 	"financo/server/types/queries"
+	"financo/services/postgresql_database"
 	"time"
 )
 
@@ -31,7 +31,7 @@ func New(id int64) queries.Query[[]response.Global] {
 func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 	var (
 		res      = make([]response.Global, 0, 5)
-		postgres = postgres_database.New()
+		postgres = postgresql_database.New()
 
 		acc account.Record
 	)

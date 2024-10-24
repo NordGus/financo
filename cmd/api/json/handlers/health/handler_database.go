@@ -2,13 +2,13 @@ package health
 
 import (
 	"encoding/json"
-	"financo/server/services/postgres_database"
+	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 )
 
 func database(w http.ResponseWriter, r *http.Request) {
-	message := postgres_database.New().Health()
+	message := postgresql_database.New().Health()
 
 	response, err := json.Marshal(message)
 	if err != nil {

@@ -3,14 +3,14 @@ package my_journey
 import (
 	"encoding/json"
 	"financo/server/my_journey/queries/list_achieved_query"
-	"financo/server/services/postgres_database"
+	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 )
 
 func achievements(w http.ResponseWriter, r *http.Request) {
 	var (
-		postgres = postgres_database.New()
+		postgres = postgresql_database.New()
 	)
 
 	res, err := list_achieved_query.New(postgres).Find(r.Context())

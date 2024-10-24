@@ -3,10 +3,10 @@ package detailed_query
 import (
 	"context"
 	"errors"
-	"financo/server/services/postgres_database"
 	base "financo/server/transactions/queries"
 	"financo/server/transactions/types/response"
 	"financo/server/types/queries"
+	"financo/services/postgresql_database"
 )
 
 type query struct {
@@ -22,7 +22,7 @@ func New(id int64) queries.Query[response.Detailed] {
 func (q *query) Find(ctx context.Context) (response.Detailed, error) {
 	var (
 		query    = base.BaseQueryList + " AND tr.id = $1"
-		postgres = postgres_database.New()
+		postgres = postgresql_database.New()
 
 		res response.Detailed
 		row base.BaseQueryListRow

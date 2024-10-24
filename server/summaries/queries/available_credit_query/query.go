@@ -5,10 +5,10 @@ import (
 	"errors"
 	"financo/lib/currency"
 	"financo/models/account"
-	"financo/server/services/postgres_database"
 	"financo/server/summaries/queries/summary_for_kind_query"
 	"financo/server/summaries/types/response"
 	"financo/server/types/queries"
+	"financo/services/postgresql_database"
 	"time"
 )
 
@@ -32,7 +32,7 @@ func New() queries.Query[[]response.Global] {
 func (q *query) Find(ctx context.Context) ([]response.Global, error) {
 	var (
 		cap      = make([]capital, 0, 10)
-		postgres = postgres_database.New()
+		postgres = postgresql_database.New()
 	)
 
 	res, err := summary_for_kind_query.New(q.kinds).Find(ctx)
