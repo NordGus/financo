@@ -19,6 +19,8 @@ func NewPostgreSQL(db databases.SQLAdapter) repositories.PreviewAccountRepositor
 	}
 }
 
+// TODO: Refactor to use math/big package
+
 const (
 	queryString = `
 	WITH
