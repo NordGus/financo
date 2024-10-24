@@ -2,8 +2,8 @@ package transactions
 
 import (
 	"encoding/json"
+	"financo/core/domain/types/nullable"
 	"financo/server/transactions/queries/list_query"
-	"financo/server/types/generic/nullable"
 	"log"
 	"net/http"
 	"strconv"

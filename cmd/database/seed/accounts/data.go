@@ -5,7 +5,7 @@ import (
 	"financo/core/domain/records/transaction"
 	"financo/core/domain/types/currency"
 	"financo/core/domain/types/icon"
-	"financo/server/types/generic/nullable"
+	"financo/core/domain/types/nullable"
 	"time"
 )
 

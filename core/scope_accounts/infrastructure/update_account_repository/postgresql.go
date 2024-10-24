@@ -5,9 +5,9 @@ import (
 	"financo/core/domain/databases"
 	"financo/core/domain/records/account"
 	"financo/core/domain/records/transaction"
+	"financo/core/domain/types/nullable"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/responses"
-	"financo/server/types/generic/nullable"
 )
 
 type repository struct {

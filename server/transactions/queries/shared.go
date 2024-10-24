@@ -5,8 +5,8 @@ import (
 	"financo/core/domain/types/color"
 	"financo/core/domain/types/currency"
 	"financo/core/domain/types/icon"
+	"financo/core/domain/types/nullable"
 	"financo/server/transactions/types/response"
-	"financo/server/types/generic/nullable"
 	"time"
 )
 
