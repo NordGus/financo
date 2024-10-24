@@ -1,10 +1,10 @@
 package responses
 
 import (
-	"financo/core/domain/records/account"
 	"financo/lib/currency"
 	"financo/lib/icon"
 	"financo/lib/nullable"
+	"financo/models/account"
 	"time"
 )
 

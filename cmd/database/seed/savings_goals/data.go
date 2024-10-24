@@ -1,10 +1,10 @@
 package savings_goals
 
 import (
-	"financo/core/domain/records/achievement"
-	"financo/core/domain/records/achievement/savings_goal"
 	"financo/lib/currency"
 	"financo/lib/nullable"
+	"financo/models/achievement"
+	"financo/models/achievement/savings_goal"
 	"time"
 )
 

@@ -1,7 +1,7 @@
 package response
 
 import (
-	"financo/core/domain/records/achievement"
+	"financo/models/achievement"
 	"time"
 )
 

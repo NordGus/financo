@@ -1,7 +1,7 @@
 package savings_goal
 
 import (
-	"financo/core/domain/records/achievement"
+	"financo/models/achievement"
 	"time"
 )
 

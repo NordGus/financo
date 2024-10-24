@@ -3,8 +3,8 @@ package summary_for_kind_query
 import (
 	"context"
 	"errors"
-	"financo/core/domain/records/account"
 	"financo/lib/currency"
+	"financo/models/account"
 	"financo/server/services/postgres_database"
 	"financo/server/summaries/types/response"
 	"financo/server/types/queries"

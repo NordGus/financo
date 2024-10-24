@@ -2,7 +2,7 @@ package summaries
 
 import (
 	"encoding/json"
-	"financo/core/domain/records/account"
+	"financo/models/account"
 	"financo/server/summaries/queries/summary_for_kind_query"
 	"log"
 	"net/http"

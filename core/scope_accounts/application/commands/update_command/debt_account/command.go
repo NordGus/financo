@@ -3,14 +3,14 @@ package debt_account
 import (
 	"context"
 	"errors"
-	"financo/core/domain/records/account"
-	"financo/core/domain/records/transaction"
-	"financo/lib/nullable"
 	"financo/core/scope_accounts/domain/brokers"
 	"financo/core/scope_accounts/domain/messages"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/domain/responses"
+	"financo/lib/nullable"
+	"financo/models/account"
+	"financo/models/transaction"
 	"financo/server/types/commands"
 	"time"
 )

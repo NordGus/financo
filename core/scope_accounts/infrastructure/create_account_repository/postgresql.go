@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"financo/core/domain/databases"
-	"financo/core/domain/records/account"
-	"financo/lib/nullable"
 	"financo/core/scope_accounts/domain/repositories"
+	"financo/lib/nullable"
+	"financo/models/account"
 )
 
 type repository struct {

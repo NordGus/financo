@@ -3,10 +3,10 @@ package update_account_repository
 import (
 	"context"
 	"database/sql"
-	"financo/core/domain/records/account"
-	"financo/core/domain/records/transaction"
-	"financo/lib/nullable"
 	"financo/core/scope_accounts/domain/responses"
+	"financo/lib/nullable"
+	"financo/models/account"
+	"financo/models/transaction"
 	"time"
 )
 

@@ -3,10 +3,10 @@ package select_account_repository
 import (
 	"context"
 	"financo/core/domain/databases"
-	"financo/core/domain/records/account"
 	"financo/core/scope_accounts/domain/filters"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/responses"
+	"financo/models/account"
 )
 
 type repository struct {

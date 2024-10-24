@@ -1,12 +1,12 @@
 package preview_account_repository
 
 import (
-	"financo/core/domain/records/account"
+	"financo/core/scope_accounts/domain/responses"
 	"financo/lib/color"
 	"financo/lib/currency"
 	"financo/lib/icon"
 	"financo/lib/nullable"
-	"financo/core/scope_accounts/domain/responses"
+	"financo/models/account"
 	"time"
 )
 

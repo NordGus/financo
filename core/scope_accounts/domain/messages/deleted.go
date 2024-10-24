@@ -1,7 +1,7 @@
 package messages
 
 import (
-	"financo/core/domain/records/account"
+	"financo/models/account"
 )
 
 type Deleted struct {

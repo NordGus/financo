@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"context"
-	"financo/core/domain/records/account"
+	"financo/models/account"
 )
 
 // [ ] Refactor account.Record inside this domain

@@ -1,13 +1,13 @@
 package requests
 
 import (
-	"financo/core/domain/records/account"
-	"financo/core/domain/records/transaction"
+	"financo/core/scope_accounts/domain/repositories"
 	"financo/lib/color"
 	"financo/lib/currency"
 	"financo/lib/icon"
 	"financo/lib/nullable"
-	"financo/core/scope_accounts/domain/repositories"
+	"financo/models/account"
+	"financo/models/transaction"
 	"time"
 )
 

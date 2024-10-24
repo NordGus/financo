@@ -1,8 +1,8 @@
 package requests
 
 import (
-	"financo/core/domain/records/account"
 	"financo/lib/nullable"
+	"financo/models/account"
 )
 
 type Preview struct {

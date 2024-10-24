@@ -1,8 +1,8 @@
 package response
 
 import (
-	"financo/core/domain/records/achievement/savings_goal"
 	"financo/lib/currency"
+	"financo/models/achievement/savings_goal"
 )
 
 type Active struct {

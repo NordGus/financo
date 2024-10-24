@@ -2,10 +2,10 @@ package repositories
 
 import (
 	"context"
-	"financo/core/domain/records/account"
-	"financo/core/domain/records/transaction"
-	"financo/lib/nullable"
 	"financo/core/scope_accounts/domain/responses"
+	"financo/lib/nullable"
+	"financo/models/account"
+	"financo/models/transaction"
 )
 
 type AccountWithHistory struct {

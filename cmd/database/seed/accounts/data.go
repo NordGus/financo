@@ -1,11 +1,11 @@
 package accounts
 
 import (
-	"financo/core/domain/records/account"
-	"financo/core/domain/records/transaction"
 	"financo/lib/currency"
 	"financo/lib/icon"
 	"financo/lib/nullable"
+	"financo/models/account"
+	"financo/models/transaction"
 	"time"
 )
 
