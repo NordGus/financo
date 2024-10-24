@@ -2,11 +2,11 @@ package accounts
 
 import (
 	"encoding/json"
+	"financo/core/infrastructure/postgresql_database"
 	"financo/core/scope_accounts/application/commands/update_command"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/infrastructure/broker_handler"
 	"financo/core/scope_accounts/infrastructure/update_account_repository"
-	"financo/server/services/postgres_database"
 	"log"
 	"net/http"
 )
@@ -33,7 +33,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo := update_account_repository.NewPostgreSQL(postgres_database.New())
+	repo := update_account_repository.NewPostgreSQL(postgresql_database.New())
 
 	broker, err := broker_handler.Instance()
 	if err != nil {
