@@ -3,8 +3,8 @@ package daily_balance_for_account
 import (
 	"context"
 	"errors"
+	"financo/core/domain/queries"
 	"financo/server/summaries/types/response"
-	"financo/server/types/queries"
 	"financo/services/postgresql_database"
 	"time"
 )

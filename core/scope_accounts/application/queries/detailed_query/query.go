@@ -2,10 +2,10 @@ package detailed_query
 
 import (
 	"context"
+	"financo/core/domain/queries"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/domain/responses"
-	"financo/server/types/queries"
 )
 
 type query struct {

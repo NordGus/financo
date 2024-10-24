@@ -3,10 +3,10 @@ package list_query
 import (
 	"context"
 	"errors"
+	"financo/core/domain/queries"
 	"financo/lib/nullable"
 	base "financo/server/transactions/queries"
 	"financo/server/transactions/types/response"
-	"financo/server/types/queries"
 	"financo/services/postgresql_database"
 	"fmt"
 	"time"

@@ -3,11 +3,11 @@ package available_credit_query
 import (
 	"context"
 	"errors"
+	"financo/core/domain/queries"
 	"financo/lib/currency"
 	"financo/models/account"
 	"financo/server/summaries/queries/summary_for_kind_query"
 	"financo/server/summaries/types/response"
-	"financo/server/types/queries"
 	"financo/services/postgresql_database"
 	"time"
 )

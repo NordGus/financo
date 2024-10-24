@@ -3,9 +3,9 @@ package detailed_query
 import (
 	"context"
 	"errors"
+	"financo/core/domain/queries"
 	base "financo/server/transactions/queries"
 	"financo/server/transactions/types/response"
-	"financo/server/types/queries"
 	"financo/services/postgresql_database"
 )
 

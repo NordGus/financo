@@ -3,9 +3,9 @@ package balance_for_account
 import (
 	"context"
 	"errors"
+	"financo/core/domain/queries"
 	"financo/lib/currency"
 	"financo/server/summaries/types/response"
-	"financo/server/types/queries"
 	"financo/services/postgresql_database"
 	"time"
 )

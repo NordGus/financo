@@ -3,10 +3,10 @@ package list_active_query
 import (
 	"context"
 	"errors"
+	"financo/core/domain/queries"
 	"financo/models/achievement"
 	"financo/models/achievement/savings_goal"
 	"financo/server/savings_goals/types/response"
-	"financo/server/types/queries"
 	"financo/services/postgresql_database"
 )
 
