@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 	"financo/core/domain/records/account"
-	"financo/server/types/generic/nullable"
+	"financo/core/domain/types/nullable"
 )
 
 // [ ] Refactor account.Record inside this domain

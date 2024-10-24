@@ -2,7 +2,7 @@ package requests
 
 import (
 	"financo/core/domain/records/account"
-	"financo/server/types/generic/nullable"
+	"financo/core/domain/types/nullable"
 )
 
 type Select struct {

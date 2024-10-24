@@ -3,9 +3,9 @@ package accounts
 import (
 	"financo/core/domain/records/account"
 	"financo/core/domain/records/transaction"
-	"financo/server/types/generic/nullable"
-	"financo/server/types/shared/currency"
-	"financo/server/types/shared/icon"
+	"financo/core/domain/types/currency"
+	"financo/core/domain/types/icon"
+	"financo/core/domain/types/nullable"
 	"time"
 )
 

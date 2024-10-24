@@ -6,6 +6,7 @@ import (
 	"errors"
 	"financo/core/domain/records/account"
 	"financo/core/domain/records/transaction"
+	"financo/core/domain/types/nullable"
 	"financo/server/services/postgres_database"
 	"financo/server/transactions/brokers"
 	"financo/server/transactions/queries/detailed_query"
@@ -13,7 +14,6 @@ import (
 	"financo/server/transactions/types/request"
 	"financo/server/transactions/types/response"
 	"financo/server/types/commands"
-	"financo/server/types/generic/nullable"
 	"time"
 )
 

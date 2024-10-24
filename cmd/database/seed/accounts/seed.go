@@ -6,7 +6,7 @@ import (
 	"errors"
 	"financo/core/domain/records/account"
 	"financo/core/domain/records/transaction"
-	"financo/server/types/generic/nullable"
+	"financo/core/domain/types/nullable"
 	"fmt"
 	"log"
 	"time"

@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"financo/core/domain/records/account"
+	"financo/core/domain/types/currency"
 	"financo/server/services/postgres_database"
 	"financo/server/summaries/queries/summary_for_kind_query"
 	"financo/server/summaries/types/response"
 	"financo/server/types/queries"
-	"financo/server/types/shared/currency"
 	"time"
 )
 

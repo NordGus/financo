@@ -3,10 +3,10 @@ package balance_for_account
 import (
 	"context"
 	"errors"
+	"financo/core/domain/types/currency"
 	"financo/server/services/postgres_database"
 	"financo/server/summaries/types/response"
 	"financo/server/types/queries"
-	"financo/server/types/shared/currency"
 	"time"
 )
 

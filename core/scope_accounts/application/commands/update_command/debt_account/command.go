@@ -5,13 +5,13 @@ import (
 	"errors"
 	"financo/core/domain/records/account"
 	"financo/core/domain/records/transaction"
+	"financo/core/domain/types/nullable"
 	"financo/core/scope_accounts/domain/brokers"
 	"financo/core/scope_accounts/domain/messages"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/domain/responses"
 	"financo/server/types/commands"
-	"financo/server/types/generic/nullable"
 	"time"
 )
 

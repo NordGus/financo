@@ -1,10 +1,10 @@
 package account
 
 import (
-	"financo/server/types/generic/nullable"
-	"financo/server/types/shared/color"
-	"financo/server/types/shared/currency"
-	"financo/server/types/shared/icon"
+	"financo/core/domain/types/color"
+	"financo/core/domain/types/currency"
+	"financo/core/domain/types/icon"
+	"financo/core/domain/types/nullable"
 	"time"
 )
 
