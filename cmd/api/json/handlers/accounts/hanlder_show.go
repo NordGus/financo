@@ -2,8 +2,10 @@ package accounts
 
 import (
 	"encoding/json"
-	"financo/server/accounts/queries/detailed_children_query"
-	"financo/server/accounts/queries/detailed_query"
+	"financo/core/infrastructure/postgresql_database"
+	"financo/core/scope_accounts/application/queries/detailed_query"
+	"financo/core/scope_accounts/domain/requests"
+	"financo/core/scope_accounts/infrastructure/detailed_account_repository"
 	"log"
 	"net/http"
 	"strconv"
@@ -23,22 +25,14 @@ func show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := detailed_query.New(id).Find(r.Context())
+	res, err := detailed_query.New(
+		requests.Detailed{ID: id},
+		detailed_account_repository.NewPostgreSQL(postgresql_database.New()),
+	).Find(r.Context())
 	if err != nil {
 		log.Println("account not found", err)
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
-	}
-
-	res.Children, err = detailed_children_query.New(id).Find(r.Context())
-	if err != nil {
-		log.Println("failed to find account children", err)
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	for i := 0; i < len(res.Children); i++ {
-		res.Balance += res.Children[i].Balance
 	}
 
 	resp, err := json.Marshal(&res)
