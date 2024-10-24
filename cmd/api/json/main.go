@@ -20,7 +20,7 @@ import (
 
 	"financo/core/infrastructure/postgresql_database"
 	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
-	postgres_service "financo/server/services/postgres_database"
+	"financo/server/services/postgres_database"
 	transactions_service "financo/server/transactions"
 
 	"github.com/go-chi/chi/v5"
@@ -37,7 +37,7 @@ func main() {
 		ctx, cancel = context.WithCancel(context.Background())
 
 		sqlDBService       = postgresql_database.New()
-		pgService          = postgres_service.New() // TODO: refactor out of code after arch refactoring
+		pgService          = postgres_database.New() // TODO: refactor out of code after arch refactoring
 		accountsBroker     = accounts_broker.Initialize(wg)
 		transactionsBroker = transactions_service.NewBroker(wg)
 	)
