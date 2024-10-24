@@ -1,7 +1,7 @@
 package messages
 
 import (
-	"financo/server/types/records/account"
+	"financo/core/domain/records/account"
 )
 
 type Created struct {

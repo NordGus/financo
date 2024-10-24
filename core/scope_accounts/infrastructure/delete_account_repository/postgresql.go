@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"financo/core/domain/databases"
+	"financo/core/domain/records/account"
 	"financo/core/scope_accounts/domain/repositories"
-	"financo/server/types/records/account"
 	"time"
 )
 

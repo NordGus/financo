@@ -3,10 +3,10 @@ package preview_account_repository
 import (
 	"context"
 	"financo/core/domain/databases"
+	"financo/core/domain/records/account"
 	"financo/core/scope_accounts/domain/filters"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/responses"
-	"financo/server/types/records/account"
 )
 
 type repository struct {

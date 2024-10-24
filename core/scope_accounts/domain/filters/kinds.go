@@ -1,6 +1,6 @@
 package filters
 
-import "financo/server/types/records/account"
+import "financo/core/domain/records/account"
 
 func FilterKinds(kinds []account.Kind) []account.Kind {
 	var (

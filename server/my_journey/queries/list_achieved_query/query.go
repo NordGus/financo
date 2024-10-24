@@ -4,11 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"financo/core/domain/records/achievement"
+	"financo/core/domain/records/achievement/savings_goal"
 	"financo/server/my_journey/types/response"
 	"financo/server/services/postgres_database"
 	"financo/server/types/queries"
-	"financo/server/types/records/achievement"
-	"financo/server/types/records/achievement/savings_goal"
 	"time"
 )
 

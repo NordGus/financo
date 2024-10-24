@@ -1,9 +1,9 @@
 package savings_goals
 
 import (
+	"financo/core/domain/records/achievement"
+	"financo/core/domain/records/achievement/savings_goal"
 	"financo/server/types/generic/nullable"
-	"financo/server/types/records/achievement"
-	"financo/server/types/records/achievement/savings_goal"
 	"financo/server/types/shared/currency"
 	"time"
 )

@@ -3,8 +3,8 @@ package update_account_repository
 import (
 	"context"
 	"database/sql"
-	"financo/server/types/records/account"
-	"financo/server/types/records/transaction"
+	"financo/core/domain/records/account"
+	"financo/core/domain/records/transaction"
 )
 
 func updateAccountRecord(ctx context.Context, tx *sql.Tx, record account.Record) error {

@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"financo/cmd/database/seed/accounts"
-	"financo/server/types/records/transaction"
+	"financo/core/domain/records/transaction"
 	"fmt"
 	"log"
 	"time"

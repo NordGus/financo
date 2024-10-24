@@ -3,11 +3,11 @@ package update_account_repository
 import (
 	"context"
 	"financo/core/domain/databases"
+	"financo/core/domain/records/account"
+	"financo/core/domain/records/transaction"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/responses"
 	"financo/server/types/generic/nullable"
-	"financo/server/types/records/account"
-	"financo/server/types/records/transaction"
 )
 
 type repository struct {

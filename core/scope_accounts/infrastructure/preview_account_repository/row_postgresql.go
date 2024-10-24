@@ -1,9 +1,9 @@
 package preview_account_repository
 
 import (
+	"financo/core/domain/records/account"
 	"financo/core/scope_accounts/domain/responses"
 	"financo/server/types/generic/nullable"
-	"financo/server/types/records/account"
 	"financo/server/types/shared/color"
 	"financo/server/types/shared/currency"
 	"financo/server/types/shared/icon"

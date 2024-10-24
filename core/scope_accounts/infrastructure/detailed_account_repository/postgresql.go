@@ -3,10 +3,10 @@ package detailed_account_repository
 import (
 	"context"
 	"financo/core/domain/databases"
+	"financo/core/domain/records/account"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/responses"
 	"financo/server/types/generic/nullable"
-	"financo/server/types/records/account"
 	"time"
 )
 
