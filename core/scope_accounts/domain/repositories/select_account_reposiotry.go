@@ -7,11 +7,11 @@ import (
 	"financo/server/types/records/account"
 )
 
-type PreviewAccountRepositoryFilter struct {
+type SelectAccountRepositoryFilter struct {
 	Kinds    []account.Kind
 	Archived nullable.Type[bool]
 }
 
-type PreviewAccountRepository interface {
-	Find(ctx context.Context, filter PreviewAccountRepositoryFilter) ([]responses.Preview, error)
+type SelectAccountRepository interface {
+	Find(ctx context.Context, filter SelectAccountRepositoryFilter) ([]responses.Select, error)
 }
