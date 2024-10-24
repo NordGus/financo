@@ -2,10 +2,10 @@ package accounts
 
 import (
 	"encoding/json"
-	"financo/core/infrastructure/postgresql_database"
 	"financo/core/scope_accounts/application/queries/detailed_query"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/infrastructure/detailed_account_repository"
+	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 	"strconv"

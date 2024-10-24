@@ -18,10 +18,10 @@ import (
 	"syscall"
 	"time"
 
-	"financo/core/infrastructure/postgresql_database"
 	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
 	"financo/server/services/postgres_database"
 	transactions_service "financo/server/transactions"
+	"financo/services/postgresql_database"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"

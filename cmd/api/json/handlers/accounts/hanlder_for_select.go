@@ -2,12 +2,12 @@ package accounts
 
 import (
 	"encoding/json"
-	"financo/core/infrastructure/postgresql_database"
 	"financo/core/scope_accounts/application/queries/select_query"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/infrastructure/select_account_repository"
 	"financo/lib/nullable"
 	"financo/models/account"
+	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 	"strings"
