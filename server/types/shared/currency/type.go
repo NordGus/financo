@@ -96,7 +96,7 @@ func (t Type) MarshalJSON() ([]byte, error) {
 func (t *Type) Scan(value any) error {
 	s, ok := value.(string)
 	if !ok {
-		return errors.New("achievement: invalid column type")
+		return errors.New("currency: invalid column type")
 	}
 
 	switch strings.ToUpper(s) {
