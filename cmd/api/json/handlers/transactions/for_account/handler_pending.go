@@ -2,7 +2,7 @@ package for_account
 
 import (
 	"encoding/json"
-	"financo/core/domain/types/nullable"
+	"financo/lib/nullable"
 	"financo/server/transactions/queries/account_pending_query"
 	"log"
 	"net/http"

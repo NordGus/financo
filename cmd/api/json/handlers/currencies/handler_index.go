@@ -2,7 +2,7 @@ package currencies
 
 import (
 	"encoding/json"
-	"financo/core/domain/types/currency"
+	"financo/lib/currency"
 	"log"
 	"net/http"
 )

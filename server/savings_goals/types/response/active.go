@@ -2,7 +2,7 @@ package response
 
 import (
 	"financo/core/domain/records/achievement/savings_goal"
-	"financo/core/domain/types/currency"
+	"financo/lib/currency"
 )
 
 type Active struct {

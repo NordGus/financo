@@ -3,7 +3,7 @@ package pending_query
 import (
 	"context"
 	"errors"
-	"financo/core/domain/types/nullable"
+	"financo/lib/nullable"
 	"financo/server/services/postgres_database"
 	base "financo/server/transactions/queries"
 	"financo/server/transactions/types/response"

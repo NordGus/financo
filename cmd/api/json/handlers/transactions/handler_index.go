@@ -2,7 +2,7 @@ package transactions
 
 import (
 	"encoding/json"
-	"financo/core/domain/types/nullable"
+	"financo/lib/nullable"
 	"financo/server/transactions/queries/list_query"
 	"log"
 	"net/http"

@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"financo/core/domain/databases"
 	"financo/core/domain/records/account"
-	"financo/core/domain/types/nullable"
+	"financo/lib/nullable"
 	"financo/core/scope_accounts/domain/repositories"
 )
 

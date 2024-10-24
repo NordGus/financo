@@ -5,7 +5,7 @@ import (
 	"errors"
 	"financo/core/domain/records/account"
 	"financo/core/domain/records/transaction"
-	"financo/core/domain/types/nullable"
+	"financo/lib/nullable"
 	"financo/core/scope_accounts/domain/brokers"
 	"financo/core/scope_accounts/domain/messages"
 	"financo/core/scope_accounts/domain/repositories"

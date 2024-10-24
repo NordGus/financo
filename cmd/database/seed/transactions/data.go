@@ -1,7 +1,7 @@
 package transactions
 
 import (
-	"financo/core/domain/types/nullable"
+	"financo/lib/nullable"
 	"time"
 )
 

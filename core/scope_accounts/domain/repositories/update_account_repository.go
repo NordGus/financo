@@ -4,7 +4,7 @@ import (
 	"context"
 	"financo/core/domain/records/account"
 	"financo/core/domain/records/transaction"
-	"financo/core/domain/types/nullable"
+	"financo/lib/nullable"
 	"financo/core/scope_accounts/domain/responses"
 )
 

@@ -1,7 +1,7 @@
 package response
 
 import (
-	"financo/core/domain/types/currency"
+	"financo/lib/currency"
 	"time"
 )
 

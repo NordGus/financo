@@ -6,7 +6,7 @@ import (
 	"errors"
 	"financo/core/domain/records/account"
 	"financo/core/domain/records/achievement/savings_goal"
-	"financo/core/domain/types/currency"
+	"financo/lib/currency"
 	"fmt"
 	"log"
 	"time"

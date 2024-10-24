@@ -2,9 +2,9 @@ package responses
 
 import (
 	"financo/core/domain/records/account"
-	"financo/core/domain/types/currency"
-	"financo/core/domain/types/icon"
-	"financo/core/domain/types/nullable"
+	"financo/lib/currency"
+	"financo/lib/icon"
+	"financo/lib/nullable"
 	"time"
 )
 

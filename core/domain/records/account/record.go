@@ -1,10 +1,10 @@
 package account
 
 import (
-	"financo/core/domain/types/color"
-	"financo/core/domain/types/currency"
-	"financo/core/domain/types/icon"
-	"financo/core/domain/types/nullable"
+	"financo/lib/color"
+	"financo/lib/currency"
+	"financo/lib/icon"
+	"financo/lib/nullable"
 	"time"
 )
 

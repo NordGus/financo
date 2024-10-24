@@ -3,7 +3,7 @@ package accounts
 import (
 	"encoding/json"
 	"financo/core/domain/records/account"
-	"financo/core/domain/types/nullable"
+	"financo/lib/nullable"
 	"financo/core/infrastructure/postgresql_database"
 	"financo/core/scope_accounts/application/queries/select_query"
 	"financo/core/scope_accounts/domain/requests"

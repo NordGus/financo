@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"financo/core/domain/records/transaction"
-	"financo/core/domain/types/nullable"
+	"financo/lib/nullable"
 	"financo/server/services/postgres_database"
 	"financo/server/transactions/brokers"
 	"financo/server/transactions/queries/detailed_query"

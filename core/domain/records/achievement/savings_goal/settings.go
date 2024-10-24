@@ -4,7 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
-	"financo/core/domain/types/currency"
+	"financo/lib/currency"
 	"fmt"
 )
 
