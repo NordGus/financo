@@ -2,8 +2,8 @@ package brokers
 
 import (
 	"context"
+	"financo/lib/message_bus"
 	"financo/server/transactions/types/message"
-	"financo/server/types/message_bus"
 	"fmt"
 	"sync"
 )

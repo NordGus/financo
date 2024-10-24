@@ -2,7 +2,7 @@ package brokers
 
 import (
 	"financo/core/scope_accounts/domain/messages"
-	"financo/server/types/message_bus"
+	"financo/lib/message_bus"
 )
 
 type CreatedBroker interface {
