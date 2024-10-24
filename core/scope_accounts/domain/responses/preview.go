@@ -2,10 +2,10 @@ package responses
 
 import (
 	"financo/core/domain/records/account"
+	"financo/core/domain/types/color"
+	"financo/core/domain/types/currency"
+	"financo/core/domain/types/icon"
 	"financo/server/types/generic/nullable"
-	"financo/server/types/shared/color"
-	"financo/server/types/shared/currency"
-	"financo/server/types/shared/icon"
 	"time"
 )
 
