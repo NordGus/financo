@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"financo/core/domain/commands"
 	"financo/lib/nullable"
 	"financo/models/account"
 	"financo/models/transaction"
@@ -12,7 +13,6 @@ import (
 	"financo/server/transactions/types/message"
 	"financo/server/transactions/types/request"
 	"financo/server/transactions/types/response"
-	"financo/server/types/commands"
 	"financo/services/postgresql_database"
 	"time"
 )

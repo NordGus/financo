@@ -2,6 +2,7 @@ package update_command
 
 import (
 	"errors"
+	"financo/core/domain/commands"
 	"financo/core/scope_accounts/application/commands/update_command/capital_account"
 	"financo/core/scope_accounts/application/commands/update_command/debt_account"
 	"financo/core/scope_accounts/application/commands/update_command/external_account"
@@ -10,7 +11,6 @@ import (
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/domain/responses"
 	"financo/models/account"
-	"financo/server/types/commands"
 )
 
 func New(

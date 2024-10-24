@@ -2,12 +2,12 @@ package create_command
 
 import (
 	"context"
+	"financo/core/domain/commands"
 	"financo/core/scope_accounts/domain/brokers"
 	"financo/core/scope_accounts/domain/messages"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/domain/responses"
-	"financo/server/types/commands"
 	"time"
 )
 

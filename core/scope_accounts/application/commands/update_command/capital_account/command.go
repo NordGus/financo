@@ -3,6 +3,7 @@ package capital_account
 import (
 	"context"
 	"errors"
+	"financo/core/domain/commands"
 	"financo/core/scope_accounts/domain/brokers"
 	"financo/core/scope_accounts/domain/messages"
 	"financo/core/scope_accounts/domain/repositories"
@@ -10,7 +11,6 @@ import (
 	"financo/core/scope_accounts/domain/responses"
 	"financo/lib/nullable"
 	"financo/models/transaction"
-	"financo/server/types/commands"
 	"time"
 )
 
