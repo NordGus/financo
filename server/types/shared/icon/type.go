@@ -64,7 +64,7 @@ func (t *Type) Scan(value any) error {
 		return errors.New("icon: invalid column type")
 	}
 
-	switch strings.ToUpper(s) {
+	switch strings.ToLower(s) {
 	default:
 		return fmt.Errorf("icon: invalid value \"%s\"", value)
 	case "base":
