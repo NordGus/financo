@@ -3,10 +3,10 @@ package debt_for_account
 import (
 	"context"
 	"errors"
+	"financo/core/domain/records/account"
 	"financo/server/services/postgres_database"
 	"financo/server/summaries/types/response"
 	"financo/server/types/queries"
-	"financo/server/types/records/account"
 	"financo/server/types/shared/currency"
 	"time"
 )

@@ -27,7 +27,7 @@ export const action = (queryClient: QueryClient) => async ({
         }
     }[request.method.toLowerCase()]
 
-    if (action) return action()
+    if (action) return await action()
 
     throw new Response("", { status: 405 })
 }

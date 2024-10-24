@@ -9,9 +9,6 @@ import (
 	"financo/cmd/api/json/handlers/savings_goals"
 	"financo/cmd/api/json/handlers/summaries"
 	"financo/cmd/api/json/handlers/transactions"
-	accounts_service "financo/server/accounts"
-	postgres_service "financo/server/services/postgres_database"
-	transactions_service "financo/server/transactions"
 	"fmt"
 	"log"
 	"net/http"
@@ -20,6 +17,11 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	"financo/core/infrastructure/postgresql_database"
+	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
+	"financo/server/services/postgres_database"
+	transactions_service "financo/server/transactions"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -34,8 +36,9 @@ func main() {
 		wg          = new(sync.WaitGroup)
 		ctx, cancel = context.WithCancel(context.Background())
 
-		pgService          = postgres_service.New()
-		accountsBroker     = accounts_service.NewBroker(wg)
+		sqlDBService       = postgresql_database.New()
+		pgService          = postgres_database.New() // TODO: refactor out of code after arch refactoring
+		accountsBroker     = accounts_broker.Initialize(wg)
 		transactionsBroker = transactions_service.NewBroker(wg)
 	)
 
@@ -51,8 +54,15 @@ func main() {
 		}
 	}()
 
+	// TODO: refactor out of code after arch refactoring
 	defer func() {
 		if err := pgService.Close(); err != nil {
+			log.Printf("failed to close database connections: %s\n", err)
+		}
+	}()
+
+	defer func() {
+		if err := sqlDBService.Close(); err != nil {
 			log.Printf("failed to close database connections: %s\n", err)
 		}
 	}()
@@ -95,7 +105,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 	server := &http.Server{
 		Addr:              ":3000",
 		Handler:           router,
-		ReadHeaderTimeout: 500 * time.Millisecond,
+		ReadHeaderTimeout: 1 * time.Second,
 		ReadTimeout:       1 * time.Second,
 		WriteTimeout:      1 * time.Second,
 	}

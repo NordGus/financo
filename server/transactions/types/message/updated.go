@@ -1,7 +1,7 @@
 package message
 
 import (
-	"financo/server/types/records/transaction"
+	"financo/core/domain/records/transaction"
 )
 
 type Updated struct {

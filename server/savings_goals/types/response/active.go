@@ -1,7 +1,7 @@
 package response
 
 import (
-	"financo/server/types/records/achievement/savings_goal"
+	"financo/core/domain/records/achievement/savings_goal"
 	"financo/server/types/shared/currency"
 )
 

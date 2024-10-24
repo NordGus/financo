@@ -3,11 +3,11 @@ package list_active_query
 import (
 	"context"
 	"errors"
+	"financo/core/domain/records/achievement"
+	"financo/core/domain/records/achievement/savings_goal"
 	"financo/server/savings_goals/types/response"
 	"financo/server/services/postgres_database"
 	"financo/server/types/queries"
-	"financo/server/types/records/achievement"
-	"financo/server/types/records/achievement/savings_goal"
 )
 
 type query struct {

@@ -2,14 +2,17 @@ package accounts
 
 import (
 	"encoding/json"
-	"financo/server/accounts/commands/create_command"
-	"financo/server/accounts/types/request"
+	"financo/core/infrastructure/postgresql_database"
+	"financo/core/scope_accounts/application/commands/create_command"
+	"financo/core/scope_accounts/domain/requests"
+	"financo/core/scope_accounts/infrastructure/broker_handler"
+	"financo/core/scope_accounts/infrastructure/create_account_repository"
 	"log"
 	"net/http"
 )
 
 func create(w http.ResponseWriter, r *http.Request) {
-	var req request.Create
+	var req requests.Create
 
 	body := r.Body
 	defer func() {
@@ -26,7 +29,16 @@ func create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := create_command.New(req).Run(r.Context())
+	repo := create_account_repository.NewPostgreSQL(postgresql_database.New())
+
+	broker, err := broker_handler.Instance()
+	if err != nil {
+		log.Println("created broker uninitialized", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	res, err := create_command.New(req, repo, broker.CreatedBroker()).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
