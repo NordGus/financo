@@ -7,8 +7,6 @@ import (
 )
 
 type ExecutedTransactionsRepository interface {
-	Find(ctx context.Context, filter filters.ExecutedTransactionsFilter) ([]responses.Detailed, error)
-	FindForAccount(
-		ctx context.Context, filter filters.ExecutedTransactionsForAccountFilter,
-	) ([]responses.Detailed, error)
+	Find(ctx context.Context, filter filters.TransactionsFilter) ([]responses.Detailed, error)
+	FindForAccount(ctx context.Context, filter filters.TransactionsForAccountFilter) ([]responses.Detailed, error)
 }

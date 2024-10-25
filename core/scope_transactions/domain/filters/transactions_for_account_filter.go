@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type ExecutedTransactionsForAccountFilter struct {
+type TransactionsForAccountFilter struct {
 	ID   int64
 	From nullable.Type[time.Time]
 	To   nullable.Type[time.Time]

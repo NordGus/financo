@@ -24,7 +24,7 @@ func New(
 }
 
 func (q *query) Find(ctx context.Context) ([]responses.Detailed, error) {
-	res, err := q.repo.Find(ctx, filters.ExecutedTransactionsFilter{
+	res, err := q.repo.Find(ctx, filters.TransactionsFilter{
 		From:        q.req.From,
 		To:          q.req.To,
 		AccountIDs:  q.req.AccountIDs,
