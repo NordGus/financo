@@ -2,8 +2,11 @@ package transactions
 
 import (
 	"encoding/json"
+	"financo/core/scope_transactions/application/queries/pending_query"
+	"financo/core/scope_transactions/domain/requests"
+	"financo/core/scope_transactions/infrastructure/pending_transactions_repository"
 	"financo/lib/nullable"
-	"financo/server/transactions/queries/pending_query"
+	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 	"strconv"
@@ -12,13 +15,10 @@ import (
 )
 
 func pending(w http.ResponseWriter, r *http.Request) {
-	var (
-		accounts   = make([]int64, 0, 10)
-		categories = make([]int64, 0, 10)
-
-		from nullable.Type[time.Time]
-		to   nullable.Type[time.Time]
-	)
+	req := requests.Pending{
+		AccountIDs:  make([]int64, 0, 10),
+		CategoryIDs: make([]int64, 0, 10),
+	}
 
 	if r.URL.Query().Has(executedFromKey) {
 		raw, err := time.Parse(time.RFC3339, r.URL.Query().Get(executedFromKey))
@@ -32,7 +32,7 @@ func pending(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		from = nullable.New(raw)
+		req.From = nullable.New(raw)
 	}
 
 	if r.URL.Query().Has(executedUntilKey) {
@@ -47,7 +47,7 @@ func pending(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		to = nullable.New(raw)
+		req.To = nullable.New(raw)
 	}
 
 	if r.URL.Query().Has(accountKey) {
@@ -69,7 +69,7 @@ func pending(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			accounts = append(accounts, parsed)
+			req.AccountIDs = append(req.AccountIDs, parsed)
 		}
 	}
 
@@ -92,11 +92,13 @@ func pending(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			categories = append(categories, parsed)
+			req.CategoryIDs = append(req.CategoryIDs, parsed)
 		}
 	}
 
-	res, err := pending_query.New(from, to, accounts, categories).Find(r.Context())
+	repo := pending_transactions_repository.New(postgresql_database.New())
+
+	res, err := pending_query.New(req, repo).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

@@ -15,12 +15,10 @@ import (
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
-	var (
-		req = requests.Executed{
-			AccountIDs:  make([]int64, 0, 10),
-			CategoryIDs: make([]int64, 0, 10),
-		}
-	)
+	req := requests.Executed{
+		AccountIDs:  make([]int64, 0, 10),
+		CategoryIDs: make([]int64, 0, 10),
+	}
 
 	if r.URL.Query().Has(executedFromKey) {
 		raw, err := time.Parse(time.RFC3339, r.URL.Query().Get(executedFromKey))
