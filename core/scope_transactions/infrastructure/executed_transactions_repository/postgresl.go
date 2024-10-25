@@ -78,7 +78,7 @@ const (
 )
 
 func (r *repository) Find(
-	ctx context.Context, filter filters.ExecutedTransactionsFilter,
+	ctx context.Context, filter filters.TransactionsFilter,
 ) ([]responses.Detailed, error) {
 	var (
 		query = queryStr + `
@@ -114,7 +114,7 @@ func (r *repository) Find(
 }
 
 func (r *repository) FindForAccount(
-	ctx context.Context, filter filters.ExecutedTransactionsForAccountFilter,
+	ctx context.Context, filter filters.TransactionsForAccountFilter,
 ) ([]responses.Detailed, error) {
 	var (
 		query = queryStr + `
