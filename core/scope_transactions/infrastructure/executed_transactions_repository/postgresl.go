@@ -85,27 +85,27 @@ func (r *repository) Find(
 			AND tr.executed_at IS NOT NULL
 			AND (tr.executed_at BETWEEN $1 AND $2)
 		`
-		filters     = make([]any, 0, 4)
+		args        = make([]any, 0, 4)
 		filterCount = 3
 
 		res []responses.Detailed
 	)
 
-	filters = append(filters, filter.From.OrElse(minimumDate()), filter.To.OrElse(maximumDate()))
+	args = append(args, filter.From.OrElse(filters.FromDefault()), filter.To.OrElse(filters.ToDefault()))
 
 	if len(filter.AccountIDs) > 0 {
 		query += fmt.Sprintf(" AND (tr.source_id = ANY ($%d) OR tr.target_id = ANY ($%d))", filterCount, filterCount)
-		filters = append(filters, filter.AccountIDs)
+		args = append(args, filter.AccountIDs)
 		filterCount++
 	}
 
 	if len(filter.CategoryIDs) > 0 {
 		query += fmt.Sprintf(" AND (tr.source_id = ANY ($%d) OR tr.target_id = ANY ($%d))", filterCount, filterCount)
-		filters = append(filters, filter.CategoryIDs)
+		args = append(args, filter.CategoryIDs)
 		filterCount++
 	}
 
-	res, err := r.find(ctx, query, filters...)
+	res, err := r.find(ctx, query, args...)
 	if err != nil {
 		return res, err
 	}
@@ -122,27 +122,27 @@ func (r *repository) FindForAccount(
 		AND (src.id = $1 OR srcp.id = $1 OR trg.id = $1 OR trgp.id = $1)
 		AND (tr.executed_at BETWEEN $2 AND $3)
 		`
-		filters     = make([]any, 0, 5)
+		args        = make([]any, 0, 5)
 		filterCount = 4
 
 		res []responses.Detailed
 	)
 
-	filters = append(filters, filter.ID, filter.From.OrElse(minimumDate()), filter.To.OrElse(maximumDate()))
+	args = append(args, filter.ID, filter.From.OrElse(filters.FromDefault()), filter.To.OrElse(filters.ToDefault()))
 
 	if len(filter.AccountIDs) > 0 {
 		query += fmt.Sprintf(" AND (tr.source_id = ANY ($%d) OR tr.target_id = ANY ($%d))", filterCount, filterCount)
-		filters = append(filters, filter.AccountIDs)
+		args = append(args, filter.AccountIDs)
 		filterCount++
 	}
 
 	if len(filter.CategoryIDs) > 0 {
 		query += fmt.Sprintf(" AND (tr.source_id = ANY ($%d) OR tr.target_id = ANY ($%d))", filterCount, filterCount)
-		filters = append(filters, filter.CategoryIDs)
+		args = append(args, filter.CategoryIDs)
 		filterCount++
 	}
 
-	res, err := r.find(ctx, query, filters...)
+	res, err := r.find(ctx, query, args...)
 	if err != nil {
 		return res, err
 	}
