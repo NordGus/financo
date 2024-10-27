@@ -96,7 +96,7 @@ func pending(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	repo := pending_transactions_repository.New(postgresql_database.New())
+	repo := pending_transactions_repository.NewPostgreSQL(postgresql_database.New())
 
 	res, err := pending_query.New(req, repo).Find(r.Context())
 	if err != nil {

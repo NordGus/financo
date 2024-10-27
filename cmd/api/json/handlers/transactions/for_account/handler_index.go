@@ -111,7 +111,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	repo := executed_transactions_repository.New(postgresql_database.New())
+	repo := executed_transactions_repository.NewPostgreSQL(postgresql_database.New())
 
 	res, err := executed_for_account_query.New(req, repo).Find(r.Context())
 	if err != nil {

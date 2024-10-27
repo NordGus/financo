@@ -12,7 +12,7 @@ type repository struct {
 	db databases.SQLAdapter
 }
 
-func New(db databases.SQLAdapter) repositories.CreateTransactionRepository {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.CreateTransactionRepository {
 	return &repository{
 		db: db,
 	}
