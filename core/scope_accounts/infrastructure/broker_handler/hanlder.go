@@ -2,21 +2,14 @@ package broker_handler
 
 import (
 	"context"
-	"errors"
 	"financo/core/scope_accounts/domain/brokers"
+	"financo/core/scope_accounts/domain/errors"
 	"financo/core/scope_accounts/infrastructure/created_broker"
 	"financo/core/scope_accounts/infrastructure/deleted_broker"
 	"financo/core/scope_accounts/infrastructure/updated_broker"
 	"fmt"
 	"sync"
 )
-
-type BrokerHandler interface {
-	CreatedBroker() brokers.CreatedBroker
-	DeletedBroker() brokers.DeletedBroker
-	UpdatedBroker() brokers.UpdatedBroker
-	Shutdown() error
-}
 
 type handler struct {
 	ctx           context.Context
@@ -27,16 +20,12 @@ type handler struct {
 	updatedBroker brokers.UpdatedBroker
 }
 
-var (
-	ErrUninitialized = errors.New("broker_handler: handler was not initialized")
+var instance *handler
 
-	instance *handler
-)
-
-// Initialize returns the context [BrokerHandler]. Please do this on program
+// Initialize returns the context [brokers.Handler]. Please do this on program
 // startup at least once for the application to work properly. If it wasn't
 // initialized before, it can panic.
-func Initialize(wg *sync.WaitGroup) BrokerHandler {
+func Initialize(wg *sync.WaitGroup) brokers.Handler {
 	if instance != nil {
 		return instance
 	}
@@ -56,9 +45,9 @@ func Initialize(wg *sync.WaitGroup) BrokerHandler {
 	return instance
 }
 
-func Instance() (BrokerHandler, error) {
+func Instance() (brokers.Handler, error) {
 	if instance == nil {
-		return nil, ErrUninitialized
+		return nil, errors.ErrUninitialized
 	}
 
 	return instance, nil
