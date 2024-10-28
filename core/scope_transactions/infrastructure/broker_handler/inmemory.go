@@ -2,11 +2,11 @@ package broker_handler
 
 import (
 	"context"
-	"financo/core/scope_accounts/domain/brokers"
-	"financo/core/scope_accounts/domain/errors"
-	"financo/core/scope_accounts/infrastructure/created_broker"
-	"financo/core/scope_accounts/infrastructure/deleted_broker"
-	"financo/core/scope_accounts/infrastructure/updated_broker"
+	"errors"
+	"financo/core/scope_transactions/domain/brokers"
+	"financo/core/scope_transactions/infrastructure/created_broker"
+	"financo/core/scope_transactions/infrastructure/deleted_broker"
+	"financo/core/scope_transactions/infrastructure/updated_broker"
 	"fmt"
 	"sync"
 )
@@ -20,7 +20,11 @@ type handler struct {
 	updatedBroker brokers.UpdatedBroker
 }
 
-var instance *handler
+var (
+	ErrUninitialized = errors.New("broker_handler: handler was not initialized")
+
+	instance *handler
+)
 
 // Initialize returns the context [brokers.Handler]. Please do this on program
 // startup at least once for the application to work properly. If it wasn't
@@ -47,7 +51,7 @@ func Initialize(wg *sync.WaitGroup) brokers.Handler {
 
 func Instance() (brokers.Handler, error) {
 	if instance == nil {
-		return nil, errors.ErrUninitialized
+		return nil, ErrUninitialized
 	}
 
 	return instance, nil
@@ -69,7 +73,7 @@ func (b *handler) UpdatedBroker() brokers.UpdatedBroker {
 func (b *handler) Shutdown() error {
 	select {
 	case <-b.ctx.Done():
-		return fmt.Errorf("accounts: broker: %s", b.ctx.Err())
+		return fmt.Errorf("transactions: broker: %s", b.ctx.Err())
 	default:
 		b.cancel()
 

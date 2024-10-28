@@ -2,7 +2,13 @@ package transactions
 
 import (
 	"encoding/json"
-	"financo/server/transactions/commands/delete_command"
+	"financo/core/scope_transactions/application/commands/delete_command"
+	"financo/core/scope_transactions/domain/requests"
+	"financo/core/scope_transactions/infrastructure/broker_handler"
+	"financo/core/scope_transactions/infrastructure/delete_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/detailed_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/transaction_repository"
+	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 	"strconv"
@@ -11,6 +17,12 @@ import (
 )
 
 func destroy(w http.ResponseWriter, r *http.Request) {
+	var (
+		db = postgresql_database.New()
+
+		req requests.Delete
+	)
+
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		log.Println("failed to parse transaction id", err)
@@ -22,7 +34,26 @@ func destroy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := delete_command.New(id).Run(r.Context())
+	req.ID = id
+
+	broker, err := broker_handler.Instance()
+	if err != nil {
+		log.Println("failed to acquire broker handler instance", err)
+		http.Error(
+			w,
+			http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	res, err := delete_command.New(
+		req,
+		transaction_repository.NewPostgreSQL(db),
+		delete_transaction_repository.NewPostgreSQL(db),
+		detailed_transaction_repository.NewPostgreSQL(db),
+		broker.DeletedBroker(),
+	).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(

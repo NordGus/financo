@@ -2,14 +2,23 @@ package transactions
 
 import (
 	"encoding/json"
-	"financo/server/transactions/commands/create_command"
-	"financo/server/transactions/types/request"
+	"financo/core/scope_transactions/application/commands/create_command"
+	"financo/core/scope_transactions/domain/requests"
+	"financo/core/scope_transactions/infrastructure/account_repository"
+	"financo/core/scope_transactions/infrastructure/broker_handler"
+	"financo/core/scope_transactions/infrastructure/create_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/detailed_transaction_repository"
+	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 )
 
 func create(w http.ResponseWriter, r *http.Request) {
-	var req request.Create
+	var (
+		db = postgresql_database.New()
+
+		req requests.Create
+	)
 
 	body := r.Body
 	defer func() {
@@ -30,7 +39,24 @@ func create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := create_command.New(req).Run(r.Context())
+	broker, err := broker_handler.Instance()
+	if err != nil {
+		log.Println("failed to get broker handler instance", err)
+		http.Error(
+			w,
+			http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	res, err := create_command.New(
+		req,
+		account_repository.NewPostgreSQL(db),
+		create_transaction_repository.NewPostgreSQL(db),
+		detailed_transaction_repository.NewPostgreSQL(db),
+		broker.CreatedBroker(),
+	).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(

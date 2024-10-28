@@ -19,7 +19,7 @@ import (
 	"time"
 
 	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
-	transactions_service "financo/server/transactions"
+	transactions_broker "financo/core/scope_transactions/infrastructure/broker_handler"
 	"financo/services/postgresql_database"
 
 	"github.com/go-chi/chi/v5"
@@ -37,7 +37,7 @@ func main() {
 
 		pgDBService        = postgresql_database.New()
 		accountsBroker     = accounts_broker.Initialize(wg)
-		transactionsBroker = transactions_service.NewBroker(wg)
+		transactionsBroker = transactions_broker.Initialize(wg)
 	)
 
 	defer func() {
