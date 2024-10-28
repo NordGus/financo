@@ -2,8 +2,14 @@ package transactions
 
 import (
 	"encoding/json"
-	"financo/server/transactions/commands/update_command"
-	"financo/server/transactions/types/request"
+	"financo/core/scope_transactions/application/commands/update_command"
+	"financo/core/scope_transactions/domain/requests"
+	"financo/core/scope_transactions/infrastructure/account_repository"
+	"financo/core/scope_transactions/infrastructure/broker_handler"
+	"financo/core/scope_transactions/infrastructure/detailed_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/transaction_repository"
+	"financo/core/scope_transactions/infrastructure/update_transaction_repository"
+	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 	"strconv"
@@ -12,7 +18,11 @@ import (
 )
 
 func Update(w http.ResponseWriter, r *http.Request) {
-	var req request.Update
+	var (
+		db = postgresql_database.New()
+
+		req requests.Update
+	)
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -54,7 +64,25 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := update_command.New(req).Run(r.Context())
+	broker, err := broker_handler.Instance()
+	if err != nil {
+		log.Println("failed to get broker handler instance", err)
+		http.Error(
+			w,
+			http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	res, err := update_command.New(
+		req,
+		account_repository.NewPostgreSQL(db),
+		transaction_repository.NewPostgreSQL(db),
+		update_transaction_repository.NewPostgreSQL(db),
+		detailed_transaction_repository.NewPostgreSQL(db),
+		broker.UpdatedBroker(),
+	).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(
