@@ -9,7 +9,6 @@ import (
 	"financo/core/scope_transactions/domain/repositories"
 	"financo/core/scope_transactions/domain/requests"
 	"financo/core/scope_transactions/domain/responses"
-	"financo/lib/nullable"
 	"financo/models/account"
 	"time"
 )
@@ -64,10 +63,6 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 
 	if target.Currency == source.Currency {
 		record.TargetAmount = record.SourceAmount
-	}
-
-	if record.ExecutedAt.Valid {
-		record.ExecutedAt = nullable.New(record.ExecutedAt.Val.UTC())
 	}
 
 	record, err = c.createRepo.Save(ctx, record)

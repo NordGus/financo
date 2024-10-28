@@ -17,7 +17,7 @@ type Create struct {
 }
 
 func (r Create) ToTransactionRecord(timestamp time.Time) transaction.Record {
-	return transaction.Record{
+	record := transaction.Record{
 		ID:           -1,
 		SourceID:     r.SourceID,
 		TargetID:     r.TargetID,
@@ -30,4 +30,10 @@ func (r Create) ToTransactionRecord(timestamp time.Time) transaction.Record {
 		CreatedAt:    timestamp,
 		UpdatedAt:    timestamp,
 	}
+
+	if record.ExecutedAt.Valid {
+		record.ExecutedAt = nullable.New(record.ExecutedAt.Val.UTC())
+	}
+
+	return record
 }
