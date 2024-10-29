@@ -21,39 +21,6 @@ func NewPostgreSQL(db databases.SQLAdapter) repositories.SelectAccountRepository
 
 const (
 	queryString = `
-	WITH
-		children (
-			id,
-			parent_id,
-			kind,
-			currency,
-			name,
-			description,
-			color,
-			icon,
-			archived_at,
-			created_at,
-			updated_at
-		) AS (
-			SELECT
-				acc.id,
-				acc.parent_id,
-				acc.kind,
-				acc.currency,
-				acc.name,
-				acc.description,
-				acc.color,
-				acc.icon,
-				acc.archived_at,
-				acc.created_at,
-				acc.updated_at
-			FROM
-				accounts acc
-			WHERE
-				acc.parent_id IS NOT NULL
-				AND acc.deleted_at IS NULL
-				AND acc.kind != $1
-		)
 	SELECT
 		acc.id,
 		acc.kind,
@@ -77,7 +44,7 @@ const (
 		child.updated_at
 	FROM
 		accounts acc
-		LEFT JOIN children child ON child.parent_id = acc.id
+		LEFT JOIN accounts child ON child.parent_id = acc.id AND child.kind != $1 AND child.deleted_at IS NULL AND child.archived_at IS NULL
 	WHERE
 		acc.kind = ANY ($2)
 		AND acc.parent_id IS NULL

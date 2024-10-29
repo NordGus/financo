@@ -73,7 +73,7 @@ const (
 		INNER JOIN accounts trg ON trg.id = tr.target_id
 		LEFT JOIN accounts trgp ON trgp.id = trg.parent_id
 	WHERE
-		tr.deleted_at IS NULL AND
+		tr.deleted_at IS NULL
 	`
 )
 
