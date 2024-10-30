@@ -8,6 +8,7 @@ import (
 	"financo/core/scope_graphs/domain/repositories"
 	"financo/core/scope_graphs/domain/responses"
 	"financo/lib/currency"
+	"time"
 )
 
 type postgresql struct {
@@ -52,6 +53,8 @@ func (r *postgresql) Find(ctx context.Context, filter filters.BalanceForKinds) (
 		for j := 1; j < len(out[i].Series); j++ {
 			out[i].Series[j].Amount += out[i].Series[j-1].Amount
 		}
+
+		out[i].Series = r.deduplicateSeries(out[i].Series)
 	}
 
 	return out, nil
@@ -146,7 +149,9 @@ func (r *postgresql) firstEntryForCurrency(
 		kinds = filter.FilteredKinds()
 		from  = filter.From.OrElse(filters.FromDefault())
 
-		entry = responses.SeriesEntry{Date: from}
+		entry = responses.SeriesEntry{
+			Date: time.Date(from.Year(), from.Month(), from.Day(), 0, 0, 0, 0, from.Location()),
+		}
 	)
 
 	err := conn.QueryRowContext(ctx, query, kinds, cur, from).Scan(&entry.Amount)
@@ -168,7 +173,7 @@ func (r *postgresql) entriesForCurrency(
 				UNION ALL
 				SELECT date - INTERVAL '1' DAY
 				FROM balance_day
-				WHERE date > $1::timestamp
+				WHERE date > $1::timestamp + INTERVAL '1' DAY
 			)
 		SELECT bd.date::DATE, SUM(COALESCE(blc.amount, 0))
 		FROM balance_day bd
@@ -227,4 +232,20 @@ func (r *postgresql) entriesForCurrency(
 	}
 
 	return entries, nil
+}
+
+func (r *postgresql) deduplicateSeries(series []responses.SeriesEntry) []responses.SeriesEntry {
+	var (
+		in  = make(map[time.Time]bool, len(series))
+		out = make([]responses.SeriesEntry, 0, len(series))
+	)
+
+	for i := 0; i < len(series); i++ {
+		if _, ok := in[series[i].Date]; !ok {
+			in[series[i].Date] = true
+			out = append(out, series[i])
+		}
+	}
+
+	return out
 }
