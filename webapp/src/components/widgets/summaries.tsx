@@ -28,8 +28,6 @@ export function SummaryCapital({ className }: { className?: string }) {
     if (isError) throw error
     if (isFetching) return null
 
-    console.log(balances)
-
     return <CardSummary className={className} title="Capital" summaries={balances || []} />
 }
 
