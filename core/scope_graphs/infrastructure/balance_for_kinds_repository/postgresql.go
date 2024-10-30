@@ -121,13 +121,13 @@ func (r *postgresql) firstEntryForCurrency(
 	var (
 		query = `
 		SELECT
-			SUM(
+			COALESCE(SUM(
 				CASE
 					WHEN tr.target_id = acc.id THEN tr.target_amount
 					WHEN tr.source_id = acc.id THEN - tr.source_amount
 					ELSE 0
 				END
-			)
+			), 0)
 		FROM
 			transactions tr
 			INNER JOIN accounts acc ON acc.id = tr.source_id OR acc.id = tr.target_id
@@ -144,7 +144,7 @@ func (r *postgresql) firstEntryForCurrency(
 		`
 
 		kinds = filter.FilteredKinds()
-		from  = filter.To.OrElse(filters.FromDefault())
+		from  = filter.From.OrElse(filters.FromDefault())
 
 		entry = responses.SeriesEntry{Date: from}
 	)
@@ -168,7 +168,7 @@ func (r *postgresql) entriesForCurrency(
 				UNION ALL
 				SELECT date - INTERVAL '1' DAY
 				FROM balance_day
-				WHERE date > $1
+				WHERE date > $1::timestamp
 			)
 		SELECT bd.date::DATE, SUM(COALESCE(blc.amount, 0))
 		FROM balance_day bd
@@ -184,27 +184,26 @@ func (r *postgresql) entriesForCurrency(
 					) AS amount
 				FROM
 					transactions tr
-					INNER JOIN accounts acc ON acc.id = tr.target_id
-					OR acc.id = tr.source_id
+					INNER JOIN accounts acc ON acc.id = tr.target_id OR acc.id = tr.source_id
 				WHERE
 					acc.kind = ANY ($3)
 					AND acc.currency = $4
 					AND tr.deleted_at IS NULL
 					AND acc.deleted_at IS NULL
 					AND (
-						(tr.executed_at IS NOT NULL AND tr.executed_at BETWEEN $1 AND $2)
+						tr.executed_at BETWEEN $1 AND $2
 						OR
-						(tr.executed_at IS NULL AND tr.issued_at BETWEEN $1 AND $2)
+						tr.issued_at BETWEEN $1 AND $2
 					)
 				GROUP BY
 					date
-			) AS blc ON blc.date = bd.date
+			) AS blc ON blc.date = bd.date::DATE
 		GROUP BY bd.date
 		ORDER BY bd.date
 		`
 
 		kinds = filter.FilteredKinds()
-		from  = filter.To.OrElse(filters.FromDefault()).AddDate(0, 1, 0)
+		from  = filter.From.OrElse(filters.FromDefault()).AddDate(0, 0, 1)
 		to    = filter.To.OrElse(filters.ToDefault())
 
 		entries = make([]responses.SeriesEntry, 0, 30)

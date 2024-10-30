@@ -9,5 +9,5 @@ func ToDefault() time.Time {
 }
 
 func FromDefault() time.Time {
-	return time.Now().UTC().AddDate(0, -FromDefaultDaysOffset, 0)
+	return time.Now().UTC().AddDate(0, 0, -FromDefaultDaysOffset)
 }
