@@ -15,3 +15,11 @@ export async function getDebtsSummaryGraph(): Promise<Summary[]> {
 
     return response.json()
 }
+
+export async function getNetWorthSummaryGraph(): Promise<Summary[]> {
+    const response = await fetch("/api/graphs/net-worth")
+
+    if (!response.ok) throw response
+
+    return response.json()
+}

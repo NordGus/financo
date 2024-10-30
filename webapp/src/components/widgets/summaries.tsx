@@ -1,11 +1,10 @@
 import { cn } from "@/lib/utils";
 import { Kind } from "@/types/Account";
-import { getCapitalSummaryGraph, getDebtsSummaryGraph } from "@api/graphs";
+import { getCapitalSummaryGraph, getDebtsSummaryGraph, getNetWorthSummaryGraph } from "@api/graphs";
 import {
     getAvailableCreditSummary,
     getBalanceForAccountSummary,
     getDailyBalanceForAccountSummary,
-    getNetWorthSummary,
     getPaidForAccountSummary
 } from "@api/summary";
 import { CardSummary } from "@components/card";
@@ -46,8 +45,8 @@ export function SummaryDebt({ className }: { className?: string }) {
 
 export function SummaryNetWorth({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
-        queryKey: ['summary', 'net_worth'],
-        queryFn: getNetWorthSummary,
+        queryKey: ['graphs', 'net-worth', 'summary'],
+        queryFn: getNetWorthSummaryGraph,
         staleTime: staleTimeDefault
     })
 
