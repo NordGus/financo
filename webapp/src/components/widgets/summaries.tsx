@@ -1,10 +1,9 @@
 import { cn } from "@/lib/utils";
 import { Kind } from "@/types/Account";
-import { getDebtsSummaryGraph } from "@api/graphs";
+import { getCapitalSummaryGraph, getDebtsSummaryGraph } from "@api/graphs";
 import {
     getAvailableCreditSummary,
     getBalanceForAccountSummary,
-    getCapitalSummary,
     getDailyBalanceForAccountSummary,
     getNetWorthSummary,
     getPaidForAccountSummary
@@ -21,13 +20,15 @@ import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts";
 
 export function SummaryCapital({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
-        queryKey: ['summary', 'capital'],
-        queryFn: getCapitalSummary,
+        queryKey: ['graphs', 'capital', 'summary'],
+        queryFn: getCapitalSummaryGraph,
         staleTime: staleTimeDefault
     })
 
     if (isError) throw error
     if (isFetching) return null
+
+    console.log(balances)
 
     return <CardSummary className={className} title="Capital" summaries={balances || []} />
 }
