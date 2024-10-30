@@ -1,23 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
-
+import { cn } from "@/lib/utils";
+import { Kind } from "@/types/Account";
+import { getDebtsSummaryGraph } from "@api/graphs";
 import {
     getAvailableCreditSummary,
     getBalanceForAccountSummary,
     getCapitalSummary,
     getDailyBalanceForAccountSummary,
-    getDebtsSummary,
     getNetWorthSummary,
     getPaidForAccountSummary
 } from "@api/summary";
-import { staleTimeDefault } from "@queries/client";
-
-import { cn } from "@/lib/utils";
-import { Kind } from "@/types/Account";
 import { CardSummary } from "@components/card";
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@components/ui/chart";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import { staleTimeDefault } from "@queries/client";
+import { useQuery } from "@tanstack/react-query";
 import { Currency } from "dinero.js";
 import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts";
 
@@ -36,8 +34,8 @@ export function SummaryCapital({ className }: { className?: string }) {
 
 export function SummaryDebt({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
-        queryKey: ['summary', 'debts'],
-        queryFn: getDebtsSummary,
+        queryKey: ['graphs', 'debts', 'summary'],
+        queryFn: getDebtsSummaryGraph,
         staleTime: staleTimeDefault
     })
 

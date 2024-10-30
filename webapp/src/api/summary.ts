@@ -8,14 +8,6 @@ export async function getCapitalSummary(): Promise<Summary[]> {
     return response.json()
 }
 
-export async function getDebtsSummary(): Promise<Summary[]> {
-    const response = await fetch("/api/summaries/debts")
-
-    if (!response.ok) throw response
-
-    return response.json()
-}
-
 export async function getNetWorthSummary(): Promise<Summary[]> {
     const response = await fetch("/api/summaries/net_worth")
 
