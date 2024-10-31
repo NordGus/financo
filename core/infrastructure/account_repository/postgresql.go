@@ -4,21 +4,21 @@ import (
 	"context"
 	"database/sql"
 	"financo/core/domain/databases"
-	"financo/core/scope_transactions/domain/repositories"
+	"financo/core/domain/repositories"
 	"financo/models/account"
 )
 
-type repository struct {
+type postgresql struct {
 	db databases.SQLAdapter
 }
 
 func NewPostgreSQL(db databases.SQLAdapter) repositories.AccountRepository {
-	return &repository{
+	return &postgresql{
 		db: db,
 	}
 }
 
-func (r *repository) Find(ctx context.Context, id int64) (account.Record, error) {
+func (r *postgresql) Find(ctx context.Context, id int64) (account.Record, error) {
 	var record account.Record
 
 	conn, err := r.db.Conn(ctx)
@@ -27,7 +27,7 @@ func (r *repository) Find(ctx context.Context, id int64) (account.Record, error)
 	}
 	defer conn.Close()
 
-	record, err = find(ctx, conn, id)
+	record, err = r.find(ctx, conn, id)
 	if err != nil {
 		return record, err
 	}
@@ -35,7 +35,7 @@ func (r *repository) Find(ctx context.Context, id int64) (account.Record, error)
 	return record, nil
 }
 
-func find(ctx context.Context, conn *sql.Conn, id int64) (account.Record, error) {
+func (r *postgresql) find(ctx context.Context, conn *sql.Conn, id int64) (account.Record, error) {
 	var record account.Record
 
 	err := conn.QueryRowContext(
