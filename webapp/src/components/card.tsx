@@ -63,7 +63,7 @@ export function CardSummary({
                             config={chartConfig}
                             className="min-h-[150px] h-[150px] max-h-[150px] w-full"
                         >
-                            <AreaChart accessibilityLayer margin={{ left: 0, right: 0, top: 0, bottom: 0 }}>
+                            <AreaChart accessibilityLayer margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
                                 <defs>
                                     {
                                         summaries.map(({ currency }) => (
