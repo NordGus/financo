@@ -50,3 +50,11 @@ func (f *BalanceForKinds) FilteredKinds() []account.Kind {
 
 	return kinds
 }
+
+func (f *BalanceForKinds) FromValue() time.Time {
+	return f.From.OrElse(from())
+}
+
+func (f *BalanceForKinds) ToValue() time.Time {
+	return f.To.OrElse(to())
+}

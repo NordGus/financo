@@ -92,7 +92,7 @@ func (r *postgresql) totalPerCurrency(
 		`
 
 		kinds     = filter.FilteredKinds()
-		to        = filter.To.OrElse(filters.ToDefault())
+		to        = filter.ToValue()
 		summaries = make([]responses.Summary, 0, 10)
 	)
 
@@ -147,7 +147,7 @@ func (r *postgresql) firstEntryForCurrency(
 		`
 
 		kinds = filter.FilteredKinds()
-		from  = filter.From.OrElse(filters.FromDefault())
+		from  = filter.FromValue()
 
 		entry = responses.SeriesEntry{
 			Date: time.Date(from.Year(), from.Month(), from.Day(), 0, 0, 0, 0, from.Location()),
@@ -208,8 +208,8 @@ func (r *postgresql) entriesForCurrency(
 		`
 
 		kinds = filter.FilteredKinds()
-		from  = filter.From.OrElse(filters.FromDefault()).AddDate(0, 0, 1)
-		to    = filter.To.OrElse(filters.ToDefault())
+		from  = filter.FromValue().AddDate(0, 0, 1)
+		to    = filter.ToValue()
 
 		entries = make([]responses.SeriesEntry, 0, 30)
 	)

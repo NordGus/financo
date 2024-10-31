@@ -2,12 +2,14 @@ package filters
 
 import "time"
 
-const FromDefaultDaysOffset = 30
+const (
+	fromDefaultDaysOffset = 30
+)
 
-func ToDefault() time.Time {
+func to() time.Time {
 	return time.Now().UTC()
 }
 
-func FromDefault() time.Time {
-	return time.Now().UTC().AddDate(0, 0, -FromDefaultDaysOffset)
+func from() time.Time {
+	return time.Now().UTC().AddDate(0, 0, -fromDefaultDaysOffset)
 }
