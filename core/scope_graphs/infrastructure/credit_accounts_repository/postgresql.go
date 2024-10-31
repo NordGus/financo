@@ -73,7 +73,21 @@ func (r *postgresql) find(ctx context.Context, conn *sql.Conn) ([]account.Record
 	for rows.Next() {
 		var r account.Record
 
-		err = rows.Scan()
+		err = rows.Scan(
+			&r.ID,
+			&r.ParentID,
+			&r.Kind,
+			&r.Currency,
+			&r.Name,
+			&r.Description,
+			&r.Color,
+			&r.Icon,
+			&r.Capital,
+			&r.ArchivedAt,
+			&r.DeletedAt,
+			&r.CreatedAt,
+			&r.UpdatedAt,
+		)
 		if err != nil {
 			return out, err
 		}

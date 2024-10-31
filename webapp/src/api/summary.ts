@@ -1,13 +1,5 @@
 import { Summary } from "@/types/Summary";
 
-export async function getAvailableCreditSummary(): Promise<Summary[]> {
-    const response = await fetch("/api/summaries/available_credit")
-
-    if (!response.ok) throw response
-
-    return response.json()
-}
-
 export async function getBalanceForAccountSummary(id: number): Promise<Summary[]> {
     const response = await fetch(`/api/summaries/for_account/${id}/balance`)
 

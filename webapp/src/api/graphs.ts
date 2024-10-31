@@ -23,3 +23,11 @@ export async function getNetWorthSummaryGraph(): Promise<Summary[]> {
 
     return response.json()
 }
+
+export async function getAvailableCreditSummaryGraph(): Promise<Summary[]> {
+    const response = await fetch("/api/graphs/available-credit")
+
+    if (!response.ok) throw response
+
+    return response.json()
+}

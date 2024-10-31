@@ -8,7 +8,7 @@ func Routes(r chi.Router) {
 	r.Get("/capital", Capital)
 	r.Get("/debts", Debts)
 	r.Get("/net-worth", NetWorth)
-	// r.Get("/available_credit", AvailableCredit)
+	r.Get("/available-credit", AvailableCredit)
 
 	// r.Route("/for_account", for_account.Routes)
 }
