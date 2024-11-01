@@ -39,3 +39,11 @@ export async function getBalanceForAccountSummaryGraph(id: number): Promise<Summ
 
     return response.json()
 }
+
+export async function getDailyBalanceForAccountSummaryGraph(id: number): Promise<Summary[]> {
+    const response = await fetch(`/api/graphs/for-account/${id}/daily-balance`)
+
+    if (!response.ok) throw response
+
+    return response.json()
+}
