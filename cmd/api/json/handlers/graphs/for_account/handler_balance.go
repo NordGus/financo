@@ -2,7 +2,10 @@ package for_account
 
 import (
 	"encoding/json"
-	"financo/server/summaries/queries/balance_for_account"
+	"financo/core/scope_graphs/application/balance_for_account_query"
+	"financo/core/scope_graphs/domain/requests"
+	"financo/core/scope_graphs/infrastructure/balance_for_account_repository"
+	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 	"strconv"
@@ -10,7 +13,11 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func balance(w http.ResponseWriter, r *http.Request) {
+func Balance(w http.ResponseWriter, r *http.Request) {
+	var (
+		req requests.BalanceForAccount
+	)
+
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		log.Println("failed to parse account id", err)
@@ -22,7 +29,12 @@ func balance(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := balance_for_account.New(id).Find(r.Context())
+	req.ID = id
+
+	res, err := balance_for_account_query.New(
+		req,
+		balance_for_account_repository.NewPostgreSQL(postgresql_database.New()),
+	).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

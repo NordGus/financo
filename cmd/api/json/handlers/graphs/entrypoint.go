@@ -1,6 +1,8 @@
 package graphs
 
 import (
+	"financo/cmd/api/json/handlers/graphs/for_account"
+
 	"github.com/go-chi/chi/v5"
 )
 
@@ -10,5 +12,5 @@ func Routes(r chi.Router) {
 	r.Get("/net-worth", NetWorth)
 	r.Get("/available-credit", AvailableCredit)
 
-	// r.Route("/for_account", for_account.Routes)
+	r.Route("/for-account", for_account.Routes)
 }
