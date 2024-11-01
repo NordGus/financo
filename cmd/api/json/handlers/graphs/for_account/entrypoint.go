@@ -6,6 +6,6 @@ func Routes(r chi.Router) {
 	r.Route("/{id}", func(r chi.Router) {
 		r.Get("/balance", Balance)
 		r.Get("/daily-balance", Daily)
-		// r.Get("/paid", debt)
+		r.Get("/debt", Debt)
 	})
 }

@@ -47,3 +47,11 @@ export async function getDailyBalanceForAccountSummaryGraph(id: number): Promise
 
     return response.json()
 }
+
+export async function getPaidForAccountSummaryGraph(id: number): Promise<Summary[]> {
+    const response = await fetch(`/api/graphs/for-account/${id}/debt`)
+
+    if (!response.ok) throw response
+
+    return response.json()
+}
