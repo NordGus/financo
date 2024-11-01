@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Kind } from "@/types/Account";
+import { Summary } from "@/types/graph";
 import { getAvailableCreditSummaryGraph, getBalanceForAccountSummaryGraph, getCapitalSummaryGraph, getDailyBalanceForAccountSummaryGraph, getDebtsSummaryGraph, getNetWorthSummaryGraph } from "@api/graphs";
 import {
     getPaidForAccountSummary
@@ -149,7 +150,13 @@ export function SummaryPaidForAccount({
     </Card>
 }
 
-export function SummaryDailyBalanceForAccount({ id, className }: { id: number, className?: string }) {
+interface SummaryDailyBalanceForAccountProp {
+    id: number
+    className?: string
+    formatter: (value: Summary, index: number, array: Summary[]) => Summary
+}
+
+export function SummaryDailyBalanceForAccount({ id, className, formatter }: SummaryDailyBalanceForAccountProp) {
     const { data: balances, isFetching, isError, error } = useQuery({
         queryKey: ['summary', 'balance', 'daily', 'account', id],
         queryFn: () => getDailyBalanceForAccountSummaryGraph(id),
@@ -159,5 +166,5 @@ export function SummaryDailyBalanceForAccount({ id, className }: { id: number, c
     if (isError) throw error
     if (isFetching) return null
 
-    return <CardSummary className={className} title="Daily Balance" summaries={balances || []} />
+    return <CardSummary className={className} title="Daily Balance" summaries={(balances || []).map(formatter)} />
 }

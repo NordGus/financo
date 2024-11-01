@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils"
 import { Kind } from "@/types/Account"
+import { Summary } from "@/types/graph"
 import { CardSummary } from "@components/card"
 import {
     SummaryBalanceForAccount,
@@ -75,6 +76,17 @@ export default function Show() {
                         key={`summary:account:${id}:dailyBalance`}
                         id={account.id}
                         className={cn("grow", isExternalAccount(account.kind) && "col-span-4")}
+                        formatter={
+                            (value: Summary, __index: number, __array: Summary[]) => {
+                                if (account.kind !== Kind.ExternalIncome) return value
+
+                                return {
+                                    ...value,
+                                    amount: -value.amount,
+                                    series: value.series?.map((value) => ({ ...value, amount: -value.amount })) || null
+                                }
+                            }
+                        }
                     />
                 )
             }
