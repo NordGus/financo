@@ -3,6 +3,7 @@ package update_command
 import (
 	"context"
 	"financo/core/domain/commands"
+	core_repos "financo/core/domain/repositories"
 	"financo/core/scope_transactions/domain/brokers"
 	"financo/core/scope_transactions/domain/errors"
 	"financo/core/scope_transactions/domain/messages"
@@ -16,7 +17,7 @@ import (
 
 type command struct {
 	req             requests.Update
-	accountRepo     repositories.AccountRepository
+	accountRepo     core_repos.AccountRepository
 	transactionRepo repositories.TransactionRepository
 	updateRepo      repositories.UpdateTransactionRepository
 	detailedRepo    repositories.DetailedTransactionRepository
@@ -25,7 +26,7 @@ type command struct {
 
 func New(
 	req requests.Update,
-	accountRepo repositories.AccountRepository,
+	accountRepo core_repos.AccountRepository,
 	transactionRepo repositories.TransactionRepository,
 	updateRepo repositories.UpdateTransactionRepository,
 	detailedRepo repositories.DetailedTransactionRepository,

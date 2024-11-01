@@ -3,6 +3,7 @@ package create_command
 import (
 	"context"
 	"financo/core/domain/commands"
+	core_repos "financo/core/domain/repositories"
 	"financo/core/scope_transactions/domain/brokers"
 	"financo/core/scope_transactions/domain/errors"
 	"financo/core/scope_transactions/domain/messages"
@@ -15,7 +16,7 @@ import (
 
 type command struct {
 	req          requests.Create
-	accountRepo  repositories.AccountRepository
+	accountRepo  core_repos.AccountRepository
 	createRepo   repositories.CreateTransactionRepository
 	detailedRepo repositories.DetailedTransactionRepository
 	broker       brokers.CreatedBroker
@@ -23,7 +24,7 @@ type command struct {
 
 func New(
 	req requests.Create,
-	accountRepo repositories.AccountRepository,
+	accountRepo core_repos.AccountRepository,
 	createRepo repositories.CreateTransactionRepository,
 	detailedRepo repositories.DetailedTransactionRepository,
 	broker brokers.CreatedBroker,

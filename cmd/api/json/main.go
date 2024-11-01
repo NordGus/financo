@@ -4,10 +4,10 @@ import (
 	"context"
 	"financo/cmd/api/json/handlers/accounts"
 	"financo/cmd/api/json/handlers/currencies"
+	"financo/cmd/api/json/handlers/graphs"
 	"financo/cmd/api/json/handlers/health"
 	"financo/cmd/api/json/handlers/my_journey"
 	"financo/cmd/api/json/handlers/savings_goals"
-	"financo/cmd/api/json/handlers/summaries"
 	"financo/cmd/api/json/handlers/transactions"
 	"fmt"
 	"log"
@@ -86,10 +86,10 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 
 	router.Route("/accounts", accounts.Routes)
 	router.Route("/currencies", currencies.Routes)
+	router.Route("/graphs", graphs.Routes)
 	router.Route("/health", health.Routes)
 	router.Route("/my_journey", my_journey.Routes)
 	router.Route("/savings_goals", savings_goals.Routes)
-	router.Route("/summaries", summaries.Routes)
 	router.Route("/transactions", transactions.Routes)
 
 	// HTTP Server configuration

@@ -1,30 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
-
-import {
-    getAvailableCreditSummary,
-    getBalanceForAccountSummary,
-    getCapitalSummary,
-    getDailyBalanceForAccountSummary,
-    getDebtsSummary,
-    getNetWorthSummary,
-    getPaidForAccountSummary
-} from "@api/summary";
-import { staleTimeDefault } from "@queries/client";
-
 import { cn } from "@/lib/utils";
 import { Kind } from "@/types/Account";
+import { Summary } from "@/types/graph";
+import { getAvailableCreditSummaryGraph, getBalanceForAccountSummaryGraph, getCapitalSummaryGraph, getDailyBalanceForAccountSummaryGraph, getDebtsSummaryGraph, getNetWorthSummaryGraph, getPaidForAccountSummaryGraph } from "@api/graphs";
 import { CardSummary } from "@components/card";
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@components/ui/chart";
 import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
+import { staleTimeDefault } from "@queries/client";
+import { useQuery } from "@tanstack/react-query";
 import { Currency } from "dinero.js";
 import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts";
 
 export function SummaryCapital({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
-        queryKey: ['summary', 'capital'],
-        queryFn: getCapitalSummary,
+        queryKey: ['graphs', 'capital', 'summary'],
+        queryFn: getCapitalSummaryGraph,
         staleTime: staleTimeDefault
     })
 
@@ -36,8 +27,8 @@ export function SummaryCapital({ className }: { className?: string }) {
 
 export function SummaryDebt({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
-        queryKey: ['summary', 'debts'],
-        queryFn: getDebtsSummary,
+        queryKey: ['graphs', 'debts', 'summary'],
+        queryFn: getDebtsSummaryGraph,
         staleTime: staleTimeDefault
     })
 
@@ -49,8 +40,8 @@ export function SummaryDebt({ className }: { className?: string }) {
 
 export function SummaryNetWorth({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
-        queryKey: ['summary', 'net_worth'],
-        queryFn: getNetWorthSummary,
+        queryKey: ['graphs', 'net-worth', 'summary'],
+        queryFn: getNetWorthSummaryGraph,
         staleTime: staleTimeDefault
     })
 
@@ -63,7 +54,7 @@ export function SummaryNetWorth({ className }: { className?: string }) {
 export function SummaryAvailableCredit({ className }: { className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
         queryKey: ['summary', 'available_credit'],
-        queryFn: getAvailableCreditSummary,
+        queryFn: getAvailableCreditSummaryGraph,
         staleTime: staleTimeDefault
     })
 
@@ -76,7 +67,7 @@ export function SummaryAvailableCredit({ className }: { className?: string }) {
 export function SummaryBalanceForAccount({ id, className }: { id: number, className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
         queryKey: ['summary', 'balance', 'account', id],
-        queryFn: () => getBalanceForAccountSummary(id),
+        queryFn: () => getBalanceForAccountSummaryGraph(id),
         staleTime: staleTimeDefault
     })
 
@@ -89,7 +80,7 @@ export function SummaryBalanceForAccount({ id, className }: { id: number, classN
 export function SummaryDebtForAccount({ id, className }: { id: number, className?: string }) {
     const { data: balances, isFetching, isError, error } = useQuery({
         queryKey: ['summary', 'debt', 'account', id],
-        queryFn: () => getPaidForAccountSummary(id),
+        queryFn: () => getPaidForAccountSummaryGraph(id),
         staleTime: staleTimeDefault
     })
 
@@ -156,15 +147,21 @@ export function SummaryPaidForAccount({
     </Card>
 }
 
-export function SummaryDailyBalanceForAccount({ id, className }: { id: number, className?: string }) {
+interface SummaryDailyBalanceForAccountProp {
+    id: number
+    className?: string
+    formatter: (value: Summary, index: number, array: Summary[]) => Summary
+}
+
+export function SummaryDailyBalanceForAccount({ id, className, formatter }: SummaryDailyBalanceForAccountProp) {
     const { data: balances, isFetching, isError, error } = useQuery({
         queryKey: ['summary', 'balance', 'daily', 'account', id],
-        queryFn: () => getDailyBalanceForAccountSummary(id),
+        queryFn: () => getDailyBalanceForAccountSummaryGraph(id),
         staleTime: staleTimeDefault
     })
 
     if (isError) throw error
     if (isFetching) return null
 
-    return <CardSummary className={className} title="Daily Balance" summaries={balances || []} />
+    return <CardSummary className={className} title="Daily Balance" summaries={(balances || []).map(formatter)} />
 }

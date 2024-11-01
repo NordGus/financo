@@ -26,7 +26,7 @@ func (t *Type) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	switch strings.ToUpper(s) {
+	switch strings.ToLower(s) {
 	default:
 		return fmt.Errorf("icon: invalid value \"%s\"", s)
 	case "base":
