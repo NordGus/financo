@@ -34,7 +34,7 @@ import { isEmpty, isNil } from "lodash";
 import { GripVerticalIcon, InfoIcon, TrophyIcon } from "lucide-react";
 import { Dispatch, useEffect, useMemo, useState } from "react";
 
-const REORDER_DEBOUNCING_OFFSET = 750
+const REORDER_DEBOUNCING_OFFSET = 500
 const REORDER_DEBOUNCING_TIMER = new Map<Currency, NodeJS.Timeout | string | number | undefined>()
 
 interface onReorderProps {
@@ -166,8 +166,11 @@ function CurrencySection({ data: { currency, goals }, onSetSavingsGoal, sensors,
 
     return (
         <div className="flex flex-col">
-            <div className="px-6 pb-2">
+            <div className="px-6 pb-2 flex items-center justify-between">
                 <CardTitle>{currency}</CardTitle>
+                {
+                    REORDER_DEBOUNCING_TIMER.get(currency) && <Throbber variant="small" />
+                }
             </div>
             <div>
                 <DndContext
