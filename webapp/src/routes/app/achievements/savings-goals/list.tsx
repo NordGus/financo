@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils";
 import { Active, SavingsGoal } from "@/types/savings-goal";
-import { getActiveSavingsGoals } from "@api/savings-goals";
+import { getActiveSavingsGoals, reorderSavingsGoals } from "@api/savings-goals";
 import { Progress } from "@components/Progress";
 import { Throbber } from "@components/Throbber";
 import { Button } from "@components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@components/ui/tooltip";
+import { toast } from "@components/ui/use-toast";
 import {
     closestCenter,
     DndContext,
@@ -27,10 +28,49 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import { staleTimeDefault } from "@queries/client";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Currency } from "dinero.js";
 import { isEmpty, isNil } from "lodash";
 import { GripVerticalIcon, InfoIcon, TrophyIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Dispatch, useEffect, useMemo, useState } from "react";
+
+const REORDER_DEBOUNCING_OFFSET = 500
+const REORDER_DEBOUNCING_TIMER = new Map<Currency, NodeJS.Timeout | string | number | undefined>()
+
+interface onReorderProps {
+    currency: Currency
+    goals: SavingsGoal[]
+    queryClient: QueryClient
+    setGoals: Dispatch<React.SetStateAction<SavingsGoal[]>>
+}
+
+const onReorder = async ({ currency, goals, queryClient, setGoals }: onReorderProps) => {
+    try {
+        const reordered = await reorderSavingsGoals({ currency, goals })
+
+        await queryClient.invalidateQueries({
+            queryKey: ["achievements", "savings-goals", "active"],
+            exact: true
+        })
+
+        toast({
+            title: "Savings Goals reordered!",
+            description: `Your savings goals for ${reordered.currency} order saved`
+        })
+
+        setGoals(reordered.goals)
+    } catch (e) {
+        console.error(e)
+
+        toast({
+            variant: "destructive",
+            title: "Oops!",
+            description: "Something went wrong with the API"
+        })
+    }
+
+    REORDER_DEBOUNCING_TIMER.set(currency, undefined)
+}
 
 function keyFor({ id }: SavingsGoal) {
     return `savings-goal:${id}`
@@ -41,7 +81,6 @@ interface Props {
     onCreateSavingsGoal: () => void
 }
 
-// TODO: save after sorting
 function List({ onCreateSavingsGoal, onSetSavingsGoal }: Props) {
     const { data, isFetching, isError, error } = useQuery({
         queryKey: ["achievements", "savings-goals", "active"],
@@ -54,6 +93,7 @@ function List({ onCreateSavingsGoal, onSetSavingsGoal }: Props) {
             coordinateGetter: sortableKeyboardCoordinates
         })
     )
+    const queryClient = useQueryClient()
 
     if (isError) throw error
 
@@ -81,6 +121,7 @@ function List({ onCreateSavingsGoal, onSetSavingsGoal }: Props) {
                                     data={data}
                                     sensors={sensors}
                                     onSetSavingsGoal={onSetSavingsGoal}
+                                    queryClient={queryClient}
                                 />
                             ))}
                         </div>
@@ -93,15 +134,43 @@ interface CurrencySectionProps {
     data: Active
     sensors: SensorDescriptor<SensorOptions>[]
     onSetSavingsGoal: (goal: SavingsGoal) => void
+    queryClient: QueryClient
 }
 
-function CurrencySection({ data: { currency, goals }, onSetSavingsGoal, sensors }: CurrencySectionProps) {
+function CurrencySection({ data: { currency, goals }, onSetSavingsGoal, sensors, queryClient }: CurrencySectionProps) {
     const [items, setItems] = useState(goals)
+    const [reordered, setReordered] = useState(false)
+
+    useEffect(() => {
+        if (!reordered) return
+        if (REORDER_DEBOUNCING_TIMER.get(currency)) clearTimeout(REORDER_DEBOUNCING_TIMER.get(currency))
+
+        REORDER_DEBOUNCING_TIMER.set(currency, setTimeout(
+            onReorder,
+            REORDER_DEBOUNCING_OFFSET,
+            {
+                currency,
+                goals: items.map((item, idx) => ({
+                    ...item,
+                    settings: { ...item.settings, position: idx + 1 }
+                })),
+                queryClient,
+                setGoals: setItems
+            }
+        ))
+
+        setReordered(false)
+    }, [reordered])
+
+    useEffect(() => setItems(goals), [...goals.map(({ updatedAt }) => updatedAt)])
 
     return (
         <div className="flex flex-col">
-            <div className="px-6 pb-2">
+            <div className="px-6 pb-2 flex items-center justify-between">
                 <CardTitle>{currency}</CardTitle>
+                {
+                    REORDER_DEBOUNCING_TIMER.get(currency) && <Throbber variant="small" />
+                }
             </div>
             <div>
                 <DndContext
@@ -118,6 +187,8 @@ function CurrencySection({ data: { currency, goals }, onSetSavingsGoal, sensors 
 
                             return arrayMove(items, prevIdx, nextIdx)
                         })
+
+                        setReordered(true)
                     }}
                 >
                     <SortableContext
@@ -231,7 +302,7 @@ function NoResults({ onCreateSavingsGoal }: NoResultsProps) {
     return (
         <CardContent className="space-y-2">
             <p>Looks like you don't have any active Savings Goals</p>
-            <Button onClick={() => onCreateSavingsGoal}>
+            <Button onClick={() => onCreateSavingsGoal()}>
                 Create a New Savings Goal
             </Button>
         </CardContent>

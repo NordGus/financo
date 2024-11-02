@@ -141,4 +141,10 @@ interface Active {
     goals: SavingsGoal[]
 }
 
-export type { Active, SavingsGoal, Settings }
+interface Reorder {
+    currency: Currency
+    goals: SavingsGoal[]
+}
+
+export type { Active, Reorder, SavingsGoal, Settings }
+

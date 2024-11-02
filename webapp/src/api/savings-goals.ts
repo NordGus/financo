@@ -1,9 +1,21 @@
-import { Active, SavingsGoal } from "@/types/savings-goal";
+import { Active, Reorder, SavingsGoal } from "@/types/savings-goal";
 
 async function getActiveSavingsGoals(): Promise<Active[]> {
-    const response = await fetch("/api/savings_goals/active")
+    const response = await fetch("/api/savings-goals/active")
 
     if (!response) throw response
+
+    return response.json()
+}
+
+async function reorderSavingsGoals(data: Reorder): Promise<Reorder> {
+    const response = await fetch(`/api/savings-goals/reorder`, {
+        method: "PATCH",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+
+    if (!response.ok) throw response
 
     return response.json()
 }
@@ -16,4 +28,4 @@ async function deleteGoal(id: number): Promise<SavingsGoal> {
     return response.json()
 }
 
-export { deleteGoal, getActiveSavingsGoals };
+export { deleteGoal, getActiveSavingsGoals, reorderSavingsGoals };
