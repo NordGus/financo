@@ -1,34 +1,33 @@
-package list_active_query
+package active_savings_goals_repository
 
 import (
 	"context"
-	"errors"
-	"financo/core/domain/queries"
+	"financo/core/domain/databases"
+	"financo/core/scope_savings_goals/domain/repositories"
+	"financo/core/scope_savings_goals/domain/responses"
 	"financo/models/achievement"
 	"financo/models/achievement/savings_goal"
-	"financo/server/savings_goals/types/response"
-	"financo/services/postgresql_database"
 )
 
-type query struct {
-	db postgresql_database.Service
+type postgresql struct {
+	db databases.SQLAdapter
 }
 
-func New(db postgresql_database.Service) queries.Query[[]response.Active] {
-	return &query{
+func NewPostgreSQL(db databases.SQLAdapter) repositories.ActiveSavingsGoals {
+	return &postgresql{
 		db: db,
 	}
 }
 
-func (q *query) Find(ctx context.Context) ([]response.Active, error) {
+func (r *postgresql) Find(ctx context.Context) ([]responses.Active, error) {
 	var (
-		res = make([]response.Active, 0, 10)
+		out = make([]responses.Active, 0, 10)
 		idx = -1
 	)
 
-	conn, err := q.db.Conn(ctx)
+	conn, err := r.db.Conn(ctx)
 	if err != nil {
-		return res, errors.Join(errors.New("failed to get database connection"), err)
+		return out, err
 	}
 	defer conn.Close()
 
@@ -56,7 +55,7 @@ func (q *query) Find(ctx context.Context) ([]response.Active, error) {
 		achievement.SavingsGoal,
 	)
 	if err != nil {
-		return res, errors.Join(errors.New("failed to execute database"), err)
+		return out, err
 	}
 	defer rows.Close()
 
@@ -75,27 +74,27 @@ func (q *query) Find(ctx context.Context) ([]response.Active, error) {
 			&record.UpdatedAt,
 		)
 		if err != nil {
-			return res, errors.Join(errors.New("failed to scan rows"), err)
+			return out, err
 		}
 
 		if idx < 0 {
-			res = append(res, buildResponse(record))
+			out = append(out, r.buildResponse(record))
 			idx = 0
 		}
 
-		if res[idx].Currency != record.Settings.Currency {
-			res = append(res, buildResponse(record))
+		if out[idx].Currency != record.Settings.Currency {
+			out = append(out, r.buildResponse(record))
 			idx++
 		}
 
-		res[idx].Goals = append(res[idx].Goals, record)
+		out[idx].Goals = append(out[idx].Goals, record)
 	}
 
-	return res, nil
+	return out, nil
 }
 
-func buildResponse(record savings_goal.Record) response.Active {
-	return response.Active{
+func (r *postgresql) buildResponse(record savings_goal.Record) responses.Active {
+	return responses.Active{
 		Currency: record.Settings.Currency,
 		Goals:    make([]savings_goal.Record, 0, 10),
 	}
