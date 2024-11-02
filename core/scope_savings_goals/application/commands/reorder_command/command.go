@@ -1,11 +1,14 @@
 package reorder_command
 
 import (
+	"cmp"
 	"context"
 	"financo/core/domain/commands"
 	"financo/core/scope_savings_goals/domain/repositories"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
+	"financo/models/achievement/savings_goal"
+	"slices"
 	"time"
 )
 
@@ -42,6 +45,10 @@ func (c *command) Run(ctx context.Context) (responses.Reorder, error) {
 	if err != nil {
 		return res, err
 	}
+
+	slices.SortFunc(res.Goals, func(a, b savings_goal.Record) int {
+		return cmp.Compare(a.Settings.Position, b.Settings.Position)
+	})
 
 	savings = s.Savings
 
