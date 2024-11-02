@@ -2,18 +2,21 @@ package my_journey
 
 import (
 	"encoding/json"
-	"financo/server/my_journey/queries/list_achieved_query"
+	"financo/core/scope_my_journey/application/timeline_query"
+	"financo/core/scope_my_journey/infrastructure/savings_goals_repository"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 )
 
-func achievements(w http.ResponseWriter, r *http.Request) {
+func Timeline(w http.ResponseWriter, r *http.Request) {
 	var (
-		postgres = postgresql_database.New()
+		db = postgresql_database.New()
 	)
 
-	res, err := list_achieved_query.New(postgres).Find(r.Context())
+	res, err := timeline_query.New(
+		savings_goals_repository.NewPostgreSQL(db),
+	).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

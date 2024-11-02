@@ -1,6 +1,6 @@
 import { Currency } from "dinero.js"
 import moment from "moment"
-import { Achievable, Kind } from "./achievable"
+import { Achievement, Kind } from "./achievement"
 
 export const placeholder: SavingsGoal[] = [
     {
@@ -134,7 +134,7 @@ export const placeholder: SavingsGoal[] = [
 ]
 
 type Settings = { position: number, target: number, saved: number, currency: Currency }
-type SavingsGoal = Achievable<Settings>
+type SavingsGoal = Achievement<Settings>
 
 interface Active {
     currency: Currency

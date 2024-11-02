@@ -1,12 +1,12 @@
-import { Achievable, Kind, Settings } from "@/types/achievable"
+import { Kind, Milestone } from "@/types/achievement"
 import { SavingsGoal } from "@/types/savings-goal"
 import { Throbber } from "@components/Throbber"
 import { Card } from "@components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableRow } from "@components/ui/table"
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman"
-import { achievedAchievements } from "@queries/my-journey"
+import { timelineQuery } from "@queries/my-journey"
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { groupBy, isEmpty, isNil } from "lodash"
+import { isEmpty, isNil } from "lodash"
 import moment from "moment"
 import { useLoaderData, useOutletContext } from "react-router-dom"
 import { AchievementsOutletContext } from "../layout"
@@ -14,11 +14,11 @@ import { loader } from "./loader"
 
 export default function MyJourney() {
     const { onSetSavingsGoal } = useOutletContext<AchievementsOutletContext>()
-    const { achievements } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
+    const { timeline } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
 
     const { data, isFetching, isError, error } = useSuspenseQuery({
-        ...achievedAchievements,
-        initialData: achievements,
+        ...timelineQuery,
+        initialData: timeline,
     })
 
     if (isError) throw error
@@ -34,7 +34,7 @@ export default function MyJourney() {
     if (isEmpty(data) || isNil(data)) {
         return (
             <div>
-                There's no achievements yet
+                The journey of a thousand kilometers starts with a step. The fact that you're using this means you took that first step.
             </div>
         )
     }
@@ -45,19 +45,13 @@ export default function MyJourney() {
                 <Table>
                     <TableBody>
                         {
-                            Object.entries(groupBy(
-                                data,
-                                (achievement) => achievement.achievedAt!
-                            )).map(([date, achievables]) => {
-                                const achievedAt = moment(date).toDate()
-
-                                return <DateRow
-                                    key={`achieved:${achievedAt.toISOString()}`}
-                                    date={achievedAt}
-                                    achievables={achievables}
+                            timeline.map((milestone) => (
+                                <MilestoneRow
+                                    key={`achieved:${milestone.timestamp}`}
+                                    milestone={milestone}
                                     onSetSavingsGoal={onSetSavingsGoal}
                                 />
-                            })
+                            ))
                         }
                     </TableBody>
                 </Table>
@@ -66,18 +60,17 @@ export default function MyJourney() {
     )
 }
 
-interface DateRowProps {
-    date: Date
-    achievables: Achievable<Settings>[]
+interface MilestoneRowProps {
+    milestone: Milestone
     onSetSavingsGoal: (goal: SavingsGoal) => void
 }
 
-function DateRow({ date, achievables, onSetSavingsGoal }: DateRowProps) {
+function MilestoneRow({ milestone: { timestamp, achievements }, onSetSavingsGoal }: MilestoneRowProps) {
     return (
         <>
             <TableRow>
                 <TableHead colSpan={3}>
-                    {date.toLocaleDateString(undefined, {
+                    {moment(timestamp).toDate().toLocaleDateString(undefined, {
                         weekday: "long",
                         year: "numeric",
                         month: "long",
@@ -86,16 +79,16 @@ function DateRow({ date, achievables, onSetSavingsGoal }: DateRowProps) {
                 </TableHead>
             </TableRow>
             {
-                achievables.map((achievable) => {
-                    switch (achievable.kind) {
+                achievements.map((achievement) => {
+                    switch (achievement.kind) {
                         case Kind.SavingsGoal:
                             return <SavingsGoalRow
-                                key={achievable.id}
-                                goal={achievable as SavingsGoal}
+                                key={achievement.id}
+                                goal={achievement as SavingsGoal}
                                 onSetSavingsGoal={onSetSavingsGoal}
                             />
                         default:
-                            throw Error(`Unknown achievable kind ${achievable.kind}`)
+                            throw Error(`Unknown achievable kind ${achievement.kind}`)
                     }
                 })
             }
