@@ -1,10 +1,10 @@
-import { getAchieved } from "@api/my-journey"
+import { getTimeline } from "@api/my-journey"
 import { staleTimeDefault } from "./client"
 
-const achievedAchievements = {
+const timelineQuery = {
     queryKey: ["my-journey", "achievements"],
-    queryFn: getAchieved,
+    queryFn: getTimeline,
     staleTime: staleTimeDefault,
 }
 
-export { achievedAchievements }
+export { timelineQuery }

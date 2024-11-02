@@ -4,7 +4,7 @@ enum Kind {
     SavingsGoal = "savings_goal"
 }
 
-interface Achievable<Settings> {
+interface Achievement<Settings> {
     id: number
     name: string
     kind: Kind,
@@ -16,6 +16,11 @@ interface Achievable<Settings> {
     updatedAt: string
 }
 
+interface Milestone {
+    timestamp: string
+    achievements: Achievement<Settings>[]
+}
+
 export { Kind }
-export type { Achievable, Settings }
+export type { Achievement, Milestone, Settings }
 

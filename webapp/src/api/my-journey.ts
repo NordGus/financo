@@ -1,8 +1,7 @@
-import { Achievable } from "@/types/achievable";
-import { Settings as SavingsGoals } from "@/types/savings-goal";
+import { Milestone } from "@/types/achievement";
 
-export async function getAchieved(): Promise<Achievable<SavingsGoals>[]> {
-    const response = await fetch("/api/my_journey/achieved")
+export async function getTimeline(): Promise<Milestone[]> {
+    const response = await fetch("/api/my-journey/timeline")
 
     if (!response.ok) throw response
 
