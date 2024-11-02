@@ -89,7 +89,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 	router.Route("/graphs", graphs.Routes)
 	router.Route("/health", health.Routes)
 	router.Route("/my-journey", my_journey.Routes)
-	router.Route("/savings_goals", savings_goals.Routes)
+	router.Route("/savings-goals", savings_goals.Routes)
 	router.Route("/transactions", transactions.Routes)
 
 	// HTTP Server configuration
