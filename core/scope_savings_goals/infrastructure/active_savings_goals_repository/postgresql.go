@@ -13,7 +13,7 @@ type postgresql struct {
 	db databases.SQLAdapter
 }
 
-func New(db databases.SQLAdapter) repositories.ActiveSavingsGoals {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.ActiveSavingsGoals {
 	return &postgresql{
 		db: db,
 	}
