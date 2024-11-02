@@ -1,5 +1,4 @@
-import { Active, SavingsGoal } from "@/types/savings-goal";
-import { Currency } from "dinero.js";
+import { Active, Reorder, SavingsGoal } from "@/types/savings-goal";
 
 async function getActiveSavingsGoals(): Promise<Active[]> {
     const response = await fetch("/api/savings-goals/active")
@@ -9,11 +8,11 @@ async function getActiveSavingsGoals(): Promise<Active[]> {
     return response.json()
 }
 
-async function reorderSavingsGoals(currency: Currency, goals: SavingsGoal[]): Promise<SavingsGoal[]> {
+async function reorderSavingsGoals(data: Reorder): Promise<Reorder> {
     const response = await fetch(`/api/savings-goals/reorder`, {
         method: "PATCH",
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currency, goals })
+        body: JSON.stringify(data)
     })
 
     if (!response.ok) throw response

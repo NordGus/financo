@@ -46,7 +46,7 @@ interface onReorderProps {
 
 const onReorder = async ({ currency, goals, queryClient, setGoals }: onReorderProps) => {
     try {
-        const reordered = await reorderSavingsGoals(currency, goals)
+        const reordered = await reorderSavingsGoals({ currency, goals })
 
         await queryClient.invalidateQueries({
             queryKey: ["achievements", "savings-goals", "active"],
@@ -55,10 +55,10 @@ const onReorder = async ({ currency, goals, queryClient, setGoals }: onReorderPr
 
         toast({
             title: "Savings Goals reordered!",
-            description: `Your savings goals for ${currency} order saved`
+            description: `Your savings goals for ${reordered.currency} order saved`
         })
 
-        setGoals(reordered)
+        setGoals(reordered.goals)
     } catch (e) {
         console.error(e)
 
