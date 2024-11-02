@@ -36,7 +36,7 @@ func (r *postgresql) Save(ctx context.Context, records []savings_goal.Record) er
 			ctx,
 			`
 			UPDATE achievements
-			SET settings = $2, updated_at = $2
+			SET settings = $2, updated_at = $3
 			WHERE id = $1
 			RETURNING updated_at
 			`,

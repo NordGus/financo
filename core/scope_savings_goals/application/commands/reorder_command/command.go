@@ -59,7 +59,7 @@ func (c *command) Run(ctx context.Context) (responses.Reorder, error) {
 			continue
 		}
 
-		res.Goals[i].Settings.Saved = savings - res.Goals[i].Settings.Target
+		res.Goals[i].Settings.Saved = res.Goals[i].Settings.Target
 		savings -= res.Goals[i].Settings.Target
 	}
 
