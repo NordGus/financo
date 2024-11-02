@@ -30,7 +30,7 @@ func (r *postgresql) Save(ctx context.Context, records []savings_goal.Record) er
 	}
 
 	for i := 0; i < len(records); i++ {
-		record := records
+		record := records[i]
 
 		err = tx.QueryRowContext(
 			ctx,
