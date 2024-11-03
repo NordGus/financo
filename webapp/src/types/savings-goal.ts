@@ -146,5 +146,18 @@ interface Reorder {
     goals: SavingsGoal[]
 }
 
-export type { Active, Reorder, SavingsGoal, Settings }
+interface Create {
+    name: string
+    description?: string | null,
+    currency: Currency,
+    target: number
+}
+
+interface Created {
+    name: string,
+    currency: Currency,
+    target: number
+}
+
+export type { Active, Create, Created, Reorder, SavingsGoal, Settings }
 
