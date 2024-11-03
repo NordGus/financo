@@ -21,7 +21,9 @@ func NewPostgreSQL(db databases.SQLAdapter) repositories.SavingsForCurrency {
 }
 
 func (r *postgresql) Find(ctx context.Context, cur currency.Type) (models.SavingsForCurrency, error) {
-	var out models.SavingsForCurrency
+	out := models.SavingsForCurrency{
+		Currency: cur,
+	}
 
 	conn, err := r.db.Conn(ctx)
 	if err != nil {
@@ -29,10 +31,10 @@ func (r *postgresql) Find(ctx context.Context, cur currency.Type) (models.Saving
 	}
 	defer conn.Close()
 
-	err = conn.QueryRowContext(
+	rows, err := conn.QueryContext(
 		ctx,
 		`
-		SELECT acc.currency, SUM(
+		SELECT SUM(
 				CASE
 					WHEN tr.target_id = acc.id THEN tr.target_amount
 					WHEN tr.source_id = acc.id THEN - tr.source_amount
@@ -55,10 +57,20 @@ func (r *postgresql) Find(ctx context.Context, cur currency.Type) (models.Saving
 		cur,
 		account.CapitalSavings,
 		time.Now().UTC(),
-	).Scan(&out.Currency, &out.Savings)
+	)
 	if err != nil {
 		return out, err
 	}
+
+	for rows.Next() {
+		err = rows.Scan(&out.Savings)
+		if err != nil {
+			_ = rows.Close()
+			return out, err
+		}
+	}
+
+	_ = rows.Close()
 
 	return out, nil
 }
