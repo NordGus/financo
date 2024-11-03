@@ -1,8 +1,8 @@
 import { SavingsGoal } from "@/types/savings-goal";
 import Breadcrumbs from "@components/breadcrumbs";
 import { NavButton } from "@components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@components/ui/sheet";
-import { useCallback, useReducer } from "react";
+import { Sheet, SheetContent } from "@components/ui/sheet";
+import { useReducer } from "react";
 import { Outlet } from "react-router-dom";
 import Goals from "./savings-goals";
 
@@ -31,7 +31,7 @@ type LayoutFormType = "edit-savings-goal" | "new-savings-goal"
 
 interface LayoutState {
     openForm: boolean
-    achievement: SavingsGoal | NonNullable<unknown>
+    achievement: SavingsGoal | null
     formType: LayoutFormType
 }
 
@@ -47,7 +47,7 @@ function reducer(state: LayoutState, action: LayoutActions): LayoutState {
         case "CREATE_SAVINGS_GOAL":
             return {
                 ...state,
-                achievement: {},
+                achievement: null,
                 openForm: true,
                 formType: "new-savings-goal"
             }
@@ -65,7 +65,7 @@ function init(props: NonNullable<unknown>): LayoutState {
     return {
         ...props,
         openForm: false,
-        achievement: {},
+        achievement: null,
         formType: "new-savings-goal"
     }
 }
@@ -83,9 +83,9 @@ export default function Layout() {
         EDIT_SAVINGS_GOAL, OPEN_FORM_CHANGE, CREATE_SAVINGS_GOAL
     } = actionTypes
 
-    const onSetSavingsGoal = useCallback((goal: SavingsGoal) => dispatch({ type: EDIT_SAVINGS_GOAL, goal }), [])
-    const onSetOpenForm = useCallback((open: boolean) => dispatch({ type: OPEN_FORM_CHANGE, open }), [])
-    const onCreateSavingsGoal = useCallback(() => dispatch({ type: CREATE_SAVINGS_GOAL }), [])
+    const onSetSavingsGoal = (goal: SavingsGoal) => dispatch({ type: EDIT_SAVINGS_GOAL, goal })
+    const onSetOpenForm = (open: boolean) => dispatch({ type: OPEN_FORM_CHANGE, open })
+    const onCreateSavingsGoal = () => dispatch({ type: CREATE_SAVINGS_GOAL })
 
     return (
         <div className="gap-4 flex flex-col">
@@ -101,20 +101,15 @@ export default function Layout() {
             </div>
             <Sheet open={state.openForm} onOpenChange={onSetOpenForm}>
                 <SheetContent className="w-[400px] sm:w-[540px] sm:max-w-[540px] overflow-y-auto">
-                    <SheetHeader>
-                        <SheetTitle>
-                            {
-                                {
-                                    ["new-savings-goal"]: "Add Savings Goals",
-                                    ["edit-savings-goal"]: "Edit Savings Goals"
-                                }[state.formType]
-                            }
-                        </SheetTitle>
-                    </SheetHeader>
                     {
                         {
-                            ["new-savings-goal"]: <Goals.Form goal={state.achievement} onSetOpenForm={onSetOpenForm} />,
-                            ["edit-savings-goal"]: <Goals.Form goal={state.achievement} onSetOpenForm={onSetOpenForm} />
+                            ["new-savings-goal"]: <Goals.CreateForm
+                                onSetOpenForm={onSetOpenForm}
+                            />,
+                            ["edit-savings-goal"]: <Goals.EditForm
+                                goal={state.achievement!}
+                                onSetOpenForm={onSetOpenForm}
+                            />
                         }[state.formType]
                     }
                 </SheetContent>
