@@ -20,7 +20,7 @@ export const action = (queryClient: QueryClient) => async ({
                 description: `${deleted.name} have been deleted`
             })
 
-            return redirect(`/savings-goals`)
+            return redirect(`/achievements`)
         }
     }[request.method.toLowerCase()]
 
