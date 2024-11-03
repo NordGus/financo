@@ -5,5 +5,5 @@ import (
 )
 
 type Command[Response any] interface {
-	Run(context.Context) (Response, error)
+	Run(ctx context.Context) (Response, error)
 }
