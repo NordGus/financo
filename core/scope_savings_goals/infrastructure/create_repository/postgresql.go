@@ -24,7 +24,12 @@ func (r *postgresql) Save(ctx context.Context, record savings_goal.Record) (savi
 	}
 	defer conn.Close()
 
-	err = conn.QueryRowContext(
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return record, err
+	}
+
+	err = tx.QueryRowContext(
 		ctx,
 		`
 		INSERT INTO
@@ -52,6 +57,13 @@ func (r *postgresql) Save(ctx context.Context, record savings_goal.Record) (savi
 		record.UpdatedAt,
 	).Scan(&record.ID)
 	if err != nil {
+		_ = tx.Rollback()
+		return record, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		_ = tx.Rollback()
 		return record, err
 	}
 
