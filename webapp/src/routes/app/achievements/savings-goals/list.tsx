@@ -162,7 +162,9 @@ function CurrencySection({ data: { currency, goals }, onSetSavingsGoal, sensors,
         setReordered(false)
     }, [reordered])
 
-    useEffect(() => setItems(goals), [...goals.map(({ updatedAt }) => updatedAt)])
+    useEffect(() => {
+        setItems(goals)
+    }, [...goals.map(({ updatedAt }) => updatedAt), goals.length])
 
     return (
         <div className="flex flex-col">

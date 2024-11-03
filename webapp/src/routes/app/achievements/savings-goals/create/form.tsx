@@ -55,7 +55,7 @@ function CreateForm({ onSetOpenForm: onSetOpenForm }: Props) {
 
             onSetOpenForm(false)
 
-            await queryClient.invalidateQueries({ queryKey: ["savings-goals"] })
+            await queryClient.invalidateQueries({ queryKey: ["achievements", "savings-goals", "active"] })
 
             navigate(`/achievements`)
         } catch (e) {
