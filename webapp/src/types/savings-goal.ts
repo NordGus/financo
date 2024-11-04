@@ -148,16 +148,40 @@ interface Reorder {
 
 interface Create {
     name: string
-    description?: string | null,
-    currency: Currency,
+    description?: string | null
+    currency: Currency
     target: number
 }
 
 interface Created {
     name: string,
-    currency: Currency,
+    currency: Currency
     target: number
 }
 
-export type { Active, Create, Created, Reorder, SavingsGoal, Settings }
+interface Update {
+    id: number
+    name: string
+    description?: string | null
+    currency: Currency
+    target: number
+}
+
+interface Updated {
+    id: number
+    name: string
+    currency: Currency
+    target: number
+}
+
+export type {
+    Active,
+    Create,
+    Created,
+    Reorder,
+    SavingsGoal,
+    Settings,
+    Update,
+    Updated
+}
 

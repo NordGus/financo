@@ -32,6 +32,18 @@ async function createSavingsGoal(data: Create): Promise<Created> {
     return response.json()
 }
 
+async function updateSavingsGoal(data: Create): Promise<Created> {
+    const response = await fetch(`/api/savings-goals`, {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+
+    if (!response.ok) throw response
+
+    return response.json()
+}
+
 async function deleteGoal(id: number): Promise<SavingsGoal> {
     const response = await fetch(`/api/savings-goals/${id}`, { method: "DELETE" })
 
@@ -44,6 +56,7 @@ export {
     createSavingsGoal,
     deleteGoal,
     getActiveSavingsGoals,
-    reorderSavingsGoals
+    reorderSavingsGoals,
+    updateSavingsGoal
 };
 
