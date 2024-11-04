@@ -1,4 +1,4 @@
-import { Active, Create, Created, Reorder, SavingsGoal } from "@/types/savings-goal";
+import { Active, Create, Created, Reorder, SavingsGoal, Update, Updated } from "@/types/savings-goal";
 
 async function getActiveSavingsGoals(): Promise<Active[]> {
     const response = await fetch("/api/savings-goals/active")
@@ -32,9 +32,9 @@ async function createSavingsGoal(data: Create): Promise<Created> {
     return response.json()
 }
 
-async function updateSavingsGoal(data: Create): Promise<Created> {
-    const response = await fetch(`/api/savings-goals`, {
-        method: "POST",
+async function updateSavingsGoal(data: Update): Promise<Updated> {
+    const response = await fetch(`/api/savings-goals/${data.id}`, {
+        method: "PUT",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
