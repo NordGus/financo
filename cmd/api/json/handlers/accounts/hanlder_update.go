@@ -9,10 +9,24 @@ import (
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func update(w http.ResponseWriter, r *http.Request) {
 	var req requests.Update
+
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		log.Println("failed to parse account id", err)
+		http.Error(
+			w,
+			http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError,
+		)
+		return
+	}
 
 	body := r.Body
 	defer func() {
@@ -22,13 +36,23 @@ func update(w http.ResponseWriter, r *http.Request) {
 		}
 	}()
 
-	err := json.NewDecoder(body).Decode(&req)
+	err = json.NewDecoder(body).Decode(&req)
 	if err != nil {
 		log.Println("failed to decode body", err)
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
 			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	if id != req.ID {
+		log.Println("ids don't match")
+		http.Error(
+			w,
+			http.StatusText(http.StatusNotAcceptable),
+			http.StatusNotAcceptable,
 		)
 		return
 	}
