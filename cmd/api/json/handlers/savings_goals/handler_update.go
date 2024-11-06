@@ -1,11 +1,13 @@
-package accounts
+package savings_goals
 
 import (
 	"encoding/json"
-	"financo/core/scope_accounts/application/commands/update_command"
-	"financo/core/scope_accounts/domain/requests"
-	"financo/core/scope_accounts/infrastructure/broker_handler"
-	"financo/core/scope_accounts/infrastructure/update_account_repository"
+	"financo/core/scope_savings_goals/application/commands/update_command"
+	"financo/core/scope_savings_goals/domain/requests"
+	"financo/core/scope_savings_goals/infrastructure/active_savings_goals_for_currency_repository"
+	"financo/core/scope_savings_goals/infrastructure/reorder_repository"
+	"financo/core/scope_savings_goals/infrastructure/savings_for_currency_repository"
+	"financo/core/scope_savings_goals/infrastructure/savings_goal_repository"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -14,8 +16,12 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func update(w http.ResponseWriter, r *http.Request) {
-	var req requests.Update
+func Update(w http.ResponseWriter, r *http.Request) {
+	var (
+		db = postgresql_database.New()
+
+		req requests.Update
+	)
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -39,11 +45,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(body).Decode(&req)
 	if err != nil {
 		log.Println("failed to decode body", err)
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
@@ -57,25 +59,15 @@ func update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo := update_account_repository.NewPostgreSQL(postgresql_database.New())
-
-	broker, err := broker_handler.Instance()
+	res, err := update_command.New(
+		req,
+		savings_goal_repository.NewPostgreSQL(db),
+		active_savings_goals_for_currency_repository.NewPostgreSQL(db),
+		savings_for_currency_repository.NewPostgreSQL(db),
+		reorder_repository.NewPostgreSQL(db),
+	).Run(r.Context())
 	if err != nil {
-		log.Println("created broker uninitialized", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	comm, err := update_command.New(req, repo, broker.UpdatedBroker())
-	if err != nil {
-		log.Println("unsupported subcommand", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	res, err := comm.Run(r.Context())
-	if err != nil {
-		log.Println("command failed", err)
+		log.Println("query failed", err)
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
@@ -84,7 +76,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := json.Marshal(&res)
+	response, err := json.Marshal(res)
 	if err != nil {
 		log.Println("failed json Marshal", err)
 		http.Error(
@@ -95,8 +87,9 @@ func update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = w.Write(resp)
+	_, err = w.Write(response)
 	if err != nil {
+		log.Println("failed to write response", err)
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
