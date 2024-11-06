@@ -7,4 +7,9 @@ func Routes(r chi.Router) {
 
 	r.Get("/active", Active)
 	r.Patch("/reorder", Reorder)
+
+	r.Route("/{id}", func(r chi.Router) {
+		// r.Delete("/", Destroy)
+		r.Put("/", Update)
+	})
 }
