@@ -71,9 +71,9 @@ function EditForm({ goal, onSetOpenForm }: Props) {
                 description: `Your goal ${name} to reach ${currencyAmountToHuman(target, currency)} has been updated`
             })
 
-            onSetOpenForm(false)
-
             await queryClient.invalidateQueries({ queryKey: ["achievements", "savings-goals", "active"] })
+
+            onSetOpenForm(false)
 
             navigate(`/achievements`)
         } catch (e) {

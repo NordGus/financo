@@ -5,13 +5,13 @@ import { AchievementsOutletContext } from "../layout"
 import SavingsGoals from "../savings-goals"
 
 export default function Index() {
-    const { onSetSavingsGoal, onCreateSavingsGoal } = useOutletContext<AchievementsOutletContext>()
-    // const { timestamp } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
+    const { onSetSavingsGoal, onCreateSavingsGoal, timestamp } = useOutletContext<AchievementsOutletContext>()
 
     return (
         <div className="flex flex-row justify-center gap-4">
             <div className="flex flex-col gap-4 w-[30%]">
                 <SavingsGoals.List
+                    timestamp={timestamp}
                     onCreateSavingsGoal={onCreateSavingsGoal}
                     onSetSavingsGoal={onSetSavingsGoal}
                 />
