@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { SavingsGoal } from "@/types/savings-goal";
 import { getCurrencies } from "@api/currencies";
 import { updateSavingsGoal } from "@api/savings-goals";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@components/ui/alert-dialog";
 import { Button } from "@components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@components/ui/command";
 import {
@@ -266,40 +267,32 @@ function EditForm({ goal, onSetOpenForm }: Props) {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
-                <Dialog>
+                <AlertDialog>
                     <div className="flex flex-col pt-4">
-                        <DialogTrigger asChild>
+                        <AlertDialogTrigger asChild>
                             <Button variant="destructive">Delete</Button>
-                        </DialogTrigger>
+                        </AlertDialogTrigger>
                     </div>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>You are about to delete this Savings Goal</DialogTitle>
-                        </DialogHeader>
-                        <DialogDescription>
-                            Are you sure you want to delete <span className="font-bold">{goal.name}</span>?
-                        </DialogDescription>
-                        <DialogFooter className="grid grid-cols-2 gap-4">
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete <span className="font-bold">{goal.name}</span> from your savings goals and recalculate your progress.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <RouterForm
-                                className="flex grow p-0 m-0"
+                                className="inline-flex p-0 m-0"
                                 method="delete"
                                 action={`/achievements/savings-goals/${goal.id}`}
                                 onSubmit={() => onSetOpenForm(false)}
                             >
-                                <DialogClose asChild>
-                                    <Button type="submit" className="grow">
-                                        Confirm
-                                    </Button>
-                                </DialogClose>
+                                <AlertDialogAction type="submit" className="grow">Confirm</AlertDialogAction>
                             </RouterForm>
-                            <DialogClose asChild>
-                                <Button type="button" variant="secondary">
-                                    Cancel
-                                </Button>
-                            </DialogClose>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </Form >
         </>
     )
