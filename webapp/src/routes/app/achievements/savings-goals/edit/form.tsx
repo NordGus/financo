@@ -31,7 +31,7 @@ import { isEmpty } from "lodash";
 import { CheckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Form as RouterForm, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { schema } from "./schema";
 
@@ -280,8 +280,18 @@ function EditForm({ goal, onSetOpenForm }: Props) {
                             Are you sure you want to delete <span className="font-bold">{goal.name}</span>?
                         </DialogDescription>
                         <DialogFooter className="grid grid-cols-2 gap-4">
-                            {/* TODO: implement deletion mechanism */}
-                            <Button>Confirm</Button>
+                            <RouterForm
+                                className="flex grow p-0 m-0"
+                                method="delete"
+                                action={`/achievements/savings-goals/${goal.id}`}
+                                onSubmit={() => onSetOpenForm(false)}
+                            >
+                                <DialogClose asChild>
+                                    <Button type="submit" className="grow">
+                                        Confirm
+                                    </Button>
+                                </DialogClose>
+                            </RouterForm>
                             <DialogClose asChild>
                                 <Button type="button" variant="secondary">
                                     Cancel
@@ -290,7 +300,7 @@ function EditForm({ goal, onSetOpenForm }: Props) {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
-            </Form>
+            </Form >
         </>
     )
 }
