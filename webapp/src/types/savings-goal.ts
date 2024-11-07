@@ -174,10 +174,16 @@ interface Updated {
     target: number
 }
 
+interface Deleted {
+    id: number
+    name: string
+}
+
 export type {
     Active,
     Create,
     Created,
+    Deleted,
     Reorder,
     SavingsGoal,
     Settings,
