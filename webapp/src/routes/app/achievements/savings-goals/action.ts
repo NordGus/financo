@@ -13,12 +13,12 @@ export const action = (queryClient: QueryClient) => async ({
         ["delete"]: async () => {
             const deleted = await deleteGoal(id)
 
-            await queryClient.invalidateQueries({ queryKey: ["savings-goals"] })
-
             toast({
                 title: "Deleted",
                 description: `${deleted.name} have been deleted`
             })
+
+            await queryClient.invalidateQueries({ queryKey: ["achievements", "savings-goals", "active"] })
 
             return redirect(`/achievements`)
         }

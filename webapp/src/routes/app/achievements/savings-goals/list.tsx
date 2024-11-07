@@ -79,9 +79,10 @@ function keyFor({ id }: SavingsGoal) {
 interface Props {
     onSetSavingsGoal: (goal: SavingsGoal) => void
     onCreateSavingsGoal: () => void
+    timestamp: string
 }
 
-function List({ onCreateSavingsGoal, onSetSavingsGoal }: Props) {
+function List({ onCreateSavingsGoal, onSetSavingsGoal, timestamp }: Props) {
     const { data, isFetching, isError, error } = useQuery({
         queryKey: ["achievements", "savings-goals", "active"],
         queryFn: getActiveSavingsGoals,
@@ -120,6 +121,7 @@ function List({ onCreateSavingsGoal, onSetSavingsGoal }: Props) {
                                     key={data.currency}
                                     data={data}
                                     sensors={sensors}
+                                    timestamp={timestamp}
                                     onSetSavingsGoal={onSetSavingsGoal}
                                     queryClient={queryClient}
                                 />
@@ -135,9 +137,16 @@ interface CurrencySectionProps {
     sensors: SensorDescriptor<SensorOptions>[]
     onSetSavingsGoal: (goal: SavingsGoal) => void
     queryClient: QueryClient
+    timestamp: string
 }
 
-function CurrencySection({ data: { currency, goals }, onSetSavingsGoal, sensors, queryClient }: CurrencySectionProps) {
+function CurrencySection({
+    data: { currency, goals },
+    onSetSavingsGoal,
+    sensors,
+    queryClient,
+    timestamp
+}: CurrencySectionProps) {
     const [items, setItems] = useState(goals)
     const [reordered, setReordered] = useState(false)
 
@@ -162,7 +171,7 @@ function CurrencySection({ data: { currency, goals }, onSetSavingsGoal, sensors,
         setReordered(false)
     }, [reordered])
 
-    useEffect(() => setItems(goals), [goals.map(({ updatedAt }) => updatedAt).join(","), goals.length])
+    useEffect(() => setItems(goals), [timestamp, goals.length])
 
     return (
         <div className="flex flex-col">

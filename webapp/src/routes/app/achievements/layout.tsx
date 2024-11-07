@@ -33,6 +33,7 @@ interface LayoutState {
     openForm: boolean
     achievement: SavingsGoal | null
     formType: LayoutFormType
+    timestamp: string
 }
 
 function reducer(state: LayoutState, action: LayoutActions): LayoutState {
@@ -54,7 +55,8 @@ function reducer(state: LayoutState, action: LayoutActions): LayoutState {
         case "OPEN_FORM_CHANGE":
             return {
                 ...state,
-                openForm: action.open
+                openForm: action.open,
+                timestamp: action.open ? state.timestamp : new Date().toISOString()
             }
         default:
             throw Error(`Unknown action`)
@@ -66,7 +68,8 @@ function init(props: NonNullable<unknown>): LayoutState {
         ...props,
         openForm: false,
         achievement: null,
-        formType: "new-savings-goal"
+        formType: "new-savings-goal",
+        timestamp: new Date().toISOString()
     }
 }
 
@@ -74,6 +77,7 @@ export interface AchievementsOutletContext {
     onSetSavingsGoal: (goal: SavingsGoal) => void
     onSetOpenForm: (open: boolean) => void
     onCreateSavingsGoal: () => void
+    timestamp: string
 }
 
 export default function Layout() {
@@ -116,6 +120,7 @@ export default function Layout() {
             </Sheet>
             <Outlet
                 context={{
+                    timestamp: state.timestamp,
                     onSetSavingsGoal,
                     onSetOpenForm,
                     onCreateSavingsGoal
