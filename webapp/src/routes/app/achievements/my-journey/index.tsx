@@ -8,12 +8,10 @@ import { timelineQuery } from "@queries/my-journey"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { isEmpty, isNil } from "lodash"
 import moment from "moment"
-import { useLoaderData, useOutletContext } from "react-router-dom"
-import { AchievementsOutletContext } from "../layout"
+import { useLoaderData } from "react-router-dom"
 import { loader } from "./loader"
 
 export default function MyJourney() {
-    const { onSetSavingsGoal } = useOutletContext<AchievementsOutletContext>()
     const { timeline } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>
 
     const { data, isFetching, isError, error } = useSuspenseQuery({
@@ -46,11 +44,7 @@ export default function MyJourney() {
                     <TableBody>
                         {
                             timeline.map((milestone) => (
-                                <MilestoneRow
-                                    key={`achieved:${milestone.timestamp}`}
-                                    milestone={milestone}
-                                    onSetSavingsGoal={onSetSavingsGoal}
-                                />
+                                <MilestoneRow key={`achieved:${milestone.timestamp}`} milestone={milestone} />
                             ))
                         }
                     </TableBody>
@@ -62,10 +56,9 @@ export default function MyJourney() {
 
 interface MilestoneRowProps {
     milestone: Milestone
-    onSetSavingsGoal: (goal: SavingsGoal) => void
 }
 
-function MilestoneRow({ milestone: { timestamp, achievements }, onSetSavingsGoal }: MilestoneRowProps) {
+function MilestoneRow({ milestone: { timestamp, achievements } }: MilestoneRowProps) {
     return (
         <>
             <TableRow>
@@ -82,11 +75,7 @@ function MilestoneRow({ milestone: { timestamp, achievements }, onSetSavingsGoal
                 achievements.map((achievement) => {
                     switch (achievement.kind) {
                         case Kind.SavingsGoal:
-                            return <SavingsGoalRow
-                                key={achievement.id}
-                                goal={achievement as SavingsGoal}
-                                onSetSavingsGoal={onSetSavingsGoal}
-                            />
+                            return <SavingsGoalRow key={achievement.id} goal={achievement as SavingsGoal} />
                         default:
                             throw Error(`Unknown achievable kind ${achievement.kind}`)
                     }
@@ -97,16 +86,12 @@ function MilestoneRow({ milestone: { timestamp, achievements }, onSetSavingsGoal
 }
 
 interface SavingsGoalRowProps {
-    goal: SavingsGoal,
-    onSetSavingsGoal: (goal: SavingsGoal) => void
+    goal: SavingsGoal
 }
 
-function SavingsGoalRow({ goal, onSetSavingsGoal }: SavingsGoalRowProps) {
+function SavingsGoalRow({ goal }: SavingsGoalRowProps) {
     return (
-        <TableRow
-            className="cursor-pointer"
-            onClick={() => onSetSavingsGoal(goal)}
-        >
+        <TableRow>
             <TableCell className="w-[30%]">
                 {goal.name}
             </TableCell>
