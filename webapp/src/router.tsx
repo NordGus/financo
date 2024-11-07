@@ -63,7 +63,12 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "savings-goals",
-                        loader: App.Achievements.actions.savingsGoals.goal(Client)
+                        children: [
+                            {
+                                path: ":id",
+                                action: App.Achievements.actions.savingsGoals.goal(Client),
+                            }
+                        ]
                     }
                 ]
             },
