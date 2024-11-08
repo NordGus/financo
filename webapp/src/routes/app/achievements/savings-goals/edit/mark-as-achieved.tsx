@@ -79,7 +79,7 @@ function MarkAsAchieved({ goal, onSetOpenForm }: MarkAsAchievedProps) {
                     </DialogClose>
                     <Form
                         className="inline-flex p-0 m-0"
-                        method="delete"
+                        method="patch"
                         action={`/achievements/savings-goals/${goal.id}/mark-as-achieved`}
                         onSubmit={() => onSetOpenForm(false)}
                     >
