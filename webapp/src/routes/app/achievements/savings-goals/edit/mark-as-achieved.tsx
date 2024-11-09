@@ -29,6 +29,8 @@ export function MarkAsAchieved({ goal, onSetOpenForm }: MarkAsAchievedProps) {
     const [achievedAt, setAchievedAt] = useState<Date | undefined>(moment().toDate())
     const maxDate = moment().endOf('day').toDate()
 
+    if (goal.settings.saved < goal.settings.target) return null
+
     return (
         <Dialog>
             <div className="flex flex-col pt-4">

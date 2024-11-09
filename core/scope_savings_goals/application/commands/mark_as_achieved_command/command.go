@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"context"
 	"financo/core/domain/commands"
+	"financo/core/scope_savings_goals/domain/errors"
 	"financo/core/scope_savings_goals/domain/repositories"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
@@ -49,6 +50,10 @@ func (c *command) Run(ctx context.Context) (responses.MarkedAsAchieved, error) {
 	}
 
 	record = c.req.UpdateRecord(record, timestamp)
+
+	if record.Settings.Saved < record.Settings.Target {
+		return res, errors.ErrGoalHasNotBeenAchieved
+	}
 
 	err = c.repo.Save(ctx, record)
 	if err != nil {
