@@ -82,6 +82,7 @@ func (c *command) updateSavingsGoalsSaved(ctx context.Context, record savings_go
 
 	for i := 0; i < len(goals); i++ {
 		goals[i].UpdatedAt = record.UpdatedAt
+		goals[i].Settings.Position = int16(i) + 1
 
 		if savings.Savings < goals[i].Settings.Target && savings.Savings > 0 {
 			goals[i].Settings.Saved = savings.Savings
