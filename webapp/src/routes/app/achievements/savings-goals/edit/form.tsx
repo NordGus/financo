@@ -2,18 +2,8 @@ import { cn } from "@/lib/utils";
 import { SavingsGoal } from "@/types/savings-goal";
 import { getCurrencies } from "@api/currencies";
 import { updateSavingsGoal } from "@api/savings-goals";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@components/ui/alert-dialog";
 import { Button } from "@components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@components/ui/command";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle
-} from "@components/ui/dialog";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@components/ui/form";
 import { Input } from "@components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover";
@@ -24,7 +14,6 @@ import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { staleTimeDefault } from "@queries/client";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Currency } from "dinero.js";
@@ -32,8 +21,10 @@ import { isEmpty } from "lodash";
 import { CheckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Form as RouterForm, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
+import { Delete } from "./delete";
+import { MarkAsAchieved } from "./mark-as-achieved";
 import { schema } from "./schema";
 
 interface Props {
@@ -241,59 +232,9 @@ function EditForm({ goal, onSetOpenForm }: Props) {
                     />
                     <Button type="submit">Save</Button>
                 </form>
-                <Dialog>
-                    <div className="flex flex-col pt-4">
-                        <DialogTrigger asChild>
-                            <Button variant="secondary">Mark as Achieved</Button>
-                        </DialogTrigger>
-                    </div>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>
-                                You are about to mark this Savings Goal as Achieved
-                            </DialogTitle>
-                        </DialogHeader>
-                        <DialogDescription>
-                            Are you sure you want to mark <span className="font-bold">{goal.name}</span> as achieved?
-                        </DialogDescription>
-                        <DialogFooter className="grid grid-cols-2 gap-4">
-                            {/* TODO: implement marking as achieved mechanism */}
-                            <Button>Confirm</Button>
-                            <DialogClose asChild>
-                                <Button type="button" variant="secondary">
-                                    Cancel
-                                </Button>
-                            </DialogClose>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-                <AlertDialog>
-                    <div className="flex flex-col pt-4">
-                        <AlertDialogTrigger asChild>
-                            <Button variant="destructive">Delete</Button>
-                        </AlertDialogTrigger>
-                    </div>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete <span className="font-bold">{goal.name}</span> from your savings goals and recalculate your progress.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <RouterForm
-                                className="inline-flex p-0 m-0"
-                                method="delete"
-                                action={`/achievements/savings-goals/${goal.id}`}
-                                onSubmit={() => onSetOpenForm(false)}
-                            >
-                                <AlertDialogAction type="submit" className="grow">Confirm</AlertDialogAction>
-                            </RouterForm>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            </Form >
+            </Form>
+            <MarkAsAchieved goal={goal} onSetOpenForm={onSetOpenForm} />
+            <Delete goal={goal} onSetOpenForm={onSetOpenForm} />
         </>
     )
 }

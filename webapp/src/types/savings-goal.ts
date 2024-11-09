@@ -179,11 +179,24 @@ interface Deleted {
     name: string
 }
 
+interface MarkAsAchieved {
+    id: number
+    achievedAt: string
+}
+
+interface MarkedAsAchieved {
+    id: number
+    name: string
+    description?: string | null
+}
+
 export type {
     Active,
     Create,
     Created,
     Deleted,
+    MarkAsAchieved,
+    MarkedAsAchieved,
     Reorder,
     SavingsGoal,
     Settings,

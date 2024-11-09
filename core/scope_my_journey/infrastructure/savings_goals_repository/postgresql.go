@@ -8,7 +8,6 @@ import (
 	"financo/core/scope_my_journey/domain/responses"
 	"financo/models/achievement"
 	"financo/models/achievement/savings_goal"
-	"time"
 )
 
 type postgresql struct {
@@ -62,12 +61,10 @@ func (r *postgresql) find(ctx context.Context, conn *sql.Conn) ([]responses.Mile
 			achieved_at IS NOT NULL
 			AND deleted_at IS NULL
 			AND kind = $1
-			AND achieved_at <= $2
 		ORDER BY
 			achieved_at DESC
 		`,
 		achievement.SavingsGoal,
-		time.Now().UTC(),
 	)
 	if err != nil {
 		return out, err

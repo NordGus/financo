@@ -11,5 +11,6 @@ func Routes(r chi.Router) {
 	r.Route("/{id}", func(r chi.Router) {
 		r.Delete("/", Destroy)
 		r.Put("/", Update)
+		r.Patch("/mark-as-achieved", MarkAsAchieved)
 	})
 }

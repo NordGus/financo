@@ -3,6 +3,8 @@ import {
     Create,
     Created,
     Deleted,
+    MarkAsAchieved,
+    MarkedAsAchieved,
     Reorder,
     Update,
     Updated
@@ -52,6 +54,18 @@ async function updateSavingsGoal(data: Update): Promise<Updated> {
     return response.json()
 }
 
+async function markSavingsGoalAsAchieved(data: MarkAsAchieved): Promise<MarkedAsAchieved> {
+    const response = await fetch(`/api/savings-goals/${data.id}/mark-as-achieved`, {
+        method: "PATCH",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+
+    if (!response.ok) throw response
+
+    return response.json()
+}
+
 async function deleteGoal(id: number): Promise<Deleted> {
     const response = await fetch(`/api/savings-goals/${id}`, { method: "DELETE" })
 
@@ -64,6 +78,7 @@ export {
     createSavingsGoal,
     deleteGoal,
     getActiveSavingsGoals,
+    markSavingsGoalAsAchieved,
     reorderSavingsGoals,
     updateSavingsGoal
 };
