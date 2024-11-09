@@ -1,6 +1,7 @@
 import { deleteGoal, markSavingsGoalAsAchieved } from "@api/savings-goals"
 import { toast } from "@components/ui/use-toast"
 import { normalizeDateForServer } from "@helpers/normalizeDate"
+import { timelineQuery } from "@queries/my-journey"
 import { QueryClient } from "@tanstack/react-query"
 import moment from "moment"
 import { Params, redirect } from "react-router-dom"
@@ -51,7 +52,10 @@ export const action = (queryClient: QueryClient) => async ({
                     description: marked.description
                 })
 
-                await queryClient.invalidateQueries({ queryKey: ["achievements", "savings-goals", "active"] })
+                await Promise.allSettled([
+                    queryClient.invalidateQueries({ queryKey: ["achievements", "savings-goals", "active"] }),
+                    queryClient.invalidateQueries({ queryKey: timelineQuery.queryKey })
+                ])
             } catch (e) {
                 console.log(e)
 
