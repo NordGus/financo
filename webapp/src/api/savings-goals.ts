@@ -56,7 +56,7 @@ async function updateSavingsGoal(data: Update): Promise<Updated> {
 
 async function markSavingsGoalAsAchieved(data: MarkAsAchieved): Promise<MarkedAsAchieved> {
     const response = await fetch(`/api/savings-goals/${data.id}/mark-as-achieved`, {
-        method: "PUT",
+        method: "PATCH",
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
