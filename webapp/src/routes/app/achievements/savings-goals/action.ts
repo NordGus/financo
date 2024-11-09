@@ -12,8 +12,6 @@ export const action = (queryClient: QueryClient) => async ({
     if (!params.id) throw new Error('No account ID provided')
     const id = Number(params.id)
 
-    console.log(request.method.toLowerCase())
-
     const action = {
         ["delete"]: async () => {
             try {
@@ -26,7 +24,7 @@ export const action = (queryClient: QueryClient) => async ({
 
                 await queryClient.invalidateQueries({ queryKey: ["achievements", "savings-goals", "active"] })
             } catch (e) {
-                console.log(e)
+                console.error(e)
 
                 toast({
                     variant: "destructive",
@@ -57,7 +55,7 @@ export const action = (queryClient: QueryClient) => async ({
                     queryClient.invalidateQueries({ queryKey: timelineQuery.queryKey })
                 ])
             } catch (e) {
-                console.log(e)
+                console.error(e)
 
                 toast({
                     variant: "destructive",
