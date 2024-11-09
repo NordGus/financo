@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils"
 import { SavingsGoal } from "@/types/savings-goal"
 import { Button } from "@components/ui/button"
+import { buttonVariants } from "@components/ui/button-variants"
 import { Calendar } from "@components/ui/calendar"
 import {
     Dialog,
@@ -13,7 +14,6 @@ import {
     DialogTrigger
 } from "@components/ui/dialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@components/ui/popover"
-import { normalizeDateForServer } from "@helpers/normalizeDate"
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import moment from "moment"
@@ -25,7 +25,7 @@ interface MarkAsAchievedProps {
     onSetOpenForm: (open: boolean) => void
 }
 
-function MarkAsAchieved({ goal, onSetOpenForm }: MarkAsAchievedProps) {
+export function MarkAsAchieved({ goal, onSetOpenForm }: MarkAsAchievedProps) {
     const [achievedAt, setAchievedAt] = useState<Date | undefined>(moment().toDate())
     const maxDate = moment().endOf('day').toDate()
 
@@ -45,24 +45,26 @@ function MarkAsAchieved({ goal, onSetOpenForm }: MarkAsAchievedProps) {
                     </DialogDescription>
                 </DialogHeader>
                 <Popover>
-                    <PopoverTrigger className="flex flex-col space-y-2 items-stretch">
-                        <Button
-                            variant={"outline"}
-                            className={cn(
-                                "pl-3 text-left font-normal",
-                                !achievedAt && "text-zinc-500"
-                            )}
-                        >
-                            {achievedAt ? (
-                                format(achievedAt, "PPP")
-                            ) : (
-                                <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                        <DialogDescription className="text-left">
-                            When did you achieved this goal?
-                        </DialogDescription>
+                    <PopoverTrigger
+                        className={
+                            cn(
+                                buttonVariants({
+                                    variant: "outline",
+                                    size: "default",
+                                    className: cn(
+                                        "pl-3 text-left font-normal",
+                                        !achievedAt && "text-zinc-500"
+                                    )
+                                }),
+                            )
+                        }
+                    >
+                        {achievedAt ? (
+                            format(achievedAt, "PPP")
+                        ) : (
+                            <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="center">
                         <Calendar
@@ -73,13 +75,16 @@ function MarkAsAchieved({ goal, onSetOpenForm }: MarkAsAchievedProps) {
                         />
                     </PopoverContent>
                 </Popover>
+                <DialogDescription className="text-left">
+                    When did you achieved this goal?
+                </DialogDescription>
                 <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
-                    <DialogClose asChild>
-                        <Button variant="secondary">Cancel</Button>
+                    <DialogClose className={cn(buttonVariants({ variant: "secondary", size: "default" }))}>
+                        Cancel
                     </DialogClose>
                     <Form
                         className="inline-flex p-0 m-0"
-                        method="patch"
+                        method="post"
                         action={`/achievements/savings-goals/${goal.id}/mark-as-achieved`}
                         onSubmit={() => onSetOpenForm(false)}
                     >
@@ -91,22 +96,18 @@ function MarkAsAchieved({ goal, onSetOpenForm }: MarkAsAchievedProps) {
                         <input
                             type="hidden"
                             name="achievedAt"
-                            value={
-                                achievedAt
-                                    ? normalizeDateForServer(achievedAt).toISOString()
-                                    : undefined
-                            }
+                            value={achievedAt?.toISOString() ?? ""}
                         />
-                        <DialogClose asChild>
-                            <Button type="submit" disabled={!achievedAt || achievedAt! > maxDate}>
-                                Confirm
-                            </Button>
+                        <DialogClose
+                            type="submit"
+                            className={cn(buttonVariants({ variant: "default", size: "default" }))}
+                            disabled={!achievedAt ? true : achievedAt > maxDate}
+                        >
+                            Confirm
                         </DialogClose>
                     </Form>
                 </DialogFooter>
             </DialogContent>
-        </Dialog>
+        </Dialog >
     )
 }
-
-export { MarkAsAchieved }

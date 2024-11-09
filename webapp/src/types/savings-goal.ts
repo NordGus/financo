@@ -186,7 +186,8 @@ interface MarkAsAchieved {
 
 interface MarkedAsAchieved {
     id: number
-    achievedAt: string
+    name: string
+    description?: string | null
 }
 
 export type {

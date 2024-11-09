@@ -1,6 +1,6 @@
 import Client from "@queries/client";
 import App from "@routes/app";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
 const router = createBrowserRouter([
     {
@@ -63,10 +63,17 @@ const router = createBrowserRouter([
                     },
                     {
                         path: "savings-goals",
+                        element: <Navigate to="/achievements" />,
                         children: [
                             {
                                 path: ":id",
                                 action: App.Achievements.actions.savingsGoals.goal(Client),
+                                element: <Navigate to="/achievements" />
+                            },
+                            {
+                                path: ":id/mark-as-achieved",
+                                action: App.Achievements.actions.savingsGoals.goal(Client),
+                                element: <Navigate to="/achievements" />
                             }
                         ]
                     }
