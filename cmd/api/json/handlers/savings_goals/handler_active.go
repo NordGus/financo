@@ -3,7 +3,7 @@ package savings_goals
 import (
 	"encoding/json"
 	"financo/core/scope_savings_goals/application/queries/active_query"
-	"financo/core/scope_savings_goals/infrastructure/active_savings_goals_repository"
+	"financo/core/scope_savings_goals/infrastructure/repositories/active_savings_goals_repository"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
