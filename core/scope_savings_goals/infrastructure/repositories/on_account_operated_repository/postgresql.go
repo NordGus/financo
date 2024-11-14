@@ -1,4 +1,4 @@
-package on_account_created_or_deleted_repository
+package on_account_operated_repository
 
 import (
 	"context"
@@ -17,7 +17,7 @@ type postgresql struct {
 	db databases.SQLAdapter
 }
 
-func NewPostgreSQL(db databases.SQLAdapter) repositories.OnAccountCreatedOrDeleted {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.OnAccountOperated {
 	return &postgresql{
 		db: db,
 	}

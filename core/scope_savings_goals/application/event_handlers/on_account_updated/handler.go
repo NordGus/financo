@@ -1,4 +1,4 @@
-package on_account_created
+package on_account_updated
 
 import (
 	"cmp"
@@ -6,6 +6,7 @@ import (
 	"financo/core/domain/event_handlers"
 	"financo/core/scope_accounts/domain/messages"
 	"financo/core/scope_savings_goals/domain/repositories"
+	"financo/models/account"
 	"financo/models/achievement/savings_goal"
 	"slices"
 	"time"
@@ -15,19 +16,35 @@ type handler struct {
 	repo repositories.OnAccountOperated
 }
 
-func New(repo repositories.OnAccountOperated) event_handlers.EventHandler[messages.Created] {
+func New(repo repositories.OnAccountOperated) event_handlers.EventHandler[messages.Updated] {
 	return &handler{
 		repo: repo,
 	}
 }
 
-func (h *handler) Handle(event messages.Created) error {
+func (h *handler) Handle(event messages.Updated) error {
 	var (
 		ctx       = context.Background()
 		timestamp = time.Now().UTC()
 	)
 
-	data, err := h.repo.Find(ctx, event.Record.Currency)
+	err := h.handle(ctx, timestamp, event.Current)
+	if err != nil {
+		return err
+	}
+
+	if event.Previous.Currency != event.Current.Currency {
+		err = h.handle(ctx, timestamp, event.Previous)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (h *handler) handle(ctx context.Context, timestamp time.Time, record account.Record) error {
+	data, err := h.repo.Find(ctx, record.Currency)
 	if err != nil {
 		return err
 	}

@@ -7,7 +7,7 @@ import (
 	"financo/models/achievement/savings_goal"
 )
 
-type OnAccountCreatedOrDeleted interface {
+type OnAccountOperated interface {
 	Find(ctx context.Context, cur currency.Type) (models.GoalsAndSavingsForCurrency, error)
 	Save(ctx context.Context, records []savings_goal.Record) error
 }
