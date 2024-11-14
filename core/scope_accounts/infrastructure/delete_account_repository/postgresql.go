@@ -34,20 +34,28 @@ func (r *repository) SoftDelete(ctx context.Context, id int64) (account.Record, 
 	if err != nil {
 		return record, err
 	}
-	defer tx.Rollback()
 
 	deleted, err := r.softDeleteAccounts(ctx, tx, id)
 	if err != nil {
+		_ = tx.Rollback()
 		return record, err
 	}
 
 	err = r.softDeleteTransactions(ctx, tx, deleted)
 	if err != nil {
+		_ = tx.Rollback()
 		return record, err
 	}
 
 	record, err = r.find(ctx, tx, id)
 	if err != nil {
+		_ = tx.Rollback()
+		return record, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		_ = tx.Rollback()
 		return record, err
 	}
 
