@@ -7,4 +7,5 @@ import (
 
 type DetailedTransactionRepository interface {
 	Find(ctx context.Context, id int64) (responses.Detailed, error)
+	FindSoftDeleted(ctx context.Context, id int64) (responses.Detailed, error)
 }

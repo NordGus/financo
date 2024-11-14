@@ -11,19 +11,29 @@ export const action = (queryClient: QueryClient) => async ({
 
     const action = {
         ["delete"]: async () => {
-            const deleted = await deleteTransaction(id)
+            try {
+                const deleted = await deleteTransaction(id)
 
-            await Promise.all([
-                queryClient.invalidateQueries({ queryKey: ["transactions"] }),
-                queryClient.invalidateQueries({ queryKey: ["accounts"] })
-            ])
+                Promise.all([
+                    queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+                    queryClient.invalidateQueries({ queryKey: ["accounts"] })
+                ])
 
-            toast({
-                title: "Deleted",
-                description: `Transaction between ${deleted.source.name} and ${deleted.target.name} have been deleted`
-            })
+                toast({
+                    title: "Deleted",
+                    description: `Transaction between ${deleted.source.name} and ${deleted.target.name} have been deleted`
+                })
+            } catch (e) {
+                console.error(e)
 
-            return redirect(`/ledger`)
+                toast({
+                    variant: "destructive",
+                    title: "Something went wrong",
+                    description: "There was a problem while deleting the transaction"
+                })
+            }
+
+            return redirect(`/ledger`, 302)
         }
     }[request.method.toLowerCase()]
 
