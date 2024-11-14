@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"financo/cmd/api/json/consumers/savings_goals_consumers"
 	"financo/cmd/api/json/handlers/accounts"
 	"financo/cmd/api/json/handlers/currencies"
 	"financo/cmd/api/json/handlers/graphs"
@@ -57,6 +58,12 @@ func main() {
 			log.Printf("failed to close database connections: %s\n", err)
 		}
 	}()
+
+	err := savings_goals_consumers.Subscribe()
+	if err != nil {
+		log.Printf("failed to subscribe savings_goals_consumers: %s\n", err)
+		os.Exit(1)
+	}
 
 	wg.Add(1)
 	go startHTTPServer(ctx, wg)
