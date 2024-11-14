@@ -71,12 +71,82 @@ const (
 		INNER JOIN accounts trg ON trg.id = tr.target_id
 		LEFT JOIN accounts trgp ON trgp.id = trg.parent_id
 	WHERE
-		tr.deleted_at IS NULL AND
 		tr.id = $1
 	`
 )
 
 func (r *repository) Find(ctx context.Context, id int64) (responses.Detailed, error) {
+	var (
+		query = queryStr + `
+		AND tr.deleted_at IS NULL
+		`
+
+		res responses.Detailed
+		row rowPostgreSQL
+	)
+
+	conn, err := r.db.Conn(ctx)
+	if err != nil {
+		return res, err
+	}
+	defer conn.Close()
+
+	err = conn.QueryRowContext(ctx, query, id).Scan(
+		&row.ID,
+		&row.IssuedAt,
+		&row.ExecutedAt,
+		&row.SourceAmount,
+		&row.TargetAmount,
+		&row.Notes,
+		&row.CreatedAt,
+		&row.UpdatedAt,
+		&row.SrcID,
+		&row.SrcKind,
+		&row.SrcCurrency,
+		&row.SrcName,
+		&row.SrcColor,
+		&row.SrcIcon,
+		&row.SrcArchivedAt,
+		&row.SrcCreatedAt,
+		&row.SrcUpdatedAt,
+		&row.SrcParentID,
+		&row.SrcParentKind,
+		&row.SrcParentCurrency,
+		&row.SrcParentName,
+		&row.SrcParentColor,
+		&row.SrcParentIcon,
+		&row.SrcParentArchivedAt,
+		&row.SrcParentCreatedAt,
+		&row.SrcParentUpdatedAt,
+		&row.TrgID,
+		&row.TrgKind,
+		&row.TrgCurrency,
+		&row.TrgName,
+		&row.TrgColor,
+		&row.TrgIcon,
+		&row.TrgArchivedAt,
+		&row.TrgCreatedAt,
+		&row.TrgUpdatedAt,
+		&row.TrgParentID,
+		&row.TrgParentKind,
+		&row.TrgParentCurrency,
+		&row.TrgParentName,
+		&row.TrgParentColor,
+		&row.TrgParentIcon,
+		&row.TrgParentArchivedAt,
+		&row.TrgParentCreatedAt,
+		&row.TrgParentUpdatedAt,
+	)
+	if err != nil {
+		return res, err
+	}
+
+	res = row.BuildTransaction()
+
+	return res, nil
+}
+
+func (r *repository) FindSoftDeleted(ctx context.Context, id int64) (responses.Detailed, error) {
 	var (
 		res responses.Detailed
 		row rowPostgreSQL

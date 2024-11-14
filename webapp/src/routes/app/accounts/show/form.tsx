@@ -53,8 +53,8 @@ import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useFieldArray, useForm, UseFormReturn } from "react-hook-form";
-import { Form as RouterForm } from "react-router-dom";
 import { z } from "zod";
+import { Delete } from "./delete";
 import { schema } from "./schema";
 
 function mapAccountToUpdateForm(account: Detailed): z.infer<typeof schema> {
@@ -229,21 +229,7 @@ export function UpdateAccountForm({
                 </Card>
             </form>
         </Form >
-        <div className="flex justify-stretch gap-4">
-            <RouterForm
-                className="flex grow"
-                method="delete"
-                onSubmit={(event) => {
-                    if (!confirm(`Do you want to delete this account? (${account.name})`)) {
-                        event.preventDefault()
-                    }
-                }}
-            >
-                <Button type="submit" variant="destructive" className="grow">
-                    Delete
-                </Button>
-            </RouterForm>
-        </div>
+        <Delete account={account} />
     </div>
 }
 

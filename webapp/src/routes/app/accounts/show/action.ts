@@ -11,19 +11,29 @@ export const action = (queryClient: QueryClient) => async ({
 
     const action = {
         ["delete"]: async () => {
-            const deleted = await deleteAccount(id)
+            try {
+                const deleted = await deleteAccount(id)
 
-            await Promise.allSettled([
-                queryClient.invalidateQueries({ queryKey: ["accounts"] }),
-                queryClient.invalidateQueries({ queryKey: ["transactions"] })
-            ])
+                Promise.allSettled([
+                    queryClient.invalidateQueries({ queryKey: ["accounts"] }),
+                    queryClient.invalidateQueries({ queryKey: ["transactions"] })
+                ])
 
-            toast({
-                title: "Deleted",
-                description: `${deleted.name} and its children have been deleted`
-            })
+                toast({
+                    title: "Deleted",
+                    description: `${deleted.name} and its children have been deleted`
+                })
+            } catch (e) {
+                console.error(e)
 
-            return redirect(`/accounts`)
+                toast({
+                    variant: "destructive",
+                    title: "Something went wrong",
+                    description: "There was a problem while deleting the account"
+                })
+            }
+
+            return redirect(`/accounts`, 302)
         }
     }[request.method.toLowerCase()]
 

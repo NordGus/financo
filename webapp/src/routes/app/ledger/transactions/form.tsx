@@ -45,8 +45,9 @@ import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Form as RouterForm, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
+import { Delete } from "./delete";
 
 const schema = z.object({
     id: z.number({ invalid_type_error: "must be a number" }).optional(),
@@ -672,22 +673,7 @@ export default function TransactionForm({ transaction, setOpen }: Props) {
             </form>
             {
                 !isEmpty(transaction) && !isHistoryTransaction(transaction) && (
-                    <RouterForm
-                        className="flex p-0 mt-4"
-                        method="delete"
-                        action={`/ledger/${(transaction as Transaction).id}`}
-                        onSubmit={(event) => {
-                            if (!confirm(`Do you want to delete this transaction?`)) {
-                                event.preventDefault()
-                            }
-
-                            setOpen(false)
-                        }}
-                    >
-                        <Button type="submit" variant="destructive" className="grow">
-                            Delete
-                        </Button>
-                    </RouterForm>
+                    <Delete transaction={(transaction as Transaction)} onSetOpenForm={setOpen} />
                 )
             }
         </Form>

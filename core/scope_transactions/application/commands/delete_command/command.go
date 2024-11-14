@@ -61,7 +61,7 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		return res, err
 	}
 
-	res, err = c.detailedRepo.Find(ctx, record.ID)
+	res, err = c.detailedRepo.FindSoftDeleted(ctx, record.ID)
 	if err != nil {
 		return res, err
 	}

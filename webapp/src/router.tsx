@@ -27,7 +27,7 @@ const router = createBrowserRouter([
                         loader: App.Accounts.loaders.account(Client),
                         action: App.Accounts.actions.account(Client),
                         element: <App.Accounts.Show />
-                    },
+                    }
                 ]
             },
             {
