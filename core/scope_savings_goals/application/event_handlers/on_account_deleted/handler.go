@@ -12,10 +12,10 @@ import (
 )
 
 type handler struct {
-	repo repositories.OnAccountCreatedOrDeleted
+	repo repositories.OnAccountOperated
 }
 
-func New(repo repositories.OnAccountCreatedOrDeleted) event_handlers.EventHandler[messages.Deleted] {
+func New(repo repositories.OnAccountOperated) event_handlers.EventHandler[messages.Deleted] {
 	return &handler{
 		repo: repo,
 	}
