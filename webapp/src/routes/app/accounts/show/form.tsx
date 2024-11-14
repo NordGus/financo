@@ -44,11 +44,12 @@ import currencyAmountColor from "@helpers/currencyAmountColor";
 import currencyAmountToHuman from "@helpers/currencyAmountToHuman";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { staleTimeDefault } from "@queries/client";
+import { timelineQuery } from "@queries/my-journey";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Currency } from "dinero.js";
-import { isEmpty, isEqual, isNil } from "lodash";
+import { isEmpty, isNil } from "lodash";
 import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -136,13 +137,15 @@ export function UpdateAccountForm({
                 }) || []
             })
 
-            await queryClient.invalidateQueries({
-                predicate: ({ queryKey }) => {
-                    return isEqual(queryKey, ["accounts", "account", account.id]) ||
-                        isEqual(queryKey, ["transactions", "pending", "account", account.id]) ||
-                        isEqual(queryKey, ["transactions", "upcoming", "account", account.id])
-                }
-            })
+            await Promise.allSettled([
+                queryClient.invalidateQueries({ queryKey: ["accounts", "account", account.id] }),
+                queryClient.invalidateQueries({ queryKey: ["summary"] }),
+                queryClient.invalidateQueries({ queryKey: ["graphs"] }),
+                queryClient.invalidateQueries({ queryKey: ["transactions"] }),
+                queryClient.invalidateQueries({ queryKey: ['accounts'] }),
+                queryClient.invalidateQueries({ queryKey: ["achievements", "savings-goals"] }),
+                queryClient.invalidateQueries({ queryKey: timelineQuery.queryKey })
+            ])
 
             toast({
                 title: "Saved",
