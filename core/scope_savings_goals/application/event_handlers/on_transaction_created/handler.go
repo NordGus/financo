@@ -13,10 +13,10 @@ import (
 )
 
 type handler struct {
-	repo repositories.OnTransactionCreated
+	repo repositories.OnTransactionOperated
 }
 
-func New(repo repositories.OnTransactionCreated) event_handlers.EventHandler[messages.Created] {
+func New(repo repositories.OnTransactionOperated) event_handlers.EventHandler[messages.Created] {
 	return &handler{
 		repo: repo,
 	}

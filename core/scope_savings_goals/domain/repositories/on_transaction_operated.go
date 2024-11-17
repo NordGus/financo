@@ -8,7 +8,7 @@ import (
 	"financo/models/transaction"
 )
 
-type OnTransactionCreated interface {
+type OnTransactionOperated interface {
 	FindAccounts(ctx context.Context, record transaction.Record) (models.AccountsForTransaction, error)
 	FindGoalsForCurrency(ctx context.Context, cur currency.Type) (models.GoalsAndSavingsForCurrency, error)
 	Save(ctx context.Context, records []savings_goal.Record) error
