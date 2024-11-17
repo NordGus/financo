@@ -30,6 +30,10 @@ func IsDebt(kind Kind) bool {
 	return kind == DebtLoan || kind == DebtPersonal || kind == DebtCredit
 }
 
+func IsSavings(kind Kind) bool {
+	return kind == CapitalSavings
+}
+
 // UnmarshalJSON receives a buffer b, and ensures that the provided value is a
 // valid [Kind]. So [Kind] satisfies the [json.Unmarshaler] interface.
 //
