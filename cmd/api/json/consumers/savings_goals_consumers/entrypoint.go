@@ -8,6 +8,7 @@ import (
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_account_updated"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_transaction_created"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_transaction_deleted"
+	"financo/core/scope_savings_goals/infrastructure/consumers/on_transaction_updated"
 	tr_msg "financo/core/scope_transactions/domain/messages"
 	transactions_broker "financo/core/scope_transactions/infrastructure/broker_handler"
 	bus "financo/lib/message_bus"
@@ -54,6 +55,13 @@ func Subscribe() error {
 
 	err = transactions.DeletedBroker().Subscribe(
 		bus.ConsumerFunc[tr_msg.Deleted](on_transaction_deleted.NewInMemory),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = transactions.UpdatedBroker().Subscribe(
+		bus.ConsumerFunc[tr_msg.Updated](on_transaction_updated.NewInMemory),
 	)
 	if err != nil {
 		return err
