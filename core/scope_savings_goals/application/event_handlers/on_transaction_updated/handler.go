@@ -40,7 +40,7 @@ func (h *handler) Handle(message messages.Updated) error {
 		return err
 	}
 
-	if !h.canOperate(current, previous) {
+	if h.skip(current, previous) {
 		// returns immediately to prevent using more resources if the
 		// transaction doesn't contains a Savings account
 		return nil
@@ -90,11 +90,11 @@ func (h *handler) Handle(message messages.Updated) error {
 	return nil
 }
 
-func (h *handler) canOperate(current models.AccountsForTransaction, prev models.AccountsForTransaction) bool {
-	return account.IsSavings(current.Source.Kind) &&
-		account.IsSavings(current.Target.Kind) &&
-		account.IsSavings(prev.Source.Kind) &&
-		account.IsSavings(prev.Target.Kind)
+func (h *handler) skip(current models.AccountsForTransaction, prev models.AccountsForTransaction) bool {
+	return !account.IsSavings(current.Source.Kind) &&
+		!account.IsSavings(current.Target.Kind) &&
+		!account.IsSavings(prev.Source.Kind) &&
+		!account.IsSavings(prev.Target.Kind)
 }
 
 func (h *handler) findAndUpdateGoalsFor(
