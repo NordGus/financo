@@ -25,7 +25,7 @@ func NewInMemory(wg *sync.WaitGroup, payload messages.Updated) {
 		on_account_operated_repository.NewPostgreSQL(db),
 	).Handle(payload)
 	if err != nil {
-		log.Println("something went wrong while handling account deleted message.", err)
+		log.Println("something went wrong while handling account updated message.", err)
 
 		return
 	}
