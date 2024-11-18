@@ -37,6 +37,9 @@ RUN apk add -q --update --progress --no-cache git make sudo openssh-client zsh n
 # updating npm
 RUN npm install -g npm@$NPM_VERSION
 
+# installing npm-check-updates
+RUN npm install -g npm-check-updates@latest
+
 # installing cosmtrek/air for hot reloading
 RUN go install github.com/air-verse/air@$GO_AIR_VERSION
 
