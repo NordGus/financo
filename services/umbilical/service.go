@@ -2,6 +2,7 @@
 package umbilical
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net"
@@ -21,7 +22,7 @@ type Service interface {
 	Close() error
 	Disconnect(id string) error
 	Connect(id string, conn net.Conn) error
-	Dispatch(message []uint8) error
+	Dispatch(message Message) error
 }
 
 type Packet []uint8
@@ -70,17 +71,20 @@ func (s *service) Disconnect(id string) error {
 	return ch.close()
 }
 
-func (s *service) Dispatch(message []uint8) error {
+func (s *service) Dispatch(message Message) error {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
-	var err error
-
-	for _, ch := range s.channels {
-		ch.send <- Packet(message)
+	packet, err := json.Marshal(message)
+	if err != nil {
+		return err
 	}
 
-	return err
+	for _, ch := range s.channels {
+		ch.send <- Packet(packet)
+	}
+
+	return nil
 }
 
 func (s *service) Close() error {
