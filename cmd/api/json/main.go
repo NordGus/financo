@@ -22,6 +22,7 @@ import (
 	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
 	transactions_broker "financo/core/scope_transactions/infrastructure/broker_handler"
 	"financo/services/postgresql_database"
+	"financo/services/umbilical"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -37,6 +38,7 @@ func main() {
 		ctx, cancel = context.WithCancel(context.Background())
 
 		pgDBService        = postgresql_database.New()
+		umbilicalService   = umbilical.New()
 		accountsBroker     = accounts_broker.Initialize(wg)
 		transactionsBroker = transactions_broker.Initialize(wg)
 	)
@@ -56,6 +58,12 @@ func main() {
 	defer func() {
 		if err := pgDBService.Close(); err != nil {
 			log.Printf("failed to close database connections: %s\n", err)
+		}
+	}()
+
+	defer func() {
+		if err := umbilicalService.Close(); err != nil {
+			log.Printf("failed to close umbilical connection: %s\n", err)
 		}
 	}()
 
@@ -89,7 +97,9 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 	router := chi.NewRouter()
 
 	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
 	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
 
 	router.Route("/accounts", accounts.Routes)
 	router.Route("/currencies", currencies.Routes)
