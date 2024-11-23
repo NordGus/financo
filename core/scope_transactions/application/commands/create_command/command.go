@@ -16,7 +16,7 @@ import (
 
 type command struct {
 	req          requests.Create
-	accountRepo  core_repos.AccountRepository
+	accountRepo  core_repos.Account
 	createRepo   repositories.CreateTransactionRepository
 	detailedRepo repositories.DetailedTransactionRepository
 	broker       brokers.CreatedBroker
@@ -24,7 +24,7 @@ type command struct {
 
 func New(
 	req requests.Create,
-	accountRepo core_repos.AccountRepository,
+	accountRepo core_repos.Account,
 	createRepo repositories.CreateTransactionRepository,
 	detailedRepo repositories.DetailedTransactionRepository,
 	broker brokers.CreatedBroker,

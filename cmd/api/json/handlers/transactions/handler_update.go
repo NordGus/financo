@@ -2,7 +2,7 @@ package transactions
 
 import (
 	"encoding/json"
-	"financo/core/infrastructure/account_repository"
+	"financo/core/infrastructure/repositories/account_repository"
 	"financo/core/scope_transactions/application/commands/update_command"
 	"financo/core/scope_transactions/domain/requests"
 	"financo/core/scope_transactions/infrastructure/broker_handler"

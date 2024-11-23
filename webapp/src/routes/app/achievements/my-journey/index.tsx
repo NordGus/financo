@@ -8,7 +8,7 @@ import { timelineQuery } from "@queries/my-journey"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { isEmpty, isNil } from "lodash"
 import moment from "moment"
-import { useLoaderData } from "react-router-dom"
+import { useLoaderData } from "react-router"
 import { loader } from "./loader"
 
 export default function MyJourney() {

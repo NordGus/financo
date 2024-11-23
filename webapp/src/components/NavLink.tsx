@@ -1,8 +1,8 @@
-import { ReactNode } from "react"
-import { NavLink as RouterNavLink } from "react-router-dom"
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
-import { cva } from "class-variance-authority"
 import { cn } from "@/lib/utils"
+import { cva } from "class-variance-authority"
+import { ReactNode } from "react"
+import { NavLink as RouterNavLink } from "react-router"
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip"
 
 const linkVariants = cva(
     "flex p-0 m-0 items-center justify-center rounded transition-colors",

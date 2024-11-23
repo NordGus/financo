@@ -9,7 +9,7 @@ import {
     SheetTrigger
 } from "@components/ui/sheet";
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import { NewAccountForm } from "./new";
 
 export default function Layout() {

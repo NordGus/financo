@@ -3,7 +3,7 @@ import QueryClient from "@queries/client"
 import { QueryClientProvider } from '@tanstack/react-query'
 import 'material-symbols/rounded.css'
 import React, { useEffect, useRef } from 'react'
-import { RouterProvider } from 'react-router-dom'
+import { RouterProvider } from "react-router"
 import useDetectColorScheme from './hooks/use-detect-color-scheme'
 import './index.css'
 import router from './router'

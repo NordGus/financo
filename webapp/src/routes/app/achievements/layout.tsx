@@ -3,7 +3,7 @@ import Breadcrumbs from "@components/breadcrumbs";
 import { NavButton } from "@components/ui/button";
 import { Sheet, SheetContent } from "@components/ui/sheet";
 import { useReducer } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import Goals from "./savings-goals";
 
 const actionTypes = {

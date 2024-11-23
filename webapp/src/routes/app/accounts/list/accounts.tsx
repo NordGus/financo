@@ -26,7 +26,7 @@ import { staleTimeDefault } from "@queries/client";
 import { useQuery } from "@tanstack/react-query";
 import Color from "colorjs.io";
 import { isEmpty, isNil } from "lodash";
-import { Link, NavigateFunction, useNavigate } from "react-router-dom";
+import { Link, NavigateFunction, useNavigate } from "react-router";
 
 function CapitalTable({ accounts, navigate }: { accounts: Preview[], navigate: NavigateFunction }) {
     return (

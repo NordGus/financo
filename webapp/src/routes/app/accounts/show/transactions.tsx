@@ -9,7 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { groupBy, isEmpty, isNil } from "lodash";
 import moment from "moment";
 import { Suspense, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import {
     getPendingTransactionsForAccount,

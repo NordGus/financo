@@ -10,6 +10,7 @@ import (
 	"financo/cmd/api/json/handlers/my_journey"
 	"financo/cmd/api/json/handlers/savings_goals"
 	"financo/cmd/api/json/handlers/transactions"
+	"financo/cmd/api/json/middleware"
 	"fmt"
 	"log"
 	"net/http"
@@ -21,11 +22,12 @@ import (
 
 	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
 	transactions_broker "financo/core/scope_transactions/infrastructure/broker_handler"
+	"financo/services/in_memory_session_store"
 	"financo/services/postgresql_database"
 	"financo/services/umbilical"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chi_middleware "github.com/go-chi/chi/v5/middleware"
 )
 
 const (
@@ -38,6 +40,7 @@ func main() {
 		ctx, cancel = context.WithCancel(context.Background())
 
 		pgDBService        = postgresql_database.New()
+		sessionStore       = in_memory_session_store.New()
 		umbilicalService   = umbilical.New()
 		accountsBroker     = accounts_broker.Initialize(wg)
 		transactionsBroker = transactions_broker.Initialize(wg)
@@ -64,6 +67,12 @@ func main() {
 	defer func() {
 		if err := umbilicalService.Close(); err != nil {
 			log.Printf("failed to close umbilical connection: %s\n", err)
+		}
+	}()
+
+	defer func() {
+		if err := sessionStore.Close(); err != nil {
+			log.Printf("failed to close session store connection: %s\n", err)
 		}
 	}()
 
@@ -96,18 +105,23 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 
 	router := chi.NewRouter()
 
-	router.Use(middleware.RequestID)
-	router.Use(middleware.RealIP)
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
+	router.Use(chi_middleware.RequestID)
+	router.Use(chi_middleware.RealIP)
+	router.Use(chi_middleware.Logger)
+	router.Use(chi_middleware.Recoverer)
 
-	router.Route("/accounts", accounts.Routes)
-	router.Route("/currencies", currencies.Routes)
-	router.Route("/graphs", graphs.Routes)
-	router.Route("/health", health.Routes)
-	router.Route("/my-journey", my_journey.Routes)
-	router.Route("/savings-goals", savings_goals.Routes)
-	router.Route("/transactions", transactions.Routes)
+	// protected routes
+	router.Group(func(r chi.Router) {
+		r.Use(middleware.Session)
+
+		r.Route("/accounts", accounts.Routes)
+		r.Route("/currencies", currencies.Routes)
+		r.Route("/graphs", graphs.Routes)
+		r.Route("/health", health.Routes)
+		r.Route("/my-journey", my_journey.Routes)
+		r.Route("/savings-goals", savings_goals.Routes)
+		r.Route("/transactions", transactions.Routes)
+	})
 
 	// HTTP Server configuration
 	server := &http.Server{

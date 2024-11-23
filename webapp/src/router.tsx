@@ -1,6 +1,7 @@
 import Client from "@queries/client";
 import App from "@routes/app";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import Login from "@routes/login";
+import { createBrowserRouter, Navigate } from "react-router";
 
 const router = createBrowserRouter([
     {
@@ -81,9 +82,13 @@ const router = createBrowserRouter([
             },
             {
                 path: '*',
-                element: <App.NotFound />
+                element: <App.NotFound />,
             }
         ]
+    },
+    {
+        path: "login",
+        element: <Login.Page />
     }
 ])
 

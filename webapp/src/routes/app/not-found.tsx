@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card"
-import { useLocation } from "react-router-dom"
+import { useLocation } from "react-router"
 
 export default function NotFound() {
     const { pathname } = useLocation()

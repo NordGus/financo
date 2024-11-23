@@ -4,7 +4,7 @@ import { normalizeDateForServer } from "@helpers/normalizeDate"
 import { timelineQuery } from "@queries/my-journey"
 import { QueryClient } from "@tanstack/react-query"
 import moment from "moment"
-import { Params, redirect } from "react-router-dom"
+import { Params, redirect } from "react-router"
 
 export const action = (queryClient: QueryClient) => async ({
     request, params
