@@ -13,6 +13,10 @@ var (
 	instance *service
 )
 
+type Packet interface {
+	PacketKind() string
+}
+
 type service struct {
 	mutex    sync.RWMutex
 	channels map[string]*channel
@@ -22,10 +26,8 @@ type Service interface {
 	Close() error
 	Disconnect(id string) error
 	Connect(id string, conn net.Conn) error
-	Dispatch(message Message) error
+	Dispatch(packet Packet) error
 }
-
-type Packet []uint8
 
 func New() Service {
 	if instance != nil {
@@ -71,17 +73,17 @@ func (s *service) Disconnect(id string) error {
 	return ch.close()
 }
 
-func (s *service) Dispatch(message Message) error {
+func (s *service) Dispatch(packet Packet) error {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
-	packet, err := json.Marshal(message)
+	msg, err := json.Marshal(packet)
 	if err != nil {
 		return err
 	}
 
 	for _, ch := range s.channels {
-		ch.send <- Packet(packet)
+		ch.send <- msg
 	}
 
 	return nil

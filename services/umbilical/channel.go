@@ -1,6 +1,7 @@
 package umbilical
 
 import (
+	"encoding/json"
 	"log"
 	"net"
 
@@ -14,8 +15,8 @@ const (
 
 type channel struct {
 	id   string
-	conn net.Conn    // Websocket connection
-	send chan Packet // Outgoing packets queue
+	conn net.Conn     // Websocket connection
+	send chan []uint8 // Outgoing packets queue
 }
 
 // newChannel returns a [Channel] for the user to handle
@@ -23,7 +24,7 @@ func newChannel(id string, conn net.Conn) *channel {
 	c := &channel{
 		id:   id,
 		conn: conn,
-		send: make(chan Packet, channelSendBufferSize),
+		send: make(chan []uint8, channelSendBufferSize),
 	}
 
 	go c.reader()
@@ -36,16 +37,26 @@ func (ch *channel) reader() {
 	defer instance.Disconnect(ch.id)
 
 	for {
-		_, op, err := wsutil.ReadClientData(ch.conn)
+		pkt, op, err := wsutil.ReadClientData(ch.conn)
 		if err != nil {
-			log.Printf("umbilical: channel %s failed to read message: %s", ch.id, err.Error())
+			log.Printf("umbilical: channel %s failed to read packet: %s\n", ch.id, err.Error())
 			break
 		}
 
 		if op == ws.OpClose {
-			log.Printf("umbilical: channel %s close by the client", ch.id)
+			log.Printf("umbilical: channel %s close by the client\n", ch.id)
 			break
 		}
+
+		msg := make(map[string]any)
+
+		err = json.Unmarshal(pkt, &msg)
+		if err != nil {
+			log.Printf("umbilical: channel %s failed to unmarshal packet: %s\n", ch.id, err.Error())
+			break
+		}
+
+		log.Printf("umbilical: channel %s received packet: %+v", ch.id, msg)
 	}
 }
 
