@@ -1,3 +1,5 @@
+// This code is not cleaver just to the point
+
 import React from "react";
 import { cn } from "~/lib/utils";
 
