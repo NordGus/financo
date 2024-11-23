@@ -9,7 +9,7 @@ import {
     TrophyIcon,
     VaultIcon
 } from "lucide-react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 
 export default function Layout() {
     return (

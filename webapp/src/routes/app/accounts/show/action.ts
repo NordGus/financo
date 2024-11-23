@@ -1,7 +1,7 @@
 import { deleteAccount } from "@api/accounts"
 import { toast } from "@components/ui/use-toast"
 import { QueryClient } from "@tanstack/react-query"
-import { Params, redirect } from "react-router-dom"
+import { Params, redirect } from "react-router"
 
 export const action = (queryClient: QueryClient) => async ({
     request, params

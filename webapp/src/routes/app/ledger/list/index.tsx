@@ -11,7 +11,7 @@ import { Card } from "@components/ui/card";
 import { useMutation } from "@tanstack/react-query";
 import moment from "moment";
 import { Dispatch, SetStateAction, useEffect } from "react";
-import { useLoaderData, useOutletContext } from "react-router-dom";
+import { useLoaderData, useOutletContext } from "react-router";
 import { TransactionsHistory } from "./history";
 import { loader } from "./loader";
 import { TransactionsPending } from "./pending";

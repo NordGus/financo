@@ -21,7 +21,7 @@ import { isEmpty } from "lodash";
 import { CheckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { z } from "zod";
 import { Delete } from "./delete";
 import { MarkAsAchieved } from "./mark-as-achieved";

@@ -10,7 +10,7 @@ import {
 } from "@components/ui/sheet";
 import { isEqual } from "lodash";
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import Transactions from "./transactions";
 
 export default function Layout() {

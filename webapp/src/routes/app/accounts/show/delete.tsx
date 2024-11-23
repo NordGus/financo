@@ -11,7 +11,7 @@ import {
     AlertDialogTrigger
 } from "@components/ui/alert-dialog"
 import { Button } from "@components/ui/button"
-import { Form } from "react-router-dom"
+import { Form } from "react-router"
 
 interface DeleteAccountProps {
     account: Detailed

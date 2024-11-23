@@ -45,7 +45,7 @@ import { CalendarIcon, CheckIcon, InfoIcon } from "lucide-react";
 import moment from "moment";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { z } from "zod";
 import { Delete } from "./delete";
 

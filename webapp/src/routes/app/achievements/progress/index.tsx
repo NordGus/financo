@@ -1,6 +1,6 @@
 import { Alert, AlertDescription, AlertTitle } from "@components/ui/alert"
 import { InfoIcon } from "lucide-react"
-import { useOutletContext } from "react-router-dom"
+import { useOutletContext } from "react-router"
 import { AchievementsOutletContext } from "../layout"
 import SavingsGoals from "../savings-goals"
 
