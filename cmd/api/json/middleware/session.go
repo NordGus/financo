@@ -41,10 +41,6 @@ func Session(next http.Handler) http.Handler {
 			return
 		}
 
-		cookie.Value = session.ID
-
-		http.SetCookie(w, cookie)
-
 		ctx := context.WithValue(r.Context(), config.SessionKey, &session)
 
 		next.ServeHTTP(w, r.WithContext(ctx))

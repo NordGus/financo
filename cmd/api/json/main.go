@@ -109,11 +109,10 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 	router.Use(chi_middleware.RealIP)
 	router.Use(chi_middleware.Logger)
 	router.Use(chi_middleware.Recoverer)
-	router.Use(middleware.Session)
 
 	// protected routes
 	router.Group(func(r chi.Router) {
-		// TODO: implement authentication system
+		r.Use(middleware.Session)
 
 		r.Route("/accounts", accounts.Routes)
 		r.Route("/currencies", currencies.Routes)
