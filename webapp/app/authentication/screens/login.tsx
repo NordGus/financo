@@ -1,5 +1,7 @@
+import { Heading2 } from "~/components/ui/headings";
+
 export function Login() {
     return (
-        <h2>Login</h2>
+        <Heading2>Login</Heading2>
     )
 }
