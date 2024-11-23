@@ -10,6 +10,7 @@ import (
 	"financo/cmd/api/json/handlers/my_journey"
 	"financo/cmd/api/json/handlers/savings_goals"
 	"financo/cmd/api/json/handlers/transactions"
+	"financo/cmd/api/json/middleware"
 	"fmt"
 	"log"
 	"net/http"
@@ -26,7 +27,7 @@ import (
 	"financo/services/umbilical"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chi_middleware "github.com/go-chi/chi/v5/middleware"
 )
 
 const (
@@ -104,10 +105,11 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 
 	router := chi.NewRouter()
 
-	router.Use(middleware.RequestID)
-	router.Use(middleware.RealIP)
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
+	router.Use(chi_middleware.RequestID)
+	router.Use(chi_middleware.RealIP)
+	router.Use(chi_middleware.Logger)
+	router.Use(chi_middleware.Recoverer)
+	router.Use(middleware.Session(http.SameSiteLaxMode))
 
 	router.Route("/accounts", accounts.Routes)
 	router.Route("/currencies", currencies.Routes)
