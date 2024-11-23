@@ -109,15 +109,20 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 	router.Use(chi_middleware.RealIP)
 	router.Use(chi_middleware.Logger)
 	router.Use(chi_middleware.Recoverer)
-	router.Use(middleware.Session(http.SameSiteLaxMode))
+	router.Use(middleware.Session)
 
-	router.Route("/accounts", accounts.Routes)
-	router.Route("/currencies", currencies.Routes)
-	router.Route("/graphs", graphs.Routes)
-	router.Route("/health", health.Routes)
-	router.Route("/my-journey", my_journey.Routes)
-	router.Route("/savings-goals", savings_goals.Routes)
-	router.Route("/transactions", transactions.Routes)
+	// protected routes
+	router.Group(func(r chi.Router) {
+		// TODO: implement authentication system
+
+		r.Route("/accounts", accounts.Routes)
+		r.Route("/currencies", currencies.Routes)
+		r.Route("/graphs", graphs.Routes)
+		r.Route("/health", health.Routes)
+		r.Route("/my-journey", my_journey.Routes)
+		r.Route("/savings-goals", savings_goals.Routes)
+		r.Route("/transactions", transactions.Routes)
+	})
 
 	// HTTP Server configuration
 	server := &http.Server{
