@@ -21,6 +21,7 @@ import (
 
 	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
 	transactions_broker "financo/core/scope_transactions/infrastructure/broker_handler"
+	"financo/services/in_memory_session_store"
 	"financo/services/postgresql_database"
 	"financo/services/umbilical"
 
@@ -38,6 +39,7 @@ func main() {
 		ctx, cancel = context.WithCancel(context.Background())
 
 		pgDBService        = postgresql_database.New()
+		sessionStore       = in_memory_session_store.New()
 		umbilicalService   = umbilical.New()
 		accountsBroker     = accounts_broker.Initialize(wg)
 		transactionsBroker = transactions_broker.Initialize(wg)
@@ -64,6 +66,12 @@ func main() {
 	defer func() {
 		if err := umbilicalService.Close(); err != nil {
 			log.Printf("failed to close umbilical connection: %s\n", err)
+		}
+	}()
+
+	defer func() {
+		if err := sessionStore.Close(); err != nil {
+			log.Printf("failed to close session store connection: %s\n", err)
 		}
 	}()
 
