@@ -1,7 +1,63 @@
-import { Heading2 } from "~/components/ui/headings";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "~/components/ui/button";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import { login } from "../schemas/login";
 
 export function Login() {
+    const form = useForm<z.infer<typeof login>>({
+        resolver: zodResolver(login),
+    })
+
+    const onSubmit = async (values: z.infer<typeof login>) => {
+
+    }
+
     return (
-        <Heading2>Login</Heading2>
+        <Form {...form}>
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-base w-80"
+            >
+                <FormField
+                    control={form.control}
+                    name="username"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>username</FormLabel>
+                            <FormControl>
+                                <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>password</FormLabel>
+                            <FormControl>
+                                <Input {...field} type="password" />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Button type="submit" className="w-full">
+                    log in
+                </Button>
+            </form>
+        </Form>
     )
 }
