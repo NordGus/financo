@@ -58,8 +58,8 @@ func (s *service) Health() map[string]string {
 	return stats
 }
 
-// Get retrieves the [session.Record] associated with the given ID.
-func (s *service) Get(ctx context.Context, id string) (session.Record, error) {
+// Find retrieves the [session.Record] associated with the given ID.
+func (s *service) Find(ctx context.Context, id string) (session.Record, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
@@ -91,7 +91,7 @@ func (s *service) Save(_ context.Context, record session.Record) error {
 	return nil
 }
 
-func (s *service) Delete(_ context.Context, id string) error {
+func (s *service) Delete(_ context.Context, record session.Record) error {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -99,12 +99,12 @@ func (s *service) Delete(_ context.Context, id string) error {
 		return ErrServiceDown
 	}
 
-	_, present := s.sessions[id]
+	_, present := s.sessions[record.ID]
 	if !present {
-		return fmt.Errorf("in_memory_session_store: session %s not found", id)
+		return fmt.Errorf("in_memory_session_store: session %s not found", record.ID)
 	}
 
-	delete(s.sessions, id)
+	delete(s.sessions, record.ID)
 
 	return nil
 }

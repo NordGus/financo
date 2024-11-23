@@ -12,14 +12,13 @@ type SessionStoreService interface {
 	// It can panic and terminate the program.
 	Health() map[string]string
 
-	// Get returns the [session.Record] associated with the given ID.
+	// Find returns the [session.Record] associated with the given ID.
 	// It returns an error if it doesn't finds it.
-	Get(ctx context.Context, id string) (session.Record, error)
+	Find(ctx context.Context, id string) (session.Record, error)
 
-	// Delete removes the [session.Record] associated with the given ID from the
-	// the store.
+	// Delete removes the given [session.Record] from the store.
 	// It returns an error if it can't remove it.
-	Delete(ctx context.Context, id string) error
+	Delete(ctx context.Context, record session.Record) error
 
 	// Save persists the given [session.Record] into the store. It returns an
 	// error if it fails to do so.
