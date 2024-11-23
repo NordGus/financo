@@ -11,4 +11,13 @@ export default defineConfig({
     },
   },
   plugins: [reactRouter(), tsconfigPaths()],
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://0.0.0.0:3000",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  }
 });
