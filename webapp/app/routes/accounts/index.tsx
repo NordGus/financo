@@ -1,4 +1,4 @@
-import { Screen } from "~/accounts/screens";
+import { Screen } from "~/modules/accounts/screens";
 import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {

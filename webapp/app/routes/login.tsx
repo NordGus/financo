@@ -1,4 +1,4 @@
-import { Screen } from "~/authentication/screens/login";
+import { Screen } from "~/modules/authentication/screens/login";
 import { Route } from "./+types/login";
 
 export function meta({ }: Route.MetaArgs) {

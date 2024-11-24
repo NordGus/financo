@@ -31,6 +31,12 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+export async function loader({ }: Route.LoaderArgs) {
+  return {
+    breadcrumb: "financo"
+  }
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const scheme = useDetectColorScheme()
 

@@ -1,4 +1,4 @@
-import { Screen } from "~/dashboard/screens/dashboard";
+import { Screen } from "~/modules/dashboard/screens/dashboard";
 import { Route } from "./+types/dashboard";
 
 export function meta({ }: Route.MetaArgs) {

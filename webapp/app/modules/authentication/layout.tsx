@@ -13,7 +13,7 @@ export default function Layout() {
       )}
     >
       <Heading1 className="text-right">
-        log into <span className="font-bold text-primary">financo</span>
+        welcome to <span className="font-bold text-primary">financo</span>
       </Heading1>
 
       <div
