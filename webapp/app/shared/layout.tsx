@@ -13,14 +13,14 @@ import { NavItem } from "./components/nav-item";
 export default function Layout() {
   return (
     <div
-      className="h-full w-full overflow-hidden grid grid-cols-layout items-stretch"
+      className="h-full w-full overflow-hidden grid grid-cols-layout items-stretch gap-4"
     >
       <main
-        className="grow h-full overflow-y-auto overflow-x-auto p-2"
+        className="grow h-full overflow-y-auto overflow-x-auto py-4 pl-4"
       >
         <Outlet />
       </main>
-      <nav className="flex flex-col gap-1 p-2 justify-stretch items-start">
+      <nav className="flex flex-col py-2 pr-4 justify-stretch items-start">
         <NavItem to="/">
           <LayoutDashboardIcon /> dashboard
         </NavItem>
