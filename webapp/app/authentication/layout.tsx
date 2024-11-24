@@ -8,27 +8,18 @@ export default function Layout() {
     <main
       className={cn(
         "h-full",
-        "grid grid-cols-2 justify-center items-center gap-base",
+        "grid grid-cols-2 justify-center items-center gap-4",
         "overflow-hidden"
       )}
     >
-      <div
-        className={cn(
-          "h-full",
-          "flex flex-col items-center justify-center",
-          "border-r",
-          "overflow-hidden"
-        )}
-      >
-        <Heading1 className="text-center">
-          log into <span className="font-bold text-primary">financo</span>
-        </Heading1>
-      </div>
+      <Heading1 className="text-right">
+        log into <span className="font-bold text-primary">financo</span>
+      </Heading1>
 
       <div
         className={cn(
           "grow h-full",
-          "flex flex-col gap-base justify-center items-center",
+          "flex flex-col gap-4 justify-center items-center",
           "overflow-x-hidden overflow-y-auto"
         )}
       >

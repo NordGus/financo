@@ -26,9 +26,6 @@ export default {
       height: {
         body: "100dvh",
       },
-      spacing: {
-        "base": "1rem",
-      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

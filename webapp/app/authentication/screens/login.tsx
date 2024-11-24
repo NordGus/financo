@@ -26,7 +26,7 @@ export function Login() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-base w-80"
+        className="space-y-4 w-80"
       >
         <FormField
           control={form.control}
