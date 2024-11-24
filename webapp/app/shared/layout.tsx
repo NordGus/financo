@@ -8,6 +8,7 @@ import {
   VaultIcon,
 } from "lucide-react";
 import { Outlet } from "react-router";
+import { Breadcrumbs } from "./components/breadcrumbs";
 import { NavItem } from "./components/nav-item";
 
 export default function Layout() {
@@ -18,10 +19,11 @@ export default function Layout() {
       <main
         className="grow h-full overflow-y-auto overflow-x-auto py-4 pl-4"
       >
+        <Breadcrumbs />
         <Outlet />
       </main>
       <nav className="flex flex-col gap-4 p-4 justify-stretch items-start">
-        <NavItem to="/">
+        <NavItem to="/dashboard">
           <LayoutDashboardIcon /> dashboard
         </NavItem>
         <NavItem to="/accounts">

@@ -8,6 +8,12 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
+export async function loader({ }: Route.LoaderArgs) {
+  return {
+    breadcrumb: "accounts"
+  }
+}
+
 export default function index() {
   return <Screen />
 }

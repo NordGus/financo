@@ -8,6 +8,12 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
+export async function loader({ }: Route.LoaderArgs) {
+  return {
+    breadcrumb: "dashboard"
+  }
+}
+
 export default function Dashboard() {
   return <Screen />
 }
