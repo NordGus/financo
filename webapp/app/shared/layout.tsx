@@ -20,7 +20,7 @@ export default function Layout() {
       >
         <Outlet />
       </main>
-      <nav className="flex flex-col py-2 pr-4 justify-stretch items-start">
+      <nav className="flex flex-col gap-4 p-4 justify-stretch items-start">
         <NavItem to="/">
           <LayoutDashboardIcon /> dashboard
         </NavItem>
