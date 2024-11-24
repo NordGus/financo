@@ -15,7 +15,8 @@ export default [
     ]),
     ...prefix("ledger", [
       index("routes/ledger/index.tsx")
-    ])
+    ]),
+    route("achievements", "routes/achievements/index.tsx")
   ]),
   layout("modules/authentication/layout.tsx", [
     route("login", "routes/login.tsx"),
