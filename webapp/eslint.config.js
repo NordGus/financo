@@ -40,7 +40,8 @@ export default [
       "no-empty-pattern": [
         "error",
         { "allowObjectPatternsAsParameters": true }
-      ]
+      ],
+      "react/prop-types": ["off"]
     },
   },
 ];
