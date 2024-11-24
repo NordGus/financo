@@ -15,6 +15,11 @@ export default function Layout() {
     <div
       className="h-full w-full overflow-hidden grid grid-cols-layout items-stretch"
     >
+      <main
+        className="grow h-full overflow-y-auto overflow-x-auto p-2"
+      >
+        <Outlet />
+      </main>
       <nav className="flex flex-col gap-1 p-2 justify-stretch items-start">
         <NavItem to="/">
           <LayoutDashboardIcon /> dashboard
@@ -39,11 +44,6 @@ export default function Layout() {
           <SettingsIcon /> settings
         </NavItem>
       </nav>
-      <main
-        className="grow h-full overflow-y-auto overflow-x-auto p-2"
-      >
-        <Outlet />
-      </main>
     </div>
   )
 }
