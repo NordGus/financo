@@ -37,6 +37,10 @@ export default [
         "double",
         { "allowTemplateLiterals": true }
       ],
+      "no-empty-pattern": [
+        "error",
+        { "allowObjectPatternsAsParameters": true }
+      ]
     },
   },
 ];
