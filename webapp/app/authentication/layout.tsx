@@ -8,7 +8,7 @@ export default function Layout() {
     <main
       className={cn(
         "h-full",
-        "grid grid-cols-2 justify-center items-center gap-4",
+        "grid grid-cols-2 justify-center items-center gap-8",
         "overflow-hidden"
       )}
     >
@@ -19,8 +19,9 @@ export default function Layout() {
       <div
         className={cn(
           "grow h-full",
-          "flex flex-col gap-4 justify-center items-center",
-          "overflow-x-hidden overflow-y-auto"
+          "flex flex-col gap-4 justify-center",
+          "overflow-y-auto",
+          "px-1"
         )}
       >
         <Outlet />
