@@ -2,7 +2,6 @@ import { Outlet } from "react-router";
 import { cn } from "~/lib/utils";
 import { Heading1 } from "~/shared/components/ui/headings";
 
-
 export default function Layout() {
   return (
     <main
