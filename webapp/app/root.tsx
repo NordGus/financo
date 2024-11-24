@@ -14,9 +14,10 @@ import { z } from "zod";
 import { zodErrorMap } from "~/config/zod-custom-error-map";
 import { Button } from "~/shared/components/ui/button";
 import { Heading1 } from "~/shared/components/ui/headings";
+import { TooltipProvider } from "~/shared/components/ui/tooltip";
+import useDetectColorScheme from "~/shared/hooks/use-detect-color-scheme";
 import type { Route } from "./+types/root";
 import "./app.css";
-import useDetectColorScheme from "./shared/hooks/use-detect-color-scheme";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -60,7 +61,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   useEffect(() => z.setErrorMap(zodErrorMap), [])
 
-  return <Outlet />;
+  return (
+    <TooltipProvider>
+      <Outlet />
+    </TooltipProvider>
+  );
 }
 
 type ErrorBoundaryActionType = "not_found" | "error"
