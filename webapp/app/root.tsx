@@ -1,17 +1,21 @@
+import { useEffect } from "react";
 import {
   isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
+  redirect,
   Scripts,
   ScrollRestoration,
+  useNavigate,
 } from "react-router";
-
-import { useEffect } from "react";
 import { z } from "zod";
+import { zodErrorMap } from "~/config/zod-custom-error-map";
+import { Button } from "~/shared/components/ui/button";
+import { Heading1 } from "~/shared/components/ui/headings";
 import type { Route } from "./+types/root";
 import "./app.css";
-import { zodErrorMap } from "./config/zod-custom-error-map";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -50,31 +54,57 @@ export default function App() {
   return <Outlet />;
 }
 
+type ErrorBoundaryActionType = "not_found" | "error"
+
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  const navigate = useNavigate();
+
+  let message = "oops!";
+  let details = "an unexpected error occurred";
   let stack: string | undefined;
+  let action: ErrorBoundaryActionType = "error";
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
+    if (error.status === 401) redirect("/login");
+    else if (error.status === 404) {
+      message = "not found";
+      details = "the requested page could not be found";
+      action = "not_found";
+    } else {
+      message = "error";
+      details = error.statusText || details;
+      action = "error";
+    }
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
+    <main className="pt-20 p-16">
+      <Heading1>{message}</Heading1>
       <p>{details}</p>
       {stack && (
         <pre className="w-full p-4 overflow-x-auto">
           <code>{stack}</code>
         </pre>
       )}
+      {
+        {
+          not_found: (
+            <Button asChild className="mt-4">
+              <Link to="/" reloadDocument>
+                return to dashboard
+              </Link>
+            </Button>
+          ),
+          error: (
+            <Button className="mt-4" onClick={() => navigate(0)}>
+              try again
+            </Button>
+          )
+        }[action]
+      }
     </main>
   );
 }
