@@ -27,7 +27,7 @@ export default {
         body: "100dvh",
       },
       gridTemplateColumns: {
-        "layout": "max-content 1fr"
+        "layout": "fit-content(20dvw) 1fr"
       },
       colors: {
         background: "hsl(var(--background))",

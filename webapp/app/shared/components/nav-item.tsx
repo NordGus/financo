@@ -8,7 +8,7 @@ const linkVariants = cva(
   {
     variants: {
       variant: {
-        "active": "text-foreground dark:text-foreground",
+        "active": "text-foreground dark:text-foreground [&_svg]:size-6 text-lg",
         "pending": "bg-background text-foreground animate-pulse",
         "default": "text-foreground/50 hover:text-foreground"
       }
