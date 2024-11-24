@@ -18,7 +18,7 @@ export function Login() {
         resolver: zodResolver(login),
     })
 
-    const onSubmit = async (values: z.infer<typeof login>) => {
+    const onSubmit = async (_values: z.infer<typeof login>) => {
 
     }
 
