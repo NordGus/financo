@@ -22,6 +22,7 @@ import {
   TooltipContent,
   TooltipTrigger
 } from "~/shared/components/ui/tooltip";
+import { colorContrast } from "~/shared/helpers/color-contrast";
 import {
   currencyAmountToHuman
 } from "~/shared/helpers/currency-amount-to-human";
@@ -38,6 +39,7 @@ export function Preview({
     currency,
     name,
     description,
+    color,
     settings: {
       favorite,
       balance
@@ -49,12 +51,25 @@ export function Preview({
 
   return (
     <Card className={cn(isArchived && "opacity-50")}>
-      <CardHeader className="min-h-36">
+      <CardHeader
+        className="min-h-28"
+        style={{
+          backgroundColor: color,
+          color: colorContrast(color)
+        }}
+      >
         <CardTitle>{name}</CardTitle>
-        <CardDescription>{description || "-"}</CardDescription>
+        <CardDescription
+          style={{
+            color: colorContrast(color),
+            opacity: "70%",
+          }}
+        >
+          {description}
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-row-reverse justify-between gap-2">
+        <div className="flex flex-row-reverse justify-between gap-2 pt-4">
           <span className={cn("font-semibold")}>
             {currencyAmountToHuman(balance, currency)}
           </span>
