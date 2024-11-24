@@ -25,7 +25,7 @@ export async function loader({ }: Route.LoaderArgs) {
       capital: 0,
       settings: {
         favorite: true,
-        balance: 133742
+        balance: 1_337_42
       },
       createdAt: moment().add({ days: -30 }).toISOString(),
       updatedAt: moment().add({ days: -30 }).toISOString()
@@ -41,7 +41,23 @@ export async function loader({ }: Route.LoaderArgs) {
       capital: 0,
       settings: {
         favorite: false,
-        balance: 133742
+        balance: 1_337_42
+      },
+      createdAt: moment().add({ days: -30 }).toISOString(),
+      updatedAt: moment().add({ days: -30 }).toISOString()
+    },
+    {
+      id: 3,
+      kind: "debt_loan" as Kind,
+      currency: "EUR" as Currency,
+      name: "Car Loan",
+      description: "My japanese shit box",
+      icon: "base",
+      color: "#34baeb",
+      capital: -5_000_00,
+      settings: {
+        favorite: false,
+        balance: 3_000_00
       },
       createdAt: moment().add({ days: -30 }).toISOString(),
       updatedAt: moment().add({ days: -30 }).toISOString()
