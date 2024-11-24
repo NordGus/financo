@@ -14,6 +14,6 @@ export async function loader({ }: Route.LoaderArgs) {
   }
 }
 
-export default function index() {
+export default function Index() {
   return <Screen />
 }
