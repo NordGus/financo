@@ -3,8 +3,8 @@ import { Route } from "./+types/login";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "financo - login" },
-    { name: "description", content: "Welcome to financo" }
+    { title: "financo - log in" },
+    { name: "description", content: "log into financo" }
   ]
 }
 

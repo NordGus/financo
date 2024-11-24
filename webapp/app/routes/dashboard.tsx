@@ -4,7 +4,7 @@ import { Route } from "./+types/dashboard";
 export function meta({ }: Route.MetaArgs) {
   return [
     { title: "financo" },
-    { name: "description", content: "Welcome to financo" }
+    { name: "description", content: "welcome to financo" }
   ]
 }
 
