@@ -1,19 +1,25 @@
+import { LayoutDashboardIcon, VaultIcon } from "lucide-react";
 import { Outlet } from "react-router";
-
+import { NavItem } from "./components/nav-item";
 
 export default function Layout() {
   return (
-    <main
-      className="h-full overflow-hidden grid grid-cols-layout"
+    <div
+      className="h-full w-full overflow-hidden grid grid-cols-layout items-stretch"
     >
-      <nav className="p-2">
-        here
+      <nav className="flex flex-col gap-1 p-2 justify-stretch items-start">
+        <NavItem to="/">
+          <LayoutDashboardIcon /> dashboard
+        </NavItem>
+        <NavItem to="/accounts">
+          <VaultIcon /> accounts
+        </NavItem>
       </nav>
-      <div
+      <main
         className="grow h-full overflow-y-auto overflow-x-auto p-2"
       >
         <Outlet />
-      </div>
-    </main>
+      </main>
+    </div>
   )
 }
