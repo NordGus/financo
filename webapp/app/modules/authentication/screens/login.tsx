@@ -7,8 +7,7 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
-  FormMessage
+  FormLabel
 } from "~/shared/components/ui/form";
 import { Input } from "~/shared/components/ui/input";
 import { login } from "../schemas/login";
@@ -37,7 +36,6 @@ export function Screen() {
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -50,7 +48,6 @@ export function Screen() {
               <FormControl>
                 <Input {...field} type="password" />
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
