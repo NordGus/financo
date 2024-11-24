@@ -13,7 +13,7 @@ import {
 import { Input } from "~/shared/components/ui/input";
 import { login } from "../schemas/login";
 
-export function Login() {
+export function Screen() {
   const form = useForm<z.infer<typeof login>>({
     resolver: zodResolver(login),
   })
