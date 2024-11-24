@@ -35,7 +35,7 @@ export default [
       "@stylistic/ts/quotes": [
         "error",
         "double",
-        { "allowTemplateLiterals": true }
+        { "allowTemplateLiterals": true, "avoidEscape": true }
       ],
       "no-empty-pattern": [
         "error",
