@@ -16,6 +16,7 @@ import { Button } from "~/shared/components/ui/button";
 import { Heading1 } from "~/shared/components/ui/headings";
 import type { Route } from "./+types/root";
 import "./app.css";
+import useDetectColorScheme from "./shared/hooks/use-detect-color-scheme";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -31,8 +32,10 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const scheme = useDetectColorScheme()
+
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={scheme}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -93,9 +96,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         {
           not_found: (
             <Button asChild className="mt-4">
-              <Link to="/" reloadDocument>
-                return to dashboard
-              </Link>
+              <Link to="/">return to dashboard</Link>
             </Button>
           ),
           error: (
