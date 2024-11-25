@@ -1,7 +1,8 @@
 import { isNil } from "lodash-es";
 import { useMemo } from "react";
-import { useNavigate } from "react-router";
+import { useFetcher, useNavigate } from "react-router";
 import { cn } from "~/lib/utils";
+import { Throbber } from "~/shared/components/throbber";
 import {
   Card,
   CardContent,
@@ -17,16 +18,18 @@ import {
 } from "~/shared/helpers/currency-amount-to-human";
 import { isCapital, isCredit, isDebt } from "~/shared/types/account";
 import { Account } from "../../types/preview";
+import { MainAccount } from "../badges/main-account";
 import { ActionablesMenu } from "./actionables-menu";
-import { MarkAsFavorite } from "./actionables/mark-as-favorite";
 import { PaymentProgress } from "./payment-progress";
 
 interface Props {
   account: Account
 }
 
-export function Preview({
-  account: {
+export function Preview({ account: loaderAccount }: Props) {
+  const navigate = useNavigate()
+  const fetcher = useFetcher<Account>()
+  const {
     id,
     kind,
     currency,
@@ -39,10 +42,11 @@ export function Preview({
       balance,
       transactionCount
     },
-    archivedAt
-  }
-}: Props) {
-  const navigate = useNavigate()
+    archivedAt,
+    deletedAt
+  } = fetcher.data || loaderAccount
+
+  if (deletedAt) return null
 
   const isArchived = useMemo(() => !isNil(archivedAt), [archivedAt])
   const balanceAmount = useMemo(() => {
@@ -87,24 +91,30 @@ export function Preview({
       </CardContent>
       <CardFooter className="flex flex-row justify-end items-center gap-2">
         {
-          isDebt(kind) && (
+          isDebt(kind) && fetcher.state === "idle" && (
             <div className="flex-grow-[3]">
               <PaymentProgress capital={capital} balance={balance} currency={currency} />
             </div>
           )}
         {
-          isCapital(kind) && (
+          isCapital(kind) && favorite && (
             <div className="flex justify-start grow">
-              <MarkAsFavorite favorite={favorite} id={id} />
+              <MainAccount />
             </div>
           )
         }
-        <div className="flex-grow flex flex-row justify-end gap-2">
-          <ActionablesMenu
-            account={{ id, name, transactionCount }}
-            isArchived={isArchived}
-          />
-        </div>
+        {
+          fetcher.state === "idle" && (
+            <div className="flex-grow flex flex-row justify-end gap-2">
+              <ActionablesMenu
+                account={{ id, name, transactionCount }}
+                isArchived={isArchived}
+                fetcher={fetcher}
+              />
+            </div>
+          )
+        }
+        {fetcher.state !== "idle" && (<Throbber size="sm" />)}
       </CardFooter>
     </Card>
   )

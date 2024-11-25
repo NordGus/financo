@@ -1,4 +1,5 @@
-import { EllipsisIcon, Package2Icon, PackageOpenIcon, TrashIcon } from "lucide-react"
+import { EllipsisIcon, TrashIcon } from "lucide-react"
+import { FetcherWithComponents } from "react-router"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +18,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "~/shared/components/ui/dropdown-menu"
+import { Account } from "../../types/preview"
+import { Archive } from "./actionables/archive"
+import { Unarchive } from "./actionables/unrachive"
 
 interface Props {
   account: {
@@ -25,15 +29,14 @@ interface Props {
     transactionCount: number
   },
   isArchived: boolean
+  fetcher: FetcherWithComponents<Account>
 }
 
 // TODO implement form and actions
 export function ActionablesMenu({
-  account: {
-    name,
-    transactionCount
-  },
-  isArchived
+  account: { id, name, transactionCount },
+  isArchived,
+  fetcher
 }: Props) {
   return (
     <AlertDialog>
@@ -44,13 +47,8 @@ export function ActionablesMenu({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem>
-            {
-              isArchived
-                ? <><PackageOpenIcon /> unarchive</>
-                : <><Package2Icon /> archive</>
-            }
-          </DropdownMenuItem>
+          {isArchived && <Unarchive accountID={id} fetcher={fetcher} />}
+          {!isArchived && <Archive accountID={id} fetcher={fetcher} />}
           <AlertDialogTrigger asChild>
             <DropdownMenuItem>
               <TrashIcon /> delete
@@ -67,7 +65,20 @@ export function ActionablesMenu({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>cancel</AlertDialogCancel>
-          <AlertDialogAction>confirm</AlertDialogAction>
+          <AlertDialogAction
+            onClick={() => {
+              fetcher.submit(
+                { intent: "delete" },
+                {
+                  action: `/accounts/${id}`,
+                  method: "POST",
+                  encType: "application/json"
+                }
+              )
+            }}
+          >
+            confirm
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
