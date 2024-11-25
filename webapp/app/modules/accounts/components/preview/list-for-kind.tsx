@@ -1,7 +1,8 @@
 import { PlusIcon } from "lucide-react";
 import { Button } from "~/shared/components/ui/button";
-import { Account, Kind } from "~/shared/types/account";
-import { Preview } from "./preview";
+import { Kind } from "~/shared/types/account";
+import { Account } from "../../types/preview";
+import { Preview } from "./card";
 
 interface Props {
   accounts: Account[]
@@ -9,7 +10,7 @@ interface Props {
   onNew: (kind: Kind) => void
 }
 
-export function PreviewList({ accounts, forKind, onNew }: Props) {
+export function ListForKind({ accounts, forKind, onNew }: Props) {
   return (
     <div className="grid grid-cols-4 gap-4">
       {accounts.map((account) => (

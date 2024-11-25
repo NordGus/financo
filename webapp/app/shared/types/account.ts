@@ -1,4 +1,3 @@
-import { Currency } from "~/shared/types/currency";
 
 const _kinds = {
   system_historic: "system_historic",
@@ -21,30 +20,6 @@ type Kind = Kinds["system_historic"] |
   Kinds["debt_credit"] |
   Kinds["external_income"] |
   Kinds["external_expense"];
-
-interface Settings {
-  favorite: boolean
-  balance: number
-  historyBalance?: number | null
-  historyAt?: string | null
-  transactionCount: number
-}
-
-interface Account {
-  id: number
-  kind: Kind
-  currency: Currency
-  name: string
-  description?: string | null
-  icon: string
-  color: string
-  capital: number
-  settings: Settings
-  archivedAt?: string | null
-  deletedAt?: string | null
-  createdAt: string
-  updatedAt: string
-}
 
 function isCapital(kind: Kind) {
   return kind === _kinds.capital_normal
@@ -72,5 +47,5 @@ function isExpense(kind: Kind) {
 
 export { isCapital, isCredit, isDebt, isExpense, isIncome, isSavings };
 
-export type { Account, Kind };
+export type { Kind };
 

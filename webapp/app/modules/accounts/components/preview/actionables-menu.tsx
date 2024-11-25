@@ -28,7 +28,7 @@ interface Props {
 }
 
 // TODO implement form and actions
-export function ActionMenu({
+export function ActionablesMenu({
   account: {
     name,
     transactionCount

@@ -15,9 +15,10 @@ import { currencyAmountColor } from "~/shared/helpers/currency-amount-color";
 import {
   currencyAmountToHuman
 } from "~/shared/helpers/currency-amount-to-human";
-import { Account, isCapital, isCredit, isDebt } from "~/shared/types/account";
-import { ActionMenu } from "./action-menu";
-import { MarkAsFavorite } from "./mark-as-favorite";
+import { isCapital, isCredit, isDebt } from "~/shared/types/account";
+import { Account } from "../../types/preview";
+import { ActionablesMenu } from "./actionables-menu";
+import { MarkAsFavorite } from "./actionables/mark-as-favorite";
 import { PaymentProgress } from "./payment-progress";
 
 interface Props {
@@ -99,7 +100,7 @@ export function Preview({
           )
         }
         <div className="flex-grow flex flex-row justify-end gap-2">
-          <ActionMenu
+          <ActionablesMenu
             account={{ id, name, transactionCount }}
             isArchived={isArchived}
           />
