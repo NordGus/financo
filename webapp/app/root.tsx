@@ -32,7 +32,7 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export async function loader({ }: Route.LoaderArgs) {
+export async function clientLoader({ }: Route.LoaderArgs) {
   return {
     breadcrumb: "financo"
   }

@@ -13,7 +13,7 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
-export async function loader({ }: Route.LoaderArgs) {
+export async function clientLoader({ }: Route.LoaderArgs) {
   const accounts: Account[] = [
     {
       id: 1,

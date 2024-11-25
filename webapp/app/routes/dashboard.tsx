@@ -8,7 +8,7 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
-export async function loader({ }: Route.LoaderArgs) {
+export async function clientLoader({ }: Route.LoaderArgs) {
   return {
     breadcrumb: "dashboard"
   }
