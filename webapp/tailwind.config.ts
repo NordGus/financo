@@ -23,6 +23,9 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)"
       },
+      animation: {
+        "throbber": "spin 3s ease-in-out infinite",
+      },
       height: {
         body: "100dvh",
       },
