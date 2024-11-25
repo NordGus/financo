@@ -27,6 +27,7 @@ interface Settings {
   balance: number
   historyBalance?: number | null
   historyAt?: string | null
+  transactionCount: number
 }
 
 interface Account {

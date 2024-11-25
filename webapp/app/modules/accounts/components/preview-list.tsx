@@ -1,7 +1,7 @@
 import { PlusIcon } from "lucide-react";
 import { Button } from "~/shared/components/ui/button";
 import { Account, Kind } from "~/shared/types/account";
-import { Preview } from "./account/preview";
+import { Preview } from "./preview";
 
 interface Props {
   accounts: Account[]

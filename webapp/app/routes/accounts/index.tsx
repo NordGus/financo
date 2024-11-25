@@ -25,7 +25,8 @@ export async function loader({ }: Route.LoaderArgs) {
       capital: 0,
       settings: {
         favorite: true,
-        balance: 1_337_42
+        balance: 1_337_42,
+        transactionCount: 42
       },
       createdAt: moment().add({ days: -30 }).toISOString(),
       updatedAt: moment().add({ days: -30 }).toISOString()
@@ -41,7 +42,8 @@ export async function loader({ }: Route.LoaderArgs) {
       capital: 0,
       settings: {
         favorite: false,
-        balance: 1_337_42
+        balance: 1_337_42,
+        transactionCount: 24
       },
       createdAt: moment().add({ days: -30 }).toISOString(),
       updatedAt: moment().add({ days: -30 }).toISOString()
@@ -57,8 +59,27 @@ export async function loader({ }: Route.LoaderArgs) {
       capital: -5_000_00,
       settings: {
         favorite: false,
-        balance: 3_000_00
+        balance: 3_000_00,
+        transactionCount: 10
       },
+      createdAt: moment().add({ days: -30 }).toISOString(),
+      updatedAt: moment().add({ days: -30 }).toISOString()
+    },
+    {
+      id: 4,
+      kind: "capital_normal" as Kind,
+      currency: "EUR" as Currency,
+      name: "Germany Bank Account",
+      description: "My small business account in the Germany",
+      icon: "base",
+      color: "#eb8934",
+      capital: 0,
+      settings: {
+        favorite: false,
+        balance: 1_337_42,
+        transactionCount: 15
+      },
+      archivedAt: moment().add({ days: -1 }).toISOString(),
       createdAt: moment().add({ days: -30 }).toISOString(),
       updatedAt: moment().add({ days: -30 }).toISOString()
     },

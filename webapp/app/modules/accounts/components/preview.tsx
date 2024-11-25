@@ -1,15 +1,7 @@
-import { Tooltip } from "@radix-ui/react-tooltip";
 import { isNil } from "lodash-es";
-import {
-  Package2Icon,
-  StarIcon,
-  StarOffIcon,
-  TrashIcon
-} from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router";
 import { cn } from "~/lib/utils";
-import { Button } from "~/shared/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,66 +10,15 @@ import {
   CardHeader,
   CardTitle
 } from "~/shared/components/ui/card";
-import { Progress } from "~/shared/components/ui/progress";
-import {
-  TooltipContent,
-  TooltipTrigger
-} from "~/shared/components/ui/tooltip";
 import { colorContrast } from "~/shared/helpers/color-contrast";
 import { currencyAmountColor } from "~/shared/helpers/currency-amount-color";
 import {
   currencyAmountToHuman
 } from "~/shared/helpers/currency-amount-to-human";
 import { Account, isCapital, isCredit, isDebt } from "~/shared/types/account";
-import { Currency } from "~/shared/types/currency";
-
-interface MarkAsFavoriteProps {
-  favorite: boolean
-}
-
-function MarkAsFavorite({ favorite }: MarkAsFavoriteProps) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button size="icon" variant="link" className="text-yellow-500">
-          {
-            favorite
-              ? <StarOffIcon />
-              : <StarIcon />
-          }
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        favorite
-      </TooltipContent>
-    </Tooltip>
-  )
-}
-
-interface PaymentProgressProps {
-  capital: number
-  balance: number
-  currency: Currency
-}
-
-function PaymentProgress({ balance, capital, currency }: PaymentProgressProps) {
-  const progress = useMemo(() => (Math.abs(balance) / Math.abs(capital)) * 100, [balance, capital])
-  const balanceAmount = useMemo(() => currencyAmountToHuman(balance, currency), [balance])
-  const capitalAmount = useMemo(() => currencyAmountToHuman(capital, currency), [capital])
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <div className="flex flex-row gap-2 items-center">
-          <Progress value={progress} /> <span>{progress}%</span>
-        </div>
-      </TooltipTrigger>
-      <TooltipContent>
-        {balanceAmount} paid out of {capitalAmount}
-      </TooltipContent>
-    </Tooltip>
-  )
-}
+import { ActionMenu } from "./action-menu";
+import { MarkAsFavorite } from "./mark-as-favorite";
+import { PaymentProgress } from "./payment-progress";
 
 interface Props {
   account: Account
@@ -94,7 +35,8 @@ export function Preview({
     capital,
     settings: {
       favorite,
-      balance
+      balance,
+      transactionCount
     },
     archivedAt
   }
@@ -118,7 +60,7 @@ export function Preview({
   return (
     <Card className={cn(isArchived && "opacity-50")}>
       <CardHeader
-        className="min-h-28"
+        className="min-h-28 cursor-pointer"
         style={{
           backgroundColor: color,
           color: colorContrast(color)
@@ -152,35 +94,15 @@ export function Preview({
         {
           isCapital(kind) && (
             <div className="flex justify-start grow">
-              <MarkAsFavorite favorite={favorite} />
+              <MarkAsFavorite favorite={favorite} id={id} />
             </div>
           )
         }
         <div className="flex-grow flex flex-row justify-end gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="icon" variant="secondary">
-                <Package2Icon />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              archive
-            </TooltipContent>
-          </Tooltip>
-          {
-            !isArchived && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button size="icon" variant="destructive">
-                    <TrashIcon />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  delete
-                </TooltipContent>
-              </Tooltip>
-            )
-          }
+          <ActionMenu
+            account={{ id, name, transactionCount }}
+            isArchived={isArchived}
+          />
         </div>
       </CardFooter>
     </Card>
