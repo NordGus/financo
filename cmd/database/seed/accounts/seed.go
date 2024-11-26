@@ -65,6 +65,43 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 	return out, nil
 }
 
+// func SeedTransactionCount(ctx context.Context, conn *sql.Conn, timestamp time.Time) error {
+// 	type row struct {
+// 		id    int64
+// 		count int64
+// 	}
+
+// 	var (
+// 		updates = make([]row, 10)
+// 	)
+
+// 	log.Println("\tseeding accounts transactions count")
+
+// 	tx, err := conn.BeginTx(ctx, nil)
+// 	if err != nil {
+// 		return out, errors.Join(errors.New("accounts: failed to seed"), err)
+// 	}
+
+// 	rows, err := tx.QueryContext(
+// 		ctx,
+// 		`
+// 			SELECT id,
+// 		`,
+// 	)
+// 	if err != nil {
+// 		_ = tx.Rollback()
+// 		return err
+// 	}
+
+// 	err = tx.Commit()
+// 	if err != nil {
+// 		_ = tx.Rollback()
+// 		return err
+// 	}
+
+// 	return nil
+// }
+
 func seed(
 	ctx context.Context,
 	tx *sql.Tx,
@@ -190,10 +227,11 @@ func createAccount(ctx context.Context, record account.Record, tx *sql.Tx) (acco
 				archived_at,
 				deleted_at,
 				created_at,
-				updated_at
+				updated_at,
+				dynamic_data
 			)
 		VALUES
-			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 		RETURNING id
 		`,
 		record.ParentID,
@@ -208,6 +246,7 @@ func createAccount(ctx context.Context, record account.Record, tx *sql.Tx) (acco
 		record.DeletedAt,
 		record.CreatedAt,
 		record.UpdatedAt,
+		record.DynamicData,
 	).Scan(&record.ID)
 
 	return record, err
