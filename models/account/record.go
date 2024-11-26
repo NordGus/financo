@@ -26,8 +26,9 @@ type Record struct {
 }
 
 type DynamicData struct {
-	Main    bool               `json:"main"`
-	History HistoryDynamicData `json:"history"`
+	Main         bool               `json:"main"`
+	History      HistoryDynamicData `json:"history"`
+	Transactions int64              `json:"transactions"`
 }
 
 type HistoryDynamicData struct {
