@@ -8,14 +8,14 @@ export default {
     extend: {
       fontFamily: {
         sans: [
-          '"Inter"',
+          "'Inter'",
           "ui-sans-serif",
           "system-ui",
           "sans-serif",
-          '"Apple Color Emoji"',
-          '"Segoe UI Emoji"',
-          '"Segoe UI Symbol"',
-          '"Noto Color Emoji"',
+          "'Apple Color Emoji'",
+          "'Segoe UI Emoji'",
+          "'Segoe UI Symbol'",
+          "'Noto Color Emoji'",
         ],
       },
       borderRadius: {
@@ -25,9 +25,11 @@ export default {
       },
       animation: {
         "throbber": "spin 3s ease-in-out infinite",
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out"
       },
       height: {
-        body: "100dvh",
+        body: "100dvh"
       },
       gridTemplateColumns: {
         "layout": "1fr fit-content(20dvw)"
@@ -72,6 +74,24 @@ export default {
           "3": "hsl(var(--chart-3))",
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))"
+        }
+      },
+      keyframes: {
+        "accordion-down": {
+          from: {
+            height: "0"
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)"
+          }
+        },
+        "accordion-up": {
+          from: {
+            height: "var(--radix-accordion-content-height)"
+          },
+          to: {
+            height: "0"
+          }
         }
       }
     }
