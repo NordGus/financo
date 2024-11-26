@@ -25,7 +25,6 @@ func SeedTransactions(
 	if err != nil {
 		return errors.Join(errors.New("transactions: failed to seed"), err)
 	}
-	defer tx.Rollback()
 
 	for i := 0; i < len(transactions); i++ {
 		var (
@@ -57,6 +56,7 @@ func SeedTransactions(
 
 		err := create(ctx, tr, tx)
 		if err != nil {
+			_ = tx.Rollback()
 			return errors.Join(
 				fmt.Errorf("transactions: failed to seed transaction between %s and %s", source.Name, target.Name),
 				err,
@@ -68,6 +68,7 @@ func SeedTransactions(
 
 	err = tx.Commit()
 	if err != nil {
+		_ = tx.Rollback()
 		return errors.Join(errors.New("transactions: failed to seed"), err)
 	}
 

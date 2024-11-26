@@ -26,17 +26,17 @@ func main() {
 
 	accountRecords, err := accounts.SeedAccounts(ctx, conn, start.UTC())
 	if err != nil {
-		log.Printf("failed to seed accounts:\n\t err: %s\n", err.Error())
+		log.Fatalf("failed to seed accounts:\n\t err: %s\n", err.Error())
 	}
 
 	err = transactions.SeedTransactions(ctx, accountRecords, conn, start.UTC())
 	if err != nil {
-		log.Printf("failed to seed transactions:\n\t err: %s\n", err.Error())
+		log.Fatalf("failed to seed transactions:\n\t err: %s\n", err.Error())
 	}
 
 	err = savings_goals.SeedSavingsGoals(ctx, conn, start.UTC())
 	if err != nil {
-		log.Printf("failed to seed savings goals:\n\t err: %s\n", err.Error())
+		log.Fatalf("failed to seed savings goals:\n\t err: %s\n", err.Error())
 	}
 
 	log.Printf("database seeded (took %s)\n", time.Since(start))

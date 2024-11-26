@@ -30,13 +30,13 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 	if err != nil {
 		return out, errors.Join(errors.New("accounts: failed to seed"), err)
 	}
-	defer tx.Rollback()
 
 	for i := 0; i < len(accounts); i++ {
 		key := accounts[i].MapKey
 
 		record, sum, tc, err := seed(ctx, tx, accounts[i], timestamp)
 		if err != nil {
+			_ = tx.Rollback()
 			return out, errors.Join(fmt.Errorf("accounts: failed to seed %s", key), err)
 		}
 
@@ -51,6 +51,7 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 
 	err = tx.Commit()
 	if err != nil {
+		_ = tx.Rollback()
 		return out, errors.Join(errors.New("accounts: failed to seed"), err)
 	}
 

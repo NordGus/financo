@@ -24,7 +24,6 @@ func SeedSavingsGoals(ctx context.Context, conn *sql.Conn, timestamp time.Time) 
 	if err != nil {
 		return errors.Join(errors.New("savings_goals: failed to seed"), err)
 	}
-	defer tx.Rollback()
 
 	savings, err = getSavings(ctx, savings, tx)
 	if err != nil {
@@ -60,6 +59,7 @@ func SeedSavingsGoals(ctx context.Context, conn *sql.Conn, timestamp time.Time) 
 
 		err := create(ctx, goal, tx)
 		if err != nil {
+			_ = tx.Rollback()
 			return errors.Join(
 				fmt.Errorf("savings_goals: failed to seed savings goal %s", goal.Name),
 				err,
@@ -71,6 +71,7 @@ func SeedSavingsGoals(ctx context.Context, conn *sql.Conn, timestamp time.Time) 
 
 	err = tx.Commit()
 	if err != nil {
+		_ = tx.Rollback()
 		return errors.Join(errors.New("savings_goals: failed to seed"), err)
 	}
 
