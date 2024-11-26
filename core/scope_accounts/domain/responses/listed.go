@@ -10,31 +10,31 @@ import (
 )
 
 type Listed struct {
-	ID             int64                    `json:"id,omitempty"`
-	Kind           account.Kind             `json:"kind,omitempty"`
-	Currency       currency.Type            `json:"currency,omitempty"`
-	Name           string                   `json:"name,omitempty"`
-	Description    nullable.Type[string]    `json:"description,omitempty"`
-	Color          color.Type               `json:"color,omitempty"`
-	Icon           icon.Type                `json:"icon,omitempty"`
-	Capital        int64                    `json:"capital,omitempty"`
-	ArchivedAt     nullable.Type[time.Time] `json:"archivedAt,omitempty"`
-	DeletedAt      nullable.Type[time.Time] `json:"deletedAt,omitempty"`
-	CreatedAt      time.Time                `json:"createdAt,omitempty"`
-	UpdatedAt      time.Time                `json:"updatedAt,omitempty"`
-	AdditionalData AdditionalData           `json:"additionalData,omitempty"`
+	ID             int64                    `json:"id"`
+	Kind           account.Kind             `json:"kind"`
+	Currency       currency.Type            `json:"currency"`
+	Name           string                   `json:"name"`
+	Description    nullable.Type[string]    `json:"description"`
+	Color          color.Type               `json:"color"`
+	Icon           icon.Type                `json:"icon"`
+	Capital        int64                    `json:"capital"`
+	ArchivedAt     nullable.Type[time.Time] `json:"archivedAt"`
+	DeletedAt      nullable.Type[time.Time] `json:"deletedAt"`
+	CreatedAt      time.Time                `json:"createdAt"`
+	UpdatedAt      time.Time                `json:"updatedAt"`
+	AdditionalData AdditionalData           `json:"additionalData"`
 }
 
 type AdditionalData struct {
-	Main         bool        `json:"main,omitempty"`
-	Balance      int64       `json:"balance,omitempty"`
-	History      HistoryData `json:"history,omitempty"`
-	Transactions int64       `json:"transactions,omitempty"`
+	Main         bool        `json:"main"`
+	Balance      int64       `json:"balance"`
+	History      HistoryData `json:"history"`
+	Transactions int64       `json:"transactions"`
 }
 
 type HistoryData struct {
-	At      nullable.Type[time.Time] `json:"at,omitempty"`
-	Balance nullable.Type[int64]     `json:"balance,omitempty"`
+	At      nullable.Type[time.Time] `json:"at"`
+	Balance nullable.Type[int64]     `json:"balance"`
 }
 
 func AccountRecordToListed(a account.Record) Listed {
