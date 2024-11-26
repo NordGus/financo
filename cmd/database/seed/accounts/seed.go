@@ -9,8 +9,14 @@ import (
 	"financo/models/transaction"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 )
+
+type transactionCount struct {
+	id    int64
+	count int64
+}
 
 type AccountRecord struct {
 	Account  account.Record
@@ -65,42 +71,78 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 	return out, nil
 }
 
-// func SeedTransactionCount(ctx context.Context, conn *sql.Conn, timestamp time.Time) error {
-// 	type row struct {
-// 		id    int64
-// 		count int64
-// 	}
+func SeedTransactionCount(ctx context.Context, conn *sql.Conn, timestamp time.Time) error {
+	var (
+		updates = make([]transactionCount, 0, 10)
+	)
 
-// 	var (
-// 		updates = make([]row, 10)
-// 	)
+	log.Println("\tseeding accounts transactions count")
 
-// 	log.Println("\tseeding accounts transactions count")
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return errors.Join(errors.New("accounts: failed to seed transaction count"), err)
+	}
 
-// 	tx, err := conn.BeginTx(ctx, nil)
-// 	if err != nil {
-// 		return out, errors.Join(errors.New("accounts: failed to seed"), err)
-// 	}
+	rows, err := tx.QueryContext(
+		ctx,
+		`
+		SELECT acc.id, COUNT(tr.id) as trs
+		FROM accounts acc
+		INNER JOIN transactions tr ON (tr.source_id = acc.id OR tr.target_id = acc.id)
+		WHERE
+			tr.deleted_at IS NULL
+		GROUP BY
+			acc.id
+		`,
+	)
+	if err != nil {
+		_ = tx.Rollback()
+		return errors.Join(errors.New("accounts: failed to seed transaction count, retrieving count"), err)
+	}
+	defer rows.Close()
 
-// 	rows, err := tx.QueryContext(
-// 		ctx,
-// 		`
-// 			SELECT id,
-// 		`,
-// 	)
-// 	if err != nil {
-// 		_ = tx.Rollback()
-// 		return err
-// 	}
+	for rows.Next() {
+		var r transactionCount
 
-// 	err = tx.Commit()
-// 	if err != nil {
-// 		_ = tx.Rollback()
-// 		return err
-// 	}
+		err = rows.Scan(&r.id, &r.count)
+		if err != nil {
+			_ = tx.Rollback()
+			return errors.Join(errors.New("accounts: failed to seed transaction count"), err)
+		}
 
-// 	return nil
-// }
+		updates = append(updates, r)
+	}
+
+	for i := 0; i < len(updates); i++ {
+		var id int64
+
+		err := tx.QueryRowContext(
+			ctx,
+			`
+			UPDATE accounts
+			SET dynamic_data = jsonb_set(dynamic_data, '{transactions}', $2, true)
+			WHERE id = $1
+			RETURNING id
+			`,
+			updates[i].id,
+			strconv.FormatInt(updates[i].count, 10),
+		).Scan(&id)
+		if err != nil {
+			_ = tx.Rollback()
+			return errors.Join(errors.New("accounts: failed to seed transaction count, updating"), err)
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	log.Printf("\t\t%d accounts transaction count seeded\n", len(updates))
+
+	return nil
+}
 
 func seed(
 	ctx context.Context,

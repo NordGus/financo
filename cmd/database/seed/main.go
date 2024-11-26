@@ -39,5 +39,10 @@ func main() {
 		log.Fatalf("failed to seed savings goals:\n\t err: %s\n", err.Error())
 	}
 
+	err = accounts.SeedTransactionCount(ctx, conn, start.UTC())
+	if err != nil {
+		log.Fatalf("failed to seed accounts transaction count:\n\t err: %s\n", err.Error())
+	}
+
 	log.Printf("database seeded (took %s)\n", time.Since(start))
 }
