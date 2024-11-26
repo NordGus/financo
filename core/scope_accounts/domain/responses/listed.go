@@ -11,7 +11,6 @@ import (
 
 type Listed struct {
 	ID             int64                    `json:"id,omitempty"`
-	ParentID       nullable.Type[int64]     `json:"parentId,omitempty"`
 	Kind           account.Kind             `json:"kind,omitempty"`
 	Currency       currency.Type            `json:"currency,omitempty"`
 	Name           string                   `json:"name,omitempty"`
@@ -35,4 +34,29 @@ type AdditionalData struct {
 type HistoryData struct {
 	At      nullable.Type[time.Time] `json:"at,omitempty"`
 	Balance nullable.Type[int64]     `json:"balance,omitempty"`
+}
+
+func AccountRecordToListed(a account.Record) Listed {
+	return Listed{
+		ID:          a.ID,
+		Kind:        a.Kind,
+		Currency:    a.Currency,
+		Name:        a.Name,
+		Description: a.Description,
+		Color:       a.Color,
+		Icon:        a.Icon,
+		Capital:     a.Capital,
+		ArchivedAt:  a.ArchivedAt,
+		DeletedAt:   a.DeletedAt,
+		CreatedAt:   a.CreatedAt,
+		UpdatedAt:   a.UpdatedAt,
+		AdditionalData: AdditionalData{
+			Main: a.DynamicData.Main,
+			History: HistoryData{
+				At:      a.DynamicData.History.At,
+				Balance: a.DynamicData.History.Balance,
+			},
+			Transactions: a.DynamicData.Transactions,
+		},
+	}
 }
