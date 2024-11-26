@@ -69,6 +69,7 @@ func (r *repository) Where(ctx context.Context, f filters.Accounts) ([]account.R
 			&r.Color,
 			&r.Icon,
 			&r.ArchivedAt,
+			&r.DeletedAt,
 			&r.CreatedAt,
 			&r.UpdatedAt,
 			&r.DynamicData,

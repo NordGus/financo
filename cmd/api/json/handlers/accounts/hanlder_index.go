@@ -2,35 +2,23 @@ package accounts
 
 import (
 	"encoding/json"
-	"financo/core/scope_accounts/application/queries/preview_query"
+	"financo/core/scope_accounts/application/queries/list_query"
 	"financo/core/scope_accounts/domain/requests"
-	"financo/core/scope_accounts/infrastructure/preview_account_repository"
-	"financo/lib/nullable"
-	"financo/models/account"
+	"financo/core/scope_accounts/infrastructure/repositories/accounts_repository"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
-	"strings"
 )
 
 func index(w http.ResponseWriter, r *http.Request) {
 	var (
-		req = requests.Preview{
-			Kinds: make([]account.Kind, 0, 7),
-		}
+		req = requests.List{}
+		db  = postgresql_database.New()
 	)
 
-	for _, k := range strings.Split(r.URL.Query().Get("kind"), ",") {
-		req.Kinds = append(req.Kinds, account.Kind(k))
-	}
+	repo := accounts_repository.NewPostgreSQL(db)
 
-	if r.URL.Query().Get("archived") != "" {
-		req.Archived = nullable.New(r.URL.Query().Get("archived") == "true")
-	}
-
-	repo := preview_account_repository.NewPostgreSQL(postgresql_database.New())
-
-	res, err := preview_query.New(req, repo).Find(r.Context())
+	res, err := list_query.New(req, repo).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(

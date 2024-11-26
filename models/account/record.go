@@ -24,14 +24,3 @@ type Record struct {
 	UpdatedAt   time.Time
 	DynamicData DynamicData
 }
-
-type DynamicData struct {
-	Main         bool               `json:"main"`
-	History      HistoryDynamicData `json:"history"`
-	Transactions int64              `json:"transactions"`
-}
-
-type HistoryDynamicData struct {
-	At      nullable.Type[time.Time]
-	Balance nullable.Type[int64]
-}

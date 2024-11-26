@@ -10,7 +10,6 @@ import (
 	"financo/cmd/api/json/handlers/my_journey"
 	"financo/cmd/api/json/handlers/savings_goals"
 	"financo/cmd/api/json/handlers/transactions"
-	"financo/cmd/api/json/middleware"
 	"fmt"
 	"log"
 	"net/http"
@@ -112,7 +111,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 
 	// protected routes
 	router.Group(func(r chi.Router) {
-		r.Use(middleware.Session)
+		// r.Use(middleware.Session)
 
 		r.Route("/accounts", accounts.Routes)
 		r.Route("/currencies", currencies.Routes)
