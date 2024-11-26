@@ -214,12 +214,7 @@ var (
 				Color:       "#34baeb",
 				Icon:        icon.Base,
 				Capital:     80_00,
-				DynamicData: account.DynamicData{
-					History: account.HistoryDynamicData{
-						At:      nullable.New(time.Now().UTC().AddDate(0, 0, -1)),
-						Balance: nullable.New[int64](-80_00),
-					},
-				},
+				DynamicData: account.DynamicData{},
 			},
 			Children: []childAccountSeed{},
 
