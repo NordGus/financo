@@ -22,4 +22,15 @@ type Record struct {
 	DeletedAt   nullable.Type[time.Time]
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	DynamicData DynamicData
+}
+
+type DynamicData struct {
+	Main    bool               `json:"main"`
+	History HistoryDynamicData `json:"history"`
+}
+
+type HistoryDynamicData struct {
+	At      nullable.Type[time.Time]
+	Balance nullable.Type[int64]
 }

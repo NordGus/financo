@@ -16,9 +16,6 @@ type accountSeed struct {
 	ArchivedAt func(moment time.Time) nullable.Type[time.Time]
 	DeletedAt  func(moment time.Time) nullable.Type[time.Time]
 
-	HistoryAt      func(moment time.Time) nullable.Type[time.Time]
-	HistoryCapital int64
-
 	MapKey string
 }
 
@@ -42,6 +39,13 @@ var (
 				Color:       "#eb8934",
 				Icon:        icon.Base,
 				Capital:     0,
+				DynamicData: account.DynamicData{
+					Main: true,
+					History: account.HistoryDynamicData{
+						At:      nullable.New(time.Now().UTC().AddDate(0, -1, 0)),
+						Balance: nullable.New[int64](1_337_42),
+					},
+				},
 			},
 			Children: []childAccountSeed{},
 
@@ -51,11 +55,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.New(moment.AddDate(0, -1, 0))
-			},
-			HistoryCapital: 1_337_42,
 
 			MapKey: "personal_bank_account",
 		},
@@ -68,6 +67,7 @@ var (
 				Color:       "#34baeb",
 				Icon:        icon.Base,
 				Capital:     0,
+				DynamicData: account.DynamicData{},
 			},
 			Children: []childAccountSeed{},
 
@@ -77,11 +77,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			HistoryCapital: 0,
 
 			MapKey: "freelance_bank_account",
 		},
@@ -94,6 +89,12 @@ var (
 				Color:       "#eb8934",
 				Icon:        icon.Base,
 				Capital:     0,
+				DynamicData: account.DynamicData{
+					History: account.HistoryDynamicData{
+						At:      nullable.New(time.Now().UTC().AddDate(0, -6, 0)),
+						Balance: nullable.New[int64](420_69),
+					},
+				},
 			},
 			Children: []childAccountSeed{},
 
@@ -103,11 +104,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.New(moment.AddDate(0, -6, 0))
-			},
-			HistoryCapital: 420_69,
 
 			MapKey: "personal_savings_account",
 		},
@@ -120,6 +116,7 @@ var (
 				Color:       "#34baeb",
 				Icon:        icon.Base,
 				Capital:     0,
+				DynamicData: account.DynamicData{},
 			},
 			Children: []childAccountSeed{},
 
@@ -129,11 +126,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			HistoryCapital: 0,
 
 			MapKey: "us_savings_account",
 		},
@@ -146,6 +138,7 @@ var (
 				Color:       "#34baeb",
 				Icon:        icon.Base,
 				Capital:     0,
+				DynamicData: account.DynamicData{},
 			},
 			Children: []childAccountSeed{},
 
@@ -155,11 +148,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.New(moment)
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			HistoryCapital: 0,
 
 			MapKey: "german_savings_account",
 		},
@@ -171,7 +159,13 @@ var (
 				Description: nullable.New("My japanese shit-box"),
 				Color:       "#eb8934",
 				Icon:        icon.Base,
-				Capital:     5_000_00,
+				Capital:     -5_000_00,
+				DynamicData: account.DynamicData{
+					History: account.HistoryDynamicData{
+						At:      nullable.New(time.Now().UTC().AddDate(-1, 0, 0)),
+						Balance: nullable.New[int64](3_000_00),
+					},
+				},
 			},
 			Children: []childAccountSeed{},
 
@@ -181,11 +175,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.New(moment.AddDate(-1, 0, 0))
-			},
-			HistoryCapital: -3_000_00,
 
 			MapKey: "car_loan",
 		},
@@ -197,7 +186,13 @@ var (
 				Description: nullable.New("I helped Morgan with their rent"),
 				Color:       "#34baeb",
 				Icon:        icon.Base,
-				Capital:     -500_00,
+				Capital:     500_00,
+				DynamicData: account.DynamicData{
+					History: account.HistoryDynamicData{
+						At:      nullable.New(time.Now().UTC().AddDate(0, -1, 0)),
+						Balance: nullable.New[int64](-300_00),
+					},
+				},
 			},
 			Children: []childAccountSeed{},
 
@@ -207,11 +202,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.New(moment.AddDate(0, -1, 0))
-			},
-			HistoryCapital: 300_00,
 
 			MapKey: "morgan_loan",
 		},
@@ -223,7 +213,13 @@ var (
 				Description: nullable.New("Carlos' catch up lunch"),
 				Color:       "#34baeb",
 				Icon:        icon.Base,
-				Capital:     -80_00,
+				Capital:     80_00,
+				DynamicData: account.DynamicData{
+					History: account.HistoryDynamicData{
+						At:      nullable.New(time.Now().UTC().AddDate(0, 0, -1)),
+						Balance: nullable.New[int64](-80_00),
+					},
+				},
 			},
 			Children: []childAccountSeed{},
 
@@ -233,11 +229,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.New(moment.AddDate(0, 0, -1))
-			},
-			HistoryCapital: 80_00,
 
 			MapKey: "carlos_lunch",
 		},
@@ -249,7 +240,13 @@ var (
 				Description: nullable.New("My bank's credit card"),
 				Color:       "#eb8934",
 				Icon:        icon.Base,
-				Capital:     2_000_00,
+				Capital:     -2_000_00,
+				DynamicData: account.DynamicData{
+					History: account.HistoryDynamicData{
+						At:      nullable.New(time.Now().UTC().AddDate(0, -3, 0)),
+						Balance: nullable.New[int64](800_00),
+					},
+				},
 			},
 			Children: []childAccountSeed{},
 
@@ -259,11 +256,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.New(moment.AddDate(0, -3, 0))
-			},
-			HistoryCapital: -800_00,
 
 			MapKey: "credit_card",
 		},
@@ -275,7 +267,13 @@ var (
 				Description: nullable.Type[string]{},
 				Color:       "#34baeb",
 				Icon:        icon.Base,
-				Capital:     2_500_00,
+				Capital:     -2_500_00,
+				DynamicData: account.DynamicData{
+					History: account.HistoryDynamicData{
+						At:      nullable.New(time.Now().UTC().AddDate(0, -8, 0)),
+						Balance: nullable.New[int64](1_234_69),
+					},
+				},
 			},
 			Children: []childAccountSeed{},
 
@@ -285,11 +283,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.New(moment.AddDate(0, -8, 0))
-			},
-			HistoryCapital: -1_234_69,
 
 			MapKey: "laptop_credit",
 		},
@@ -302,6 +295,7 @@ var (
 				Color:       "#eb8934",
 				Icon:        icon.Base,
 				Capital:     0,
+				DynamicData: account.DynamicData{},
 			},
 			Children: []childAccountSeed{
 				{
@@ -314,6 +308,7 @@ var (
 						Color:       "#eb8934",
 						Icon:        icon.Base,
 						Capital:     0,
+						DynamicData: account.DynamicData{},
 					},
 
 					ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
@@ -335,6 +330,7 @@ var (
 						Color:       "#eb8934",
 						Icon:        icon.Base,
 						Capital:     0,
+						DynamicData: account.DynamicData{},
 					},
 
 					ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
@@ -356,6 +352,7 @@ var (
 						Color:       "#eb8934",
 						Icon:        icon.Base,
 						Capital:     0,
+						DynamicData: account.DynamicData{},
 					},
 
 					ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
@@ -376,11 +373,6 @@ var (
 				return nullable.Type[time.Time]{}
 			},
 
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			HistoryCapital: 0,
-
 			MapKey: "paycheck",
 		},
 		{
@@ -392,6 +384,7 @@ var (
 				Color:       "#eb8934",
 				Icon:        icon.Base,
 				Capital:     0,
+				DynamicData: account.DynamicData{},
 			},
 			Children: []childAccountSeed{},
 
@@ -401,11 +394,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			HistoryCapital: 0,
 
 			MapKey: "allowance",
 		},
@@ -429,6 +417,7 @@ var (
 						Color:       "#34ebae",
 						Icon:        icon.Base,
 						Capital:     0,
+						DynamicData: account.DynamicData{},
 					},
 
 					ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
@@ -450,6 +439,7 @@ var (
 						Color:       "#34ebae",
 						Icon:        icon.Base,
 						Capital:     0,
+						DynamicData: account.DynamicData{},
 					},
 
 					ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
@@ -471,6 +461,7 @@ var (
 						Color:       "#34ebae",
 						Icon:        icon.Base,
 						Capital:     0,
+						DynamicData: account.DynamicData{},
 					},
 
 					ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
@@ -491,11 +482,6 @@ var (
 				return nullable.Type[time.Time]{}
 			},
 
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			HistoryCapital: 0,
-
 			MapKey: "market",
 		},
 		{
@@ -506,6 +492,7 @@ var (
 				Description: nullable.Type[string]{},
 				Color:       "#e5eb34",
 				Icon:        icon.Base,
+				DynamicData: account.DynamicData{},
 			},
 			Children: []childAccountSeed{},
 
@@ -515,11 +502,6 @@ var (
 			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
 				return nullable.Type[time.Time]{}
 			},
-
-			HistoryAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			HistoryCapital: 0,
 
 			MapKey: "transport",
 		},
@@ -539,6 +521,7 @@ var (
 		// Doesn't will be added at seeding time.
 		// CreatedAt will be added at seeding time.
 		// UpdatedAt will be added at seeding time.
+		DynamicData: account.DynamicData{},
 	}
 
 	historyTransactionTemplate = transaction.Record{

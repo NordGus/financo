@@ -72,13 +72,12 @@ func seed(
 	timestamp time.Time,
 ) (AccountRecord, map[account.Kind]uint, uint, error) {
 	var (
-		tc        uint = 0
-		ac             = make(map[account.Kind]uint, 3)
-		children       = make(map[string]account.Record, 0)
-		historyAt      = s.HistoryAt(timestamp)
-		history        = historyTemplate
-		parent         = s.Account
-		pKey           = s.MapKey
+		tc       uint = 0
+		ac            = make(map[account.Kind]uint, 3)
+		children      = make(map[string]account.Record, 0)
+		history       = historyTemplate
+		parent        = s.Account
+		pKey          = s.MapKey
 	)
 
 	parent.ArchivedAt = s.ArchivedAt(timestamp)
@@ -112,15 +111,15 @@ func seed(
 		ac[history.Kind] += 1
 	}
 
-	if !account.IsExternal(parent.Kind) && historyAt.Valid {
+	if !account.IsExternal(parent.Kind) && s.Account.DynamicData.History.At.Valid {
 		tr := historyTransactionTemplate
 
 		tr.SourceID = history.ID
 		tr.TargetID = parent.ID
-		tr.SourceAmount = s.HistoryCapital
-		tr.TargetAmount = s.HistoryCapital
-		tr.IssuedAt = historyAt.Val
-		tr.ExecutedAt = historyAt
+		tr.SourceAmount = s.Account.DynamicData.History.Balance.Val
+		tr.TargetAmount = s.Account.DynamicData.History.Balance.Val
+		tr.IssuedAt = s.Account.DynamicData.History.At.Val
+		tr.ExecutedAt = s.Account.DynamicData.History.At
 		tr.CreatedAt = timestamp
 		tr.UpdatedAt = timestamp
 
