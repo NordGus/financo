@@ -9,13 +9,14 @@ import (
 	"financo/models/transaction"
 	"fmt"
 	"log"
-	"strconv"
+	"slices"
 	"time"
 )
 
-type transactionCount struct {
-	id    int64
-	count int64
+type dynamicData struct {
+	id      int64
+	count   int64
+	balance int64
 }
 
 type AccountRecord struct {
@@ -71,9 +72,11 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 	return out, nil
 }
 
-func SeedTransactionCount(ctx context.Context, conn *sql.Conn, timestamp time.Time) error {
+func SeedDynamicData(ctx context.Context, conn *sql.Conn, timestamp time.Time) error {
 	var (
-		updates = make([]transactionCount, 0, 10)
+		records = make([]account.Record, 0, 10)
+		ids     = make([]int64, 0, 10)
+		updates = make([]dynamicData, 0, 10)
 	)
 
 	log.Println("\tseeding accounts transactions count")
@@ -86,9 +89,20 @@ func SeedTransactionCount(ctx context.Context, conn *sql.Conn, timestamp time.Ti
 	rows, err := tx.QueryContext(
 		ctx,
 		`
-		SELECT acc.id, COUNT(tr.id) as trs
+		SELECT
+			acc.id,
+			COUNT(tr.id) as trs,
+			SUM(
+				CASE
+					WHEN tr.source_id = acc.id THEN - tr.source_amount
+					ELSE tr.target_amount
+				END
+			) AS balance
 		FROM accounts acc
-		INNER JOIN transactions tr ON (tr.source_id = acc.id OR tr.target_id = acc.id)
+		INNER JOIN transactions tr ON (
+			tr.source_id = acc.id
+			OR tr.target_id = acc.id
+		)
 		WHERE
 			tr.deleted_at IS NULL
 		GROUP BY
@@ -102,30 +116,72 @@ func SeedTransactionCount(ctx context.Context, conn *sql.Conn, timestamp time.Ti
 	defer rows.Close()
 
 	for rows.Next() {
-		var r transactionCount
+		var r dynamicData
 
-		err = rows.Scan(&r.id, &r.count)
+		err = rows.Scan(&r.id, &r.count, &r.balance)
 		if err != nil {
 			_ = tx.Rollback()
 			return errors.Join(errors.New("accounts: failed to seed transaction count"), err)
 		}
 
 		updates = append(updates, r)
+		ids = append(ids, r.id)
 	}
 
-	for i := 0; i < len(updates); i++ {
+	rows.Close()
+
+	rows, err = tx.QueryContext(
+		ctx,
+		`
+		SELECT
+			acc.id,
+			acc.dynamic_data
+		FROM accounts acc
+		WHERE
+			acc.deleted_at IS NULL AND
+			acc.id = ANY ($1)
+		`,
+		ids,
+	)
+	if err != nil {
+		return errors.Join(errors.New("accounts: failed to seed transaction count, retrieving accounts"), err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var r account.Record
+
+		err = rows.Scan(
+			&r.ID,
+			&r.DynamicData,
+		)
+		if err != nil {
+			return errors.Join(errors.New("accounts: failed to seed transaction count, scanning accounts"), err)
+		}
+
+		i := slices.IndexFunc(updates, func(a dynamicData) bool {
+			return a.id == r.ID
+		})
+
+		r.DynamicData.Balance = updates[i].balance
+		r.DynamicData.Transactions = updates[i].count
+
+		records = append(records, r)
+	}
+
+	for i := 0; i < len(records); i++ {
 		var id int64
 
 		err := tx.QueryRowContext(
 			ctx,
 			`
 			UPDATE accounts
-			SET dynamic_data = jsonb_set(dynamic_data, '{transactions}', $2, true)
+			SET dynamic_data = $2
 			WHERE id = $1
 			RETURNING id
 			`,
-			updates[i].id,
-			strconv.FormatInt(updates[i].count, 10),
+			records[i].ID,
+			records[i].DynamicData,
 		).Scan(&id)
 		if err != nil {
 			_ = tx.Rollback()

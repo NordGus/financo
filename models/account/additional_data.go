@@ -13,6 +13,7 @@ import (
 // the application or added as additional fields for configuration.
 type DynamicData struct {
 	Main         bool               `json:"main"`
+	Balance      int64              `json:"balance"`
 	History      HistoryDynamicData `json:"history"`
 	Transactions int64              `json:"transactions"`
 }
@@ -32,7 +33,7 @@ type HistoryDynamicData struct {
 func (s *DynamicData) Scan(value any) error {
 	data, ok := value.([]uint8)
 	if !ok {
-		return errors.New("savings_goal: invalid column type")
+		return errors.New("account: invalid column type")
 	}
 
 	if err := json.Unmarshal(data, s); err != nil {
