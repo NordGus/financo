@@ -11,7 +11,7 @@ interface AvailableCreditProps {
 }
 
 export function AvailableCredit({ balance, capital, currency }: AvailableCreditProps) {
-  const progress = useMemo(() => (Math.abs(balance) / Math.abs(capital)) * 100, [balance, capital])
+  const progress = useMemo(() => Math.round((Math.abs(balance) / Math.abs(capital)) * 100), [balance, capital])
   const balanceAmount = useMemo(() => currencyAmountToHuman(balance, currency), [balance])
   const capitalAmount = useMemo(() => currencyAmountToHuman(capital, currency), [capital])
 
