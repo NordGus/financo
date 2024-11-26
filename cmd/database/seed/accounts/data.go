@@ -266,7 +266,7 @@ var (
 				DynamicData: account.DynamicData{
 					History: account.HistoryDynamicData{
 						At:      nullable.New(time.Now().UTC().AddDate(0, -8, 0)),
-						Balance: nullable.New[int64](1_234_69),
+						Balance: nullable.New[int64](1_337_42),
 					},
 				},
 			},

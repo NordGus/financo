@@ -396,8 +396,8 @@ var (
 			Target: accountKey{
 				Key: "laptop_credit",
 			},
-			SourceAmount: 1_234_69,
-			TargetAmount: 1_234_69,
+			SourceAmount: 1_162_58,
+			TargetAmount: 1_162_58,
 			Notes:        nullable.Type[string]{},
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, -4, 0).UTC()
