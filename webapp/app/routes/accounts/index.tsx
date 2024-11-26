@@ -1,9 +1,8 @@
-import moment from "moment";
 import { useEffect, useState } from "react";
 import { useLoaderData } from "react-router";
+import { getAccountsPreviews } from "~/modules/accounts/api/queries/get-accounts-previews";
 import { Screen } from "~/modules/accounts/screens";
-import { Account, Kind } from "~/shared/types/account";
-import { Currency } from "~/shared/types/currency";
+import { Kind } from "~/shared/types/account";
 import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
@@ -14,76 +13,7 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export async function clientLoader({ }: Route.LoaderArgs) {
-  const accounts: Account[] = [
-    {
-      id: 1,
-      kind: "capital_normal" as Kind,
-      currency: "EUR" as Currency,
-      name: "Personal Bank Account",
-      icon: "base",
-      color: "#eb8934",
-      capital: 0,
-      settings: {
-        favorite: true,
-        balance: 1_337_42,
-        transactionCount: 42
-      },
-      createdAt: moment().add({ days: -30 }).toISOString(),
-      updatedAt: moment().add({ days: -30 }).toISOString()
-    },
-    {
-      id: 2,
-      kind: "capital_normal" as Kind,
-      currency: "USD" as Currency,
-      name: "US Bank Account",
-      description: "My small business account in the USA",
-      icon: "base",
-      color: "#eb8934",
-      capital: 0,
-      settings: {
-        favorite: false,
-        balance: 1_337_42,
-        transactionCount: 24
-      },
-      createdAt: moment().add({ days: -30 }).toISOString(),
-      updatedAt: moment().add({ days: -30 }).toISOString()
-    },
-    {
-      id: 3,
-      kind: "debt_loan" as Kind,
-      currency: "EUR" as Currency,
-      name: "Car Loan",
-      description: "My japanese shit box",
-      icon: "base",
-      color: "#34baeb",
-      capital: -5_000_00,
-      settings: {
-        favorite: false,
-        balance: 3_000_00,
-        transactionCount: 10
-      },
-      createdAt: moment().add({ days: -30 }).toISOString(),
-      updatedAt: moment().add({ days: -30 }).toISOString()
-    },
-    {
-      id: 4,
-      kind: "capital_normal" as Kind,
-      currency: "EUR" as Currency,
-      name: "Germany Bank Account",
-      description: "My small business account in the Germany",
-      icon: "base",
-      color: "#eb8934",
-      capital: 0,
-      settings: {
-        favorite: false,
-        balance: 1_337_42,
-        transactionCount: 15
-      },
-      archivedAt: moment().add({ days: -1 }).toISOString(),
-      createdAt: moment().add({ days: -30 }).toISOString(),
-      updatedAt: moment().add({ days: -30 }).toISOString()
-    },
-  ];
+  const accounts = await getAccountsPreviews()
 
   return {
     breadcrumb: "accounts",
@@ -92,7 +22,7 @@ export async function clientLoader({ }: Route.LoaderArgs) {
 }
 
 export default function Index() {
-  const { accounts } = useLoaderData<typeof loader>()
+  const { accounts } = useLoaderData<typeof clientLoader>()
   // TODO implement useReducer
   const [formFor, setFromFor] = useState<Kind | null>(null)
 

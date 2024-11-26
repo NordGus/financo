@@ -37,16 +37,18 @@ export function Preview({ account: loaderAccount }: Props) {
     description,
     color,
     capital,
-    settings: {
+    additionalData: {
       favorite,
       balance,
-      transactionCount
+      transactions
     },
     archivedAt,
     deletedAt
   } = fetcher.data || loaderAccount
 
   if (deletedAt) return null
+
+  console.log(balance, capital)
 
   const isArchived = useMemo(() => !isNil(archivedAt), [archivedAt])
   const balanceAmount = useMemo(() => {
@@ -107,7 +109,7 @@ export function Preview({ account: loaderAccount }: Props) {
           fetcher.state === "idle" && (
             <div className="flex-grow flex flex-row justify-end gap-2">
               <ActionablesMenu
-                account={{ id, name, transactionCount }}
+                account={{ id, name, transactions }}
                 isArchived={isArchived}
                 fetcher={fetcher}
               />

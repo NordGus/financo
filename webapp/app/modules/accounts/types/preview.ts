@@ -1,12 +1,16 @@
 import { Kind } from "~/shared/types/account"
 import { Currency } from "~/shared/types/currency"
 
-interface Settings {
+interface History {
+  at?: string | null
+  balance?: number | null
+}
+
+interface AdditionalData {
   favorite: boolean
   balance: number
-  historyBalance?: number | null
-  historyAt?: string | null
-  transactionCount: number
+  history: History
+  transactions: number
 }
 
 interface Account {
@@ -18,7 +22,7 @@ interface Account {
   icon: string
   color: string
   capital: number
-  settings: Settings
+  additionalData: AdditionalData
   archivedAt?: string | null
   deletedAt?: string | null
   createdAt: string

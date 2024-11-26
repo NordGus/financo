@@ -26,7 +26,7 @@ interface Props {
   account: {
     id: number
     name: string
-    transactionCount: number
+    transactions: number
   },
   isArchived: boolean
   fetcher: FetcherWithComponents<Account>
@@ -34,7 +34,7 @@ interface Props {
 
 // TODO implement form and actions
 export function ActionablesMenu({
-  account: { id, name, transactionCount },
+  account: { id, name, transactions },
   isArchived,
   fetcher
 }: Props) {
@@ -60,7 +60,7 @@ export function ActionablesMenu({
         <AlertDialogHeader>
           <AlertDialogTitle>are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription className="space-y-1">
-            this action cannot be undone. this will permanently delete <span className="font-bold">{name}</span> from your accounts. and it will also permanently delete <span className="font-bold">{transactionCount}</span> transaction(s) associated to it.
+            this action cannot be undone. this will permanently delete <span className="font-bold">{name}</span> from your accounts. and it will also permanently delete <span className="font-bold">{transactions}</span> transaction(s) associated to it.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
