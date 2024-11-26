@@ -7,7 +7,7 @@ interface History {
 }
 
 interface AdditionalData {
-  favorite: boolean
+  main: boolean
   balance: number
   history: History
   transactions: number

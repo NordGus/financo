@@ -20,6 +20,7 @@ import { isCapital, isCredit, isDebt } from "~/shared/types/account";
 import { Account } from "../../types/preview";
 import { MainAccount } from "../badges/main-account";
 import { ActionablesMenu } from "./actionables-menu";
+import { AvailableCredit } from "./available-credit";
 import { PaymentProgress } from "./payment-progress";
 
 interface Props {
@@ -38,7 +39,7 @@ export function Preview({ account: loaderAccount }: Props) {
     color,
     capital,
     additionalData: {
-      favorite,
+      main,
       balance,
       transactions
     },
@@ -47,8 +48,6 @@ export function Preview({ account: loaderAccount }: Props) {
   } = fetcher.data || loaderAccount
 
   if (deletedAt) return null
-
-  console.log(balance, capital)
 
   const isArchived = useMemo(() => !isNil(archivedAt), [archivedAt])
   const balanceAmount = useMemo(() => {
@@ -85,28 +84,47 @@ export function Preview({ account: loaderAccount }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-row justify-end gap-1 pt-4">
+        <div className="flex flex-row justify-end gap-2 pt-4">
+          {
+            capital !== 0 && (
+              <span>
+                {
+                  capital > 0
+                    ? "I'm owed"
+                    : "I owe"
+                }
+              </span>
+            )
+          }
           <span className={cn("font-semibold", balanceColorClass)}>
             {balanceAmount}
           </span>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-row justify-end items-center gap-2">
-        {
-          isDebt(kind) && fetcher.state === "idle" && (
-            <div className="flex-grow-[3]">
-              <PaymentProgress capital={capital} balance={balance} currency={currency} />
-            </div>
-          )}
-        {
-          isCapital(kind) && favorite && (
-            <div className="flex justify-start grow">
-              <MainAccount />
-            </div>
-          )
-        }
-        {
-          fetcher.state === "idle" && (
+      {
+        fetcher.state === "idle" && (
+          <CardFooter className="flex flex-row justify-end items-center gap-2">
+            {
+              isDebt(kind) && (
+                <div className="flex-grow-[3]">
+                  <PaymentProgress capital={capital} balance={balance} currency={currency} />
+                </div>
+              )
+            }
+            {
+              isCredit(kind) && (
+                <div className="flex-grow-[3]">
+                  <AvailableCredit capital={capital} balance={balance} currency={currency} />
+                </div>
+              )
+            }
+            {
+              isCapital(kind) && main && (
+                <div className="flex justify-start grow">
+                  <MainAccount />
+                </div>
+              )
+            }
             <div className="flex-grow flex flex-row justify-end gap-2">
               <ActionablesMenu
                 account={{ id, name, transactions }}
@@ -114,10 +132,16 @@ export function Preview({ account: loaderAccount }: Props) {
                 fetcher={fetcher}
               />
             </div>
-          )
-        }
-        {fetcher.state !== "idle" && (<Throbber size="sm" />)}
-      </CardFooter>
+          </CardFooter>
+        )
+      }
+      {
+        fetcher.state !== "idle" && (
+          <CardFooter className="flex flex-row justify-end items-center gap-2">
+            <Throbber size="sm" />
+          </CardFooter>
+        )
+      }
     </Card>
   )
 }

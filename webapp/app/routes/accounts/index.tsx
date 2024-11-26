@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLoaderData } from "react-router";
 import { getAccountsPreviews } from "~/modules/accounts/api/queries/get-accounts-previews";
 import { Screen } from "~/modules/accounts/screens";
@@ -24,11 +24,9 @@ export async function clientLoader({ }: Route.LoaderArgs) {
 export default function Index() {
   const { accounts } = useLoaderData<typeof clientLoader>()
   // TODO implement useReducer
-  const [formFor, setFromFor] = useState<Kind | null>(null)
+  const [__formFor, setFromFor] = useState<Kind | null>(null)
 
   const onNew = (kind: Kind) => setFromFor(kind)
-
-  useEffect(() => console.debug(formFor), [formFor])
 
   return <Screen accounts={accounts} onNew={onNew} />
 }
