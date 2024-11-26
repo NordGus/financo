@@ -29,7 +29,7 @@ interface Props {
 
 export function Preview({ account: loaderAccount }: Props) {
   const navigate = useNavigate()
-  const fetcher = useFetcher<Account>()
+  const fetcher = useFetcher<Account>({ key: `account.${loaderAccount.id}` })
   const {
     id,
     kind,
