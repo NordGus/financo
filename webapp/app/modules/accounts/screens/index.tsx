@@ -1,5 +1,7 @@
+import { InfoIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useSearchParams } from "react-router";
+import { Alert, AlertDescription, AlertTitle } from "~/shared/components/ui/alert";
 import { Button } from "~/shared/components/ui/button";
 import { Heading1, Heading2 } from "~/shared/components/ui/headings";
 import { isCapital, isCredit, isLoan, isPersonalDebt, isSavings } from "~/shared/types/account";
@@ -29,7 +31,7 @@ export function Screen({ accounts }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
-      <Heading1>accounts</Heading1>
+      <Heading1>Accounts</Heading1>
       <div className="flex flex-row gap-4">
         <Button
           variant={view === "active" ? "secondary" : "outline"}
@@ -39,7 +41,7 @@ export function Screen({ accounts }: Props) {
             return prev
           })}
         >
-          active
+          Active
         </Button>
         <Button
           variant={view === "archived" ? "secondary" : "outline"}
@@ -49,34 +51,52 @@ export function Screen({ accounts }: Props) {
             return prev
           })}
         >
-          archived
+          Archived
         </Button>
       </div>
-      <Heading2>capital</Heading2>
+      {
+        view === "archived" && (
+          <Alert>
+            <InfoIcon className="h-4 w-4" />
+            <AlertTitle className="mb-2">
+              What means that an Account is archived?
+            </AlertTitle>
+            <AlertDescription>
+              <p>
+                When an Account is archived it means you are no longer using it, it can be because you close it, payed it or it was paid. So they stop appearing anywhere else inside <span className="font-bold">financo</span>.
+              </p>
+              <p>
+                Contrary to deletion, you do not lose your Transaction history when you archive your Account, archival only helps to clean the noise within your <span className="font-bold">financo</span> experience.
+              </p>
+            </AlertDescription>
+          </Alert>
+        )
+      }
+      <Heading2>Capital</Heading2>
       <ListForKind
         accounts={accounts.filter(({ kind, archivedAt }) => isCapital(kind) && archived(archivedAt))}
         forKind="capital_normal"
         forArchived={view === "archived"}
       />
-      <Heading2>savings</Heading2>
+      <Heading2>Savings</Heading2>
       <ListForKind
         accounts={accounts.filter(({ kind, archivedAt }) => isSavings(kind) && archived(archivedAt))}
         forKind="capital_savings"
         forArchived={view === "archived"}
       />
-      <Heading2>loans</Heading2>
+      <Heading2>Loans</Heading2>
       <ListForKind
         accounts={accounts.filter(({ kind, archivedAt }) => isLoan(kind) && archived(archivedAt))}
         forKind="debt_loan"
         forArchived={view === "archived"}
       />
-      <Heading2>personal debts</Heading2>
+      <Heading2>Personal debts</Heading2>
       <ListForKind
         accounts={accounts.filter(({ kind, archivedAt }) => isPersonalDebt(kind) && archived(archivedAt))}
         forKind="debt_personal"
         forArchived={view === "archived"}
       />
-      <Heading2>credit</Heading2>
+      <Heading2>Credit</Heading2>
       <ListForKind
         accounts={accounts.filter(({ kind, archivedAt }) => isCredit(kind) && archived(archivedAt))}
         forKind="debt_credit"
