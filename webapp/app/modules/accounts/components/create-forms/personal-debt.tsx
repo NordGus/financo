@@ -1,10 +1,16 @@
+import { InfoDialog } from "~/shared/components/dialogs/info";
 import { DialogFooter, DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
+import { accountKindsManual } from "../../manual/account-kinds-manual";
 
 export function CreatePersonalDebtAccount() {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>New Personal debt Account</DialogTitle>
+        <DialogTitle>
+          <div className="flex gap-2 items-center">
+            New Personal debt Account <InfoDialog copy={accountKindsManual.personalDebt} />
+          </div>
+        </DialogTitle>
       </DialogHeader>
       <div></div>
       <DialogFooter></DialogFooter>
