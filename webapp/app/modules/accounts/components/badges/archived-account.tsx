@@ -1,14 +1,14 @@
-import { StarIcon } from "lucide-react";
+import { PackageIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/components/ui/tooltip";
 
-export function MainAccount() {
+export function ArchivedAccount() {
   return (
     <Tooltip>
       <TooltipTrigger className="[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
-        <StarIcon />
+        <PackageIcon />
       </TooltipTrigger>
       <TooltipContent>
-        main
+        archived
       </TooltipContent>
     </Tooltip>
   )
