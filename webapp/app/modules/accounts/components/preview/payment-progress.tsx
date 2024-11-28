@@ -27,7 +27,8 @@ export function PaymentProgress({ kind, balance, capital, currency, color }: Pay
         </div>
       </TooltipTrigger>
       <TooltipContent>
-        {balanceAmount} paid out of {capitalAmount}
+        {isDebt(kind) && (`${balanceAmount} paid out of ${capitalAmount}`)}
+        {isCredit(kind) && (`${balanceAmount} available out of ${capitalAmount}`)}
       </TooltipContent>
     </Tooltip>
   )
