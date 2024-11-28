@@ -13,7 +13,7 @@ export function InfoAlert({ copy: { title, message } }: Props) {
       <AlertTitle>
         {title}
       </AlertTitle>
-      <AlertDescription>
+      <AlertDescription className="space-y-1">
         {message}
       </AlertDescription>
     </Alert>
