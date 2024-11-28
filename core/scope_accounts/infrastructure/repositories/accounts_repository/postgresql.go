@@ -47,10 +47,14 @@ func (r *repository) Where(ctx context.Context, f filters.Accounts) ([]account.R
 	WHERE
 		acc.deleted_at IS NULL
 		AND acc.parent_id IS NULL
-		AND acc.kind != $1
+		AND acc.kind = ANY($1)
 	`
 
-	rows, err := conn.QueryContext(ctx, query, account.SystemHistoric)
+	rows, err := conn.QueryContext(
+		ctx,
+		query,
+		f.Kinds,
+	)
 	if err != nil {
 		return res, err
 	}

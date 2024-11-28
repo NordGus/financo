@@ -1,3 +1,7 @@
 package filters
 
-type Accounts struct{}
+import "financo/models/account"
+
+type Accounts struct {
+	Kinds []account.Kind
+}
