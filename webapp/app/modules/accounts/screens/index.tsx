@@ -58,16 +58,12 @@ export function Screen({ accounts }: Props) {
         view === "archived" && (
           <Alert>
             <InfoIcon className="h-4 w-4" />
-            <AlertTitle className="mb-2">
+            <AlertTitle>
               What means that an Account is archived?
             </AlertTitle>
             <AlertDescription>
-              <p>
-                When an Account is archived it means you are no longer using it, it can be because you close it, payed it or it was paid. So they stop appearing anywhere else inside <span className="font-bold">financo</span>.
-              </p>
-              <p>
-                Contrary to deletion, you do not lose your Transaction history when you archive your Account, archival only helps to clean the noise within your <span className="font-bold">financo</span> experience.
-              </p>
+              <p>When an Account is archived it means you are no longer using it, it can be because you close it, payed it or it was paid. So they simply stop appearing anywhere else inside <span className="font-bold">financo</span> like what happens with deletion.</p>
+              <p>But contrary to deletion, you do not lose your Transaction history when you archive any Account, ergo archival only helps to clean the noise within your <span className="font-bold">financo</span> experience.</p>
             </AlertDescription>
           </Alert>
         )

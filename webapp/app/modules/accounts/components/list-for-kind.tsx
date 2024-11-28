@@ -31,7 +31,7 @@ export function ListForKind({ accounts, forKind, forArchived = false }: Props) {
                 variant="link"
                 className="flex justify-center items-center text-base leading-snug gap-2 h-auto p-6 border border-dashed"
               >
-                <PlusIcon /> new
+                <PlusIcon /> New
               </Button>
             </DialogTrigger>
             <DialogContent>
