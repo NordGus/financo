@@ -24,26 +24,26 @@ export default function Layout() {
       </main>
       <nav className="flex flex-col gap-4 p-4 justify-stretch items-start">
         <NavItem to="/dashboard">
-          <LayoutDashboardIcon /> dashboard
+          <LayoutDashboardIcon /> Dashboard
         </NavItem>
         <NavItem to="/accounts">
-          <VaultIcon /> accounts
+          <VaultIcon /> Accounts
         </NavItem>
         <NavItem to="/ledger">
-          <BookMarkedIcon /> ledger
+          <BookMarkedIcon /> Ledger
         </NavItem>
         <NavItem to="/budgets">
-          <NotebookTabsIcon /> budgets
+          <NotebookTabsIcon /> Budgets
         </NavItem>
         <NavItem to="/payment-plans">
-          <RouteIcon /> payment plans
+          <RouteIcon /> Payment plans
         </NavItem>
         <span className="grow contents-['']"></span>
         <NavItem to="/achievements">
-          <TrophyIcon /> achievements
+          <TrophyIcon /> Achievements
         </NavItem>
         <NavItem to="/settings">
-          <SettingsIcon /> settings
+          <SettingsIcon /> Settings
         </NavItem>
       </nav>
     </div>
