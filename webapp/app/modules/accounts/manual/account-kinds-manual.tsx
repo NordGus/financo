@@ -27,7 +27,7 @@ export const accountKindsManual: Manual = {
         A Savings Account represents your personal bank savings account, bank deposits, government bonds or any other really simple financial instrument that generates interest in your favour.
       </p>
       <p>
-        Basically any kind of capital store that generates interest in your favour.
+        Basically any kind of capital store that generates interests in your favour.
       </p>
     </>
   },
@@ -38,7 +38,7 @@ export const accountKindsManual: Manual = {
         A Loan Account represents your student loan, car loan, smartphone loan, etc.
       </p>
       <p>
-        Basically any kind of simple debt you owe or are owed that generates interest for or against you.
+        Basically any kind of simple debt you owe or are owed that generates interests for or against you.
       </p>
     </>
   },
@@ -49,7 +49,7 @@ export const accountKindsManual: Manual = {
         A Loan Account represents that lunch your friend payed or you paid for them, that little help you give out to your sibling, etc.
       </p>
       <p>
-        Basically any kind of simple debt you owe or are owed that <span className="font-bold">does not</span> generate interest you.
+        Basically any kind of simple debt you owe or are owed that <span className="font-bold">does not</span> generate interests for or against you.
       </p>
     </>
   },
