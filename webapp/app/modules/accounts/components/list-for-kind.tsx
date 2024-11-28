@@ -2,8 +2,8 @@ import { PlusIcon } from "lucide-react";
 import { Button } from "~/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "~/shared/components/ui/card";
 import { Kind } from "~/shared/types/account";
-import { Account } from "../../types/preview";
-import { Preview } from "./card";
+import { Account } from "../types/preview";
+import { Preview } from "./preview/card";
 
 interface Props {
   accounts: Account[]

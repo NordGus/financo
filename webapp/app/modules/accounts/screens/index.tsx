@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router";
 import { Button } from "~/shared/components/ui/button";
 import { Heading1, Heading2 } from "~/shared/components/ui/headings";
 import { isCapital, isCredit, isLoan, isPersonalDebt, isSavings } from "~/shared/types/account";
-import { ListForKind } from "../components/preview/list-for-kind";
+import { ListForKind } from "../components/list-for-kind";
 import { Account } from "../types/preview";
 
 interface Props {
