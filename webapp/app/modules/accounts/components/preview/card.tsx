@@ -18,6 +18,7 @@ import {
 } from "~/shared/helpers/currency-amount-to-human";
 import { isDebt } from "~/shared/types/account";
 import { Account } from "../../types/preview";
+import { ArchivedAccount } from "../badges/archived-account";
 import { MainAccount } from "../badges/main-account";
 import { ActionablesMenu } from "./actionables-menu";
 import { PaymentProgress } from "./payment-progress";
@@ -61,7 +62,7 @@ export function Preview({ account: loaderAccount }: Props) {
   }, [balance, capital])
 
   return (
-    <Card className={cn(isArchived && "opacity-50")}>
+    <Card>
       <CardHeader
         className="min-h-28 cursor-pointer"
         style={{
@@ -101,8 +102,9 @@ export function Preview({ account: loaderAccount }: Props) {
       {
         fetcher.state === "idle" && (
           <CardFooter className="flex flex-row justify-end items-center gap-2">
+            {main && <MainAccount />}
+            {isArchived && <ArchivedAccount />}
             <div className="flex-grow-[3]">
-              {main && <MainAccount />}
               <PaymentProgress capital={capital} balance={balance} currency={currency} color={color} kind={kind} />
             </div>
             <div className="flex-grow flex flex-row justify-end gap-2">
