@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { useLoaderData } from "react-router";
 import { getAccountsPreviews } from "~/modules/accounts/api/queries/get-accounts-previews";
 import { Screen } from "~/modules/accounts/screens";
-import { Kind } from "~/shared/types/account";
 import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
@@ -23,10 +21,6 @@ export async function clientLoader({ }: Route.LoaderArgs) {
 
 export default function Index() {
   const { accounts } = useLoaderData<typeof clientLoader>()
-  // TODO implement useReducer
-  const [__formFor, setFromFor] = useState<Kind | null>(null)
 
-  const onNew = (kind: Kind) => setFromFor(kind)
-
-  return <Screen accounts={accounts} onNew={onNew} />
+  return <Screen accounts={accounts} />
 }
