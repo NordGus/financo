@@ -1,8 +1,14 @@
 import { PlusIcon } from "lucide-react";
 import { Button } from "~/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "~/shared/components/ui/card";
-import { Kind } from "~/shared/types/account";
+import { Dialog, DialogContent, DialogTrigger } from "~/shared/components/ui/dialog";
+import { isCapital, isCredit, isLoan, isPersonalDebt, isSavings, Kind } from "~/shared/types/account";
 import { Account } from "../types/preview";
+import { CreateCapitalAccount } from "./create-forms/capita";
+import { CreateCreditAccount } from "./create-forms/credit";
+import { CreateLoanAccount } from "./create-forms/loan";
+import { CreatePersonalDebtAccount } from "./create-forms/personal-debt";
+import { CreateSavingsAccount } from "./create-forms/savings";
 import { Preview } from "./preview/card";
 
 interface Props {
@@ -11,7 +17,7 @@ interface Props {
   forArchived?: boolean
 }
 
-export function ListForKind({ accounts, forKind: __forKind, forArchived = false }: Props) {
+export function ListForKind({ accounts, forKind, forArchived = false }: Props) {
   return (
     <div className="grid grid-cols-4 gap-4">
       {accounts.map((account) => (
@@ -19,12 +25,23 @@ export function ListForKind({ accounts, forKind: __forKind, forArchived = false 
       ))}
       {
         !forArchived && (
-          <Button
-            variant="link"
-            className="flex justify-center items-center text-base leading-snug gap-2 h-auto p-6 border border-dashed"
-          >
-            <PlusIcon /> new
-          </Button>
+          <Dialog modal>
+            <DialogTrigger asChild>
+              <Button
+                variant="link"
+                className="flex justify-center items-center text-base leading-snug gap-2 h-auto p-6 border border-dashed"
+              >
+                <PlusIcon /> new
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              {isCapital(forKind) && <CreateCapitalAccount />}
+              {isSavings(forKind) && <CreateSavingsAccount />}
+              {isLoan(forKind) && <CreateLoanAccount />}
+              {isPersonalDebt(forKind) && <CreatePersonalDebtAccount />}
+              {isCredit(forKind) && <CreateCreditAccount />}
+            </DialogContent>
+          </Dialog>
         )
       }
       {
