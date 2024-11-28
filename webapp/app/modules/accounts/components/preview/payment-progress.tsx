@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { CustomProgressProps, Progress } from "~/shared/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/components/ui/tooltip";
 import { currencyAmountToHuman } from "~/shared/helpers/currency-amount-to-human";
-import { isCredit, isDebt, Kind } from "~/shared/types/account";
+import { isCredit, isDebt, isLoan, isPersonalDebt, Kind } from "~/shared/types/account";
 import { Currency } from "~/shared/types/currency";
 
 interface PaymentProgressProps extends CustomProgressProps {
@@ -17,7 +17,7 @@ export function PaymentProgress({ kind, balance, capital, currency, color }: Pay
   const balanceAmount = useMemo(() => currencyAmountToHuman(balance, currency), [balance])
   const capitalAmount = useMemo(() => currencyAmountToHuman(capital, currency), [capital])
 
-  if (!(isCredit(kind) || isDebt(kind))) return null
+  if (!isDebt(kind)) return null
 
   return (
     <Tooltip>
@@ -27,7 +27,7 @@ export function PaymentProgress({ kind, balance, capital, currency, color }: Pay
         </div>
       </TooltipTrigger>
       <TooltipContent>
-        {isDebt(kind) && (`${balanceAmount} paid out of ${capitalAmount}`)}
+        {(isLoan(kind) || isPersonalDebt(kind)) && (`${balanceAmount} paid out of ${capitalAmount}`)}
         {isCredit(kind) && (`${balanceAmount} available out of ${capitalAmount}`)}
       </TooltipContent>
     </Tooltip>

@@ -1,6 +1,6 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/shared/components/ui/accordion";
 import { Heading1, Heading2 } from "~/shared/components/ui/headings";
-import { isCapital, isCredit, isDebt, isSavings } from "~/shared/types/account";
+import { isCapital, isCredit, isLoan, isPersonalDebt, isSavings } from "~/shared/types/account";
 import { ListForKind } from "../components/preview/list-for-kind";
 import { Account } from "../types/preview";
 
@@ -22,10 +22,15 @@ export function Screen({ accounts }: Props) {
         accounts={accounts.filter(({ kind, archivedAt }) => isSavings(kind) && !archivedAt)}
         forKind="capital_savings"
       />
-      <Heading2>debts</Heading2>
+      <Heading2>loans</Heading2>
       <ListForKind
-        accounts={accounts.filter(({ kind, archivedAt }) => isDebt(kind) && !archivedAt)}
+        accounts={accounts.filter(({ kind, archivedAt }) => isLoan(kind) && !archivedAt)}
         forKind="debt_loan"
+      />
+      <Heading2>personal debts</Heading2>
+      <ListForKind
+        accounts={accounts.filter(({ kind, archivedAt }) => isPersonalDebt(kind) && !archivedAt)}
+        forKind="debt_personal"
       />
       <Heading2>credit</Heading2>
       <ListForKind
@@ -50,10 +55,16 @@ export function Screen({ accounts }: Props) {
               forKind="capital_savings"
               forArchived
             />
-            <Heading2>debts</Heading2>
+            <Heading2>loans</Heading2>
             <ListForKind
-              accounts={accounts.filter(({ kind, archivedAt }) => isDebt(kind) && archivedAt)}
+              accounts={accounts.filter(({ kind, archivedAt }) => isLoan(kind) && archivedAt)}
               forKind="debt_loan"
+              forArchived
+            />
+            <Heading2>personal debts</Heading2>
+            <ListForKind
+              accounts={accounts.filter(({ kind, archivedAt }) => isPersonalDebt(kind) && archivedAt)}
+              forKind="debt_personal"
               forArchived
             />
             <Heading2>credit</Heading2>

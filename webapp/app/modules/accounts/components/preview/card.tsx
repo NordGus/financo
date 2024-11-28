@@ -16,7 +16,7 @@ import { currencyAmountColor } from "~/shared/helpers/currency-amount-color";
 import {
   currencyAmountToHuman
 } from "~/shared/helpers/currency-amount-to-human";
-import { isCredit, isDebt } from "~/shared/types/account";
+import { isDebt } from "~/shared/types/account";
 import { Account } from "../../types/preview";
 import { MainAccount } from "../badges/main-account";
 import { ActionablesMenu } from "./actionables-menu";
@@ -51,13 +51,11 @@ export function Preview({ account: loaderAccount }: Props) {
   const isArchived = useMemo(() => !isNil(archivedAt), [archivedAt])
   const balanceAmount = useMemo(() => {
     if (isDebt(kind)) return currencyAmountToHuman(balance + capital, currency)
-    if (isCredit(kind)) return currencyAmountToHuman(balance + capital, currency)
 
     return currencyAmountToHuman(balance, currency)
   }, [balance, capital])
   const balanceColorClass = useMemo(() => {
     if (isDebt(kind)) return currencyAmountColor(balance + capital)
-    if (isCredit(kind)) return currencyAmountColor(balance + capital)
 
     return currencyAmountColor(balance)
   }, [balance, capital])

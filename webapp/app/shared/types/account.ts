@@ -30,7 +30,17 @@ function isSavings(kind: Kind) {
 }
 
 function isDebt(kind: Kind) {
-  return kind === _kinds.debt_loan || kind === _kinds.debt_personal
+  return kind === _kinds.debt_loan ||
+    kind === _kinds.debt_personal ||
+    kind === _kinds.debt_credit
+}
+
+function isLoan(kind: Kind) {
+  return kind === _kinds.debt_loan
+}
+
+function isPersonalDebt(kind: Kind) {
+  return kind === _kinds.debt_personal
 }
 
 function isCredit(kind: Kind) {
@@ -45,7 +55,7 @@ function isExpense(kind: Kind) {
   return kind === _kinds.external_expense
 }
 
-export { isCapital, isCredit, isDebt, isExpense, isIncome, isSavings };
+export { isCapital, isCredit, isDebt, isExpense, isIncome, isLoan, isPersonalDebt, isSavings };
 
 export type { Kind };
 
