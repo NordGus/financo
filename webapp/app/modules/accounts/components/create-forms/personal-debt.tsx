@@ -4,7 +4,7 @@ export function CreatePersonalDebtAccount() {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>new personal debt account</DialogTitle>
+        <DialogTitle>New Personal debt Account</DialogTitle>
       </DialogHeader>
       <div></div>
       <DialogFooter></DialogFooter>

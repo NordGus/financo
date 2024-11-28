@@ -5,7 +5,7 @@ export function CreateCapitalAccount() {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>new capital account</DialogTitle>
+        <DialogTitle>New Capital Account</DialogTitle>
       </DialogHeader>
       <div></div>
       <DialogFooter></DialogFooter>

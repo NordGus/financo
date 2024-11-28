@@ -22,7 +22,7 @@ export function Unarchive({ accountID, fetcher }: Props) {
         )
       }}
     >
-      <PackageOpenIcon /> unarchive
+      <PackageOpenIcon /> Unarchive
     </DropdownMenuItem>
   )
 }

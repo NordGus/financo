@@ -4,7 +4,7 @@ export function CreateLoanAccount() {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>new loan account</DialogTitle>
+        <DialogTitle>New Loan Account</DialogTitle>
       </DialogHeader>
       <div></div>
       <DialogFooter></DialogFooter>

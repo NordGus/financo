@@ -5,8 +5,8 @@ import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "financo - accounts" },
-    { name: "description", content: "manage your accounts" }
+    { title: "financo - Accounts" },
+    { name: "description", content: "Manage your Accounts" }
   ]
 }
 
@@ -14,7 +14,7 @@ export async function clientLoader({ }: Route.LoaderArgs) {
   const accounts = await getAccountsPreviews()
 
   return {
-    breadcrumb: "accounts",
+    breadcrumb: "Accounts",
     accounts,
   }
 }

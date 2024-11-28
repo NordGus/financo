@@ -32,7 +32,7 @@ export function Screen() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>username</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -44,7 +44,7 @@ export function Screen() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>password</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input {...field} type="password" />
               </FormControl>
@@ -52,7 +52,7 @@ export function Screen() {
           )}
         />
         <Button type="submit" className="w-full">
-          log in
+          Log in
         </Button>
       </form>
     </Form>

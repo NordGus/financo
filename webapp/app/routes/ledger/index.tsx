@@ -3,14 +3,14 @@ import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "financo - ledger" },
-    { name: "description", content: "manage your wealth's transactions" }
+    { title: "financo - Ledger" },
+    { name: "description", content: "Manage the Transactions between your Accounts" }
   ]
 }
 
 export async function clientLoader({ }: Route.LoaderArgs) {
   return {
-    breadcrumb: "ledger"
+    breadcrumb: "Ledger"
   }
 }
 

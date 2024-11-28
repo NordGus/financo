@@ -8,7 +8,7 @@ export function MainAccount() {
         <StarIcon />
       </TooltipTrigger>
       <TooltipContent>
-        main
+        This is your main Account
       </TooltipContent>
     </Tooltip>
   )

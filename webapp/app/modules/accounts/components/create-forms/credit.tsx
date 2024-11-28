@@ -4,7 +4,7 @@ export function CreateCreditAccount() {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>new credit account</DialogTitle>
+        <DialogTitle>New Credit Account</DialogTitle>
       </DialogHeader>
       <div></div>
       <DialogFooter></DialogFooter>

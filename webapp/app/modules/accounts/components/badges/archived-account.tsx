@@ -8,7 +8,7 @@ export function ArchivedAccount() {
         <PackageIcon />
       </TooltipTrigger>
       <TooltipContent>
-        archived
+        This Account is archived
       </TooltipContent>
     </Tooltip>
   )

@@ -22,7 +22,7 @@ export function Archive({ accountID, fetcher }: Props) {
         )
       }}
     >
-      <PackageIcon /> archive
+      <PackageIcon /> Archive
     </DropdownMenuItem>
   )
 }

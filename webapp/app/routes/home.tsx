@@ -3,8 +3,8 @@ import { Route } from "./+types/home";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "financo - morning brew" },
-    { name: "description", content: "welcome to financo" }
+    { title: "financo - Morning brew" },
+    { name: "description", content: "Welcome to financo" }
   ]
 }
 

@@ -73,19 +73,30 @@ type ErrorBoundaryActionType = "not_found" | "error"
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   const navigate = useNavigate();
 
-  let message = "oops!";
-  let details = "an unexpected error occurred";
+  let message = "Oops!";
+  let details = "An unexpected error occurred";
   let stack: string | undefined;
   let action: ErrorBoundaryActionType = "error";
 
   if (isRouteErrorResponse(error)) {
     if (error.status === 401) redirect("/login");
     else if (error.status === 404) {
-      message = "not found";
-      details = "the requested page could not be found";
+      message = "Not found";
+      details = "The requested page could not be found";
       action = "not_found";
     } else {
-      message = "error";
+      message = "Error";
+      details = error.statusText || details;
+      action = "error";
+    }
+  } else if (error instanceof Response) {
+    if (error.status === 401) return redirect("/login");
+    else if (error.status === 404) {
+      message = "Not found";
+      details = "The requested resource could not be found";
+      action = "not_found";
+    } else {
+      message = "API error";
       details = error.statusText || details;
       action = "error";
     }
@@ -107,12 +118,12 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
         {
           not_found: (
             <Button asChild className="mt-4">
-              <Link to="/">return to dashboard</Link>
+              <Link to="/">Return to your Morning brew</Link>
             </Button>
           ),
           error: (
             <Button className="mt-4" onClick={() => navigate(0)}>
-              try again
+              Try again
             </Button>
           )
         }[action]

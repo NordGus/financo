@@ -51,20 +51,25 @@ export function ActionablesMenu({
           {!isArchived && <Archive accountID={id} fetcher={fetcher} />}
           <AlertDialogTrigger asChild>
             <DropdownMenuItem>
-              <TrashIcon /> delete
+              <TrashIcon /> Delete
             </DropdownMenuItem>
           </AlertDialogTrigger>
         </DropdownMenuContent>
       </DropdownMenu>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription className="space-y-1">
-            this action cannot be undone. this will permanently delete <span className="font-bold">{name}</span> from your accounts. and it will also permanently delete <span className="font-bold">{transactions}</span> transaction(s) associated to it.
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription className="space-y-2">
+            <p>
+              This action cannot be undone.
+            </p>
+            <p>
+              You are about to permanently delete <span className="font-bold">{name}</span> from your Accounts and its related <span className="font-bold">{transactions}</span> transaction(s) from your Transaction history.
+            </p>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>cancel</AlertDialogCancel>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
               fetcher.submit(
@@ -77,7 +82,7 @@ export function ActionablesMenu({
               )
             }}
           >
-            confirm
+            Confirm
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

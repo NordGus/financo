@@ -4,13 +4,13 @@ import { Route } from "./+types/dashboard";
 export function meta({ }: Route.MetaArgs) {
   return [
     { title: "financo" },
-    { name: "description", content: "welcome to financo" }
+    { name: "description", content: "Welcome to financo" }
   ]
 }
 
 export async function clientLoader({ }: Route.LoaderArgs) {
   return {
-    breadcrumb: "dashboard"
+    breadcrumb: "Dashboard"
   }
 }
 

@@ -12,7 +12,7 @@ export default function Layout() {
       )}
     >
       <Heading1 className="text-right">
-        welcome to <span className="font-bold text-primary">financo</span>
+        Welcome to <span className="font-bold text-primary">financo</span>
       </Heading1>
 
       <div

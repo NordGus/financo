@@ -4,7 +4,7 @@ export function CreateSavingsAccount() {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>new savings account</DialogTitle>
+        <DialogTitle>New Savings Account</DialogTitle>
       </DialogHeader>
       <div></div>
       <DialogFooter></DialogFooter>

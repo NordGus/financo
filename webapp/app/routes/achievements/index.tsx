@@ -3,14 +3,14 @@ import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
   return [
-    { title: "financo - achievements" },
-    { name: "description", content: "set your goals and remember your progress" }
+    { title: "financo - Achievements" },
+    { name: "description", content: "Set your goals and remember your progress" }
   ]
 }
 
 export async function clientLoader({ }: Route.LoaderArgs) {
   return {
-    breadcrumb: "achievements"
+    breadcrumb: "Achievements"
   }
 }
 
