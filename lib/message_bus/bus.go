@@ -20,7 +20,7 @@ type Bus[Payload any] interface {
 }
 
 type messageBus[Payload any] struct {
-	sync.Mutex
+	sync.RWMutex
 
 	name          string
 	wg            *sync.WaitGroup
@@ -43,20 +43,20 @@ func (m *messageBus[Payload]) Subscribe(consumer Consumer[Payload]) error {
 	}
 
 	m.wg.Add(1)
-	m.Mutex.Lock()
+	m.RWMutex.Lock()
 
 	m.consumers[m.consumerCount] = consumer
 	m.consumerCount++
 
-	m.Mutex.Unlock()
+	m.RWMutex.Unlock()
 	m.wg.Done()
 
 	return nil
 }
 
 func (m *messageBus[Payload]) Publish(payload Payload) error {
-	m.Mutex.Lock()
-	defer m.Mutex.Unlock()
+	m.RWMutex.RLock()
+	defer m.RWMutex.RUnlock()
 
 	m.wg.Add(m.consumerCount + 1)
 	defer m.wg.Done()
