@@ -35,13 +35,13 @@ func (b *inMemoryBroker) Subscribe(consumer message_bus.Consumer[messages.Delete
 	}
 }
 
-func (b *inMemoryBroker) Publish(message messages.Deleted) error {
+func (b *inMemoryBroker) Publish(message messages.Deleted) (<-chan struct{}, error) {
 	b.wg.Add(1)
 	defer b.wg.Done()
 
 	select {
 	case <-b.ctx.Done():
-		return fmt.Errorf("deleted_broker: failed to publish: %s", b.ctx.Err())
+		return nil, fmt.Errorf("deleted_broker: failed to publish: %s", b.ctx.Err())
 	default:
 		return b.bus.Publish(message)
 	}
