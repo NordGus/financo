@@ -18,6 +18,9 @@ export default [
     ]),
     route("achievements", "routes/achievements/index.tsx")
   ]),
+  ...prefix("currencies", [
+    route("for-select", "routes/currencies/for-select.tsx")
+  ]),
   layout("modules/authentication/layout.tsx", [
     route("login", "routes/login.tsx"),
   ])
