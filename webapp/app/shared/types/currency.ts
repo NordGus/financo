@@ -1,4 +1,4 @@
-const _currencies = {
+export const CURRENCIES = {
   CAD: "CAD",
   USD: "USD",
   EUR: "EUR",
@@ -6,7 +6,7 @@ const _currencies = {
   GBP: "GBP",
 } as const;
 
-type Currencies = typeof _currencies;
+type Currencies = typeof CURRENCIES;
 
 type Currency =
   Currencies["CAD"] |
