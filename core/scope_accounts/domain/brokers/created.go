@@ -7,5 +7,5 @@ import (
 
 type CreatedBroker interface {
 	Subscribe(consumer message_bus.Consumer[messages.Created]) error
-	Publish(message messages.Created) (<-chan struct{}, error)
+	Publish(message messages.Created) error
 }

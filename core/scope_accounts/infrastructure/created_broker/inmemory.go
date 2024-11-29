@@ -35,14 +35,19 @@ func (b *inMemoryBroker) Subscribe(consumer message_bus.Consumer[messages.Create
 	}
 }
 
-func (b *inMemoryBroker) Publish(message messages.Created) (<-chan struct{}, error) {
+func (b *inMemoryBroker) Publish(message messages.Created) error {
 	b.wg.Add(1)
 	defer b.wg.Done()
 
+	done, err := b.bus.Publish(message)
+	if err != nil {
+		return err
+	}
+
 	select {
 	case <-b.ctx.Done():
-		return nil, fmt.Errorf("created_broker: failed to publish: %s", b.ctx.Err())
-	default:
-		return b.bus.Publish(message)
+		return fmt.Errorf("created_broker: failed to publish: %s", b.ctx.Err())
+	case <-done:
+		return nil
 	}
 }
