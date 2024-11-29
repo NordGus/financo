@@ -4,7 +4,7 @@ import { Card, CardContent, CardFooter, CardHeader } from "~/shared/components/u
 import { Dialog, DialogContent, DialogTrigger } from "~/shared/components/ui/dialog";
 import { isCapital, isCredit, isLoan, isPersonalDebt, isSavings, Kind } from "~/shared/types/account";
 import { Account } from "../types/preview";
-import { CreateCapitalAccount } from "./create-forms/capita";
+import { CreateCapitalAccount } from "./create-forms/capital";
 import { CreateCreditAccount } from "./create-forms/credit";
 import { CreateLoanAccount } from "./create-forms/loan";
 import { CreatePersonalDebtAccount } from "./create-forms/personal-debt";
