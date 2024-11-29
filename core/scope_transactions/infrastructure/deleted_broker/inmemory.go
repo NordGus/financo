@@ -39,10 +39,15 @@ func (b *inMemoryBroker) Publish(message messages.Deleted) error {
 	b.wg.Add(1)
 	defer b.wg.Done()
 
+	done, err := b.bus.Publish(message)
+	if err != nil {
+		return err
+	}
+
 	select {
 	case <-b.ctx.Done():
 		return fmt.Errorf("deleted_broker: failed to publish: %s", b.ctx.Err())
-	default:
-		return b.bus.Publish(message)
+	case <-done:
+		return nil
 	}
 }
