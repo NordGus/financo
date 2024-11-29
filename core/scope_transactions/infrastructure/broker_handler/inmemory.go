@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"financo/core/scope_transactions/domain/brokers"
-	"financo/core/scope_transactions/infrastructure/created_broker"
-	"financo/core/scope_transactions/infrastructure/deleted_broker"
-	"financo/core/scope_transactions/infrastructure/updated_broker"
+	"financo/core/scope_transactions/infrastructure/brokers/created_broker"
+	"financo/core/scope_transactions/infrastructure/brokers/deleted_broker"
+	"financo/core/scope_transactions/infrastructure/brokers/updated_broker"
 	"fmt"
 	"sync"
 )
