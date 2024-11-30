@@ -1,11 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AccordionItem } from "@radix-ui/react-accordion";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { cn } from "~/lib/utils";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { CurrencyInput } from "~/shared/components/inputs/currency-input";
+import { DateInput } from "~/shared/components/inputs/date-input";
+import { Accordion, AccordionContent } from "~/shared/components/ui/accordion";
 import { Button } from "~/shared/components/ui/button";
 import { DialogFooter, DialogHeader } from "~/shared/components/ui/dialog";
 import {
@@ -108,28 +110,39 @@ export function CreateCapitalAccount() {
             <Label htmlFor="has-form">Has incomplete an incomplete ledger</Label>
             <InfoDialog copy={hasIncompleteLedgerManual} />
           </div>
-          <div
-            className={cn("flex flex-col gap-4", hasIncompleteLedger ? "h-fit" : "h-0")}
-          >
-            <FormField
-              control={form.control}
-              name="currency"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Currency</FormLabel>
-                  <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} />
-                  <FormDescription>
-                    The currency this account will operate in with
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <Accordion type="single" value={hasIncompleteLedger ? "opened" : "close"}>
+            <AccordionItem value="opened">
+              <AccordionContent className="flex flex-col gap-4">
+                <FormField
+                  control={form.control}
+                  name="history.at"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Starts at</FormLabel>
+                      <DateInput value={field.value} onSelect={field.onChange} />
+                      <FormDescription>
+                        The date from where your ledger starts
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="history.at"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Starting balance</FormLabel>
+                      <DateInput value={field.value} onSelect={field.onChange} />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
           <DialogFooter>
-            <Button type="submit">
-              Create
-            </Button>
+            <Button type="submit">Create</Button>
           </DialogFooter>
         </form>
       </Form>
