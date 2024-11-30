@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { InfoDialog } from "~/shared/components/dialogs/info";
+import { CurrencyAmountInput } from "~/shared/components/inputs/currency-amount-input";
 import { CurrencyInput } from "~/shared/components/inputs/currency-input";
 import { DateInput } from "~/shared/components/inputs/date-input";
 import { Accordion, AccordionContent } from "~/shared/components/ui/accordion";
@@ -30,7 +31,10 @@ import { schema } from "../../schemas/create-capital-account";
 export function CreateCapitalAccount() {
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
   const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema)
+    resolver: zodResolver(schema),
+    defaultValues: {
+      currency: "EUR"
+    }
   })
 
   const onSubmit = (values: z.infer<typeof schema>) => {
@@ -129,11 +133,16 @@ export function CreateCapitalAccount() {
                 />
                 <FormField
                   control={form.control}
-                  name="history.at"
+                  name="history.balance"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Starting balance</FormLabel>
-                      <DateInput value={field.value} onSelect={field.onChange} />
+                      <CurrencyAmountInput
+                        currency={form.getValues("currency")}
+                        value={field.value}
+                        onChange={field.onChange}
+                        name="Starting Balance"
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
