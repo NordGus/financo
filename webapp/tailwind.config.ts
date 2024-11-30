@@ -31,6 +31,9 @@ export default {
       height: {
         body: "100dvh"
       },
+      transitionProperty: {
+        "height": "height"
+      },
       gridTemplateColumns: {
         "layout": "1fr fit-content(20dvw)"
       },
