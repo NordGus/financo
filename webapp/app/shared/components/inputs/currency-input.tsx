@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useFetcher } from "react-router";
 import { clientLoader } from "~/routes/currencies/for-select";
 import { Currency } from "~/shared/types/currency";
+import { Throbber } from "../throbber";
 import { FormControl } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
@@ -30,7 +31,7 @@ export function CurrencyInput({ onValueChange, defaultValue }: Props) {
     <Select onValueChange={onValueChange} defaultValue={defaultValue}>
       <FormControl>
         <SelectTrigger>
-          <SelectValue placeholder={fetcher.state !== "idle" ? "Loading..." : "Select a currency"} />
+          <SelectValue placeholder={fetcher.state !== "idle" ? <Throbber size="sm" /> : "Select a currency"} />
         </SelectTrigger>
       </FormControl>
       <SelectContent>
