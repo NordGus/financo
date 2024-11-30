@@ -4,7 +4,8 @@ import { cn } from "~/lib/utils"
 import { currencyAmountColor } from "~/shared/helpers/currency-amount-color"
 import { currencyAmountToHuman } from "~/shared/helpers/currency-amount-to-human"
 import { Currency } from "~/shared/types/currency"
-import { Button } from "../ui/button"
+import { Button, buttonVariants } from "../ui/button"
+import { DialogClose } from "../ui/dialog"
 
 interface Props {
   initialValue?: number
@@ -37,6 +38,8 @@ interface Calc {
 
 const __actions = {
   MODIFY_VALUE: "MODIFY_VALUE",
+  EXECUTE_CALC: "EXECUTE_CALC",
+  FLIP_SIGN: "FLIP_SIGN"
 } as const
 
 type ActionType = typeof __actions
@@ -45,6 +48,11 @@ type Action =
   {
     type: ActionType["MODIFY_VALUE"]
     by: number
+  } |
+  {
+    type: ActionType["EXECUTE_CALC"]
+  } | {
+    type: ActionType["FLIP_SIGN"]
   }
 
 function runCalcStack(value: number, stack: Calc[]): number {
@@ -56,8 +64,8 @@ function runCalcStack(value: number, stack: Calc[]): number {
     if (calc.value === 0) continue
     if (calc.op === CalcOp.Sum) output += calc.value
     if (calc.op === CalcOp.Subtraction) output -= calc.value
-    if (calc.op === CalcOp.Multiplication) output *= calc.value
-    if (calc.op === CalcOp.Division) output /= calc.value
+    if (calc.op === CalcOp.Multiplication) output = Math.round(output * calc.value)
+    if (calc.op === CalcOp.Division) output = Math.round(output / calc.value)
   }
 
   return output
@@ -84,11 +92,11 @@ function renderCalcStack(value: number, currency: Currency, stack: Calc[]): Reac
     )
     if (calc.op === CalcOp.Multiplication) output.push(
       <AsteriskIcon key={`${key}.op`} className="h-4 w-4" />,
-      <span key={`${key}.value`}>{currencyAmountToHuman(calc.value, currency)}</span>
+      <span key={`${key}.value`}>{calc.value}</span>
     )
     if (calc.op === CalcOp.Division) output.push(
       <DivideIcon key={`${key}.op`} className="h-4 w-4" />,
-      <span key={`${key}.value`}>{currencyAmountToHuman(calc.value, currency)}</span>
+      <span key={`${key}.value`}>{calc.value}</span>
     )
   }
 
@@ -96,15 +104,28 @@ function renderCalcStack(value: number, currency: Currency, stack: Calc[]): Reac
 }
 
 function reducer(state: State, action: Action): State {
+  if (action.type === "EXECUTE_CALC") {
+    return {
+      ...state,
+      value: runCalcStack(state.value, state.calc),
+      calc: []
+    }
+  }
+  if (action.type === "FLIP_SIGN" && state.calc.length === 0) {
+    return {
+      ...state,
+      value: Math.round(state.value * -1)
+    }
+  }
   if (action.type === "MODIFY_VALUE" && state.calc.length === 0) {
     return {
       ...state,
-      value: (state.value * 10) + action.by,
+      value: Math.round(state.value * 10) + action.by,
     }
   }
   if (action.type === "MODIFY_VALUE" && state.calc.length !== 0) {
     const current = state.calc[state.calc.length - 1].value
-    state.calc[state.calc.length - 1].value = (current * 10) + action.by
+    state.calc[state.calc.length - 1].value = Math.round(current * 10) + action.by
 
     return {
       ...state,
@@ -118,14 +139,16 @@ function reducer(state: State, action: Action): State {
 function init({ initialValue }: InitialState): State {
   return {
     value: initialValue || 0,
-    calc: [],
+    calc: [{ value: 2, op: CalcOp.Multiplication }, { value: 2, op: CalcOp.Division }],
   }
 }
 
-export function Calculator({ initialValue, currency }: Props) {
+export function Calculator({ initialValue, currency, onChange }: Props) {
   const [state, dispatch] = useReducer(reducer, { initialValue }, init)
 
   const onModifyValue = (by: number) => dispatch({ type: "MODIFY_VALUE", by })
+  const onExecuteCalc = () => dispatch({ type: "EXECUTE_CALC" })
+  const onFlipSign = () => dispatch({ type: "FLIP_SIGN" })
 
   useEffect(() => { }, [])
 
@@ -187,7 +210,8 @@ export function Calculator({ initialValue, currency }: Props) {
       {
         name: <DiffIcon />,
         type: "operation",
-        disabled: (s) => s.calc.length !== 0 || s.value === 0
+        disabled: (s) => s.calc.length !== 0 || s.value === 0,
+        onClick: () => onFlipSign()
       },
       // line 3
       {
@@ -246,10 +270,12 @@ export function Calculator({ initialValue, currency }: Props) {
           currencyAmountColor(runCalcStack(state.value, state.calc))
         )}
       >
-        <div className="flex items-center justify-end gap-2 text-lg text-muted-foreground">
+        <div className="flex items-center justify-end gap-2 text-lg text-muted-foreground h-4">
           {state.calc.length > 0 && renderCalcStack(state.value, currency, state.calc)}
         </div>
-        {currencyAmountToHuman(runCalcStack(state.value, state.calc), currency)}
+        <p className="w-full">
+          {currencyAmountToHuman(runCalcStack(state.value, state.calc), currency)}
+        </p>
       </div>
       <div>
         <div className="grid grid-cols-5 grid-rows-4 gap-2 w-fit m-auto">
@@ -268,22 +294,31 @@ export function Calculator({ initialValue, currency }: Props) {
                     className={baseClassNames}
                     variant={"secondary"}
                     disabled={button.disabled(state)}
+                    onClick={button.onClick}
                   >
                     {button.name}
                   </Button>
                 )
               case "submit":
                 return (
-                  <Button
-                    key={key}
-                    className={cn(baseClassNames, "row-span-2 !h-full")}
-                  >
-                    {
-                      state.calc.length > 0
-                        ? <EqualIcon />
-                        : <CheckIcon />
-                    }
-                  </Button>
+                  state.calc.length === 0
+                    ? <DialogClose
+                      key={key}
+                      className={cn(
+                        buttonVariants({ className: baseClassNames }),
+                        "row-span-2 !h-full"
+                      )}
+                      onClick={() => onChange(state.value)}
+                    >
+                      <CheckIcon />
+                    </DialogClose>
+                    : <Button
+                      key={key}
+                      className={cn(baseClassNames, "row-span-2 !h-full")}
+                      onClick={() => onExecuteCalc()}
+                    >
+                      <EqualIcon />
+                    </Button>
                 )
               case "clear":
                 return (
