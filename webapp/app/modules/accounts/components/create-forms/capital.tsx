@@ -16,8 +16,11 @@ import {
   FormMessage
 } from "~/shared/components/ui/form";
 import { Input } from "~/shared/components/ui/input";
+import { Label } from "~/shared/components/ui/label";
+import { Switch } from "~/shared/components/ui/switch";
 import { Textarea } from "~/shared/components/ui/textarea";
 import { accountKindsManual } from "../../manual/account-kinds-manual";
+import { hasIncompleteLedgerManual } from "../../manual/has-imcomplete-ledger-manual";
 import { schema } from "../../schemas/create-capital-account";
 
 export function CreateCapitalAccount() {
@@ -87,6 +90,11 @@ export function CreateCapitalAccount() {
               </FormItem>
             )}
           />
+          <div className="flex items-center space-x-2">
+            <Switch id="has-form" />
+            <Label htmlFor="has-form">Has incomplete an incomplete ledger</Label>
+            <InfoDialog copy={hasIncompleteLedgerManual} />
+          </div>
           <DialogFooter>
             <Button type="submit">
               Create
