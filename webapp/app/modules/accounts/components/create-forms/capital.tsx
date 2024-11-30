@@ -3,9 +3,18 @@ import { DialogTitle } from "@radix-ui/react-dialog";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { InfoDialog } from "~/shared/components/dialogs/info";
+import { CurrencyInput } from "~/shared/components/inputs/currency-input";
 import { Button } from "~/shared/components/ui/button";
 import { DialogFooter, DialogHeader } from "~/shared/components/ui/dialog";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/shared/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "~/shared/components/ui/form";
 import { Input } from "~/shared/components/ui/input";
 import { Textarea } from "~/shared/components/ui/textarea";
 import { accountKindsManual } from "../../manual/account-kinds-manual";
@@ -59,6 +68,20 @@ export function CreateCapitalAccount() {
                 </FormControl>
                 <FormDescription>
                   You can leave this empty
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="currency"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Currency</FormLabel>
+                <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} />
+                <FormDescription>
+                  The currency this account will operate in with
                 </FormDescription>
                 <FormMessage />
               </FormItem>
