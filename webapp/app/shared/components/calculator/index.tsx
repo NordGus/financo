@@ -123,7 +123,7 @@ function reducer(state: State, action: Action): State {
       value: Math.round(state.value * 10) + action.by,
     }
   }
-  if (action.type === "MODIFY_VALUE" && state.calc.length !== 0) {
+  if (action.type === "MODIFY_VALUE") {
     const current = state.calc[state.calc.length - 1].value
     state.calc[state.calc.length - 1].value = Math.round(current * 10) + action.by
 
@@ -139,7 +139,7 @@ function reducer(state: State, action: Action): State {
 function init({ initialValue }: InitialState): State {
   return {
     value: initialValue || 0,
-    calc: [{ value: 2, op: CalcOp.Multiplication }, { value: 2, op: CalcOp.Division }],
+    calc: [],
   }
 }
 
