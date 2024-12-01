@@ -32,11 +32,10 @@ import { schema } from "../../schemas/create-capital-account";
 export function CreateCapitalAccount() {
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
   const [loading, setLoading] = useState(false)
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      currency: "EUR"
-    }
+    defaultValues: { currency: "EUR" }
   })
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
