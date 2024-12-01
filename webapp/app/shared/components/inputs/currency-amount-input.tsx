@@ -33,7 +33,7 @@ export function CurrencyAmountInput({ value, name, onChange, currency }: Props) 
           </Button>
         </FormControl>
       </DialogTrigger>
-      <DialogContent className="max-w-fit">
+      <DialogContent className="max-w-[400px] overflow-clip">
         <DialogHeader>
           <DialogTitle className="hidden">{name}</DialogTitle>
         </DialogHeader>

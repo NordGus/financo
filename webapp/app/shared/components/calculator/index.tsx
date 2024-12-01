@@ -175,7 +175,7 @@ export function Calculator({ initialValue, currency, onChange }: Props) {
   const onStartCalc = (op: CalcOp) => dispatch({ type: "START_CALC", op })
   const onRevertValue = () => dispatch({ type: "REVERT_VALUE" })
 
-  useEffect(() => { }, [])
+  useEffect(() => { if (state.calc.length === 0) onChange(state.value) }, [state.value, state.calc.length])
 
   const buttons: ButtonProps[] = useMemo(() => {
     return [
