@@ -47,20 +47,11 @@ const __actions = {
 type ActionType = typeof __actions
 
 type Action =
-  {
-    type: ActionType["MODIFY_VALUE"]
-    by: number
-  } |
-  {
-    type: ActionType["EXECUTE_CALC"]
-  } | {
-    type: ActionType["FLIP_SIGN"]
-  } | {
-    type: ActionType["START_CALC"]
-    op: CalcOp
-  } | {
-    type: ActionType["REVERT_VALUE"]
-  }
+  { type: ActionType["MODIFY_VALUE"], by: number } |
+  { type: ActionType["EXECUTE_CALC"] } |
+  { type: ActionType["FLIP_SIGN"] } |
+  { type: ActionType["START_CALC"], op: CalcOp } |
+  { type: ActionType["REVERT_VALUE"] }
 
 function runCalcStack(value: number, stack: Calc[]): number {
   let output = value
@@ -110,78 +101,62 @@ function renderCalcStack(value: number, currency: Currency, stack: Calc[]): Reac
   return output
 }
 
-function reducer(state: State, action: Action): State {
-  if (action.type === "EXECUTE_CALC") {
-    return {
-      ...state,
-      value: runCalcStack(state.value, state.calc),
-      calc: []
-    }
-  }
-  if (action.type === "FLIP_SIGN" && state.calc.length === 0) {
-    return {
-      ...state,
-      value: Math.round(state.value * -1)
-    }
-  }
-  if (action.type === "FLIP_SIGN") {
-    return { ...state }
-  }
-  if (action.type === "MODIFY_VALUE" && state.calc.length === 0) {
-    return {
-      ...state,
-      value: Math.round(state.value * 10) + action.by,
-    }
-  }
-  if (action.type === "MODIFY_VALUE") {
-    const calc = [...state.calc]
-    const last = calc.splice(calc.length - 1, 1)[0]
+function handleExecuteCalc(state: State, __action: { type: ActionType["EXECUTE_CALC"] }): State {
+  return { ...state, value: runCalcStack(state.value, state.calc), calc: [] }
+}
 
-    return {
-      ...state,
-      calc: [
-        ...calc,
-        {
-          ...last,
-          value: Math.round(last.value * 10) + action.by
-        }
-      ]
-    }
-  }
-  if (action.type === "START_CALC") {
-    return {
-      ...state,
-      calc: [...state.calc, { value: 0, op: action.op }]
-    }
-  }
-  if (action.type === "REVERT_VALUE" && state.calc.length === 0) {
+function handleFlipSign(state: State, __action: { type: ActionType["FLIP_SIGN"] }): State {
+  if (state.calc.length !== 0) return { ...state }
+  return { ...state, value: Math.round(state.value * -1) }
+}
+
+function handleModifyValue(state: State, action: { type: ActionType["MODIFY_VALUE"], by: number }): State {
+  if (state.calc.length === 0) return { ...state, value: Math.round(state.value * 10) + action.by }
+
+  const calc = [...state.calc]
+  const last = calc.splice(calc.length - 1, 1)[0]
+
+  return { ...state, calc: [...calc, { ...last, value: Math.round(last.value * 10) + action.by }] }
+}
+
+function handleRevertValue(state: State, __action: { type: ActionType["REVERT_VALUE"] }): State {
+  if (state.calc.length === 0) {
     const mod = state.value % 10
     const value = (state.value - mod) / 10
 
-    return {
-      ...state,
-      value: Math.round(value)
-    }
-  }
-  if (action.type === "REVERT_VALUE") {
-    const calc = [...state.calc]
-    const { op, value: prev } = calc.splice(calc.length - 1, 1)[0]
-
-    if (prev === 0) return { ...state, calc: [...calc] }
-
-    const mod = prev % 10
-    const value = (prev - mod) / 10
-
-    return {
-      ...state,
-      calc: [
-        ...calc,
-        { op, value: Math.round(value) }
-      ]
-    }
+    return { ...state, value: Math.round(value) }
   }
 
-  throw new Error("unknown action.")
+  const calc = [...state.calc]
+  const { op, value: prev } = calc.splice(calc.length - 1, 1)[0]
+
+  if (prev === 0) return { ...state, calc: [...calc] }
+
+  const mod = prev % 10
+  const value = (prev - mod) / 10
+
+  return { ...state, calc: [...calc, { op, value: Math.round(value) }] }
+}
+
+function handleStartCalc(state: State, action: { type: ActionType["START_CALC"], op: CalcOp }): State {
+  return { ...state, calc: [...state.calc, { value: 0, op: action.op }] }
+}
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "EXECUTE_CALC":
+      return handleExecuteCalc(state, action)
+    case "FLIP_SIGN":
+      return handleFlipSign(state, action)
+    case "MODIFY_VALUE":
+      return handleModifyValue(state, action)
+    case "REVERT_VALUE":
+      return handleRevertValue(state, action)
+    case "START_CALC":
+      return handleStartCalc(state, action)
+    default:
+      throw new Error("unknown action.")
+  }
 }
 
 function init({ initialValue }: InitialState): State {
