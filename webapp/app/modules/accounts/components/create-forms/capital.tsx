@@ -117,6 +117,22 @@ export function CreateCapitalAccount() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="color"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Color</FormLabel>
+                <FormControl>
+                  <Input {...field} type={"color"} />
+                </FormControl>
+                <FormDescription>
+                  Select a color for easy identification
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="flex items-center space-x-2">
             <Switch id="has-form" checked={hasIncompleteLedger} onCheckedChange={setHasIncompleteLedger} />
             <Label htmlFor="has-form">Has incomplete an incomplete ledger</Label>
