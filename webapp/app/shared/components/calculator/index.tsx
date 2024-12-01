@@ -1,9 +1,11 @@
-import { AsteriskIcon, CheckIcon, DeleteIcon, DiffIcon, DivideIcon, EqualIcon, MinusIcon, PlusIcon } from "lucide-react"
+import { AsteriskIcon, CheckIcon, CircleHelpIcon, DeleteIcon, DiffIcon, DivideIcon, EqualIcon, MinusIcon, PlusIcon } from "lucide-react"
 import { ReactNode, useEffect, useMemo, useReducer } from "react"
 import { cn } from "~/lib/utils"
 import { currencyAmountColor } from "~/shared/helpers/currency-amount-color"
 import { currencyAmountToHuman } from "~/shared/helpers/currency-amount-to-human"
 import { Currency } from "~/shared/types/currency"
+import { InfoDialog } from "../dialogs/info"
+import { calculatorManual } from "../manual/calculator-manual"
 import { Button, buttonVariants } from "../ui/button"
 import { DialogClose } from "../ui/dialog"
 
@@ -24,7 +26,7 @@ interface InitialState {
 }
 
 interface ButtonProps {
-  type: "dummy" | "button" | "submit" | "clear" | "calc" | "operation"
+  type: "dummy" | "button" | "submit" | "clear" | "calc" | "operation" | "help"
   name: ReactNode,
   onClick?: () => void,
   disabled: (state: State) => boolean
@@ -290,6 +292,11 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
         disabled: (__s) => false,
         onClick: () => onModifyValue(0)
       },
+      {
+        name: <CircleHelpIcon />,
+        type: "help",
+        disabled: (__s) => false,
+      },
     ]
   }, [dispatch])
 
@@ -317,6 +324,15 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
             switch (button.type) {
               case "dummy":
                 return <span key={key}>{""}</span>
+              case "help":
+                return (
+                  <InfoDialog
+                    copy={calculatorManual}
+                    variant={"ghost"}
+                    size={"default"}
+                    className={baseClassNames}
+                  />
+                )
               case "operation":
               case "calc":
                 return (
