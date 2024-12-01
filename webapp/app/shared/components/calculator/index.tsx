@@ -39,7 +39,8 @@ interface Calc {
 const __actions = {
   MODIFY_VALUE: "MODIFY_VALUE",
   EXECUTE_CALC: "EXECUTE_CALC",
-  FLIP_SIGN: "FLIP_SIGN"
+  FLIP_SIGN: "FLIP_SIGN",
+  START_CALC: "START_CALC"
 } as const
 
 type ActionType = typeof __actions
@@ -53,6 +54,9 @@ type Action =
     type: ActionType["EXECUTE_CALC"]
   } | {
     type: ActionType["FLIP_SIGN"]
+  } | {
+    type: ActionType["START_CALC"]
+    op: CalcOp
   }
 
 function runCalcStack(value: number, stack: Calc[]): number {
@@ -117,6 +121,9 @@ function reducer(state: State, action: Action): State {
       value: Math.round(state.value * -1)
     }
   }
+  if (action.type === "FLIP_SIGN") {
+    return { ...state }
+  }
   if (action.type === "MODIFY_VALUE" && state.calc.length === 0) {
     return {
       ...state,
@@ -124,16 +131,28 @@ function reducer(state: State, action: Action): State {
     }
   }
   if (action.type === "MODIFY_VALUE") {
-    const current = state.calc[state.calc.length - 1].value
-    state.calc[state.calc.length - 1].value = Math.round(current * 10) + action.by
+    const calc = [...state.calc]
+    const last = calc.splice(calc.length - 1, 1)[0]
 
     return {
       ...state,
-      calc: [...state.calc],
+      calc: [
+        ...calc,
+        {
+          ...last,
+          value: Math.round(last.value * 10) + action.by
+        }
+      ]
+    }
+  }
+  if (action.type === "START_CALC") {
+    return {
+      ...state,
+      calc: [...state.calc, { value: 0, op: action.op }]
     }
   }
 
-  throw new Error(`unknown action: ${action.type}`)
+  throw new Error("unknown action.")
 }
 
 function init({ initialValue }: InitialState): State {
@@ -149,6 +168,7 @@ export function Calculator({ initialValue, currency, onChange }: Props) {
   const onModifyValue = (by: number) => dispatch({ type: "MODIFY_VALUE", by })
   const onExecuteCalc = () => dispatch({ type: "EXECUTE_CALC" })
   const onFlipSign = () => dispatch({ type: "FLIP_SIGN" })
+  const onStartCalc = (op: CalcOp) => dispatch({ type: "START_CALC", op })
 
   useEffect(() => { }, [])
 
@@ -159,6 +179,7 @@ export function Calculator({ initialValue, currency, onChange }: Props) {
         name: <DivideIcon />,
         type: "calc",
         disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
+        onClick: () => onStartCalc(CalcOp.Division)
       },
       {
         name: "7",
@@ -187,7 +208,8 @@ export function Calculator({ initialValue, currency, onChange }: Props) {
       {
         name: <AsteriskIcon />,
         type: "calc",
-        disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0
+        disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
+        onClick: () => onStartCalc(CalcOp.Multiplication)
       },
       {
         name: "4",
@@ -217,7 +239,8 @@ export function Calculator({ initialValue, currency, onChange }: Props) {
       {
         name: <MinusIcon />,
         type: "calc",
-        disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0
+        disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
+        onClick: () => onStartCalc(CalcOp.Subtraction)
       },
       {
         name: "1",
@@ -246,7 +269,8 @@ export function Calculator({ initialValue, currency, onChange }: Props) {
       {
         name: <PlusIcon />,
         type: "calc",
-        disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0
+        disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
+        onClick: () => onStartCalc(CalcOp.Sum)
       },
       {
         name: "",
