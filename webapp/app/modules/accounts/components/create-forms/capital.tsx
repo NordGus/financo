@@ -8,6 +8,7 @@ import { InfoDialog } from "~/shared/components/dialogs/info";
 import { CurrencyAmountInput } from "~/shared/components/inputs/currency-amount-input";
 import { CurrencyInput } from "~/shared/components/inputs/currency-input";
 import { DateInput } from "~/shared/components/inputs/date-input";
+import { Throbber } from "~/shared/components/throbber";
 import { Accordion, AccordionContent } from "~/shared/components/ui/accordion";
 import { Button } from "~/shared/components/ui/button";
 import { DialogFooter, DialogHeader } from "~/shared/components/ui/dialog";
@@ -30,6 +31,7 @@ import { schema } from "../../schemas/create-capital-account";
 
 export function CreateCapitalAccount() {
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
+  const [loading, setLoading] = useState(false)
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -37,8 +39,10 @@ export function CreateCapitalAccount() {
     }
   })
 
-  const onSubmit = (values: z.infer<typeof schema>) => {
+  const onSubmit = async (values: z.infer<typeof schema>) => {
+    setLoading(true)
     console.log(values)
+    //setLoading(false)
   }
 
   useEffect(() => {
@@ -151,7 +155,9 @@ export function CreateCapitalAccount() {
             </AccordionItem>
           </Accordion>
           <DialogFooter>
-            <Button type="submit">Create</Button>
+            <Button type="submit" className="min-w-24" disabled={loading}>
+              {loading ? <Throbber size={"sm"} /> : "Create"}
+            </Button>
           </DialogFooter>
         </form>
       </Form>
