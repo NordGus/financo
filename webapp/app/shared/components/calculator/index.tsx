@@ -1,4 +1,14 @@
-import { AsteriskIcon, CheckIcon, CircleHelpIcon, DeleteIcon, DiffIcon, DivideIcon, EqualIcon, MinusIcon, PlusIcon } from "lucide-react"
+import {
+  AsteriskIcon,
+  CheckIcon,
+  CircleHelpIcon,
+  DeleteIcon,
+  DiffIcon,
+  DivideIcon,
+  EqualIcon,
+  MinusIcon,
+  PlusIcon
+} from "lucide-react"
 import { ReactNode, useEffect, useMemo, useReducer } from "react"
 import { cn } from "~/lib/utils"
 import { currencyAmountColor } from "~/shared/helpers/currency-amount-color"
@@ -177,6 +187,69 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
   const onFlipSign = () => !disableFlipSign && dispatch({ type: "FLIP_SIGN" })
   const onStartCalc = (op: CalcOp) => dispatch({ type: "START_CALC", op })
   const onRevertValue = () => dispatch({ type: "REVERT_VALUE" })
+
+  const onKeyDown = (ev: globalThis.KeyboardEvent) => {
+    const disableCalc = state.calc.length === 0 ? state.value === 0 : state.calc[state.calc.length - 1].value === 0
+
+    switch (ev.key.toLocaleLowerCase()) {
+      case "0":
+        ev.preventDefault()
+        return onModifyValue(0)
+      case "1":
+        ev.preventDefault()
+        return onModifyValue(1)
+      case "2":
+        ev.preventDefault()
+        return onModifyValue(2)
+      case "3":
+        ev.preventDefault()
+        return onModifyValue(3)
+      case "4":
+        ev.preventDefault()
+        return onModifyValue(4)
+      case "5":
+        ev.preventDefault()
+        return onModifyValue(5)
+      case "6":
+        ev.preventDefault()
+        return onModifyValue(6)
+      case "7":
+        ev.preventDefault()
+        return onModifyValue(7)
+      case "8":
+        ev.preventDefault()
+        return onModifyValue(8)
+      case "9":
+        ev.preventDefault()
+        return onModifyValue(9)
+      case "/":
+        ev.preventDefault()
+        return !disableCalc && onStartCalc(CalcOp.Division)
+      case "*":
+        ev.preventDefault()
+        return !disableCalc && onStartCalc(CalcOp.Multiplication)
+      case "+":
+        ev.preventDefault()
+        return !disableCalc && onStartCalc(CalcOp.Sum)
+      case "-":
+        ev.preventDefault()
+        return !disableCalc && onStartCalc(CalcOp.Subtraction)
+      case "enter":
+        ev.preventDefault()
+        return onExecuteCalc()
+      case "backspace":
+        ev.preventDefault()
+        return onRevertValue()
+    }
+
+    console.log(ev.key.toLocaleLowerCase())
+  }
+
+  useEffect(() => {
+    document.addEventListener("keydown", onKeyDown)
+
+    return () => document.removeEventListener("keydown", onKeyDown)
+  }, [dispatch])
 
   useEffect(() => { if (state.calc.length === 0) onChange(state.value) }, [state.value, state.calc.length])
 
