@@ -38,6 +38,7 @@ interface Calc {
 
 const __actions = {
   MODIFY_VALUE: "MODIFY_VALUE",
+  REVERT_VALUE: "REVERT_VALUE",
   EXECUTE_CALC: "EXECUTE_CALC",
   FLIP_SIGN: "FLIP_SIGN",
   START_CALC: "START_CALC"
@@ -57,6 +58,8 @@ type Action =
   } | {
     type: ActionType["START_CALC"]
     op: CalcOp
+  } | {
+    type: ActionType["REVERT_VALUE"]
   }
 
 function runCalcStack(value: number, stack: Calc[]): number {
@@ -151,6 +154,32 @@ function reducer(state: State, action: Action): State {
       calc: [...state.calc, { value: 0, op: action.op }]
     }
   }
+  if (action.type === "REVERT_VALUE" && state.calc.length === 0) {
+    const mod = state.value % 10
+    const value = (state.value - mod) / 10
+
+    return {
+      ...state,
+      value: Math.round(value)
+    }
+  }
+  if (action.type === "REVERT_VALUE") {
+    const calc = [...state.calc]
+    const { op, value: prev } = calc.splice(calc.length - 1, 1)[0]
+
+    if (prev === 0) return { ...state, calc: [...calc] }
+
+    const mod = prev % 10
+    const value = (prev - mod) / 10
+
+    return {
+      ...state,
+      calc: [
+        ...calc,
+        { op, value: Math.round(value) }
+      ]
+    }
+  }
 
   throw new Error("unknown action.")
 }
@@ -169,6 +198,7 @@ export function Calculator({ initialValue, currency, onChange }: Props) {
   const onExecuteCalc = () => dispatch({ type: "EXECUTE_CALC" })
   const onFlipSign = () => dispatch({ type: "FLIP_SIGN" })
   const onStartCalc = (op: CalcOp) => dispatch({ type: "START_CALC", op })
+  const onRevertValue = () => dispatch({ type: "REVERT_VALUE" })
 
   useEffect(() => { }, [])
 
@@ -202,7 +232,8 @@ export function Calculator({ initialValue, currency, onChange }: Props) {
       {
         name: <DeleteIcon />,
         type: "clear",
-        disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0
+        disabled: (__s) => false,
+        onClick: () => onRevertValue()
       },
       // line 2
       {
@@ -351,6 +382,7 @@ export function Calculator({ initialValue, currency, onChange }: Props) {
                     className={baseClassNames}
                     variant={"destructive"}
                     disabled={button.disabled(state)}
+                    onClick={button.onClick}
                   >
                     {button.name}
                   </Button>
