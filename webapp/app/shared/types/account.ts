@@ -1,5 +1,5 @@
 
-const _kinds = {
+export const KINDS = {
   system_historic: "system_historic",
   capital_normal: "capital_normal",
   capital_savings: "capital_savings",
@@ -10,7 +10,7 @@ const _kinds = {
   external_expense: "external_expense"
 } as const;
 
-type Kinds = typeof _kinds;
+type Kinds = typeof KINDS;
 
 type Kind = Kinds["system_historic"] |
   Kinds["capital_normal"] |
@@ -22,37 +22,37 @@ type Kind = Kinds["system_historic"] |
   Kinds["external_expense"];
 
 function isCapital(kind: Kind) {
-  return kind === _kinds.capital_normal
+  return kind === KINDS.capital_normal
 }
 
 function isSavings(kind: Kind) {
-  return kind === _kinds.capital_savings
+  return kind === KINDS.capital_savings
 }
 
 function isDebt(kind: Kind) {
-  return kind === _kinds.debt_loan ||
-    kind === _kinds.debt_personal ||
-    kind === _kinds.debt_credit
+  return kind === KINDS.debt_loan ||
+    kind === KINDS.debt_personal ||
+    kind === KINDS.debt_credit
 }
 
 function isLoan(kind: Kind) {
-  return kind === _kinds.debt_loan
+  return kind === KINDS.debt_loan
 }
 
 function isPersonalDebt(kind: Kind) {
-  return kind === _kinds.debt_personal
+  return kind === KINDS.debt_personal
 }
 
 function isCredit(kind: Kind) {
-  return kind === _kinds.debt_credit
+  return kind === KINDS.debt_credit
 }
 
 function isIncome(kind: Kind) {
-  return kind === _kinds.external_income
+  return kind === KINDS.external_income
 }
 
 function isExpense(kind: Kind) {
-  return kind === _kinds.external_expense
+  return kind === KINDS.external_expense
 }
 
 export { isCapital, isCredit, isDebt, isExpense, isIncome, isLoan, isPersonalDebt, isSavings };

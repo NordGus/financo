@@ -27,7 +27,7 @@ import { Switch } from "~/shared/components/ui/switch";
 import { Textarea } from "~/shared/components/ui/textarea";
 import { accountKindsManual } from "../../manual/account-kinds-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
-import { schema } from "../../schemas/create-capital-account";
+import { schema } from "../../schemas/create";
 
 export function CreateCapitalAccount() {
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
@@ -35,7 +35,12 @@ export function CreateCapitalAccount() {
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: { currency: "EUR" }
+    defaultValues: {
+      kind: "capital_normal",
+      currency: "EUR",
+      capital: 0,
+      intent: "create"
+    }
   })
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
