@@ -4,14 +4,17 @@ import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 interface Props {
-  copy: Copy
+  copy: Copy,
+  className?: string
+  size?: "default" | "sm" | "lg" | "icon" | null | undefined
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | null | undefined
 }
 
-export function InfoDialog({ copy: { title, message } }: Props) {
+export function InfoDialog({ copy: { title, message }, className, variant = "link", size = "icon" }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="link" size="icon">
+        <Button variant={variant} size={size} className={className}>
           <InfoIcon />
         </Button>
       </DialogTrigger>
