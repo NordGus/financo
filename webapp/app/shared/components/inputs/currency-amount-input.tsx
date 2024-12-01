@@ -13,9 +13,10 @@ interface Props {
   value?: number
   onChange: (value?: number) => void
   name: string
+  fixedSign?: boolean
 }
 
-export function CurrencyAmountInput({ value, name, onChange, currency }: Props) {
+export function CurrencyAmountInput({ value, name, onChange, currency, fixedSign = false }: Props) {
 
   return (
     <Dialog>
@@ -37,7 +38,12 @@ export function CurrencyAmountInput({ value, name, onChange, currency }: Props) 
         <DialogHeader>
           <DialogTitle className="hidden">{name}</DialogTitle>
         </DialogHeader>
-        <Calculator initialValue={value} onChange={onChange} currency={currency} />
+        <Calculator
+          initialValue={value}
+          onChange={onChange}
+          currency={currency}
+          disableFlipSign={fixedSign}
+        />
       </DialogContent>
     </Dialog>
   )

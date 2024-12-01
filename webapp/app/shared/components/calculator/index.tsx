@@ -11,6 +11,7 @@ interface Props {
   initialValue?: number
   currency: Currency
   onChange: (value?: number) => void
+  disableFlipSign?: boolean
 }
 
 interface State {
@@ -166,12 +167,12 @@ function init({ initialValue }: InitialState): State {
   }
 }
 
-export function Calculator({ initialValue, currency, onChange }: Props) {
+export function Calculator({ initialValue, currency, onChange, disableFlipSign = false }: Props) {
   const [state, dispatch] = useReducer(reducer, { initialValue }, init)
 
   const onModifyValue = (by: number) => dispatch({ type: "MODIFY_VALUE", by })
   const onExecuteCalc = () => dispatch({ type: "EXECUTE_CALC" })
-  const onFlipSign = () => dispatch({ type: "FLIP_SIGN" })
+  const onFlipSign = () => !disableFlipSign && dispatch({ type: "FLIP_SIGN" })
   const onStartCalc = (op: CalcOp) => dispatch({ type: "START_CALC", op })
   const onRevertValue = () => dispatch({ type: "REVERT_VALUE" })
 
@@ -238,7 +239,7 @@ export function Calculator({ initialValue, currency, onChange }: Props) {
       {
         name: <DiffIcon />,
         type: "operation",
-        disabled: (s) => s.calc.length !== 0 || s.value === 0,
+        disabled: (s) => s.calc.length !== 0 || s.value === 0 || disableFlipSign,
         onClick: () => onFlipSign()
       },
       // line 3
