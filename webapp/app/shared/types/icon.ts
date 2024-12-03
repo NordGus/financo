@@ -107,7 +107,7 @@ export const ICONS = {
   fire_extinguisher: "fire_extinguisher",
   package: "package",
   armchair: "armchair",
-  at_sign: "at-sign",
+  at_sign: "at_sign",
   cake: "cake",
   building: "building",
   cog: "cog",
@@ -136,7 +136,7 @@ export const ICONS = {
   gamepad: "gamepad",
   skull: "skull",
   sword: "sword",
-  bell_electric: "bell-electric",
+  bell_electric: "bell_electric",
   heart: "heart",
   clover: "clover",
   monitor_play: "monitor_play",
@@ -145,3 +145,8 @@ export const ICONS = {
   candy: "candy",
   baby: "baby"
 } as const
+
+export type Icons = typeof ICONS
+
+export type Icon =
+  Icons["credit_card"] | Icons["landmark"] | Icons["vault"] | Icons["banknote"] | Icons["hand_coins"] | Icons["piggy_bank"] | Icons["wallet_card"] | Icons["wallet_minimal"] | Icons["car_front"] | Icons["car_taxi_front"] | Icons["ambulance"] | Icons["cross"] | Icons["hospital"] | Icons["bandage"] | Icons["heart_pulse"] | Icons["bone"] | Icons["brain"] | Icons["graduation_cap"] | Icons["dices"] | Icons["school"] | Icons["bitcoin"] | Icons["target"] | Icons["trophy"] | Icons["book"] | Icons["book_open"] | Icons["bookmark"] | Icons["notebook"] | Icons["ticket"] | Icons["tag"] | Icons["tickets"] | Icons["fence"] | Icons["train_front"] | Icons["tv"] | Icons["cigarette"] | Icons["circle_parking"] | Icons["container"] | Icons["fuel"] | Icons["luggage"] | Icons["plane"] | Icons["ship"] | Icons["briefcase"] | Icons["clapperboard"] | Icons["film"] | Icons["popcorn"] | Icons["dumbbell"] | Icons["biceps_flexed"] | Icons["mic_vocal"] | Icons["piano"] | Icons["headphones"] | Icons["computer"] | Icons["binary"] | Icons["cable"] | Icons["cpu"] | Icons["laptop"] | Icons["pc_case"] | Icons["router"] | Icons["phone"] | Icons["smartphone"] | Icons["stethoscope"] | Icons["utility_pole"] | Icons["megaphone"] | Icons["ethernet_port"] | Icons["earth"] | Icons["globe"] | Icons["shield"] | Icons["volleyball"] | Icons["ruler"] | Icons["calculator"] | Icons["music"] | Icons["drum"] | Icons["theater"] | Icons["shopping_bag"] | Icons["shopping_basket"] | Icons["shopping_cart"] | Icons["barcode"] | Icons["shirt"] | Icons["tent_tree"] | Icons["utensils"] | Icons["shower_head"] | Icons["washing_machine"] | Icons["bed_single"] | Icons["bed_double"] | Icons["bus_front"] | Icons["pill"] | Icons["syringe"] | Icons["microscope"] | Icons["siren"] | Icons["zap"] | Icons["heater"] | Icons["battery_charging"] | Icons["user"] | Icons["venetian_mask"] | Icons["house"] | Icons["hammer"] | Icons["microwave"] | Icons["paint_roller"] | Icons["paintbrush_vertical"] | Icons["tv_minimal_play"] | Icons["wine"] | Icons["medal"] | Icons["crown"] | Icons["milk"] | Icons["glass_water"] | Icons["droplet"] | Icons["hand_platter"] | Icons["fire_extinguisher"] | Icons["package"] | Icons["armchair"] | Icons["at_sign"] | Icons["cake"] | Icons["building"] | Icons["cog"] | Icons["id_card"] | Icons["mail"] | Icons["search"] | Icons["binoculars"] | Icons["tree_palm"] | Icons["trees"] | Icons["flower"] | Icons["dog"] | Icons["paw_print"] | Icons["cat"] | Icons["fish"] | Icons["bird"] | Icons["ice_cream_cone"] | Icons["beef"] | Icons["pizza"] | Icons["apple"] | Icons["bean"] | Icons["drumstick"] | Icons["salad"] | Icons["sandwich"] | Icons["bike"] | Icons["coins"] | Icons["gamepad"] | Icons["skull"] | Icons["sword"] | Icons["bell_electric"] | Icons["heart"] | Icons["clover"] | Icons["monitor_play"] | Icons["glasses"] | Icons["key_round"] | Icons["candy"] | Icons["baby"]
