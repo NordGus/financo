@@ -1,4 +1,5 @@
-import { Icon } from "~/shared/types/icon";
+import { useMemo } from "react";
+import { Icon, ICONS } from "~/shared/types/icon";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { FormControl } from "../ui/form";
@@ -9,7 +10,8 @@ interface Props {
   onChange: (value: Icon) => void
 }
 
-export function IconInput({ value }: Props) {
+export function IconInput({ value, onChange }: Props) {
+  const selectables = useMemo(() => Object.values(ICONS), [])
 
   return (
     <Dialog>
@@ -27,7 +29,19 @@ export function IconInput({ value }: Props) {
         <DialogHeader>
           <DialogTitle>Select an Icon</DialogTitle>
         </DialogHeader>
-        <span>{icons[value]}</span>
+        <div className="flex flex-row flex-wrap justify-start gap-2 max-h-[300px] overflow-y-auto">
+          {selectables.map((icon) => (
+            <Button
+              key={icon}
+              variant={value === icon ? "default" : "outline"}
+              className="[&_svg]:size-8 h-fit w-fit p-2"
+              size={"icon"}
+              onClick={() => onChange(icon)}
+            >
+              {icons[icon]}
+            </Button>
+          ))}
+        </div>
       </DialogContent>
     </Dialog>
   )
