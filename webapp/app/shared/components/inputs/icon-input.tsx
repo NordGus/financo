@@ -29,7 +29,7 @@ export function IconInput({ value, onChange }: Props) {
         <DialogHeader>
           <DialogTitle>Select an Icon</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-row flex-wrap justify-start gap-2 max-h-[70dvh] overflow-y-auto">
+        <div className="flex flex-row flex-wrap justify-center gap-2 max-h-[70dvh] overflow-y-auto">
           {selectables.map((icon) => (
             <Button
               key={icon}
