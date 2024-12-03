@@ -2,6 +2,7 @@ import { z } from "zod";
 import { INTENTS } from "~/modules/accounts/types/actions";
 import { KINDS } from "~/shared/types/account";
 import { CURRENCIES } from "~/shared/types/currency";
+import { ICONS } from "~/shared/types/icon";
 
 export const schema = z.object({
   kind: z.nativeEnum(KINDS),
@@ -15,6 +16,7 @@ export const schema = z.object({
 
     return validator.color.length > 0
   }, { message: `must be a valid color code` }),
+  icon: z.nativeEnum(ICONS),
   history: z.object({
     at: z.date().optional(),
     balance: z.number().optional()
