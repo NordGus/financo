@@ -29,11 +29,11 @@ export function IconInput({ value, onChange }: Props) {
         <DialogHeader>
           <DialogTitle>Select an Icon</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-row flex-wrap justify-center gap-2 max-h-[70dvh] overflow-y-auto">
+        <div className="grid grid-cols-6 justify-center items-center gap-2 max-h-[70dvh] overflow-y-auto">
           {selectables.map((icon) => (
             <DialogClose key={icon} asChild>
               <Button
-                variant={value === icon ? "default" : "outline"}
+                variant={value === icon ? "secondary" : "ghost"}
                 className="[&_svg]:size-8 h-fit w-fit p-2"
                 size={"icon"}
                 onClick={() => onChange(icon)}
