@@ -62,8 +62,6 @@ export function CreateCapitalAccount() {
     }
   }, [hasIncompleteLedger])
 
-  console.log(Object.values(ICONS))
-
   return (
     <>
       <DialogHeader>
