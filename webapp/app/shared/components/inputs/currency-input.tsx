@@ -16,8 +16,6 @@ export function CurrencyInput({ onValueChange, defaultValue }: Props) {
   const [currencies, setCurrencies] = useState(fetcher.data?.currencies || [])
 
   useEffect(() => {
-    if (currencies.length !== 0) return;
-
     const fetchCurrencies = async () => {
       await fetcher.load("/currencies/for-select")
 
@@ -25,7 +23,7 @@ export function CurrencyInput({ onValueChange, defaultValue }: Props) {
     }
 
     fetchCurrencies()
-  }, [currencies.length])
+  }, [])
 
   return (
     <Select onValueChange={onValueChange} defaultValue={defaultValue}>
