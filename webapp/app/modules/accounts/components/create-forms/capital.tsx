@@ -8,6 +8,7 @@ import { InfoDialog } from "~/shared/components/dialogs/info";
 import { CurrencyAmountInput } from "~/shared/components/inputs/currency-amount-input";
 import { CurrencyInput } from "~/shared/components/inputs/currency-input";
 import { DateInput } from "~/shared/components/inputs/date-input";
+import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
 import { Accordion, AccordionContent } from "~/shared/components/ui/accordion";
 import { Button } from "~/shared/components/ui/button";
@@ -25,6 +26,7 @@ import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
 import { Switch } from "~/shared/components/ui/switch";
 import { Textarea } from "~/shared/components/ui/textarea";
+import { ICONS } from "~/shared/types/icon";
 import { accountKindsManual } from "../../manual/account-kinds-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { schema } from "../../schemas/create";
@@ -39,6 +41,7 @@ export function CreateCapitalAccount() {
       kind: "capital_normal",
       currency: "EUR",
       capital: 0,
+      icon: ICONS.landmark,
       intent: "create"
     }
   })
@@ -59,6 +62,8 @@ export function CreateCapitalAccount() {
     }
   }, [hasIncompleteLedger])
 
+  console.log(Object.values(ICONS))
+
   return (
     <>
       <DialogHeader>
@@ -70,6 +75,34 @@ export function CreateCapitalAccount() {
       </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <div className="grid grid-cols-3 gap-4">
+            <FormField
+              control={form.control}
+              name="icon"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Icon</FormLabel>
+                  <FormControl>
+                    <IconInput value={field.value} onChange={field.onChange} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Color</FormLabel>
+                  <FormControl>
+                    <Input {...field} type={"color"} className="cursor-pointer" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
             name="name"
@@ -112,22 +145,6 @@ export function CreateCapitalAccount() {
                 <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} />
                 <FormDescription>
                   The currency this account will operate in with
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="color"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Color</FormLabel>
-                <FormControl>
-                  <Input {...field} type={"color"} />
-                </FormControl>
-                <FormDescription>
-                  Select a color for easy identification
                 </FormDescription>
                 <FormMessage />
               </FormItem>
