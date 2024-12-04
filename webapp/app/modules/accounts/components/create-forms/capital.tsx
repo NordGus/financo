@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AccordionItem } from "@radix-ui/react-accordion";
-import { DialogTitle } from "@radix-ui/react-dialog";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -12,7 +11,7 @@ import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
 import { Accordion, AccordionContent } from "~/shared/components/ui/accordion";
 import { Button } from "~/shared/components/ui/button";
-import { DialogFooter, DialogHeader } from "~/shared/components/ui/dialog";
+import { DialogFooter, DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
 import {
   Form,
   FormControl,
