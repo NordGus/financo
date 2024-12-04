@@ -52,7 +52,7 @@ func CreateToSystemHistoricAccountRecord(req Create, timestamp time.Time) nullab
 		Name:        "History",
 		Description: nullable.New("This account was created by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 		Color:       "#8c8c8c",
-		Icon:        icon.Base,
+		Icon:        icon.Bookmark,
 		Capital:     0,
 		UpdatedAt:   timestamp,
 		CreatedAt:   timestamp,
