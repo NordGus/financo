@@ -1,6 +1,7 @@
 import { InfoDialog } from "~/shared/components/dialogs/info";
-import { DialogFooter, DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
+import { DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
 import { accountKindsManual } from "../../manual/account-kinds-manual";
+import { CreateAccount } from "../forms/create";
 
 export function CreatePersonalDebtAccount() {
   return (
@@ -12,8 +13,12 @@ export function CreatePersonalDebtAccount() {
           </div>
         </DialogTitle>
       </DialogHeader>
-      <div></div>
-      <DialogFooter></DialogFooter>
+      <CreateAccount
+        kind="debt_personal"
+        defaultCurrency="EUR"
+        defaultIcon="user"
+        withCapital
+      />
     </>
   )
 }
