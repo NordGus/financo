@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useFetcher } from "react-router";
 import { clientLoader } from "~/routes/currencies/for-select";
 import { Currency } from "~/shared/types/currency";
@@ -13,14 +13,9 @@ interface Props {
 
 export function CurrencyInput({ onValueChange, defaultValue }: Props) {
   const fetcher = useFetcher<typeof clientLoader>({ key: "currencies.input" })
-  const [currencies, setCurrencies] = useState(fetcher.data?.currencies || [])
 
   useEffect(() => {
-    const fetchCurrencies = async () => {
-      await fetcher.load("/currencies/for-select")
-
-      setCurrencies(fetcher.data?.currencies || [])
-    }
+    const fetchCurrencies = async () => await fetcher.load("/currencies/for-select")
 
     fetchCurrencies()
   }, [])
@@ -29,14 +24,20 @@ export function CurrencyInput({ onValueChange, defaultValue }: Props) {
     <Select onValueChange={onValueChange} defaultValue={defaultValue}>
       <FormControl>
         <SelectTrigger>
-          <SelectValue placeholder={fetcher.state !== "idle" ? <Throbber size="sm" /> : "Select a currency"} />
+          {
+            fetcher.state !== "idle"
+              ? <Throbber size="sm" />
+              : <SelectValue placeholder={"Select a currency"} />
+          }
         </SelectTrigger>
       </FormControl>
       <SelectContent>
         {
-          currencies.map(({ code, name }) => (
-            <SelectItem value={code} key={`currency.${code}`}>{name}</SelectItem>
-          ))
+          !fetcher.data?.currencies
+            ? <Throbber size="sm" />
+            : fetcher.data.currencies.map(({ code, name }) => (
+              <SelectItem value={code} key={`currency.${code}`}>{name}</SelectItem>
+            ))
         }
       </SelectContent>
     </Select>
