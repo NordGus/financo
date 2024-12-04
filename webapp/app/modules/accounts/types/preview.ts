@@ -1,5 +1,6 @@
 import { Kind } from "~/shared/types/account"
 import { Currency } from "~/shared/types/currency"
+import { Icon } from "~/shared/types/icon"
 
 interface History {
   at?: string | null
@@ -19,7 +20,7 @@ interface Account {
   currency: Currency
   name: string
   description?: string | null
-  icon: string
+  icon: Icon
   color: string
   capital: number
   additionalData: AdditionalData
