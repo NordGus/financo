@@ -37,7 +37,7 @@ var (
 				Name:        "My Personal Bank Account",
 				Description: nullable.New("The account where I get my paycheck"),
 				Color:       "#eb8934",
-				Icon:        icon.Base,
+				Icon:        icon.Landmark,
 				Capital:     0,
 				DynamicData: account.DynamicData{
 					Main: true,
@@ -65,7 +65,7 @@ var (
 				Name:        "Freelance bank account",
 				Description: nullable.New("Where I get paid for my freelance job"),
 				Color:       "#34baeb",
-				Icon:        icon.Base,
+				Icon:        icon.HandCoins,
 				Capital:     0,
 				DynamicData: account.DynamicData{},
 			},
@@ -87,7 +87,7 @@ var (
 				Name:        "My Savings Account",
 				Description: nullable.New("The account where I store my savings"),
 				Color:       "#eb8934",
-				Icon:        icon.Base,
+				Icon:        icon.PiggyBank,
 				Capital:     0,
 				DynamicData: account.DynamicData{
 					History: account.HistoryDynamicData{
@@ -114,7 +114,7 @@ var (
 				Name:        "My US Savings Account",
 				Description: nullable.Type[string]{},
 				Color:       "#34baeb",
-				Icon:        icon.Base,
+				Icon:        icon.PiggyBank,
 				Capital:     0,
 				DynamicData: account.DynamicData{},
 			},
@@ -136,7 +136,7 @@ var (
 				Name:        "My German Savings Account",
 				Description: nullable.Type[string]{},
 				Color:       "#34baeb",
-				Icon:        icon.Base,
+				Icon:        icon.PiggyBank,
 				Capital:     0,
 				DynamicData: account.DynamicData{},
 			},
@@ -158,7 +158,7 @@ var (
 				Name:        "Car loan",
 				Description: nullable.New("My japanese shit-box"),
 				Color:       "#eb8934",
-				Icon:        icon.Base,
+				Icon:        icon.CarFront,
 				Capital:     -5_000_00,
 				DynamicData: account.DynamicData{
 					History: account.HistoryDynamicData{
@@ -185,7 +185,7 @@ var (
 				Name:        "Morgan's Loan",
 				Description: nullable.New("I helped Morgan with their rent"),
 				Color:       "#34baeb",
-				Icon:        icon.Base,
+				Icon:        icon.House,
 				Capital:     500_00,
 				DynamicData: account.DynamicData{
 					History: account.HistoryDynamicData{
@@ -212,7 +212,7 @@ var (
 				Name:        "Carlos' Lunch",
 				Description: nullable.New("Carlos' catch up lunch"),
 				Color:       "#34baeb",
-				Icon:        icon.Base,
+				Icon:        icon.HandPlatter,
 				Capital:     80_00,
 				DynamicData: account.DynamicData{},
 			},
@@ -234,7 +234,7 @@ var (
 				Name:        "Credit Card",
 				Description: nullable.New("My bank's credit card"),
 				Color:       "#eb8934",
-				Icon:        icon.Base,
+				Icon:        icon.CreditCard,
 				Capital:     -2_000_00,
 				DynamicData: account.DynamicData{
 					History: account.HistoryDynamicData{
@@ -261,7 +261,7 @@ var (
 				Name:        "Laptop financing Credit Line",
 				Description: nullable.Type[string]{},
 				Color:       "#34baeb",
-				Icon:        icon.Base,
+				Icon:        icon.Laptop,
 				Capital:     -2_500_00,
 				DynamicData: account.DynamicData{
 					History: account.HistoryDynamicData{
@@ -288,7 +288,7 @@ var (
 				Name:        "Paycheck",
 				Description: nullable.New("Where the bread comes from"),
 				Color:       "#eb8934",
-				Icon:        icon.Base,
+				Icon:        icon.Banknote,
 				Capital:     0,
 				DynamicData: account.DynamicData{},
 			},
@@ -301,7 +301,7 @@ var (
 						Name:        "Freelancing",
 						Description: nullable.New("Hustling"),
 						Color:       "#eb8934",
-						Icon:        icon.Base,
+						Icon:        icon.BicepsFlexed,
 						Capital:     0,
 						DynamicData: account.DynamicData{},
 					},
@@ -323,7 +323,7 @@ var (
 						Name:        "Day Job",
 						Description: nullable.New("Grinding"),
 						Color:       "#eb8934",
-						Icon:        icon.Base,
+						Icon:        icon.Briefcase,
 						Capital:     0,
 						DynamicData: account.DynamicData{},
 					},
@@ -345,7 +345,7 @@ var (
 						Name:        "Teaching",
 						Description: nullable.New("Side Hustle"),
 						Color:       "#eb8934",
-						Icon:        icon.Base,
+						Icon:        icon.GraduationCap,
 						Capital:     0,
 						DynamicData: account.DynamicData{},
 					},
@@ -377,7 +377,7 @@ var (
 				Name:        "Allowance",
 				Description: nullable.Type[string]{},
 				Color:       "#eb8934",
-				Icon:        icon.Base,
+				Icon:        icon.Coins,
 				Capital:     0,
 				DynamicData: account.DynamicData{},
 			},
@@ -399,7 +399,7 @@ var (
 				Name:        "Market",
 				Description: nullable.New("I need to survive"),
 				Color:       "#34ebae",
-				Icon:        icon.Base,
+				Icon:        icon.ShoppingBasket,
 			},
 			Children: []childAccountSeed{
 				{
@@ -410,7 +410,7 @@ var (
 						Name:        "Gardening supplies",
 						Description: nullable.New("My ADHD demands to be fed dopamine"),
 						Color:       "#34ebae",
-						Icon:        icon.Base,
+						Icon:        icon.Flower,
 						Capital:     0,
 						DynamicData: account.DynamicData{},
 					},
@@ -432,7 +432,7 @@ var (
 						Name:        "Food",
 						Description: nullable.New("Fuel for my body"),
 						Color:       "#34ebae",
-						Icon:        icon.Base,
+						Icon:        icon.Salad,
 						Capital:     0,
 						DynamicData: account.DynamicData{},
 					},
@@ -454,7 +454,7 @@ var (
 						Name:        "Fruit Shop",
 						Description: nullable.Type[string]{},
 						Color:       "#34ebae",
-						Icon:        icon.Base,
+						Icon:        icon.Apple,
 						Capital:     0,
 						DynamicData: account.DynamicData{},
 					},
@@ -486,7 +486,7 @@ var (
 				Name:        "Transport",
 				Description: nullable.Type[string]{},
 				Color:       "#e5eb34",
-				Icon:        icon.Base,
+				Icon:        icon.BusFront,
 				DynamicData: account.DynamicData{},
 			},
 			Children: []childAccountSeed{},
@@ -510,7 +510,7 @@ var (
 		Name:        "History",
 		Description: nullable.New("This is an automatically created account by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
 		Color:       "#8c8c8c",
-		Icon:        icon.Base,
+		Icon:        icon.Bookmark,
 		// Doesn't need Capital because is not a debt record.
 		// ArchivedAt will be added at seeding time.
 		// Doesn't will be added at seeding time.
