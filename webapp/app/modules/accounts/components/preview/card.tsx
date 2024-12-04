@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle
 } from "~/shared/components/ui/card";
+import { icons } from "~/shared/components/ui/icon";
 import { colorContrast } from "~/shared/helpers/color-contrast";
 import { currencyAmountColor } from "~/shared/helpers/currency-amount-color";
 import {
@@ -38,6 +39,7 @@ export function Preview({ account: loaderAccount }: Props) {
     description,
     color,
     capital,
+    icon,
     additionalData: {
       main,
       balance,
@@ -71,7 +73,9 @@ export function Preview({ account: loaderAccount }: Props) {
         }}
         onClick={() => navigate(`/accounts/${id}`)}
       >
-        <CardTitle>{name}</CardTitle>
+        <CardTitle className="flex flex-row gap-1 items-center [&_svg]:size-5">
+          {icons[icon]} {name}
+        </CardTitle>
         <CardDescription
           style={{
             color: colorContrast(color),
