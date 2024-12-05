@@ -24,7 +24,7 @@ import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
 import { Switch } from "~/shared/components/ui/switch";
 import { Textarea } from "~/shared/components/ui/textarea";
-import { Kind } from "~/shared/types/account";
+import { isCredit, isDebt, isLoan, Kind } from "~/shared/types/account";
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
 import { capitalManual } from "../../manual/capital-manual";
@@ -39,6 +39,8 @@ interface Props {
 }
 
 export function CreateAccount({ defaultIcon, defaultCurrency, kind, withCapital = false }: Props) {
+  const isFixedSignDebt = isCredit(kind) || isLoan(kind)
+  const forDebts = isDebt(kind)
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -158,8 +160,14 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, withCapital 
                   <CurrencyAmountInput
                     currency={form.getValues("currency")}
                     value={field.value}
-                    onChange={field.onChange}
+                    onChange={(value) => field.onChange(
+                      value && isFixedSignDebt && value > 0
+                        ? Math.round(Math.abs(value) * -1)
+                        : value
+                    )}
                     name="Capital"
+                    forDebts={forDebts}
+                    fixedSign={isFixedSignDebt}
                   />
                   <FormMessage />
                 </FormItem>

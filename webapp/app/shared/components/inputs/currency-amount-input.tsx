@@ -14,9 +14,12 @@ interface Props {
   onChange: (value?: number) => void
   name: string
   fixedSign?: boolean
+  forDebts?: boolean
 }
 
-export function CurrencyAmountInput({ value, name, onChange, currency, fixedSign = false }: Props) {
+export function CurrencyAmountInput({
+  value = 0, name, onChange, currency, fixedSign = false, forDebts = false
+}: Props) {
 
   return (
     <Dialog>
@@ -26,11 +29,19 @@ export function CurrencyAmountInput({ value, name, onChange, currency, fixedSign
             variant="outline"
             className={cn(
               "w-full px-3 text-left font-normal",
-              currencyAmountColor(value || 0)
+              currencyAmountColor(value)
             )}
           >
-            {currencyAmountToHuman(value || 0, currency)}
-            <BanknoteIcon className="ml-auto h-4 w-4 text-muted-foreground" />
+            {currencyAmountToHuman(value, currency)}
+            {forDebts && value > 0 && <span className="ml-auto">I&apos;m owed</span>}
+            {forDebts && value < 0 && <span className="ml-auto">I owe</span>}
+            <BanknoteIcon
+              className={cn(
+                "h-4 w-4 text-muted-foreground",
+                !forDebts && "ml-auto",
+                forDebts && value === 0 && "ml-auto"
+              )}
+            />
           </Button>
         </FormControl>
       </DialogTrigger>
