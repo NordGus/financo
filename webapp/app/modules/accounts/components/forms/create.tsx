@@ -27,6 +27,7 @@ import { Textarea } from "~/shared/components/ui/textarea";
 import { Kind } from "~/shared/types/account";
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
+import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { schema } from "../../schemas/create";
 
@@ -153,7 +154,7 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, withCapital 
               name="capital"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Capital <InfoDialog copy={hasIncompleteLedgerManual} /></FormLabel>
+                  <FormLabel>Capital <InfoDialog copy={capitalManual} /></FormLabel>
                   <CurrencyAmountInput
                     currency={form.getValues("currency")}
                     value={field.value}

@@ -30,5 +30,8 @@ export const hasIncompleteLedgerManual: Copy = {
     <p>
       Activating this option allows you to introduce this starting point and balance so <span className="font-bold text-foreground">financo</span> can help you to maintain your ledger.
     </p>
+    <p>
+      Please keep in mind that red numbers indicate a negative balance while black numbers are indicate a positive one.
+    </p>
   </>
 }
