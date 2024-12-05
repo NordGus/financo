@@ -9,6 +9,9 @@ export const calculatorManual: Copy = {
     <p>
       While you are operating over the amount you are inputting, ex. summing, subtracting, multiplying or dividing, the changes are not applied to the final value until you apply the value by pressing equal.
     </p>
+    <p>
+      A red value indicates that the displayed number is negative, while a black value indicates a positive one.
+    </p>
     <Heading6>About your keyboard</Heading6>
     <p>
       When this calculator is active, <span className="font-bold text-foreground">it takes control of the following keys from your keyboard</span> for usability reasons:
