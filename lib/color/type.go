@@ -7,6 +7,10 @@ import (
 
 type Type string
 
+const (
+	HistoryAccountColor Type = "#8c8c8c"
+)
+
 // Scan takes the value returned by the SQL database and maps it to [Type].
 // So [Type] satisfies the [sql.Scanner] interface.
 //

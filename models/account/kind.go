@@ -34,6 +34,10 @@ func IsSavings(kind Kind) bool {
 	return kind == CapitalSavings
 }
 
+func IsCapital(kind Kind) bool {
+	return kind == CapitalNormal
+}
+
 // UnmarshalJSON receives a buffer b, and ensures that the provided value is a
 // valid [Kind]. So [Kind] satisfies the [json.Unmarshaler] interface.
 //
@@ -165,4 +169,9 @@ func (k Kind) Value() (driver.Value, error) {
 	}
 
 	return s, nil
+}
+
+// String returns the cast value of [Kind] as a string
+func (k Kind) String() string {
+	return string(k)
 }

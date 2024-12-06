@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+type History struct {
+	At      nullable.Type[time.Time] `json:"at"`
+	Balance nullable.Type[int64]     `json:"balance"`
+}
+
 type Create struct {
 	Kind        account.Kind          `json:"kind"`
 	Currency    currency.Type         `json:"currency"`
@@ -17,6 +22,8 @@ type Create struct {
 	Capital     int64                 `json:"capital"`
 	Color       color.Type            `json:"color"`
 	Icon        icon.Type             `json:"icon"`
+	History     History               `json:"history"`
+	Main        bool                  `json:"main"`
 }
 
 func CreateToAccountRecord(req Create, timestamp time.Time) account.Record {
@@ -31,10 +38,22 @@ func CreateToAccountRecord(req Create, timestamp time.Time) account.Record {
 		Capital:     0,
 		UpdatedAt:   timestamp,
 		CreatedAt:   timestamp,
+		DynamicData: account.DynamicData{
+			Main:    req.Main,
+			Balance: req.History.Balance.OrElse(0),
+			History: account.HistoryDynamicData{
+				At:      req.History.At,
+				Balance: req.History.Balance,
+			},
+		},
 	}
 
 	if account.IsDebt(req.Kind) {
 		record.Capital = req.Capital
+	}
+
+	if record.DynamicData.History.At.Valid && !account.IsExternal(record.Kind) {
+		record.DynamicData.Transactions = 1
 	}
 
 	return record
@@ -45,16 +64,25 @@ func CreateToSystemHistoricAccountRecord(req Create, timestamp time.Time) nullab
 		return nullable.Type[account.Record]{}
 	}
 
-	return nullable.New(account.Record{
+	record := account.Record{
 		ID:          -1,
 		Kind:        account.SystemHistoric,
 		Currency:    req.Currency,
 		Name:        "History",
-		Description: nullable.New("This account was created by the system to represent the lost balance history of the parent account. DO NOT MODIFY NOR DELETE"),
-		Color:       "#8c8c8c",
+		Description: nullable.New("This Account was created by the system to represent the starting point for the incomplete ledger for its parent Account. DO NOT MODIFY NOR DELETE"),
+		Color:       color.HistoryAccountColor,
 		Icon:        icon.Bookmark,
 		Capital:     0,
 		UpdatedAt:   timestamp,
 		CreatedAt:   timestamp,
-	})
+		DynamicData: account.DynamicData{
+			Balance: req.History.Balance.OrElse(0) * -1,
+		},
+	}
+
+	if req.History.At.Valid && !account.IsExternal(req.Kind) {
+		record.DynamicData.Transactions = 1
+	}
+
+	return nullable.New(record)
 }

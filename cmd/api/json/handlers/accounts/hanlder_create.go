@@ -12,15 +12,12 @@ import (
 )
 
 func create(w http.ResponseWriter, r *http.Request) {
-	var req requests.Create
+	var (
+		body = r.Body
 
-	body := r.Body
-	defer func() {
-		err := body.Close()
-		if err != nil {
-			log.Println("failed to close body", err)
-		}
-	}()
+		req requests.Create
+	)
+	defer body.Close()
 
 	err := json.NewDecoder(body).Decode(&req)
 	if err != nil {
