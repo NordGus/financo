@@ -1,5 +1,6 @@
 import { useLoaderData } from "react-router";
-import { createAccount } from "~/modules/accounts/api/queries/create-account";
+import { toast } from "sonner";
+import { createAccount } from "~/modules/accounts/api/commands/create-account";
 import { getAccountsPreviews } from "~/modules/accounts/api/queries/get-accounts-previews";
 import { Screen } from "~/modules/accounts/screens";
 import { Create } from "~/modules/accounts/types/create";
@@ -21,9 +22,27 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
   if (values.intent !== "create") throw new Error("invalid action")
 
-  const response = await createAccount({ ...values })
+  try {
+    const response = createAccount({ ...values })
 
-  return response
+    toast.promise(response, {
+      loading: "Creating...",
+      success: (data) => {
+        return `${data.name} created`
+      },
+      error: "Oops!. Something went wrong"
+    })
+
+    const created = await response
+
+    return created
+  } catch (error) {
+    if (error instanceof Response && error.status === 401) throw error
+
+    console.error(error)
+
+    return null
+  }
 }
 
 export async function clientLoader({ }: Route.ClientLoaderArgs) {

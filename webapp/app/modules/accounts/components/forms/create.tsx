@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { redirect, useFetcher } from "react-router";
+import { useFetcher } from "react-router";
 import { z } from "zod";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { CurrencyAmountInput } from "~/shared/components/inputs/currency-amount-input";
@@ -60,9 +60,8 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, withCapital 
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     setLoading(true)
-    console.log(values)
-    //setLoading(false)
-    const promise = fetcher.submit(
+
+    await fetcher.submit(
       {
         ...values,
         history: {
@@ -70,16 +69,12 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, withCapital 
           at: values.history.at?.toUTCString() || null,
         }
       },
-      { action: "/accounts", method: "post", encType: "application/json" })
+      { action: "/accounts", method: "post", encType: "application/json" }
+    )
 
-    try {
-      await promise
-
-      if (!fetcher.data) redirect("/accounts")
-
-      redirect(`/accounts/${fetcher.data?.id}`)
-    } catch (error) {
-      console.error(error)
+    if (!fetcher.data) setLoading(false)
+    else {
+      setLoading(false)
     }
   }
 
