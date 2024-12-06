@@ -10,6 +10,7 @@ import {
 import { Outlet } from "react-router";
 import { Breadcrumbs } from "./components/breadcrumbs";
 import { NavItem } from "./components/nav-item";
+import { Toaster } from "./components/ui/sonner";
 
 export default function Layout() {
   return (
@@ -21,6 +22,7 @@ export default function Layout() {
       >
         <Breadcrumbs />
         <Outlet />
+        <Toaster position="top-center" closeButton />
       </main>
       <nav className="flex flex-col gap-4 p-4 justify-stretch items-start">
         <NavItem to="/dashboard">
