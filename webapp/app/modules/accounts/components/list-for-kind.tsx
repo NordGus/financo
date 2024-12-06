@@ -1,4 +1,5 @@
 import { PlusIcon } from "lucide-react";
+import { useState } from "react";
 import { Button } from "~/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "~/shared/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "~/shared/components/ui/dialog";
@@ -18,6 +19,10 @@ interface Props {
 }
 
 export function ListForKind({ accounts, forKind, forArchived = false }: Props) {
+  const [openCreate, setOpenCreate] = useState(false)
+
+  const onSuccess = () => setOpenCreate(false)
+
   return (
     <div className="grid grid-cols-4 gap-4">
       {accounts.map((account) => (
@@ -25,7 +30,7 @@ export function ListForKind({ accounts, forKind, forArchived = false }: Props) {
       ))}
       {
         !forArchived && (
-          <Dialog modal>
+          <Dialog modal open={openCreate} onOpenChange={setOpenCreate}>
             <DialogTrigger asChild>
               <Button
                 variant="link"
@@ -35,11 +40,11 @@ export function ListForKind({ accounts, forKind, forArchived = false }: Props) {
               </Button>
             </DialogTrigger>
             <DialogContent>
-              {isCapital(forKind) && <CreateCapitalAccount />}
-              {isSavings(forKind) && <CreateSavingsAccount />}
-              {isLoan(forKind) && <CreateLoanAccount />}
-              {isPersonalDebt(forKind) && <CreatePersonalDebtAccount />}
-              {isCredit(forKind) && <CreateCreditAccount />}
+              {isCapital(forKind) && <CreateCapitalAccount onSuccess={onSuccess} />}
+              {isSavings(forKind) && <CreateSavingsAccount onSuccess={onSuccess} />}
+              {isLoan(forKind) && <CreateLoanAccount onSuccess={onSuccess} />}
+              {isPersonalDebt(forKind) && <CreatePersonalDebtAccount onSuccess={onSuccess} />}
+              {isCredit(forKind) && <CreateCreditAccount onSuccess={onSuccess} />}
             </DialogContent>
           </Dialog>
         )

@@ -3,7 +3,11 @@ import { DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
 import { accountKindsManual } from "../../manual/account-kinds-manual";
 import { CreateAccount } from "../forms/create";
 
-export function CreateCapitalAccount() {
+interface Props {
+  onSuccess: () => void
+}
+
+export function CreateCapitalAccount({ onSuccess }: Props) {
   return (
     <>
       <DialogHeader>
@@ -17,6 +21,7 @@ export function CreateCapitalAccount() {
         kind="capital_normal"
         defaultCurrency="EUR"
         defaultIcon="landmark"
+        onSuccess={onSuccess}
       />
     </>
   )

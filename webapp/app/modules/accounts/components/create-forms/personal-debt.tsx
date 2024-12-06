@@ -3,7 +3,11 @@ import { DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
 import { accountKindsManual } from "../../manual/account-kinds-manual";
 import { CreateAccount } from "../forms/create";
 
-export function CreatePersonalDebtAccount() {
+interface Props {
+  onSuccess: () => void
+}
+
+export function CreatePersonalDebtAccount({ onSuccess }: Props) {
   return (
     <>
       <DialogHeader>
@@ -18,6 +22,7 @@ export function CreatePersonalDebtAccount() {
         defaultCurrency="EUR"
         defaultIcon="user"
         withCapital
+        onSuccess={onSuccess}
       />
     </>
   )

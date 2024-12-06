@@ -38,9 +38,10 @@ interface Props {
   defaultCurrency: Currency
   defaultIcon: Icon
   withCapital?: boolean
+  onSuccess: () => void
 }
 
-export function CreateAccount({ defaultIcon, defaultCurrency, kind, withCapital = false }: Props) {
+export function CreateAccount({ defaultIcon, defaultCurrency, kind, onSuccess, withCapital = false }: Props) {
   const isFixedSignDebt = isCredit(kind) || isLoan(kind)
   const forDebts = isDebt(kind)
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
@@ -72,10 +73,9 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, withCapital 
       { action: "/accounts", method: "post", encType: "application/json" }
     )
 
-    if (!fetcher.data) setLoading(false)
-    else {
-      setLoading(false)
-    }
+    setLoading(false)
+
+    if (fetcher.data) onSuccess()
   }
 
   useEffect(() => {
