@@ -1,6 +1,8 @@
 import { useLoaderData } from "react-router";
+import { createAccount } from "~/modules/accounts/api/queries/create-account";
 import { getAccountsPreviews } from "~/modules/accounts/api/queries/get-accounts-previews";
 import { Screen } from "~/modules/accounts/screens";
+import { Create } from "~/modules/accounts/types/create";
 import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
@@ -10,7 +12,21 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
-export async function clientLoader({ }: Route.LoaderArgs) {
+interface ActionRequestBody extends Create {
+  intent: "create"
+}
+
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  const values: ActionRequestBody = await request.json()
+
+  if (values.intent !== "create") throw new Error("invalid action")
+
+  const response = await createAccount({ ...values })
+
+  return response
+}
+
+export async function clientLoader({ }: Route.ClientLoaderArgs) {
   const accounts = await getAccountsPreviews()
 
   return {

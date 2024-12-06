@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { redirect, useFetcher } from "react-router";
 import { z } from "zod";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { CurrencyAmountInput } from "~/shared/components/inputs/currency-amount-input";
@@ -30,6 +31,7 @@ import { Icon } from "~/shared/types/icon";
 import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { schema } from "../../schemas/create";
+import { Created } from "../../types/create";
 
 interface Props {
   kind: Kind
@@ -43,6 +45,7 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, withCapital 
   const forDebts = isDebt(kind)
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
   const [loading, setLoading] = useState(false)
+  const fetcher = useFetcher<Created>({ key: `accounts.create.${kind}` })
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -59,6 +62,25 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, withCapital 
     setLoading(true)
     console.log(values)
     //setLoading(false)
+    const promise = fetcher.submit(
+      {
+        ...values,
+        history: {
+          balance: values.history.balance || null,
+          at: values.history.at?.toUTCString() || null,
+        }
+      },
+      { action: "/accounts", method: "post", encType: "application/json" })
+
+    try {
+      await promise
+
+      if (!fetcher.data) redirect("/accounts")
+
+      redirect(`/accounts/${fetcher.data?.id}`)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   useEffect(() => {
