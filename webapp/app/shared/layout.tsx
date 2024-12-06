@@ -22,7 +22,7 @@ export default function Layout() {
       >
         <Breadcrumbs />
         <Outlet />
-        <Toaster position="top-center" closeButton />
+        <Toaster position="top-center" closeButton richColors />
       </main>
       <nav className="flex flex-col gap-4 p-4 justify-stretch items-start">
         <NavItem to="/dashboard">
