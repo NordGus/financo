@@ -25,11 +25,12 @@ import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
 import { Switch } from "~/shared/components/ui/switch";
 import { Textarea } from "~/shared/components/ui/textarea";
-import { isCredit, isDebt, isLoan, Kind } from "~/shared/types/account";
+import { isCapital, isCredit, isDebt, isLoan, Kind } from "~/shared/types/account";
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
 import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
+import { mainAccountManual } from "../../manual/main-account-manual";
 import { schema } from "../../schemas/create";
 import { Created } from "../../types/create";
 
@@ -55,6 +56,7 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, onSuccess, w
       currency: defaultCurrency,
       capital: 0,
       icon: defaultIcon,
+      main: false,
       intent: "create"
     }
   })
@@ -187,6 +189,23 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, onSuccess, w
                     fixedSign={isFixedSignDebt}
                   />
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+          )
+        }
+        {
+          isCapital(kind) && (
+            <FormField
+              control={form.control}
+              name="main"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2 space-y-0">
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel className="cursor-pointer">This is my main Account</FormLabel>
+                  <InfoDialog copy={mainAccountManual} />
                 </FormItem>
               )}
             />

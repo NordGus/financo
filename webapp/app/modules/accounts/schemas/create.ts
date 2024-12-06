@@ -21,5 +21,6 @@ export const schema = z.object({
     at: z.date().optional(),
     balance: z.number().optional()
   }),
+  main: z.boolean(),
   intent: z.nativeEnum(INTENTS)
 });
