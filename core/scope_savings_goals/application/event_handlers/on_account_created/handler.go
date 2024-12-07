@@ -28,7 +28,7 @@ func (h *handler) Handle(event messages.Created) error {
 		timestamp = time.Now().UTC()
 	)
 
-	if event.Record.Kind != account.CapitalSavings {
+	if !account.IsSavings(event.Record.Kind) {
 		return nil // Only process savings account
 	}
 
