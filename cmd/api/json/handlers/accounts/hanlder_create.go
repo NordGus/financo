@@ -5,7 +5,7 @@ import (
 	"financo/core/scope_accounts/application/commands/create_command"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/infrastructure/broker_handler"
-	"financo/core/scope_accounts/infrastructure/create_account_repository"
+	"financo/core/scope_accounts/infrastructure/repositories/create_repository"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -26,7 +26,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo := create_account_repository.NewPostgreSQL(postgresql_database.New())
+	repo := create_repository.NewPostgreSQL(postgresql_database.New())
 
 	broker, err := broker_handler.Instance()
 	if err != nil {
