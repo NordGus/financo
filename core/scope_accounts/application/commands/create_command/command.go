@@ -8,6 +8,8 @@ import (
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/domain/responses"
+	"financo/models/account"
+	"fmt"
 	"time"
 )
 
@@ -28,6 +30,10 @@ func New(
 }
 
 func (c *command) Run(ctx context.Context) (responses.Created, error) {
+	if account.IsExternal(c.req.Kind) {
+		return responses.Created{}, fmt.Errorf("create_command: invalid account kind %s", c.req.Kind)
+	}
+
 	var (
 		timestamp = time.Now().UTC()
 		args      = repositories.CreateAccountSaveArgs{
