@@ -1,22 +1,17 @@
 // package lock implements a global mutex lock for the savings goals
 // achievements feature inside financo.
 //
-// This is done because of the constant concurrency related with Go's stdlib
-// net/http package concurrency model where a user can trigger recalculations
-// by tracking, this ensures that the application maintains consistency in any
-// moment.
+// This is done to prevent race conditions related with Go's stdlib net/http
+// package concurrency model and how financo is designed. Because a user can
+// trigger recalculations related to event consuming, this ensures that the
+// subsystem maintains data consistency.
 package lock
 
 import "sync"
 
-var (
-	// instance is an implementation detail for all the scope_saving_goals
-	// consumers to prevent race conditions around savings goals automated
-	// calculations.
-	instance *sync.Mutex
-)
+var instance *sync.Mutex
 
-// GlobalLock returns savings goal's tracking global mutex
+// GlobalLock returns savings goal's global mutex
 func GlobalLock() *sync.Mutex {
 	if instance != nil {
 		return instance
