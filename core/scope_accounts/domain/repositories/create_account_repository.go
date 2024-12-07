@@ -4,13 +4,14 @@ import (
 	"context"
 	"financo/lib/nullable"
 	"financo/models/account"
+	"financo/models/transaction"
 )
 
-// [ ] Refactor account.Record inside this domain
-
 type CreateAccountSaveArgs struct {
-	Record  account.Record
-	History nullable.Type[account.Record]
+	Record             account.Record
+	History            account.Record
+	HistoryTransaction nullable.Type[transaction.Record]
+	Interest           nullable.Type[account.Record]
 }
 
 type CreateAccountRepository interface {

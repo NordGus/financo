@@ -30,6 +30,18 @@ func IsDebt(kind Kind) bool {
 	return kind == DebtLoan || kind == DebtPersonal || kind == DebtCredit
 }
 
+func IsCredit(kind Kind) bool {
+	return kind == DebtCredit
+}
+
+func IsLoan(kind Kind) bool {
+	return kind == DebtLoan
+}
+
+func IsPersonalDebt(kind Kind) bool {
+	return kind == DebtPersonal
+}
+
 func IsSavings(kind Kind) bool {
 	return kind == CapitalSavings
 }

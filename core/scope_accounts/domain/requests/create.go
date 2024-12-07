@@ -6,6 +6,7 @@ import (
 	"financo/lib/icon"
 	"financo/lib/nullable"
 	"financo/models/account"
+	"financo/models/transaction"
 	"time"
 )
 
@@ -26,7 +27,7 @@ type Create struct {
 	Main        bool                  `json:"main"`
 }
 
-func CreateToAccountRecord(req Create, timestamp time.Time) account.Record {
+func (req *Create) Record(timestamp time.Time) account.Record {
 	record := account.Record{
 		ID:          -1,
 		Kind:        req.Kind,
@@ -52,18 +53,15 @@ func CreateToAccountRecord(req Create, timestamp time.Time) account.Record {
 		record.Capital = req.Capital
 	}
 
-	if record.DynamicData.History.At.Valid && !account.IsExternal(record.Kind) {
+	if record.DynamicData.History.At.Valid {
 		record.DynamicData.Transactions = 1
+		record.DynamicData.History.At.Val = record.DynamicData.History.At.Val.UTC()
 	}
 
 	return record
 }
 
-func CreateToSystemHistoricAccountRecord(req Create, timestamp time.Time) nullable.Type[account.Record] {
-	if account.IsExternal(req.Kind) {
-		return nullable.Type[account.Record]{}
-	}
-
+func (req *Create) HistoryRecord(timestamp time.Time) account.Record {
 	record := account.Record{
 		ID:          -1,
 		Kind:        account.SystemHistoric,
@@ -80,8 +78,58 @@ func CreateToSystemHistoricAccountRecord(req Create, timestamp time.Time) nullab
 		},
 	}
 
-	if req.History.At.Valid && !account.IsExternal(req.Kind) {
+	if req.History.At.Valid {
 		record.DynamicData.Transactions = 1
+	}
+
+	return record
+}
+
+func (req *Create) HistoryTransaction(timestamp time.Time) nullable.Type[transaction.Record] {
+	if !req.History.At.Valid {
+		return nullable.Type[transaction.Record]{}
+	}
+
+	record := transaction.Record{
+		ID:           -1,
+		SourceID:     -1,
+		TargetID:     -1,
+		SourceAmount: req.History.Balance.OrElse(0),
+		TargetAmount: req.History.Balance.OrElse(0),
+		Notes:        nullable.New("This Transaction was created by the system to represent the starting point for the incomplete ledger for the Account. DO NOT MODIFY NOR DELETE"),
+		IssuedAt:     req.History.At.Val,
+		ExecutedAt:   req.History.At,
+		UpdatedAt:    timestamp,
+		CreatedAt:    timestamp,
+	}
+
+	return nullable.New(record)
+}
+
+func (req *Create) Interest(timestamp time.Time) nullable.Type[account.Record] {
+	if account.IsCapital(req.Kind) || account.IsPersonalDebt(req.Kind) {
+		return nullable.Type[account.Record]{}
+	}
+
+	record := account.Record{
+		ID:          -1,
+		Currency:    req.Currency,
+		Name:        "Interest",
+		Description: nullable.New("This Account was created by the system to function as the source or target its parent Account interest. DO NOT MODIFY NOR DELETE"),
+		Icon:        icon.Landmark,
+		Capital:     0,
+		UpdatedAt:   timestamp,
+		CreatedAt:   timestamp,
+	}
+
+	if account.IsSavings(req.Kind) {
+		record.Kind = account.ExternalIncome
+		record.Color = color.IncomeInterestColor
+	}
+
+	if account.IsCredit(req.Kind) || account.IsLoan(req.Kind) {
+		record.Kind = account.ExternalExpense
+		record.Color = color.ExpenseInterestColor
 	}
 
 	return nullable.New(record)

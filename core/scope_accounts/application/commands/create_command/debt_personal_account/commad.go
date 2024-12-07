@@ -33,8 +33,10 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 	var (
 		timestamp = time.Now().UTC()
 		args      = repositories.CreateAccountSaveArgs{
-			Record:  requests.CreateToAccountRecord(c.req, timestamp),
-			History: requests.CreateToSystemHistoricAccountRecord(c.req, timestamp),
+			Record:             c.req.Record(timestamp),
+			History:            c.req.HistoryRecord(timestamp),
+			HistoryTransaction: c.req.HistoryTransaction(timestamp),
+			Interest:           c.req.Interest(timestamp),
 		}
 	)
 
