@@ -100,11 +100,13 @@ func (req *Create) HistoryTransaction(timestamp time.Time) nullable.Type[transac
 		SourceAmount: req.History.Balance.OrElse(0),
 		TargetAmount: req.History.Balance.OrElse(0),
 		Notes:        nullable.New("This Transaction was created by the system to represent the starting point for the incomplete ledger for the Account. DO NOT MODIFY NOR DELETE"),
-		IssuedAt:     req.History.At.Val,
+		IssuedAt:     req.History.At.Val.UTC(),
 		ExecutedAt:   req.History.At,
 		UpdatedAt:    timestamp,
 		CreatedAt:    timestamp,
 	}
+
+	record.ExecutedAt.Val = record.ExecutedAt.Val.UTC()
 
 	return nullable.New(record)
 }
