@@ -21,8 +21,8 @@ type DynamicData struct {
 // HistoryDynamicData represent contains the data needed to create the account's
 // history
 type HistoryDynamicData struct {
-	At      nullable.Type[time.Time]
-	Balance nullable.Type[int64]
+	At      nullable.Type[time.Time] `json:"at"`
+	Balance nullable.Type[int64]     `json:"balance"`
 }
 
 // Scan takes the json value returned by the SQL database and maps it to
