@@ -3,6 +3,7 @@ package on_account_deleted
 import (
 	"financo/core/scope_accounts/domain/messages"
 	"financo/core/scope_savings_goals/application/event_handlers/on_account_deleted"
+	"financo/core/scope_savings_goals/infrastructure/lock"
 	"financo/core/scope_savings_goals/infrastructure/repositories/on_account_operated_repository"
 	"financo/models/account"
 	"financo/services/postgresql_database"
@@ -18,8 +19,12 @@ func NewInMemory(wg *sync.WaitGroup, payload messages.Deleted) {
 	}
 
 	var (
+		l  = lock.GlobalLock()
 		db = postgresql_database.New()
 	)
+
+	l.Lock()
+	defer l.Unlock()
 
 	err := on_account_deleted.New(
 		on_account_operated_repository.NewPostgreSQL(db),

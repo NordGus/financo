@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"financo/core/scope_savings_goals/application/commands/mark_as_achieved_command"
 	"financo/core/scope_savings_goals/domain/requests"
+	"financo/core/scope_savings_goals/infrastructure/lock"
 	"financo/core/scope_savings_goals/infrastructure/repositories/active_savings_goals_for_currency_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/mark_as_achieved_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/reorder_repository"
@@ -19,9 +20,13 @@ import (
 func MarkAsAchieved(w http.ResponseWriter, r *http.Request) {
 	var (
 		db = postgresql_database.New()
+		l  = lock.GlobalLock()
 
 		req requests.MarkAsAchieved
 	)
+
+	l.Lock()
+	defer l.Unlock()
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
