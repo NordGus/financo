@@ -40,7 +40,6 @@ func (req *Create) Record(timestamp time.Time) account.Record {
 		UpdatedAt:   timestamp,
 		CreatedAt:   timestamp,
 		DynamicData: account.DynamicData{
-			Main:    req.Main,
 			Balance: req.History.Balance.OrElse(0),
 			History: account.HistoryDynamicData{
 				At:      req.History.At,
@@ -51,6 +50,10 @@ func (req *Create) Record(timestamp time.Time) account.Record {
 
 	if account.IsDebt(req.Kind) {
 		record.Capital = req.Capital
+	}
+
+	if account.IsCapital(record.Kind) {
+		record.DynamicData.Main = req.Main
 	}
 
 	if record.DynamicData.History.At.Valid {
