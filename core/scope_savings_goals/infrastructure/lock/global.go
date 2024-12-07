@@ -13,11 +13,9 @@ var instance *sync.Mutex
 
 // GlobalLock returns savings goal's global mutex
 func GlobalLock() *sync.Mutex {
-	if instance != nil {
-		return instance
+	if instance == nil {
+		instance = new(sync.Mutex)
 	}
-
-	instance = new(sync.Mutex)
 
 	return instance
 }
