@@ -39,16 +39,24 @@ interface Props {
   kind: Kind
   defaultCurrency: Currency
   defaultIcon: Icon
-  withCapital?: boolean
+  keyId: number
   onSuccess: () => void
+  withCapital?: boolean
 }
 
-export function CreateAccount({ defaultIcon, defaultCurrency, kind, onSuccess, withCapital = false }: Props) {
+export function CreateAccount({
+  defaultIcon,
+  defaultCurrency,
+  kind,
+  keyId,
+  onSuccess,
+  withCapital = false,
+}: Props) {
   const isFixedSignDebt = isCredit(kind) || isLoan(kind)
   const forDebts = isDebt(kind)
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
   const [loading, setLoading] = useState(false)
-  const fetcher = useFetcher<Created | null>({ key: `accounts.create.${kind}` })
+  const fetcher = useFetcher<Created | null>({ key: `accounts.create.${kind}.${keyId}` })
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -75,12 +83,6 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, onSuccess, w
       },
       { action: "/accounts", method: "post", encType: "application/json" }
     )
-
-    setLoading(false)
-
-    console.log(fetcher.data)
-
-    if (fetcher.data) onSuccess()
   }
 
   useEffect(() => {
@@ -92,6 +94,12 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, onSuccess, w
       form.setValue("history.balance", undefined)
     }
   }, [hasIncompleteLedger])
+
+  useEffect(() => {
+    setLoading(false)
+
+    if (loading && fetcher.data) onSuccess()
+  }, [fetcher.data])
 
   return (
     <Form {...form}>

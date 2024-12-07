@@ -40,11 +40,11 @@ export function ListForKind({ accounts, forKind, forArchived = false }: Props) {
               </Button>
             </DialogTrigger>
             <DialogContent>
-              {isCapital(forKind) && <CreateCapitalAccount onSuccess={onSuccess} />}
-              {isSavings(forKind) && <CreateSavingsAccount onSuccess={onSuccess} />}
-              {isLoan(forKind) && <CreateLoanAccount onSuccess={onSuccess} />}
-              {isPersonalDebt(forKind) && <CreatePersonalDebtAccount onSuccess={onSuccess} />}
-              {isCredit(forKind) && <CreateCreditAccount onSuccess={onSuccess} />}
+              {isCapital(forKind) && <CreateCapitalAccount onSuccess={onSuccess} keyId={accounts.length} />}
+              {isSavings(forKind) && <CreateSavingsAccount onSuccess={onSuccess} keyId={accounts.length} />}
+              {isLoan(forKind) && <CreateLoanAccount onSuccess={onSuccess} keyId={accounts.length} />}
+              {isPersonalDebt(forKind) && <CreatePersonalDebtAccount onSuccess={onSuccess} keyId={accounts.length} />}
+              {isCredit(forKind) && <CreateCreditAccount onSuccess={onSuccess} keyId={accounts.length} />}
             </DialogContent>
           </Dialog>
         )

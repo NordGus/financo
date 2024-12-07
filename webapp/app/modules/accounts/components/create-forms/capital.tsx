@@ -5,9 +5,10 @@ import { CreateAccount } from "../forms/create";
 
 interface Props {
   onSuccess: () => void
+  keyId: number
 }
 
-export function CreateCapitalAccount({ onSuccess }: Props) {
+export function CreateCapitalAccount({ onSuccess, keyId }: Props) {
   return (
     <>
       <DialogHeader>
@@ -22,6 +23,7 @@ export function CreateCapitalAccount({ onSuccess }: Props) {
         defaultCurrency="EUR"
         defaultIcon="landmark"
         onSuccess={onSuccess}
+        keyId={keyId}
       />
     </>
   )

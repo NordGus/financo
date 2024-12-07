@@ -5,9 +5,10 @@ import { CreateAccount } from "../forms/create";
 
 interface Props {
   onSuccess: () => void
+  keyId: number
 }
 
-export function CreateLoanAccount({ onSuccess }: Props) {
+export function CreateLoanAccount({ onSuccess, keyId }: Props) {
   return (
     <>
       <DialogHeader>
@@ -23,6 +24,7 @@ export function CreateLoanAccount({ onSuccess }: Props) {
         defaultIcon="hand_coins"
         withCapital
         onSuccess={onSuccess}
+        keyId={keyId}
       />
     </>
   )
