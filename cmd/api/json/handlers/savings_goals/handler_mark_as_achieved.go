@@ -20,13 +20,12 @@ import (
 func MarkAsAchieved(w http.ResponseWriter, r *http.Request) {
 	var (
 		db = postgresql_database.New()
-		l  = lock.GlobalLock()
 
 		req requests.MarkAsAchieved
 	)
 
-	l.Lock()
-	defer l.Unlock()
+	lock.GlobalLock().Lock()
+	defer lock.GlobalLock().Unlock()
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {

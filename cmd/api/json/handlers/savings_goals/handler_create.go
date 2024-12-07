@@ -16,13 +16,12 @@ import (
 func Create(w http.ResponseWriter, r *http.Request) {
 	var (
 		db = postgresql_database.New()
-		l  = lock.GlobalLock()
 
 		req requests.Create
 	)
 
-	l.Lock()
-	defer l.Unlock()
+	lock.GlobalLock().Lock()
+	defer lock.GlobalLock().Unlock()
 
 	body := r.Body
 	defer func() {

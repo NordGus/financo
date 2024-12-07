@@ -15,13 +15,12 @@ import (
 func Reorder(w http.ResponseWriter, r *http.Request) {
 	var (
 		db = postgresql_database.New()
-		l  = lock.GlobalLock()
 
 		req requests.Reorder
 	)
 
-	l.Lock()
-	defer l.Unlock()
+	lock.GlobalLock().Lock()
+	defer lock.GlobalLock().Unlock()
 
 	body := r.Body
 	defer func() {
