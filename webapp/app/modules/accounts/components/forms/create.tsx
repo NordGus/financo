@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useFetcher } from "react-router";
@@ -47,7 +48,7 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, onSuccess, w
   const forDebts = isDebt(kind)
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
   const [loading, setLoading] = useState(false)
-  const fetcher = useFetcher<Created>({ key: `accounts.create.${kind}` })
+  const fetcher = useFetcher<Created | null>({ key: `accounts.create.${kind}` })
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -69,13 +70,15 @@ export function CreateAccount({ defaultIcon, defaultCurrency, kind, onSuccess, w
         ...values,
         history: {
           balance: values.history.balance || null,
-          at: values.history.at?.toUTCString() || null,
+          at: values.history.at ? moment(values.history.at).utc().toISOString() : null,
         }
       },
       { action: "/accounts", method: "post", encType: "application/json" }
     )
 
     setLoading(false)
+
+    console.log(fetcher.data)
 
     if (fetcher.data) onSuccess()
   }
