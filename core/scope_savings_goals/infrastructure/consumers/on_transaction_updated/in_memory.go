@@ -13,16 +13,11 @@ import (
 func NewInMemory(wg *sync.WaitGroup, payload messages.Updated) {
 	defer wg.Done()
 
-	var (
-		l  = lock.GlobalLock()
-		db = postgresql_database.New()
-	)
-
-	l.Lock()
-	defer l.Unlock()
+	lock.GlobalLock().Lock()
+	defer lock.GlobalLock().Unlock()
 
 	err := on_transaction_updated.New(
-		on_transaction_operated_repository.NewPostgreSQL(db),
+		on_transaction_operated_repository.NewPostgreSQL(postgresql_database.New()),
 	).Handle(payload)
 	if err != nil {
 		log.Println("something went wrong while handling transaction updated message.", err)
