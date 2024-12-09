@@ -10,8 +10,9 @@ export default [
   layout("shared/layout.tsx", [
     index("routes/home.tsx"),
     route("dashboard", "routes/dashboard.tsx"),
-    ...prefix("accounts", [
-      index("routes/accounts/index.tsx")
+    route("accounts", "routes/accounts/wrapper.tsx", [
+      index("routes/accounts/index.tsx"),
+      route(":id", "routes/accounts/show.tsx")
     ]),
     ...prefix("ledger", [
       index("routes/ledger/index.tsx")

@@ -1,15 +1,15 @@
 import { useLoaderData } from "react-router";
 import { toast } from "sonner";
 import { createAccount } from "~/modules/accounts/api/commands/create-account";
-import { getAccountsPreviews } from "~/modules/accounts/api/queries/get-accounts-previews";
-import { Screen } from "~/modules/accounts/screens";
+import { getAccount } from "~/modules/accounts/api/queries/get-account";
+import { Screen } from "~/modules/accounts/screens/show";
 import { Create } from "~/modules/accounts/types/create";
-import { Route } from "./+types/index";
+import { Route } from "./+types/show";
 
-export function meta({ }: Route.MetaArgs) {
+export function meta({ data }: Route.MetaArgs) {
   return [
-    { title: "financo - Accounts" },
-    { name: "description", content: "Manage your Accounts" }
+    { title: `financo - Account - ${data.account.name}` },
+    { name: "description", content: "Manage your Account" }
   ]
 }
 
@@ -45,14 +45,18 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   }
 }
 
-export async function clientLoader({ }: Route.ClientLoaderArgs) {
-  const accounts = await getAccountsPreviews()
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const id = Number(params.id)
+  const account = await getAccount(id)
 
-  return { accounts }
+  return {
+    breadcrumb: account.name,
+    account,
+  }
 }
 
-export default function Index() {
-  const { accounts } = useLoaderData<typeof clientLoader>()
+export default function Show() {
+  const { account } = useLoaderData<typeof clientLoader>()
 
-  return <Screen accounts={accounts} />
+  return <Screen account={account} />
 }
