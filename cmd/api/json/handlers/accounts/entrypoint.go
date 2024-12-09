@@ -14,5 +14,7 @@ func Routes(r chi.Router) {
 		r.Get("/", show)
 		r.Delete("/", destroy)
 		r.Put("/", update)
+		r.Patch("/archive", archive)
+		r.Patch("/unarchive", unarchive)
 	})
 }
