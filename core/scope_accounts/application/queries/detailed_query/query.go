@@ -10,10 +10,10 @@ import (
 
 type query struct {
 	req  requests.Detailed
-	repo repositories.DetailedAccountRepository
+	repo repositories.AccountRepository
 }
 
-func New(req requests.Detailed, repo repositories.DetailedAccountRepository) queries.Query[responses.Detailed] {
+func New(req requests.Detailed, repo repositories.AccountRepository) queries.Query[responses.Detailed] {
 	return &query{
 		req:  req,
 		repo: repo,
@@ -21,23 +21,21 @@ func New(req requests.Detailed, repo repositories.DetailedAccountRepository) que
 }
 
 func (q *query) Find(ctx context.Context) (responses.Detailed, error) {
-	var (
-		res responses.Detailed
-	)
+	res := responses.Detailed{
+		Children: make([]responses.Detailed, 0, 10),
+	}
 
-	res, err := q.repo.Find(ctx, q.req.ID)
+	record, err := q.repo.Find(ctx, q.req.ID)
 	if err != nil {
 		return res, err
 	}
 
-	res.Children, err = q.repo.FindChildren(ctx, q.req.ID)
+	children, err := q.repo.FindChildren(ctx, q.req.ID)
 	if err != nil {
 		return res, err
 	}
 
-	for i := 0; i < len(res.Children); i++ {
-		res.Balance += res.Children[i].Balance
-	}
+	res = res.FromRecord(record, children)
 
 	return res, nil
 }

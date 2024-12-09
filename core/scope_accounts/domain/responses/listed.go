@@ -25,18 +25,6 @@ type Listed struct {
 	AdditionalData AdditionalData           `json:"additionalData"`
 }
 
-type AdditionalData struct {
-	Main         bool        `json:"main"`
-	Balance      int64       `json:"balance"`
-	History      HistoryData `json:"history"`
-	Transactions int64       `json:"transactions"`
-}
-
-type HistoryData struct {
-	At      nullable.Type[time.Time] `json:"at"`
-	Balance nullable.Type[int64]     `json:"balance"`
-}
-
 func AccountRecordToListed(a account.Record) Listed {
 	return Listed{
 		ID:          a.ID,
@@ -54,7 +42,7 @@ func AccountRecordToListed(a account.Record) Listed {
 		AdditionalData: AdditionalData{
 			Main:    a.DynamicData.Main,
 			Balance: a.DynamicData.Balance,
-			History: HistoryData{
+			History: History{
 				At:      a.DynamicData.History.At,
 				Balance: a.DynamicData.History.Balance,
 			},

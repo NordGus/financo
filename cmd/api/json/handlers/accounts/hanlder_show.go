@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"financo/core/scope_accounts/application/queries/detailed_query"
 	"financo/core/scope_accounts/domain/requests"
-	"financo/core/scope_accounts/infrastructure/detailed_account_repository"
+	"financo/core/scope_accounts/infrastructure/repositories/accounts_repository"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -27,7 +27,7 @@ func show(w http.ResponseWriter, r *http.Request) {
 
 	res, err := detailed_query.New(
 		requests.Detailed{ID: id},
-		detailed_account_repository.NewPostgreSQL(postgresql_database.New()),
+		accounts_repository.NewPostgreSQL(postgresql_database.New()),
 	).Find(r.Context())
 	if err != nil {
 		log.Println("account not found", err)
