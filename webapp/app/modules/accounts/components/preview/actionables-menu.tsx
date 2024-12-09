@@ -1,16 +1,5 @@
-import { EllipsisIcon, TrashIcon } from "lucide-react"
-import { FetcherWithComponents } from "react-router"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger
-} from "~/shared/components/ui/alert-dialog"
+import { EllipsisIcon, PackageIcon, PackageOpenIcon, TrashIcon } from "lucide-react"
+import { useState } from "react"
 import { Button } from "~/shared/components/ui/button"
 import {
   DropdownMenu,
@@ -19,27 +8,22 @@ import {
   DropdownMenuTrigger
 } from "~/shared/components/ui/dropdown-menu"
 import { Account } from "../../types/preview"
-import { Archive } from "./actionables/archive"
-import { Unarchive } from "./actionables/unrachive"
+import { ArchiveDialog } from "../dialogs/archive"
+import { DeleteDialog } from "../dialogs/delete"
+import { UnarchiveDialog } from "../dialogs/unarchive"
 
 interface Props {
-  account: {
-    id: number
-    name: string
-    transactions: number
-  },
-  isArchived: boolean
-  fetcher: FetcherWithComponents<Account>
+  account: Account
 }
 
 // TODO implement form and actions
-export function ActionablesMenu({
-  account: { id, name, transactions },
-  isArchived,
-  fetcher
-}: Props) {
+export function ActionablesMenu({ account: { id, name, archivedAt, additionalData: { transactions } } }: Props) {
+  const [openUnarchiveDialog, setOpenUnarchiveDialog] = useState(false)
+  const [openArchiveDialog, setOpenArchiveDialog] = useState(false)
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+
   return (
-    <AlertDialog>
+    <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="link" size="icon">
@@ -47,45 +31,39 @@ export function ActionablesMenu({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          {isArchived && <Unarchive accountID={id} fetcher={fetcher} />}
-          {!isArchived && <Archive accountID={id} fetcher={fetcher} />}
-          <AlertDialogTrigger asChild>
-            <DropdownMenuItem>
-              <TrashIcon /> Delete
+          {archivedAt && (
+            <DropdownMenuItem onClick={() => setOpenUnarchiveDialog(true)}>
+              <PackageOpenIcon /> Unarchive
             </DropdownMenuItem>
-          </AlertDialogTrigger>
+          )}
+          {!archivedAt && (
+            <DropdownMenuItem onClick={() => setOpenArchiveDialog(true)}>
+              <PackageIcon /> Archive
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem onClick={() => setOpenDeleteDialog(true)}>
+            <TrashIcon /> Delete
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription className="space-y-2">
-            <p>
-              This action cannot be undone.
-            </p>
-            <p>
-              You are about to permanently delete <span className="font-bold">{name}</span> from your Accounts and its related <span className="font-bold">{transactions}</span> transaction(s) from your Transaction history.
-            </p>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={() => {
-              fetcher.submit(
-                { intent: "delete" },
-                {
-                  action: `/accounts/${id}`,
-                  method: "POST",
-                  encType: "application/json"
-                }
-              )
-            }}
-          >
-            Confirm
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+
+      <UnarchiveDialog
+        account={{ id, name, transactions }}
+        open={openUnarchiveDialog}
+        onOpenChanged={setOpenUnarchiveDialog}
+      />
+
+      <ArchiveDialog
+        account={{ id, name, transactions }}
+        open={openArchiveDialog}
+        onOpenChanged={setOpenArchiveDialog}
+      />
+
+      <DeleteDialog
+        account={{ id, name, transactions }}
+        open={openDeleteDialog}
+        onOpenChanged={setOpenDeleteDialog}
+      />
+    </>
   )
 }

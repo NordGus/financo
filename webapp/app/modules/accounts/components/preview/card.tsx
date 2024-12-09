@@ -1,8 +1,7 @@
 import { isNil } from "lodash-es";
 import { useMemo } from "react";
-import { useFetcher, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { cn } from "~/lib/utils";
-import { Throbber } from "~/shared/components/throbber";
 import {
   Card,
   CardContent,
@@ -30,7 +29,6 @@ interface Props {
 
 export function Preview({ account: loaderAccount }: Props) {
   const navigate = useNavigate()
-  const fetcher = useFetcher<Account>({ key: `account.${loaderAccount.id}` })
   const {
     id,
     kind,
@@ -43,11 +41,10 @@ export function Preview({ account: loaderAccount }: Props) {
     additionalData: {
       main,
       balance,
-      transactions
     },
     archivedAt,
     deletedAt
-  } = fetcher.data || loaderAccount
+  } = loaderAccount
 
   if (deletedAt) return null
 
@@ -103,31 +100,18 @@ export function Preview({ account: loaderAccount }: Props) {
           </span>
         </div>
       </CardContent>
-      {
-        fetcher.state === "idle" && (
-          <CardFooter className="flex flex-row justify-end items-center gap-2">
-            {main && <MainAccount />}
-            {isArchived && <ArchivedAccount />}
-            <div className="flex-grow-[3]">
-              <PaymentProgress capital={capital} balance={balance} currency={currency} color={color} kind={kind} />
-            </div>
-            <div className="flex-grow flex flex-row justify-end gap-2">
-              <ActionablesMenu
-                account={{ id, name, transactions }}
-                isArchived={isArchived}
-                fetcher={fetcher}
-              />
-            </div>
-          </CardFooter>
-        )
-      }
-      {
-        fetcher.state !== "idle" && (
-          <CardFooter className="flex flex-row justify-end items-center gap-2">
-            <Throbber size="sm" />
-          </CardFooter>
-        )
-      }
+      <CardFooter className="flex flex-row justify-end items-center gap-2">
+        {main && <MainAccount />}
+        {isArchived && <ArchivedAccount />}
+        <div className="flex-grow-[3]">
+          <PaymentProgress capital={capital} balance={balance} currency={currency} color={color} kind={kind} />
+        </div>
+        <div className="flex-grow flex flex-row justify-end gap-2">
+          <ActionablesMenu
+            account={loaderAccount}
+          />
+        </div>
+      </CardFooter>
     </Card>
   )
 }
