@@ -5,7 +5,8 @@ import (
 	"financo/core/scope_accounts/application/commands/update_command"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/infrastructure/broker_handler"
-	"financo/core/scope_accounts/infrastructure/update_account_repository"
+	"financo/core/scope_accounts/infrastructure/repositories/transactions_repository"
+	"financo/core/scope_accounts/infrastructure/repositories/update_repository"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -15,7 +16,11 @@ import (
 )
 
 func update(w http.ResponseWriter, r *http.Request) {
-	var req requests.Update
+	var (
+		db = postgresql_database.New()
+
+		req requests.Update
+	)
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -57,8 +62,6 @@ func update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo := update_account_repository.NewPostgreSQL(postgresql_database.New())
-
 	broker, err := broker_handler.Instance()
 	if err != nil {
 		log.Println("created broker uninitialized", err)
@@ -66,14 +69,12 @@ func update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	comm, err := update_command.New(req, repo, broker.UpdatedBroker())
-	if err != nil {
-		log.Println("unsupported subcommand", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	res, err := comm.Run(r.Context())
+	res, err := update_command.New(
+		req,
+		update_repository.NewPostgreSQL(db),
+		transactions_repository.NewPostgreSQL(db),
+		broker.UpdatedBroker(),
+	).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(
