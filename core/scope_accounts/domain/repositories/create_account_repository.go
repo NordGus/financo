@@ -10,7 +10,7 @@ import (
 type CreateAccountSaveArgs struct {
 	Record             account.Record
 	History            account.Record
-	HistoryTransaction nullable.Type[transaction.Record]
+	HistoryTransaction transaction.Record
 	Interest           nullable.Type[account.Record]
 }
 

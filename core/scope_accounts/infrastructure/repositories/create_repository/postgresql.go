@@ -66,12 +66,10 @@ func (r *repository) Save(ctx context.Context, args repositories.CreateAccountSa
 
 	args.HistoryTransaction = prepareHistoryTransaction(args.HistoryTransaction, args.Record, args.History)
 
-	if hasToPersistHistoryTransaction(args.HistoryTransaction) {
-		args.HistoryTransaction.Val, err = r.persistTransaction(ctx, tx, args.HistoryTransaction.Val)
-		if err != nil {
-			_ = tx.Rollback()
-			return args.Record, err
-		}
+	args.HistoryTransaction, err = r.persistTransaction(ctx, tx, args.HistoryTransaction)
+	if err != nil {
+		_ = tx.Rollback()
+		return args.Record, err
 	}
 
 	err = tx.Commit()
@@ -167,28 +165,18 @@ func (r *repository) persistTransaction(
 	return record, err
 }
 
-func prepareHistoryTransaction(
-	tr nullable.Type[transaction.Record], r account.Record, h account.Record,
-) nullable.Type[transaction.Record] {
-	if !tr.Valid {
-		return tr
+func prepareHistoryTransaction(tr transaction.Record, r account.Record, h account.Record) transaction.Record {
+	if tr.SourceAmount >= 0 {
+		tr.SourceID = h.ID
+		tr.TargetID = r.ID
 	}
 
-	if tr.Val.SourceAmount > 0 {
-		tr.Val.SourceID = h.ID
-		tr.Val.TargetID = r.ID
-	}
-
-	if tr.Val.SourceAmount < 0 {
-		tr.Val.SourceID = r.ID
-		tr.Val.TargetID = h.ID
-		tr.Val.SourceAmount = tr.Val.SourceAmount * -1
-		tr.Val.TargetAmount = tr.Val.TargetAmount * -1
+	if tr.SourceAmount < 0 {
+		tr.SourceID = r.ID
+		tr.TargetID = h.ID
+		tr.SourceAmount = tr.SourceAmount * -1
+		tr.TargetAmount = tr.TargetAmount * -1
 	}
 
 	return tr
-}
-
-func hasToPersistHistoryTransaction(tr nullable.Type[transaction.Record]) bool {
-	return tr.Valid && tr.Val.SourceID != -1 && tr.Val.TargetID != -1
 }

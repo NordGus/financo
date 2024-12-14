@@ -88,11 +88,7 @@ func (req *Create) HistoryRecord(timestamp time.Time) account.Record {
 	return record
 }
 
-func (req *Create) HistoryTransaction(timestamp time.Time) nullable.Type[transaction.Record] {
-	if !req.History.At.Valid {
-		return nullable.Type[transaction.Record]{}
-	}
-
+func (req *Create) HistoryTransaction(timestamp time.Time) transaction.Record {
 	record := transaction.Record{
 		ID:           -1,
 		SourceID:     -1,
@@ -100,15 +96,21 @@ func (req *Create) HistoryTransaction(timestamp time.Time) nullable.Type[transac
 		SourceAmount: req.History.Balance.OrElse(0),
 		TargetAmount: req.History.Balance.OrElse(0),
 		Notes:        nullable.New("This Transaction was created by the system to represent the starting point for the incomplete ledger for the Account. DO NOT MODIFY NOR DELETE"),
-		IssuedAt:     req.History.At.Val.UTC(),
+		IssuedAt:     req.History.At.OrElse(timestamp).UTC(),
 		ExecutedAt:   req.History.At,
 		UpdatedAt:    timestamp,
 		CreatedAt:    timestamp,
 	}
 
-	record.ExecutedAt.Val = record.ExecutedAt.Val.UTC()
+	if req.History.At.Valid {
+		record.ExecutedAt.Val = record.ExecutedAt.Val.UTC()
+	}
 
-	return nullable.New(record)
+	if !req.History.At.Valid {
+		record.DeletedAt = nullable.New(timestamp)
+	}
+
+	return record
 }
 
 func (req *Create) Interest(timestamp time.Time) nullable.Type[account.Record] {
