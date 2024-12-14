@@ -21,18 +21,19 @@ interface Account {
 
 interface Props {
   open: boolean
-  onOpenChanged: (open: boolean) => void
   account: Account
+  onOpenChanged: (open: boolean) => void
+  onSuccess: () => void
 }
 
-export function DeleteDialog({ open, onOpenChanged, account: { id, name, transactions } }: Props) {
+export function DeleteDialog({ open, onOpenChanged, onSuccess, account: { id, name, transactions } }: Props) {
   const [loading, setLoading] = useState(false)
   const fetcher = useFetcher<Deleted | null>({ key: `delete.account.${id}` })
 
   useEffect(() => {
     setLoading(false)
 
-    if (loading && fetcher.data) onOpenChanged(false)
+    if (loading && !!fetcher.data) onSuccess()
   }, [fetcher.data])
 
   return (

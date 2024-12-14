@@ -1,7 +1,9 @@
-import { EditIcon, PackageIcon, PackageOpenIcon } from "lucide-react";
+import { EditIcon } from "lucide-react";
 import { Button } from "~/shared/components/ui/button";
 import { Heading1 } from "~/shared/components/ui/headings";
+import { Archive } from "../components/detail/actionables/archive";
 import { Delete } from "../components/detail/actionables/delete";
+import { Unarchive } from "../components/detail/actionables/unarchive";
 import { Account } from "../types/preview";
 
 interface Props {
@@ -18,17 +20,9 @@ export function Screen({ account }: Props) {
           <EditIcon /> Edit
         </Button>
         {
-          !account.archivedAt
-            ? (
-              <Button variant="outline">
-                <PackageIcon /> Archive
-              </Button>
-            )
-            : (
-              <Button variant="outline">
-                <PackageOpenIcon /> Unarchive
-              </Button>
-            )
+          account.archivedAt
+            ? <Unarchive account={account} />
+            : <Archive account={account} />
         }
         <Delete account={account} />
       </div>

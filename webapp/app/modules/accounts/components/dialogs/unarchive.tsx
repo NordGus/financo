@@ -11,7 +11,7 @@ import {
   AlertDialogTitle
 } from "~/shared/components/ui/alert-dialog";
 import { Button } from "~/shared/components/ui/button";
-import { Deleted } from "../../types/delete";
+import { Unarchived } from "../../types/unarchived";
 
 interface Account {
   id: number
@@ -21,18 +21,19 @@ interface Account {
 
 interface Props {
   open: boolean
-  onOpenChanged: (open: boolean) => void
   account: Account
+  onOpenChanged: (open: boolean) => void
+  onSuccess: () => void
 }
 
-export function UnarchiveDialog({ open, onOpenChanged, account: { id, name } }: Props) {
+export function UnarchiveDialog({ open, onOpenChanged, onSuccess, account: { id, name } }: Props) {
   const [loading, setLoading] = useState(false)
-  const fetcher = useFetcher<Deleted | null>({ key: `unarchive.account.${id}` })
+  const fetcher = useFetcher<Unarchived | null>({ key: `unarchive.account.${id}` })
 
   useEffect(() => {
     setLoading(false)
 
-    if (loading && !!fetcher.data) onOpenChanged(false)
+    if (loading && !!fetcher.data) onSuccess()
   }, [fetcher.data])
 
   return (
@@ -57,7 +58,7 @@ export function UnarchiveDialog({ open, onOpenChanged, account: { id, name } }: 
                     setLoading(true)
 
                     fetcher.submit(
-                      { intent: "archive" },
+                      { intent: "unarchive" },
                       {
                         action: `/accounts/${id}`,
                         method: "post",

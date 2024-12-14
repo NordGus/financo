@@ -1,5 +1,6 @@
 import { EllipsisIcon, PackageIcon, PackageOpenIcon, TrashIcon } from "lucide-react"
 import { useState } from "react"
+import { redirect } from "react-router"
 import { Button } from "~/shared/components/ui/button"
 import {
   DropdownMenu,
@@ -16,7 +17,6 @@ interface Props {
   account: Account
 }
 
-// TODO implement form and actions
 export function ActionablesMenu({ account: { id, name, archivedAt, additionalData: { transactions } } }: Props) {
   const [openUnarchiveDialog, setOpenUnarchiveDialog] = useState(false)
   const [openArchiveDialog, setOpenArchiveDialog] = useState(false)
@@ -51,18 +51,30 @@ export function ActionablesMenu({ account: { id, name, archivedAt, additionalDat
         account={{ id, name, transactions }}
         open={openUnarchiveDialog}
         onOpenChanged={setOpenUnarchiveDialog}
+        onSuccess={() => {
+          setOpenUnarchiveDialog(false)
+          redirect(".")
+        }}
       />
 
       <ArchiveDialog
         account={{ id, name, transactions }}
         open={openArchiveDialog}
         onOpenChanged={setOpenArchiveDialog}
+        onSuccess={() => {
+          setOpenArchiveDialog(false)
+          redirect(".")
+        }}
       />
 
       <DeleteDialog
         account={{ id, name, transactions }}
         open={openDeleteDialog}
         onOpenChanged={setOpenDeleteDialog}
+        onSuccess={() => {
+          setOpenDeleteDialog(false)
+          redirect(".")
+        }}
       />
     </>
   )

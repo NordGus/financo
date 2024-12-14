@@ -1,6 +1,8 @@
-import { useLoaderData } from "react-router";
+import { redirect, useLoaderData } from "react-router";
 import { toast } from "sonner";
-import { createAccount } from "~/modules/accounts/api/commands/create-account";
+import { archiveAccount } from "~/modules/accounts/api/commands/archive-account";
+import { deleteAccount } from "~/modules/accounts/api/commands/delete-account";
+import { unarchiveAccount } from "~/modules/accounts/api/commands/unarchive-account";
 import { getAccount } from "~/modules/accounts/api/queries/get-account";
 import { Screen } from "~/modules/accounts/screens/show";
 import { Create } from "~/modules/accounts/types/create";
@@ -14,35 +16,92 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 interface ActionRequestBody extends Create {
-  intent: "create"
+  intent: "archive" | "unarchive" | "delete"
 }
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
+export async function clientAction({ request, params }: Route.ClientActionArgs) {
+  const id = Number(params.id)
   const values: ActionRequestBody = await request.json()
 
-  if (values.intent !== "create") throw new Error("invalid action")
+  console.log(values.intent)
 
-  try {
-    const response = createAccount({ ...values })
+  const actions = {
+    archive: async () => {
+      try {
+        const response = archiveAccount(id)
 
-    toast.promise(response, {
-      loading: "Creating...",
-      success: (data) => {
-        return `${data.name} created`
-      },
-      error: "Oops!. Something went wrong"
-    })
+        toast.promise(response, {
+          loading: "Archiving...",
+          success: (data) => {
+            return `${data.name} archived`
+          },
+          error: "Oops!. Something went wrong"
+        })
 
-    const created = await response
+        const archived = await response
 
-    return created
-  } catch (error) {
-    if (error instanceof Response && error.status === 401) throw error
+        return archived
+      } catch (error) {
+        if (error instanceof Response && error.status === 401) throw error
 
-    console.error(error)
+        console.error(error)
 
-    return null
+        return null
+      }
+    },
+    unarchive: async () => {
+      try {
+        const response = unarchiveAccount(id)
+
+        toast.promise(response, {
+          loading: "Unarchiving...",
+          success: (data) => {
+            return `${data.name} unarchived`
+          },
+          error: "Oops!. Something went wrong"
+        })
+
+        const unarchived = await response
+
+        return unarchived
+      } catch (error) {
+        if (error instanceof Response && error.status === 401) throw error
+
+        console.error(error)
+
+        return null
+      }
+    },
+    delete: async () => {
+      try {
+        const response = deleteAccount(id)
+
+        toast.promise(response, {
+          loading: "Deleting...",
+          success: (data) => {
+            return `${data.name} deleted`
+          },
+          error: "Oops!. Something went wrong"
+        })
+
+        await response
+
+        return redirect("/accounts")
+      } catch (error) {
+        if (error instanceof Response && error.status === 401) throw error
+
+        console.error(error)
+
+        return null
+      }
+    }
   }
+
+  const action = actions[values.intent]
+
+  if (!action) throw new Error("invalid action")
+
+  return await action()
 }
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
