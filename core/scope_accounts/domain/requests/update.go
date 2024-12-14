@@ -17,22 +17,6 @@ type UpdateHistory struct {
 	Balance nullable.Type[int64]     `json:"balance"`
 }
 
-// [ ] scope_accounts will no handle children anymore, this feature will go to
-//   the scope_categories that will manage the accounts that have children the
-//   the external accounts
-// type UpdateChild struct {
-// 	ID          nullable.Type[int64]  `json:"id"`
-// 	Currency    currency.Type         `json:"currency"`
-// 	Name        string                `json:"name"`
-// 	Description nullable.Type[string] `json:"description"`
-// 	Capital     int64                 `json:"capital"`
-// 	History     UpdateHistory         `json:"history"`
-// 	Color       color.Type            `json:"color"`
-// 	Icon        icon.Type             `json:"icon"`
-// 	Archive     bool                  `json:"archive"`
-// 	Delete      bool                  `json:"delete"`
-// }
-
 // Update is the DTO for requests that want to update an existing account inside
 // financo
 type Update struct {
