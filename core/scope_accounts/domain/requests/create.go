@@ -10,11 +10,15 @@ import (
 	"time"
 )
 
+// History is the DTO that handles the processes related to accounts with an
+// incomplete ledger history inside financo.
 type History struct {
 	At      nullable.Type[time.Time] `json:"at"`
 	Balance nullable.Type[int64]     `json:"balance"`
 }
 
+// Create is the DTO for requests that want to create a new account inside
+// financo
 type Create struct {
 	Kind        account.Kind          `json:"kind"`
 	Currency    currency.Type         `json:"currency"`
@@ -27,7 +31,9 @@ type Create struct {
 	Main        bool                  `json:"main"`
 }
 
+// Record maps [Create] into a [account.Record] use by financo
 func (req *Create) Record(timestamp time.Time) account.Record {
+	// Builds the basic record data
 	record := account.Record{
 		ID:          -1,
 		Kind:        req.Kind,
@@ -48,23 +54,38 @@ func (req *Create) Record(timestamp time.Time) account.Record {
 		},
 	}
 
+	// Sets the capital to the one send by the request only if the account been
+	// created is [account.DebtLoan], [account.DebtPersonal] or
+	// [account.DebtCredit]
 	if account.IsDebt(req.Kind) {
 		record.Capital = req.Capital
 	}
 
+	// Sets the DynamicData Main attribute to the one set by the request only if
+	// the account been created is [account.CapitalNormal]
 	if account.IsCapital(record.Kind) {
 		record.DynamicData.Main = req.Main
 	}
 
-	if record.DynamicData.History.At.Valid {
+	// Sets the DynamicData History attributes to the one set by the request only
+	// if the request History attributes contains a At date.
+	//
+	// When the request contains a valid At attribute it means that the account
+	// been created has an incomplete ledger.
+	if req.History.At.Valid {
 		record.DynamicData.Transactions = 1
-		record.DynamicData.History.At.Val = record.DynamicData.History.At.Val.UTC()
+		record.DynamicData.History.At.Val = req.History.At.Val.UTC()
+	} else {
+		record.DynamicData.History.Balance = nullable.Type[int64]{}
 	}
 
 	return record
 }
 
+// HistoryRecord maps [Create] into a [account.Record] that represents the
+// account previous ledger history.
 func (req *Create) HistoryRecord(timestamp time.Time) account.Record {
+	// Builds the basic record data
 	record := account.Record{
 		ID:          -1,
 		Kind:        account.SystemHistoric,
@@ -81,6 +102,11 @@ func (req *Create) HistoryRecord(timestamp time.Time) account.Record {
 		},
 	}
 
+	// Sets the DynamicData Transaction attribute to reflect that the account has
+	// an incomplete ledger and starts with a single account.
+	//
+	// When the request contains a valid At attribute it means that the account
+	// been created has an incomplete ledger.
 	if req.History.At.Valid {
 		record.DynamicData.Transactions = 1
 	}
@@ -88,7 +114,11 @@ func (req *Create) HistoryRecord(timestamp time.Time) account.Record {
 	return record
 }
 
+// HistoryTransaction maps [Create] into a [transaction.Record] that represents
+// movement of currency between the account been created and its history
+// account.
 func (req *Create) HistoryTransaction(timestamp time.Time) transaction.Record {
+	// Builds the basic record data
 	record := transaction.Record{
 		ID:           -1,
 		SourceID:     -1,
@@ -102,10 +132,16 @@ func (req *Create) HistoryTransaction(timestamp time.Time) transaction.Record {
 		CreatedAt:    timestamp,
 	}
 
+	// Sets the ExecutedAt value for the transaction if the request History At
+	// attribute contains a valid value.
 	if req.History.At.Valid {
 		record.ExecutedAt.Val = record.ExecutedAt.Val.UTC()
 	}
 
+	// Sets the DeletedAt value for the transaction if the request History At
+	// attribute doesn't contain a valid value. This means that the account has a
+	// complete ledger history so the transaction is created as deleted, but is
+	// is created for the case the user changes this later.
 	if !req.History.At.Valid {
 		record.DeletedAt = nullable.New(timestamp)
 	}
@@ -113,11 +149,16 @@ func (req *Create) HistoryTransaction(timestamp time.Time) transaction.Record {
 	return record
 }
 
+// Interest maps [Create] into a nullable [account.Record] for the
+// [account.Kind] that should have a type of interest store.
 func (req *Create) Interest(timestamp time.Time) nullable.Type[account.Record] {
+	// Return a null [account.Record] if the request [account.Kind] is
+	// [account.CapitalNormal] or [account.DebtPersonal].
 	if account.IsCapital(req.Kind) || account.IsPersonalDebt(req.Kind) {
 		return nullable.Type[account.Record]{}
 	}
 
+	// Builds the basic record data
 	record := account.Record{
 		ID:          -1,
 		Currency:    req.Currency,
@@ -129,11 +170,16 @@ func (req *Create) Interest(timestamp time.Time) nullable.Type[account.Record] {
 		CreatedAt:   timestamp,
 	}
 
+	// Sets the Interest Account Kind and Color for an [account.ExternalIncome]
+	// Interest account if the request [account.Kind] is [account.CapitalSavings]
 	if account.IsSavings(req.Kind) {
 		record.Kind = account.ExternalIncome
 		record.Color = color.IncomeInterestColor
 	}
 
+	// Sets the Interest Account Kind and Color for an [account.ExternalExpense]
+	// Interest account if the request [account.Kind] is [account.DebtCredit] or
+	// [account.DebtLoan]
 	if account.IsCredit(req.Kind) || account.IsLoan(req.Kind) {
 		record.Kind = account.ExternalExpense
 		record.Color = color.ExpenseInterestColor
