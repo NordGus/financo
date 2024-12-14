@@ -73,7 +73,6 @@ func (p *postgresql) BalanceWithoutHistoryFor(ctx context.Context, id int64) (in
 	return balance, nil
 }
 
-// CountWithoutHistoryFor implements repositories.TransactionsRepository.
 func (p *postgresql) CountWithoutHistoryFor(ctx context.Context, id int64) (int64, error) {
 	var count int64
 
@@ -103,4 +102,105 @@ func (p *postgresql) CountWithoutHistoryFor(ctx context.Context, id int64) (int6
 	}
 
 	return count, nil
+}
+
+func (p *postgresql) BalanceFor(ctx context.Context, ids []int64) (map[int64]int64, error) {
+	balances := make(map[int64]int64, 10)
+
+	conn, err := p.db.Conn(ctx)
+	if err != nil {
+		return balances, err
+	}
+	defer conn.Close()
+
+	rows, err := conn.QueryContext(
+		ctx,
+		`
+		SELECT
+			acc.id,
+			SUM(
+				CASE
+				WHEN tr.source_id = acc.id THEN - tr.source_amount
+				ELSE tr.target_amount
+				END
+			) as balance
+		FROM
+				transactions tr
+				INNER JOIN accounts acc ON (tr.source_id = acc.id OR tr.target_id = acc.id)
+		WHERE
+				tr.deleted_at IS NULL
+				AND acc.id = ANY ($1)
+		GROUP BY acc.id
+		`,
+		ids,
+	)
+	if err != nil {
+		return balances, err
+	}
+
+	for rows.Next() {
+		var (
+			id      int64
+			balance int64
+		)
+
+		err = rows.Scan(&id, &balance)
+		if err != nil {
+			_ = rows.Close()
+			return balances, err
+		}
+
+		balances[id] = balance
+	}
+
+	_ = rows.Close()
+
+	return balances, nil
+}
+
+func (p *postgresql) CountFor(ctx context.Context, ids []int64) (map[int64]int64, error) {
+	counts := make(map[int64]int64, 10)
+
+	conn, err := p.db.Conn(ctx)
+	if err != nil {
+		return counts, err
+	}
+	defer conn.Close()
+
+	rows, err := conn.QueryContext(
+		ctx,
+		`
+		SELECT acc.id, SUM(tr.id) as trs
+		FROM
+				transactions tr
+				INNER JOIN accounts acc ON (tr.source_id = acc.id OR tr.target_id = acc.id)
+		WHERE
+				tr.deleted_at IS NULL
+				AND acc.id = ANY ($1)
+		GROUP BY acc.id
+		`,
+		ids,
+	)
+	if err != nil {
+		return counts, err
+	}
+
+	for rows.Next() {
+		var (
+			id    int64
+			count int64
+		)
+
+		err = rows.Scan(&id, &count)
+		if err != nil {
+			_ = rows.Close()
+			return counts, err
+		}
+
+		counts[id] = count
+	}
+
+	_ = rows.Close()
+
+	return counts, nil
 }

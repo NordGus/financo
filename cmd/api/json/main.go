@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"financo/cmd/api/json/consumers/accounts_consumers"
 	"financo/cmd/api/json/consumers/savings_goals_consumers"
 	"financo/cmd/api/json/handlers/accounts"
 	"financo/cmd/api/json/handlers/currencies"
@@ -76,6 +77,12 @@ func main() {
 	}()
 
 	err := savings_goals_consumers.Subscribe()
+	if err != nil {
+		log.Printf("failed to subscribe savings_goals_consumers: %s\n", err)
+		os.Exit(1)
+	}
+
+	err = accounts_consumers.Subscribe()
 	if err != nil {
 		log.Printf("failed to subscribe savings_goals_consumers: %s\n", err)
 		os.Exit(1)
