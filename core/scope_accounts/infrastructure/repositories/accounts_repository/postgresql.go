@@ -4,29 +4,29 @@ import (
 	"context"
 	"financo/core/domain/databases"
 	"financo/core/scope_accounts/domain/filters"
+	"financo/core/scope_accounts/domain/repositories"
 	"financo/models/account"
 )
 
 type Repository interface {
-	Find(ctx context.Context, id int64) (account.Record, error)
-	FindChildren(ctx context.Context, parentID int64) ([]account.Record, error)
-	Where(ctx context.Context, f filters.Accounts) ([]account.Record, error)
+	repositories.AccountRepository
+	repositories.AccountsRepository
 }
 
-type repository struct {
+type postgresql struct {
 	db databases.SQLAdapter
 }
 
 func NewPostgreSQL(db databases.SQLAdapter) Repository {
-	return &repository{
+	return &postgresql{
 		db: db,
 	}
 }
 
-func (r *repository) Find(ctx context.Context, id int64) (account.Record, error) {
+func (p *postgresql) Find(ctx context.Context, id int64) (account.Record, error) {
 	var record account.Record
 
-	conn, err := r.db.Conn(ctx)
+	conn, err := p.db.Conn(ctx)
 	if err != nil {
 		return record, err
 	}
@@ -77,10 +77,10 @@ func (r *repository) Find(ctx context.Context, id int64) (account.Record, error)
 	return record, err
 }
 
-func (r *repository) FindChildren(ctx context.Context, parentID int64) ([]account.Record, error) {
+func (p *postgresql) FindChildren(ctx context.Context, parentID int64) ([]account.Record, error) {
 	var res = make([]account.Record, 0, 10)
 
-	conn, err := r.db.Conn(ctx)
+	conn, err := p.db.Conn(ctx)
 	if err != nil {
 		return res, err
 	}
@@ -146,10 +146,10 @@ func (r *repository) FindChildren(ctx context.Context, parentID int64) ([]accoun
 	return res, nil
 }
 
-func (r *repository) Where(ctx context.Context, f filters.Accounts) ([]account.Record, error) {
+func (p *postgresql) Where(ctx context.Context, f filters.Accounts) ([]account.Record, error) {
 	var res = make([]account.Record, 0, 10)
 
-	conn, err := r.db.Conn(ctx)
+	conn, err := p.db.Conn(ctx)
 	if err != nil {
 		return res, err
 	}

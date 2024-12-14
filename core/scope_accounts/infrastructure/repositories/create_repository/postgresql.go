@@ -10,18 +10,18 @@ import (
 	"financo/models/transaction"
 )
 
-type repository struct {
+type postgresql struct {
 	db databases.SQLAdapter
 }
 
 func NewPostgreSQL(db databases.SQLAdapter) repositories.CreateAccountRepository {
-	return &repository{
+	return &postgresql{
 		db: db,
 	}
 }
 
-func (r *repository) Save(ctx context.Context, args repositories.CreateAccountSaveArgs) (account.Record, error) {
-	conn, err := r.db.Conn(ctx)
+func (p *postgresql) Save(ctx context.Context, args repositories.CreateAccountSaveArgs) (account.Record, error) {
+	conn, err := p.db.Conn(ctx)
 	if err != nil {
 		return args.Record, err
 	}
@@ -33,14 +33,14 @@ func (r *repository) Save(ctx context.Context, args repositories.CreateAccountSa
 	}
 
 	if args.Record.DynamicData.Main {
-		err = r.unmarkPreviousMainAccount(ctx, tx)
+		err = p.unmarkPreviousMainAccount(ctx, tx)
 		if err != nil {
 			_ = tx.Rollback()
 			return args.Record, err
 		}
 	}
 
-	args.Record, err = r.persistAccount(ctx, tx, args.Record)
+	args.Record, err = p.persistAccount(ctx, tx, args.Record)
 	if err != nil {
 		_ = tx.Rollback()
 		return args.Record, err
@@ -48,7 +48,7 @@ func (r *repository) Save(ctx context.Context, args repositories.CreateAccountSa
 
 	args.History.ParentID = nullable.New(args.Record.ID)
 
-	args.History, err = r.persistAccount(ctx, tx, args.History)
+	args.History, err = p.persistAccount(ctx, tx, args.History)
 	if err != nil {
 		_ = tx.Rollback()
 		return args.Record, err
@@ -57,7 +57,7 @@ func (r *repository) Save(ctx context.Context, args repositories.CreateAccountSa
 	if args.Interest.Valid {
 		args.Interest.Val.ParentID = nullable.New(args.Record.ID)
 
-		args.Interest.Val, err = r.persistAccount(ctx, tx, args.Interest.Val)
+		args.Interest.Val, err = p.persistAccount(ctx, tx, args.Interest.Val)
 		if err != nil {
 			_ = tx.Rollback()
 			return args.Record, err
@@ -66,7 +66,7 @@ func (r *repository) Save(ctx context.Context, args repositories.CreateAccountSa
 
 	args.HistoryTransaction = prepareHistoryTransaction(args.HistoryTransaction, args.Record, args.History)
 
-	args.HistoryTransaction, err = r.persistTransaction(ctx, tx, args.HistoryTransaction)
+	args.HistoryTransaction, err = p.persistTransaction(ctx, tx, args.HistoryTransaction)
 	if err != nil {
 		_ = tx.Rollback()
 		return args.Record, err
@@ -81,7 +81,7 @@ func (r *repository) Save(ctx context.Context, args repositories.CreateAccountSa
 	return args.Record, nil
 }
 
-func (r *repository) unmarkPreviousMainAccount(ctx context.Context, tx *sql.Tx) error {
+func (p *postgresql) unmarkPreviousMainAccount(ctx context.Context, tx *sql.Tx) error {
 	_, err := tx.ExecContext(
 		ctx,
 		`
@@ -96,7 +96,7 @@ func (r *repository) unmarkPreviousMainAccount(ctx context.Context, tx *sql.Tx) 
 	return err
 }
 
-func (r *repository) persistAccount(ctx context.Context, tx *sql.Tx, record account.Record) (account.Record, error) {
+func (p *postgresql) persistAccount(ctx context.Context, tx *sql.Tx, record account.Record) (account.Record, error) {
 	err := tx.QueryRowContext(
 		ctx,
 		`
@@ -132,7 +132,7 @@ func (r *repository) persistAccount(ctx context.Context, tx *sql.Tx, record acco
 	return record, err
 }
 
-func (r *repository) persistTransaction(
+func (p *postgresql) persistTransaction(
 	ctx context.Context, tx *sql.Tx, record transaction.Record,
 ) (transaction.Record, error) {
 	err := tx.QueryRowContext(

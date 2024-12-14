@@ -18,8 +18,8 @@ func NewPostgreSQL(db databases.SQLAdapter) repositories.ArchivalRepository {
 	}
 }
 
-func (r *postgresql) Archive(ctx context.Context, id int64, at nullable.Type[time.Time], timestamp time.Time) error {
-	conn, err := r.db.Conn(ctx)
+func (p *postgresql) Archive(ctx context.Context, id int64, at nullable.Type[time.Time], timestamp time.Time) error {
+	conn, err := p.db.Conn(ctx)
 	if err != nil {
 		return err
 	}
