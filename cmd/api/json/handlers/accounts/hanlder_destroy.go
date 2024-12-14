@@ -5,7 +5,7 @@ import (
 	"financo/core/scope_accounts/application/commands/delete_command"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/infrastructure/broker_handler"
-	"financo/core/scope_accounts/infrastructure/delete_account_repository"
+	"financo/core/scope_accounts/infrastructure/repositories/delete_repository"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -23,7 +23,7 @@ func destroy(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req := requests.Delete{ID: id}
-	repo := delete_account_repository.NewPostgreSQL(postgresql_database.New())
+	repo := delete_repository.NewPostgreSQL(postgresql_database.New())
 
 	broker, err := broker_handler.Instance()
 	if err != nil {

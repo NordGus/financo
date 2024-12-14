@@ -8,6 +8,8 @@ import (
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/domain/responses"
+	"financo/lib/nullable"
+	"time"
 )
 
 type command struct {
@@ -29,17 +31,35 @@ func New(
 }
 
 func (c *command) Run(ctx context.Context) (responses.Deleted, error) {
-	record, err := c.repo.SoftDelete(ctx, c.req.ID)
+	var (
+		timestamp = time.Now().UTC()
+
+		res responses.Deleted
+	)
+
+	record, err := c.repo.Find(ctx, c.req.ID)
 	if err != nil {
-		return responses.Deleted{}, err
+		return res, err
 	}
 
-	res := responses.Deleted{ID: record.ID, Name: record.Name}
+	record.DeletedAt = nullable.New(timestamp)
+	record.UpdatedAt = timestamp
+
+	err = c.repo.SoftDelete(ctx, record)
+	if err != nil {
+		return res, err
+	}
 
 	err = c.broker.Publish(messages.Deleted{Record: record})
 	if err != nil {
 		return res, err
 	}
 
-	return res, nil
+	return responses.Deleted{
+		ID:    record.ID,
+		Name:  record.Name,
+		Kind:  record.Kind,
+		Color: record.Color,
+		Icon:  record.Icon,
+	}, nil
 }
