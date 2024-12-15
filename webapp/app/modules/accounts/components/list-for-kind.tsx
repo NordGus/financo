@@ -34,7 +34,7 @@ export function ListForKind({ accounts, forKind, forArchived = false }: Props) {
             <DialogTrigger asChild>
               <Button
                 variant="link"
-                className="flex justify-center items-center text-base leading-snug gap-2 h-auto p-6 border border-dashed"
+                className="flex justify-center items-center text-base leading-snug gap-2 h-auto p-6 border-2 border-dashed rounded-xl"
               >
                 <PlusIcon /> New
               </Button>
