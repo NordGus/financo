@@ -3,11 +3,13 @@ import { toast } from "sonner";
 import { archiveAccount } from "~/modules/accounts/api/commands/archive-account";
 import { deleteAccount } from "~/modules/accounts/api/commands/delete-account";
 import { unarchiveAccount } from "~/modules/accounts/api/commands/unarchive-account";
-import { Create } from "~/modules/accounts/types/create";
+import { updateAccount } from "~/modules/accounts/api/commands/update-account";
+import { Intents } from "~/modules/accounts/types/actions";
+import { Update } from "~/modules/accounts/types/update";
 import { Route } from "./+types/show";
 
-interface ActionRequestBody extends Create {
-  intent: "archive" | "unarchive" | "delete"
+interface ActionRequestBody extends Update {
+  intent: Intents["archive"] | Intents["unarchive"] | Intents["delete"] | Intents["update"]
 }
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
@@ -71,6 +73,29 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
           loading: "Deleting...",
           success: (data) => {
             return `${data.name} deleted`
+          },
+          error: "Oops!. Something went wrong"
+        })
+
+        await response
+
+        return redirect("/accounts")
+      } catch (error) {
+        if (error instanceof Response && error.status === 401) throw error
+
+        console.error(error)
+
+        return null
+      }
+    },
+    update: async () => {
+      try {
+        const response = updateAccount({ ...values })
+
+        toast.promise(response, {
+          loading: "Updating...",
+          success: (data) => {
+            return `${data.name} updated`
           },
           error: "Oops!. Something went wrong"
         })

@@ -26,47 +26,42 @@ import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
 import { Switch } from "~/shared/components/ui/switch";
 import { Textarea } from "~/shared/components/ui/textarea";
-import { isCapital, isCredit, isDebt, isLoan, Kind } from "~/shared/types/account";
-import { Currency } from "~/shared/types/currency";
-import { Icon } from "~/shared/types/icon";
+import { isCapital, isCredit, isDebt, isLoan } from "~/shared/types/account";
 import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { mainAccountManual } from "../../manual/main-account-manual";
-import { schema } from "../../schemas/create";
-import { Created } from "../../types/create";
+import { schema } from "../../schemas/update";
+import { Account } from "../../types/preview";
+import { Updated } from "../../types/update";
 
 interface Props {
-  kind: Kind
-  defaultCurrency: Currency
-  defaultIcon: Icon
-  keyId: number
+  account: Account
   onSuccess: () => void
-  withCapital?: boolean
 }
 
-export function UpdateAccount({
-  defaultIcon,
-  defaultCurrency,
-  kind,
-  keyId,
-  onSuccess,
-  withCapital = false,
-}: Props) {
-  const isFixedSignDebt = isCredit(kind) || isLoan(kind)
-  const forDebts = isDebt(kind)
-  const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
+export function UpdateAccount({ account, onSuccess }: Props) {
+  const isFixedSignDebt = isCredit(account.kind) || isLoan(account.kind)
+  const forDebts = isDebt(account.kind)
+  const withCapital = isDebt(account.kind)
+  const [hasIncompleteLedger, setHasIncompleteLedger] = useState(!!account.additionalData.history.at)
   const [loading, setLoading] = useState(false)
-  const fetcher = useFetcher<Created | null>({ key: `accounts.create.${kind}.${keyId}` })
+  const fetcher = useFetcher<Updated | null>({ key: `accounts.update.${account.id}` })
+  const historyAt = account.additionalData.history.at ? moment(account.additionalData.history.at).toDate() : undefined
+  const historyBalance = account.additionalData.history.balance || undefined
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      kind: kind,
-      currency: defaultCurrency,
-      capital: 0,
-      icon: defaultIcon,
-      main: false,
-      intent: "create"
+      id: account.id,
+      name: account.name,
+      description: account.description || undefined,
+      currency: account.currency,
+      capital: account.capital,
+      color: account.color,
+      icon: account.icon,
+      history: { at: historyAt, balance: historyBalance },
+      main: isCapital(account.kind) ? account.additionalData.main : false,
+      intent: "update"
     }
   })
 
@@ -81,14 +76,14 @@ export function UpdateAccount({
           at: values.history.at ? moment(values.history.at).utc().toISOString() : null,
         }
       },
-      { action: "/accounts", method: "post", encType: "application/json" }
+      { action: `/accounts/${account.id}`, method: "post", encType: "application/json" }
     )
   }
 
   useEffect(() => {
     if (hasIncompleteLedger) {
-      form.setValue("history.at", new Date())
-      form.setValue("history.balance", 0)
+      form.setValue("history.at", historyAt)
+      form.setValue("history.balance", historyBalance)
     } else {
       form.setValue("history.at", undefined)
       form.setValue("history.balance", undefined)
@@ -206,7 +201,7 @@ export function UpdateAccount({
           )
         }
         {
-          isCapital(kind) && (
+          isCapital(account.kind) && (
             <FormField
               control={form.control}
               name="main"
@@ -265,7 +260,7 @@ export function UpdateAccount({
         </Accordion>
         <DialogFooter>
           <Button type="submit" className="min-w-24" disabled={loading}>
-            {loading ? <Throbber size={"sm"} /> : "Create"}
+            {loading ? <Throbber size={"sm"} /> : "Update"}
           </Button>
         </DialogFooter>
       </form>

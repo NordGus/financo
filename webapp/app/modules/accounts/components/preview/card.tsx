@@ -1,5 +1,6 @@
 import { isNil } from "lodash-es";
 import { useMemo, useState } from "react";
+import { redirect } from "react-router";
 import { cn } from "~/lib/utils";
 import {
   Card,
@@ -20,6 +21,7 @@ import { isDebt } from "~/shared/types/account";
 import { Account } from "../../types/preview";
 import { ArchivedAccount } from "../badges/archived-account";
 import { MainAccount } from "../badges/main-account";
+import { UpdateAccount } from "../forms/update";
 import { ActionablesMenu } from "./actionables-menu";
 import { PaymentProgress } from "./payment-progress";
 
@@ -48,16 +50,12 @@ export function Preview({ account }: Props) {
   if (deletedAt) return null
 
   const isArchived = useMemo(() => !isNil(archivedAt), [archivedAt])
-  const balanceAmount = useMemo(() => {
-    if (isDebt(kind)) return currencyAmountToHuman(balance + capital, currency)
-
-    return currencyAmountToHuman(balance, currency)
-  }, [balance, capital])
-  const balanceColorClass = useMemo(() => {
-    if (isDebt(kind)) return currencyAmountColor(balance + capital)
-
-    return currencyAmountColor(balance)
-  }, [balance, capital])
+  const balanceAmount = useMemo(() => (
+    currencyAmountToHuman(isDebt(kind) ? balance + capital : balance, currency)
+  ), [balance, capital])
+  const balanceColorClass = useMemo(() => (
+    currencyAmountColor(isDebt(kind) ? balance + capital : balance)
+  ), [balance, capital])
 
   return (
     <>
@@ -117,8 +115,15 @@ export function Preview({ account }: Props) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Account</DialogTitle>
-            <DialogDescription>Edit your account</DialogDescription>
+            <DialogDescription className={"hidden"} data-hidden>Edit your account</DialogDescription>
           </DialogHeader>
+          <UpdateAccount
+            account={account}
+            onSuccess={() => {
+              setOpenEdit(false)
+              redirect(".")
+            }}
+          />
         </DialogContent>
       </Dialog>
     </>

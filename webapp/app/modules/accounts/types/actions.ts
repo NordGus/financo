@@ -5,3 +5,5 @@ export const INTENTS = {
   archive: "archive",
   unarchive: "unarchive"
 } as const
+
+export type Intents = typeof INTENTS
