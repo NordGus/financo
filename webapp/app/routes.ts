@@ -10,18 +10,23 @@ export default [
   layout("shared/layout.tsx", [
     index("routes/home.tsx"),
     route("dashboard", "routes/dashboard.tsx"),
-    route("accounts", "routes/accounts/wrapper.tsx", [
+
+    ...prefix("accounts", [
       index("routes/accounts/index.tsx"),
-      route(":id", "routes/accounts/show.tsx")
+      route(":id", "routes/accounts/show.tsx"), // for actions/loaders only it does not contain a view
     ]),
+
     ...prefix("ledger", [
       index("routes/ledger/index.tsx")
     ]),
+
     route("achievements", "routes/achievements/index.tsx")
   ]),
+
   ...prefix("currencies", [
-    route("for-select", "routes/currencies/for-select.tsx")
+    route("for-select", "routes/currencies/for-select.tsx") // for actions/loaders only it does not contain a view
   ]),
+
   layout("modules/authentication/layout.tsx", [
     route("login", "routes/login.tsx"),
   ])

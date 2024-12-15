@@ -9,7 +9,6 @@ func Routes(r chi.Router) {
 	r.Post("/", create)
 
 	r.Route("/{id}", func(r chi.Router) {
-		r.Get("/", show)
 		r.Delete("/", destroy)
 		r.Put("/", update)
 		r.Patch("/archive", archive)
