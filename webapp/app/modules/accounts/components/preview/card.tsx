@@ -1,6 +1,5 @@
 import { isNil } from "lodash-es";
-import { useMemo } from "react";
-import { useNavigate } from "react-router";
+import { useMemo, useState } from "react";
 import { cn } from "~/lib/utils";
 import {
   Card,
@@ -10,6 +9,7 @@ import {
   CardHeader,
   CardTitle
 } from "~/shared/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
 import { icons } from "~/shared/components/ui/icon";
 import { colorContrast } from "~/shared/helpers/color-contrast";
 import { currencyAmountColor } from "~/shared/helpers/currency-amount-color";
@@ -27,10 +27,9 @@ interface Props {
   account: Account
 }
 
-export function Preview({ account: loaderAccount }: Props) {
-  const navigate = useNavigate()
+export function Preview({ account }: Props) {
+  const [openEdit, setOpenEdit] = useState(false)
   const {
-    id,
     kind,
     currency,
     name,
@@ -44,7 +43,7 @@ export function Preview({ account: loaderAccount }: Props) {
     },
     archivedAt,
     deletedAt
-  } = loaderAccount
+  } = account
 
   if (deletedAt) return null
 
@@ -61,57 +60,67 @@ export function Preview({ account: loaderAccount }: Props) {
   }, [balance, capital])
 
   return (
-    <Card>
-      <CardHeader
-        className="min-h-28 cursor-pointer"
-        style={{
-          backgroundColor: color,
-          color: colorContrast(color)
-        }}
-        onClick={() => navigate(`/accounts/${id}`)}
-      >
-        <CardTitle className="flex flex-row gap-1 items-center [&_svg]:size-5">
-          {icons[icon]} {name}
-        </CardTitle>
-        <CardDescription
+    <>
+      <Card>
+        <CardHeader
+          className="min-h-28 cursor-pointer"
           style={{
-            color: colorContrast(color),
-            opacity: "70%",
+            backgroundColor: color,
+            color: colorContrast(color)
           }}
+          onClick={() => setOpenEdit(true)}
         >
-          {description}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-row justify-end gap-2 pt-4">
-          {
-            capital !== 0 && (
-              <span>
-                {
-                  capital > 0
-                    ? "I'm owed"
-                    : "I owe"
-                }
-              </span>
-            )
-          }
-          <span className={cn("font-semibold", balanceColorClass)}>
-            {balanceAmount}
-          </span>
-        </div>
-      </CardContent>
-      <CardFooter className="flex flex-row justify-end items-center gap-2">
-        {main && <MainAccount />}
-        {isArchived && <ArchivedAccount />}
-        <div className="flex-grow-[3]">
-          <PaymentProgress capital={capital} balance={balance} currency={currency} color={color} kind={kind} />
-        </div>
-        <div className="flex-grow flex flex-row justify-end gap-2">
-          <ActionablesMenu
-            account={loaderAccount}
-          />
-        </div>
-      </CardFooter>
-    </Card>
+          <CardTitle className="flex flex-row gap-1 items-center [&_svg]:size-5">
+            {icons[icon]} {name}
+          </CardTitle>
+          <CardDescription
+            style={{
+              color: colorContrast(color),
+              opacity: "70%",
+            }}
+          >
+            {description}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-row justify-end gap-2 pt-4">
+            {
+              capital !== 0 && (
+                <span>
+                  {
+                    capital > 0
+                      ? "I'm owed"
+                      : "I owe"
+                  }
+                </span>
+              )
+            }
+            <span className={cn("font-semibold", balanceColorClass)}>
+              {balanceAmount}
+            </span>
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-row justify-end items-center gap-2">
+          {main && <MainAccount />}
+          {isArchived && <ArchivedAccount />}
+          <div className="flex-grow-[3]">
+            <PaymentProgress capital={capital} balance={balance} currency={currency} color={color} kind={kind} />
+          </div>
+          <div className="flex-grow flex flex-row justify-end gap-2">
+            <ActionablesMenu
+              account={account}
+            />
+          </div>
+        </CardFooter>
+      </Card>
+      <Dialog modal open={openEdit} onOpenChange={setOpenEdit}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Account</DialogTitle>
+            <DialogDescription>Edit your account</DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
