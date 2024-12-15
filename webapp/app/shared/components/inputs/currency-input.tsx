@@ -1,3 +1,4 @@
+import { isEmpty, isNil } from "lodash-es";
 import { useEffect } from "react";
 import { useFetcher } from "react-router";
 import { clientLoader } from "~/routes/currencies/for-select";
@@ -33,7 +34,7 @@ export function CurrencyInput({ onValueChange, defaultValue }: Props) {
       </FormControl>
       <SelectContent>
         {
-          !fetcher.data?.currencies
+          isEmpty(fetcher.data?.currencies) || isNil(fetcher.data?.currencies)
             ? <Throbber size="sm" />
             : fetcher.data.currencies.map(({ code, name }) => (
               <SelectItem value={code} key={`currency.${code}`}>{name}</SelectItem>
