@@ -52,7 +52,7 @@ export function Preview({ account }: Props) {
   const isArchived = useMemo(() => !isNil(archivedAt), [archivedAt])
   const balanceAmount = useMemo(() => (
     currencyAmountToHuman(isDebt(kind) ? balance + capital : balance, currency)
-  ), [balance, capital])
+  ), [balance, capital, currency])
   const balanceColorClass = useMemo(() => (
     currencyAmountColor(isDebt(kind) ? balance + capital : balance)
   ), [balance, capital])
