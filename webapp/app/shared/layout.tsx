@@ -1,5 +1,6 @@
 import {
   BookMarkedIcon,
+  BookmarkIcon,
   LayoutDashboardIcon,
   NotebookTabsIcon,
   RouteIcon,
@@ -30,6 +31,9 @@ export default function Layout() {
         </NavItem>
         <NavItem to="/accounts">
           <VaultIcon /> Accounts
+        </NavItem>
+        <NavItem to="/categories">
+          <BookmarkIcon /> Categories
         </NavItem>
         <NavItem to="/ledger">
           <BookMarkedIcon /> Ledger
