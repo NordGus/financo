@@ -16,8 +16,6 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
   const id = Number(params.id)
   const values: ActionRequestBody = await request.json()
 
-  console.log(values.intent)
-
   const actions = {
     archive: async () => {
       try {
@@ -100,9 +98,9 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
           error: "Oops!. Something went wrong"
         })
 
-        await response
+        const updated = await response
 
-        return redirect("/accounts")
+        return updated
       } catch (error) {
         if (error instanceof Response && error.status === 401) throw error
 
