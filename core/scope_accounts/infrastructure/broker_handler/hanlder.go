@@ -4,20 +4,24 @@ import (
 	"context"
 	"financo/core/scope_accounts/domain/brokers"
 	"financo/core/scope_accounts/domain/errors"
+	"financo/core/scope_accounts/infrastructure/brokers/archived_broker"
 	"financo/core/scope_accounts/infrastructure/brokers/created_broker"
 	"financo/core/scope_accounts/infrastructure/brokers/deleted_broker"
+	"financo/core/scope_accounts/infrastructure/brokers/unarchived_broker"
 	"financo/core/scope_accounts/infrastructure/brokers/updated_broker"
 	"fmt"
 	"sync"
 )
 
 type handler struct {
-	ctx           context.Context
-	wg            *sync.WaitGroup
-	cancel        context.CancelFunc
-	createdBroker brokers.CreatedBroker
-	deletedBroker brokers.DeletedBroker
-	updatedBroker brokers.UpdatedBroker
+	ctx              context.Context
+	wg               *sync.WaitGroup
+	cancel           context.CancelFunc
+	createdBroker    brokers.CreatedBroker
+	deletedBroker    brokers.DeletedBroker
+	updatedBroker    brokers.UpdatedBroker
+	archivedBroker   brokers.ArchivedBroker
+	unarchivedBroker brokers.UnarchivedBroker
 }
 
 var instance *handler
@@ -34,12 +38,14 @@ func Initialize(wg *sync.WaitGroup) brokers.Handler {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	instance = &handler{
-		ctx:           ctx,
-		cancel:        cancel,
-		wg:            wg,
-		createdBroker: created_broker.NewInMemory(ctx, wg),
-		deletedBroker: deleted_broker.NewInMemory(ctx, wg),
-		updatedBroker: updated_broker.NewInMemory(ctx, wg),
+		ctx:              ctx,
+		cancel:           cancel,
+		wg:               wg,
+		createdBroker:    created_broker.NewInMemory(ctx, wg),
+		deletedBroker:    deleted_broker.NewInMemory(ctx, wg),
+		updatedBroker:    updated_broker.NewInMemory(ctx, wg),
+		archivedBroker:   archived_broker.NewInMemory(ctx, wg),
+		unarchivedBroker: unarchived_broker.NewInMemory(ctx, wg),
 	}
 
 	return instance
@@ -63,6 +69,14 @@ func (b *handler) DeletedBroker() brokers.DeletedBroker {
 
 func (b *handler) UpdatedBroker() brokers.UpdatedBroker {
 	return b.updatedBroker
+}
+
+func (b *handler) ArchivedBroker() brokers.ArchivedBroker {
+	return b.archivedBroker
+}
+
+func (b *handler) UnarchivedBroker() brokers.UnarchivedBroker {
+	return b.unarchivedBroker
 }
 
 // [ ] TODO rethink the whole shutdown mechanism.
