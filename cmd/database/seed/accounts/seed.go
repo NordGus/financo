@@ -246,7 +246,7 @@ func seed(
 		ac[history.Kind] += 1
 	}
 
-	if !account.IsExternal(parent.Kind) && s.Account.DynamicData.History.At.Valid {
+	if !account.IsExternal(parent.Kind) {
 		tr := historyTransactionTemplate
 
 		tr.SourceID = history.ID
@@ -262,6 +262,10 @@ func seed(
 			tr.SourceID, tr.TargetID = tr.TargetID, tr.SourceID
 			tr.SourceAmount = -tr.SourceAmount
 			tr.TargetAmount = -tr.TargetAmount
+		}
+
+		if !s.Account.DynamicData.History.At.Valid {
+			tr.DeletedAt = nullable.New(timestamp)
 		}
 
 		tr, err = createTransaction(ctx, tr, tx)

@@ -212,7 +212,7 @@ func (p *postgresql) findTransaction(
 		FROM transactions
 		WHERE
 			(source_id = $1 AND target_id = $2)
-			AND (source_id = $2 AND target_id = $1)
+			OR (source_id = $2 AND target_id = $1)
 		`,
 		id,
 		hid,
@@ -271,7 +271,6 @@ func (p *postgresql) persistTransaction(ctx context.Context, tx *sql.Tx, r trans
 		SET
 			source_id = $2, target_id = $3, source_amount = $4, target_amount = $5, notes = $6, issued_at = $7,
 			executed_at = $8, deleted_at = $9, created_at = $10, updated_at = $11
-		FROM transactions
 		WHERE id = $1
 		RETURNING id
 		`,
