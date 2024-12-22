@@ -57,5 +57,5 @@ function isExpense(kind: Kind) {
 
 export { isCapital, isCredit, isDebt, isExpense, isIncome, isLoan, isPersonalDebt, isSavings };
 
-export type { Kind };
+export type { Kind, Kinds };
 
