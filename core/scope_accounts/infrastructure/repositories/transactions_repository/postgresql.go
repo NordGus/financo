@@ -120,6 +120,7 @@ func (p *postgresql) BalanceFor(ctx context.Context, ids []int64) (map[int64]int
 			acc.id,
 			SUM(
 				CASE
+				WHEN acc.kind = ANY($2) THEN 0
 				WHEN tr.source_id = acc.id THEN - tr.source_amount
 				ELSE tr.target_amount
 				END
@@ -133,6 +134,7 @@ func (p *postgresql) BalanceFor(ctx context.Context, ids []int64) (map[int64]int
 		GROUP BY acc.id
 		`,
 		ids,
+		[]account.Kind{account.ExternalExpense, account.ExternalIncome},
 	)
 	if err != nil {
 		return balances, err
