@@ -1,9 +1,9 @@
-import { useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import { InfoAlert } from "~/shared/components/alerts/info";
 import { InfoDialog } from "~/shared/components/dialogs/info";
-import { Button } from "~/shared/components/ui/button";
 import { Heading1, Heading2 } from "~/shared/components/ui/headings";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/components/ui/select";
 import { isCapital, isCredit, isLoan, isPersonalDebt, isSavings } from "~/shared/types/account";
 import { ListForKind } from "../components/list-for-kind";
 import { accountKindsManual } from "../manual/account-kinds-manual";
@@ -28,33 +28,25 @@ function withView(view?: string | null): View {
 
 export function Screen({ accounts }: Props) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const view = useMemo(() => withView(searchParams.get("view")), [searchParams.get("view")]);
+  const [view, setView] = useState(withView(searchParams.get("view")))
+
   const archived = (archivedAt?: string | null) => view === "active" ? !archivedAt : archivedAt;
+
+  useEffect(() => setSearchParams({ view: view }), [view])
 
   return (
     <div className="flex flex-col gap-4">
       <Heading1>Accounts</Heading1>
-      <div className="flex flex-row gap-4">
-        <Button
-          variant={view === "active" ? "secondary" : "outline"}
-          onClick={() => setSearchParams((prev) => {
-            prev.set("view", "active")
-
-            return prev
-          })}
-        >
-          Active
-        </Button>
-        <Button
-          variant={view === "archived" ? "secondary" : "outline"}
-          onClick={() => setSearchParams((prev) => {
-            prev.set("view", "archived")
-
-            return prev
-          })}
-        >
-          Archived
-        </Button>
+      <div className="grid grid-cols-4 gap-4">
+        <Select value={view} onValueChange={(value) => setView(withView(value))}>
+          <SelectTrigger>
+            <SelectValue placeholder="View" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="archived">Archived</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       {view === "archived" && <InfoAlert copy={archivedAccountsManual} />}
       <Heading2 className="flex gap-4 items-center">
