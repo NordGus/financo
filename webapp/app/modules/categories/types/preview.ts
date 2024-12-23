@@ -14,6 +14,7 @@ interface Child {
   deletedAt?: string | null
   createdAt: string
   updatedAt: string
+  transactions: number
 }
 
 interface Account {
@@ -28,6 +29,7 @@ interface Account {
   deletedAt?: string | null
   createdAt: string
   updatedAt: string
+  transactions: number
   children: Child[]
 }
 

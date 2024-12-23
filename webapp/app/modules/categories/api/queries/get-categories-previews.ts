@@ -1,4 +1,4 @@
-import { Account } from "../../type/preview";
+import { Account } from "../../types/preview";
 
 export async function getCategoriesPreviews(): Promise<Account[]> {
   const response = await fetch("/api/categories")
