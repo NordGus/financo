@@ -34,33 +34,35 @@ func (q *query) Find(ctx context.Context) ([]responses.Listed, error) {
 
 	for i := 0; i < len(records); i++ {
 		r := responses.Listed{
-			ID:          records[i].Account.ID,
-			Kind:        records[i].Account.Kind,
-			Currency:    records[i].Account.Currency,
-			Name:        records[i].Account.Name,
-			Description: records[i].Account.Description,
-			Color:       records[i].Account.Color,
-			Icon:        records[i].Account.Icon,
-			ArchivedAt:  records[i].Account.ArchivedAt,
-			DeletedAt:   records[i].Account.DeletedAt,
-			CreatedAt:   records[i].Account.CreatedAt,
-			UpdatedAt:   records[i].Account.UpdatedAt,
-			Children:    make([]responses.ListedChild, 0, len(records[i].Children)),
+			ID:           records[i].Account.ID,
+			Kind:         records[i].Account.Kind,
+			Currency:     records[i].Account.Currency,
+			Name:         records[i].Account.Name,
+			Description:  records[i].Account.Description,
+			Color:        records[i].Account.Color,
+			Icon:         records[i].Account.Icon,
+			ArchivedAt:   records[i].Account.ArchivedAt,
+			DeletedAt:    records[i].Account.DeletedAt,
+			CreatedAt:    records[i].Account.CreatedAt,
+			UpdatedAt:    records[i].Account.UpdatedAt,
+			Transactions: records[i].Account.DynamicData.Transactions,
+			Children:     make([]responses.ListedChild, 0, len(records[i].Children)),
 		}
 
 		for j := 0; j < len(records[i].Children); j++ {
 			r.Children = append(r.Children, responses.ListedChild{
-				ID:          records[i].Children[j].ID,
-				Kind:        records[i].Children[j].Kind,
-				Currency:    records[i].Children[j].Currency,
-				Name:        records[i].Children[j].Name,
-				Description: records[i].Children[j].Description,
-				Color:       records[i].Children[j].Color,
-				Icon:        records[i].Children[j].Icon,
-				ArchivedAt:  records[i].Children[j].ArchivedAt,
-				DeletedAt:   records[i].Children[j].DeletedAt,
-				CreatedAt:   records[i].Children[j].CreatedAt,
-				UpdatedAt:   records[i].Children[j].UpdatedAt,
+				ID:           records[i].Children[j].ID,
+				Kind:         records[i].Children[j].Kind,
+				Currency:     records[i].Children[j].Currency,
+				Name:         records[i].Children[j].Name,
+				Description:  records[i].Children[j].Description,
+				Color:        records[i].Children[j].Color,
+				Icon:         records[i].Children[j].Icon,
+				ArchivedAt:   records[i].Children[j].ArchivedAt,
+				DeletedAt:    records[i].Children[j].DeletedAt,
+				CreatedAt:    records[i].Children[j].CreatedAt,
+				UpdatedAt:    records[i].Children[j].UpdatedAt,
+				Transactions: records[i].Children[j].DynamicData.Transactions,
 			})
 		}
 
