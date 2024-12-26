@@ -37,6 +37,7 @@ export function Preview({ account, isArchived }: Props) {
             <span
               key={`category.${account.id}.${child.id}`}
               className="rounded-md px-2 py-0.5 border text-sm"
+              style={{ borderColor: colorContrast(account.color) }}
             >
               {child.name}
             </span>
