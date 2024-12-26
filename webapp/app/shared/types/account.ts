@@ -55,7 +55,11 @@ function isExpense(kind: Kind) {
   return kind === KINDS.external_expense
 }
 
-export { isCapital, isCredit, isDebt, isExpense, isIncome, isLoan, isPersonalDebt, isSavings };
+function isCategory(kind: Kind) {
+  return kind === KINDS.external_expense || kind === KINDS.external_income
+}
+
+export { isCapital, isCategory, isCredit, isDebt, isExpense, isIncome, isLoan, isPersonalDebt, isSavings };
 
 export type { Kind, Kinds };
 

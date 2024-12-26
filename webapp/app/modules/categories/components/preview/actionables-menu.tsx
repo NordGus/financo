@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "~/shared/components/ui/dropdown-menu"
+import { isCategory } from "~/shared/types/account"
 import { Account } from "../../types/preview"
 import { ArchiveDialog } from "../dialogs/archive"
 import { DeleteDialog } from "../dialogs/delete"
@@ -17,7 +18,7 @@ interface Props {
   account: Account
 }
 
-export function ActionablesMenu({ account: { id, name, archivedAt, transactions, children } }: Props) {
+export function ActionablesMenu({ account: { id, name, kind, archivedAt, transactions, children } }: Props) {
   const [openUnarchiveDialog, setOpenUnarchiveDialog] = useState(false)
   const [openArchiveDialog, setOpenArchiveDialog] = useState(false)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
@@ -25,7 +26,7 @@ export function ActionablesMenu({ account: { id, name, archivedAt, transactions,
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+        <DropdownMenuTrigger asChild disabled={!isCategory(kind)}>
           <Button variant="outline" size="icon">
             <EllipsisIcon />
           </Button>

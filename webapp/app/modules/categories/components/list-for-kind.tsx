@@ -1,10 +1,12 @@
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
+import { redirect } from "react-router";
 import { Button } from "~/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "~/shared/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "~/shared/components/ui/dialog";
 import { Kind } from "~/shared/types/account";
 import { Account } from "../types/preview";
+import { CreateCategory } from "./forms/create";
 import { Preview } from "./preview/card";
 
 interface Props {
@@ -13,7 +15,7 @@ interface Props {
   archived: boolean
 }
 
-export function ListForKind({ accounts, archived }: Props) {
+export function ListForKind({ accounts, archived, kind }: Props) {
   const [openCreate, setOpenCreate] = useState(false)
 
   const isArchived = (archivedAt?: string | null) => archived ? !!archivedAt : !archivedAt
@@ -32,7 +34,15 @@ export function ListForKind({ accounts, archived }: Props) {
               </Button>
             </DialogTrigger>
             <DialogContent>
-              Create Category
+              <CreateCategory
+                kind={kind}
+                defaultCurrency={"EUR"}
+                onSuccess={() => {
+                  setOpenCreate(false)
+
+                  redirect(".")
+                }}
+              />
             </DialogContent>
           </Dialog>
         )
