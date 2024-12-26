@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router";
 import { toast } from "sonner";
-import { createCategory } from "~/modules/categories/api/actions/create-category";
+import { createCategory } from "~/modules/categories/api/commands/create-category";
 import { getCategoriesPreviews } from "~/modules/categories/api/queries/get-categories-previews";
 import { Screen } from "~/modules/categories/screens";
 import { Intent } from "~/modules/categories/types/actions";
