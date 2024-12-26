@@ -22,6 +22,7 @@ import (
 	"time"
 
 	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
+	categories_broker "financo/core/scope_categories/infrastructure/broker_handler"
 	transactions_broker "financo/core/scope_transactions/infrastructure/broker_handler"
 	"financo/services/in_memory_session_store"
 	"financo/services/postgresql_database"
@@ -44,12 +45,19 @@ func main() {
 		sessionStore       = in_memory_session_store.New()
 		umbilicalService   = umbilical.New()
 		accountsBroker     = accounts_broker.Initialize(wg)
+		categoriesBroker   = categories_broker.Initialize(wg)
 		transactionsBroker = transactions_broker.Initialize(wg)
 	)
 
 	defer func() {
 		if err := accountsBroker.Shutdown(); err != nil {
 			log.Printf("failed to shutdown accounts broker: %s\n", err)
+		}
+	}()
+
+	defer func() {
+		if err := categoriesBroker.Shutdown(); err != nil {
+			log.Printf("failed to shutdown categories broker: %s\n", err)
 		}
 	}()
 
