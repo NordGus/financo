@@ -19,9 +19,15 @@ type command struct {
 	broker brokers.CreatedBroker
 }
 
-func New(req requests.Create) commands.Command[responses.Created] {
+func New(
+	req requests.Create,
+	repo repositories.CreateRepository,
+	broker brokers.CreatedBroker,
+) commands.Command[responses.Created] {
 	return &command{
-		req: req,
+		req:    req,
+		repo:   repo,
+		broker: broker,
 	}
 }
 
