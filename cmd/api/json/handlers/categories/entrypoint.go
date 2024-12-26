@@ -4,7 +4,7 @@ import "github.com/go-chi/chi/v5"
 
 func Routes(r chi.Router) {
 	r.Get("/", index)
-	// r.Post("/", create)
+	r.Post("/", create)
 
 	// r.Route("/{id}", func(r chi.Router) {
 	// 	r.Delete("/", destroy)
