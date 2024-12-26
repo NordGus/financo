@@ -7,3 +7,10 @@ export const INTENTS = {
 } as const
 
 export type Intents = typeof INTENTS
+
+export type Intent =
+  Intents["create"] |
+  Intents["update"] |
+  Intents["delete"] |
+  Intents["archive"] |
+  Intents["unarchive"]
