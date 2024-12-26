@@ -1,4 +1,4 @@
-package archive_repository
+package archival_repository
 
 import (
 	"context"
@@ -13,7 +13,7 @@ type postgresql struct {
 	db databases.SQLAdapter
 }
 
-func NewPostgreSQL(db databases.SQLAdapter) repositories.ArchiveRepository {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.ArchivalRepository {
 	return &postgresql{
 		db: db,
 	}

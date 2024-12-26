@@ -5,7 +5,7 @@ import (
 	"financo/core/scope_categories/application/commands/archive_command"
 	"financo/core/scope_categories/domain/requests"
 	"financo/core/scope_categories/infrastructure/broker_handler"
-	"financo/core/scope_categories/infrastructure/repositories/archive_repository"
+	"financo/core/scope_categories/infrastructure/repositories/archival_repository"
 	"financo/core/scope_categories/infrastructure/repositories/categories_repository"
 	"financo/services/postgresql_database"
 	"log"
@@ -62,7 +62,7 @@ func archive(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	archivalRepo := archive_repository.NewPostgreSQL(db)
+	archivalRepo := archival_repository.NewPostgreSQL(db)
 	repo := categories_repository.NewPostgreSQL(db)
 
 	broker, err := broker_handler.Instance()
