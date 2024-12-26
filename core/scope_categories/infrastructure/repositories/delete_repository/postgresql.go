@@ -12,7 +12,7 @@ type postgresql struct {
 	db databases.SQLAdapter
 }
 
-func PostgreSQL(db databases.SQLAdapter) repositories.DeleteRepository {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.DeleteRepository {
 	return &postgresql{
 		db: db,
 	}
