@@ -84,7 +84,6 @@ func (p *postgresql) Unarchive(ctx context.Context, id int64, timestamp time.Tim
 		WHERE
 			id = $1
 			AND kind = ANY($2)
-			AND archived_at IS NULL
 			AND deleted_at IS NULL
 		`,
 		id,
@@ -92,7 +91,7 @@ func (p *postgresql) Unarchive(ctx context.Context, id int64, timestamp time.Tim
 			account.ExternalExpense,
 			account.ExternalIncome,
 		},
-		nullable.New(timestamp),
+		nullable.Type[time.Time]{},
 		timestamp,
 	)
 	if err != nil {
