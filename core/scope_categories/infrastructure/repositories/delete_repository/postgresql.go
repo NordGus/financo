@@ -2,6 +2,7 @@ package delete_repository
 
 import (
 	"context"
+	"database/sql"
 	"financo/core/domain/databases"
 	"financo/core/scope_categories/domain/models/category"
 	"financo/core/scope_categories/domain/repositories"
@@ -158,24 +159,13 @@ func (p *postgresql) SoftDelete(ctx context.Context, record category.Record) err
 		return err
 	}
 
-	_, err = tx.ExecContext(
-		ctx,
-		`
-		UPDATE accounts
-		SET deleted_at = $3, updated_at = $4
-		WHERE
-			(id = $1 OR parent_id = $1)
-			AND kind = ANY($2)
-			AND deleted_at IS NULL
-		`,
-		record.Account.ID,
-		[]account.Kind{
-			account.ExternalExpense,
-			account.ExternalIncome,
-		},
-		record.Account.DeletedAt,
-		record.Account.UpdatedAt,
-	)
+	ids, err := p.softDeleteCategories(ctx, tx, record.Account)
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	err = p.softDeleteTransactions(ctx, tx, ids, record.Account)
 	if err != nil {
 		_ = tx.Rollback()
 		return err
@@ -188,4 +178,61 @@ func (p *postgresql) SoftDelete(ctx context.Context, record category.Record) err
 	}
 
 	return nil
+}
+
+func (p *postgresql) softDeleteCategories(ctx context.Context, tx *sql.Tx, r account.Record) ([]int64, error) {
+	ids := make([]int64, 0, 10)
+
+	rows, err := tx.QueryContext(
+		ctx,
+		`
+		UPDATE accounts
+		SET deleted_at = $3, updated_at = $4
+		WHERE
+			(id = $1 OR parent_id = $1)
+			AND kind = ANY($2)
+			AND deleted_at IS NULL
+		RETURNING id
+		`,
+		r.ID,
+		[]account.Kind{
+			account.ExternalExpense,
+			account.ExternalIncome,
+		},
+		r.DeletedAt,
+		r.UpdatedAt,
+	)
+	if err != nil {
+		return ids, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var id int64
+
+		err = rows.Scan(&id)
+		if err != nil {
+			return ids, err
+		}
+
+		ids = append(ids, id)
+	}
+
+	return ids, nil
+}
+
+func (p *postgresql) softDeleteTransactions(ctx context.Context, tx *sql.Tx, ids []int64, r account.Record) error {
+	_, err := tx.ExecContext(
+		ctx,
+		`
+		UPDATE transactions
+		SET deleted_at = $2, updated_at = $3
+		WHERE (source_id = ANY ($1) OR target_id = ANY ($1)) AND deleted_at IS NULL
+		`,
+		ids,
+		r.DeletedAt,
+		r.UpdatedAt,
+	)
+
+	return err
 }
