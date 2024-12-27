@@ -5,6 +5,7 @@ import (
 	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
 	"financo/core/scope_accounts/infrastructure/consumers/on_account_deleted"
 	"financo/core/scope_accounts/infrastructure/consumers/on_category_deleted"
+	"financo/core/scope_accounts/infrastructure/consumers/on_category_updated"
 	"financo/core/scope_accounts/infrastructure/consumers/on_transaction_created"
 	"financo/core/scope_accounts/infrastructure/consumers/on_transaction_deleted"
 	"financo/core/scope_accounts/infrastructure/consumers/on_transaction_updated"
@@ -40,6 +41,13 @@ func Subscribe() error {
 
 	err = categories.DeletedBroker().Subscribe(
 		bus.ConsumerFunc[cat_msg.Deleted](on_category_deleted.NewInMemory),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = categories.UpdatedBroker().Subscribe(
+		bus.ConsumerFunc[cat_msg.Updated](on_category_updated.NewInMemory),
 	)
 	if err != nil {
 		return err
