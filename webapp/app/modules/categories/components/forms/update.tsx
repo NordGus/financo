@@ -27,10 +27,10 @@ import { Textarea } from "~/shared/components/ui/textarea";
 import { isCategory, isExpense } from "~/shared/types/account";
 import { Icon, ICONS } from "~/shared/types/icon";
 import { Created } from "../../types/create";
-import { Account, Child } from "../../types/preview";
-import { schema } from "../schemas/create";
-import { ChildForm } from "./child/form";
-import { Preview } from "./child/preview-edit";
+import { Account } from "../../types/preview";
+import { Preview } from "../preview/child/edit";
+import { schema } from "../schemas/update";
+import { ChildForm } from "./child/edit";
 
 interface Props {
   account: Account
@@ -38,6 +38,7 @@ interface Props {
 }
 
 interface ChildData {
+  id: number
   name: string
   description?: string
   icon: Icon
@@ -51,6 +52,7 @@ interface ChildState {
 }
 
 interface ChildInitialState {
+  id?: number
   name?: string
   description?: string
   icon?: Icon
@@ -76,7 +78,7 @@ function reducer(state: ChildState, action: ChildAction): ChildState {
     case "ADD":
       return {
         ...state,
-        data: { name: "", description: undefined, icon: ICONS.bookmark },
+        data: { id: -1, name: "", description: undefined, icon: ICONS.bookmark },
         onSubmit: action.onSubmit,
         action: "add",
         open: true
@@ -92,7 +94,7 @@ function reducer(state: ChildState, action: ChildAction): ChildState {
     case "CLOSE":
       return {
         ...state,
-        data: { name: "", description: undefined, icon: ICONS.bookmark },
+        data: { id: -1, name: "", description: undefined, icon: ICONS.bookmark },
         onSubmit: (__data) => { },
         open: false
       }
@@ -103,9 +105,9 @@ function reducer(state: ChildState, action: ChildAction): ChildState {
   }
 }
 
-function initChildForm({ name = "", description, icon = ICONS.bookmark }: ChildInitialState): ChildState {
+function initChildForm({ id = -1, name = "", description, icon = ICONS.bookmark }: ChildInitialState): ChildState {
   return {
-    data: { name, description, icon },
+    data: { id, name, description, icon },
     onSubmit: (__data) => { },
     open: false,
     action: "add"
@@ -119,17 +121,23 @@ export function UpdateCategory({ account, onSuccess }: Props) {
   const [child, childDispatch] = useReducer(reducer, {}, initChildForm)
   const fetcher = useFetcher<Created | null>({ key: `categories.create.${account.kind}` })
   const defaultIcon = isExpense(account.kind) ? ICONS.bookmark : ICONS.banknote
+  const buildPreviewData = (data: ChildData) => {
+    const child = account.children.find((c) => c.id === data.id)
+
+    return { ...data, archivedAt: child?.archivedAt, transactions: child?.transactions }
+  }
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      kind: account.kind,
+      id: account.id,
       currency: account.currency,
       name: account.name,
       description: account.description ?? undefined,
       color: account.color,
       icon: account.icon,
       children: account.children.map((child) => ({
+        id: child.id,
         name: child.name,
         description: child.description ?? undefined,
         icon: child.icon,
@@ -137,7 +145,7 @@ export function UpdateCategory({ account, onSuccess }: Props) {
       intent: "update"
     }
   })
-  const { append, update } = useFieldArray({
+  const { fields: children, append, update } = useFieldArray({
     name: "children",
     control: form.control,
     keyName: "identity"
@@ -157,14 +165,14 @@ export function UpdateCategory({ account, onSuccess }: Props) {
   const onAddChildClicked = () => childDispatch({
     type: "ADD",
     onSubmit: (data) => {
-      append({ name: data.name, description: data.description, icon: data.icon })
+      append({ ...data })
 
       onChildSubmitted()
     }
   })
-  const onEditChildClicked = (c: Child, idx: number) => childDispatch({
+  const onEditChildClicked = (c: ChildData, idx: number) => childDispatch({
     type: "EDIT",
-    data: { name: c.name, description: c.description ?? undefined, icon: c.icon },
+    data: { id: c.id, name: c.name, description: c.description ?? undefined, icon: c.icon },
     onSubmit: (data) => {
       update(idx, { ...data })
       onChildSubmitted()
@@ -270,10 +278,10 @@ export function UpdateCategory({ account, onSuccess }: Props) {
             <PlusIcon /> Add Child
           </Button>
           <div className="divide-y-2 divide-primary-foreground">
-            {account.children.map((c, idx) => (
+            {children.map((c, idx) => (
               <Preview
                 key={`child.${idx}`}
-                child={c}
+                child={buildPreviewData(c)}
                 onEditClick={() => onEditChildClicked(c, idx)}
               />
             ))}

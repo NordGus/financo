@@ -28,9 +28,9 @@ import { isCategory, isExpense, Kind } from "~/shared/types/account";
 import { Currency } from "~/shared/types/currency";
 import { Icon, ICONS } from "~/shared/types/icon";
 import { Created } from "../../types/create";
+import { Preview } from "../preview/child/create";
 import { schema } from "../schemas/create";
-import { ChildForm } from "./child/form";
-import { Preview } from "./child/preview-create";
+import { ChildForm } from "./child/create";
 
 interface Props {
   kind: Kind
@@ -275,7 +275,7 @@ export function CreateCategory({ kind, defaultCurrency, onSuccess }: Props) {
           </div>
           <DialogFooter>
             <Button type="submit" className="min-w-24" disabled={loading}>
-              {loading ? <Throbber size={"sm"} /> : "Create"}
+              {loading ? <Throbber size={"sm"} /> : "Update"}
             </Button>
           </DialogFooter>
         </form>

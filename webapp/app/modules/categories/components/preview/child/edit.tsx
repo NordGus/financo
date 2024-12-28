@@ -1,20 +1,27 @@
 import { EditIcon, PackageIcon, PackageOpenIcon, TrashIcon } from "lucide-react"
 import { useState } from "react"
 import { redirect } from "react-router"
-import { Child } from "~/modules/categories/types/preview"
 import { Button } from "~/shared/components/ui/button"
 import { icons } from "~/shared/components/ui/icon"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/components/ui/tooltip"
+import { Icon } from "~/shared/types/icon"
 import { ArchiveDialog } from "../../dialogs/child/archive"
 import { DeleteDialog } from "../../dialogs/child/delete"
 import { UnarchiveDialog } from "../../dialogs/child/unarchive"
 
 interface Props {
-  child: Child
+  child: {
+    id: number
+    name: string
+    description?: string
+    icon: Icon
+    archivedAt?: string | null
+    transactions?: number
+  }
   onEditClick: () => void
 }
 
-export function Preview({ child: { id, name, description, icon, archivedAt, transactions }, onEditClick }: Props) {
+export function Preview({ child: { id, name, description, icon, archivedAt, transactions = 0 }, onEditClick }: Props) {
   const [openArchive, setOpenArchive] = useState(false)
   const [openUnarchive, setOpenUnarchive] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
