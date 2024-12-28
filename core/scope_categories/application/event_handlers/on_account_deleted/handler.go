@@ -11,18 +11,18 @@ import (
 )
 
 type handler struct {
-	accountsRepo     repositories.CategoriesRepository
+	categoryRepo     repositories.CategoriesRepository
 	transactionsRepo repositories.TransactionsRepository
 	repo             repositories.UpdateDynamicDataRepository
 }
 
 func New(
-	accountsRepo repositories.CategoriesRepository,
+	categoryRepo repositories.CategoriesRepository,
 	transactionsRepo repositories.TransactionsRepository,
 	repo repositories.UpdateDynamicDataRepository,
 ) event_handlers.EventHandler[messages.Deleted] {
 	return &handler{
-		accountsRepo:     accountsRepo,
+		categoryRepo:     categoryRepo,
 		transactionsRepo: transactionsRepo,
 		repo:             repo,
 	}
@@ -34,7 +34,7 @@ func (h *handler) Handle(event messages.Deleted) error {
 		timestamp = time.Now().UTC()
 	)
 
-	records, err := h.accountsRepo.Where(ctx, filters.Categories{
+	records, err := h.categoryRepo.Where(ctx, filters.Categories{
 		Kinds: []account.Kind{
 			account.ExternalIncome,
 			account.ExternalExpense,

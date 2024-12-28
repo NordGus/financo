@@ -10,18 +10,18 @@ import (
 )
 
 type handler struct {
-	accountRepo      repositories.CategoryRepository
+	categoryRepo     repositories.CategoryRepository
 	transactionsRepo repositories.TransactionsRepository
 	repo             repositories.UpdateDynamicDataRepository
 }
 
 func New(
-	accountRepo repositories.CategoryRepository,
+	categoryRepo repositories.CategoryRepository,
 	transactionsRepo repositories.TransactionsRepository,
 	repo repositories.UpdateDynamicDataRepository,
 ) event_handlers.EventHandler[messages.Created] {
 	return &handler{
-		accountRepo:      accountRepo,
+		categoryRepo:     categoryRepo,
 		transactionsRepo: transactionsRepo,
 		repo:             repo,
 	}
@@ -33,12 +33,12 @@ func (h *handler) Handle(event messages.Created) error {
 		timestamp = time.Now().UTC()
 	)
 
-	source, err := h.accountRepo.Find(ctx, event.Record.SourceID)
+	source, err := h.categoryRepo.Find(ctx, event.Record.SourceID)
 	if err != nil {
 		return err
 	}
 
-	target, err := h.accountRepo.Find(ctx, event.Record.TargetID)
+	target, err := h.categoryRepo.Find(ctx, event.Record.TargetID)
 	if err != nil {
 		return err
 	}

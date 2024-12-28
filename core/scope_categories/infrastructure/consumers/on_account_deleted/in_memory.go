@@ -17,12 +17,12 @@ func NewInMemory(wg *sync.WaitGroup, payload messages.Deleted) {
 	var (
 		db = postgresql_database.New()
 
-		accountsRepo     = categories_repository.NewPostgreSQL(db)
+		categoriesRepo   = categories_repository.NewPostgreSQL(db)
 		transactionsRepo = transactions_repository.NewPostgreSQL(db)
 		repo             = update_dynamic_data_repository.NewPostgreSQL(db)
 	)
 
-	err := on_account_deleted.New(accountsRepo, transactionsRepo, repo).Handle(payload)
+	err := on_account_deleted.New(categoriesRepo, transactionsRepo, repo).Handle(payload)
 	if err != nil {
 		log.Println("something went wrong while handling account deleted message.", err)
 
