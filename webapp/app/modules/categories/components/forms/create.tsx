@@ -29,8 +29,8 @@ import { Currency } from "~/shared/types/currency";
 import { Icon, ICONS } from "~/shared/types/icon";
 import { Created } from "../../types/create";
 import { schema } from "../schemas/create";
-import { CreateChild } from "./child/create";
-import { Preview } from "./child/preview";
+import { ChildForm } from "./child/form";
+import { Preview } from "./child/preview-create";
 
 interface Props {
   kind: Kind
@@ -281,7 +281,7 @@ export function CreateCategory({ kind, defaultCurrency, onSuccess }: Props) {
         </form>
       </Form>
 
-      <CreateChild
+      <ChildForm
         action={child.action}
         child={child.data}
         open={child.open}

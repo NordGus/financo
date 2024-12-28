@@ -40,7 +40,7 @@ interface Props {
   defaultIcon: Icon
 }
 
-export function CreateChild({ action, child, open, defaultIcon, onOpenChange, onSubmit }: Props) {
+export function ChildForm({ action, child, open, defaultIcon, onOpenChange, onSubmit }: Props) {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: { name: "", description: undefined, icon: defaultIcon }

@@ -1,6 +1,7 @@
 import { EditIcon } from "lucide-react"
 import { Button } from "~/shared/components/ui/button"
 import { icons } from "~/shared/components/ui/icon"
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/components/ui/tooltip"
 import { Icon } from "~/shared/types/icon"
 
 interface Props {
@@ -19,9 +20,14 @@ export function Preview({ name, description, icon, onClick }: Props) {
         {icons[icon]} {name}
       </span>
       <span className="row-span-2 justify-self-end self-center">
-        <Button type="button" variant={"outline"} size={"icon"} onClick={onClick}>
-          <EditIcon />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button type="button" variant={"outline"} size={"icon"} onClick={onClick}>
+              <EditIcon />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Edit</TooltipContent>
+        </Tooltip>
       </span>
       <span className="text-muted-foreground text-sm">{description}</span>
     </div>
