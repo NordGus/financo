@@ -8,7 +8,7 @@ func Routes(r chi.Router) {
 
 	r.Route("/{id}", func(r chi.Router) {
 		r.Delete("/", destroy)
-		// 	r.Put("/", update)
+		r.Put("/", update)
 		r.Patch("/archive", archive)
 		r.Patch("/unarchive", unarchive)
 	})
