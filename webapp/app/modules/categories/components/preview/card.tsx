@@ -1,4 +1,6 @@
 import { useState } from "react"
+import { redirect } from "react-router"
+import { cn } from "~/lib/utils"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/shared/components/ui/card"
 import { Dialog, DialogContent } from "~/shared/components/ui/dialog"
 import { icons } from "~/shared/components/ui/icon"
@@ -20,7 +22,7 @@ export function Preview({ account, isArchived }: Props) {
   return (
     <>
       <Card
-        className="flex flex-col cursor-pointer"
+        className={cn("flex flex-col", isCategory(account.kind) && "cursor-pointer")}
         style={{ backgroundColor: account.color }}
       >
         <CardHeader
@@ -69,7 +71,10 @@ export function Preview({ account, isArchived }: Props) {
             <DialogContent>
               <UpdateCategory
                 account={account}
-                onSuccess={() => { }}
+                onSuccess={() => {
+                  redirect(".")
+                  setOpenEdit(false)
+                }}
               />
             </DialogContent>
           </Dialog>
