@@ -71,7 +71,6 @@ func (p *postgresql) Find(ctx context.Context, id int64) (category.Record, error
 			AND child.deleted_at IS NULL
 		WHERE
 			acc.deleted_at IS NULL
-			AND acc.parent_id IS NULL
 			AND acc.id = $1
 			AND acc.kind = ANY($2)
 		`,
