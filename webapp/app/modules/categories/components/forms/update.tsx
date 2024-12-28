@@ -190,7 +190,7 @@ export function UpdateCategory({ account, onSuccess }: Props) {
       <Form {...form}>
         <DialogHeader className="flex flex-row gap-4 items-center">
           <DialogTitle>
-            {isExpense(account.kind) ? "Create Expense Category" : "Create Income Category"}
+            {isExpense(account.kind) ? "Update Expense Category" : "Update Income Category"}
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
