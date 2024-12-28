@@ -8,6 +8,7 @@ import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Button } from "~/shared/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogFooter,
   DialogHeader,
@@ -118,6 +119,9 @@ export function ChildForm({ action, child, open, defaultIcon, onOpenChange, onSu
               )}
             />
             <DialogFooter>
+              <DialogClose asChild>
+                <Button variant={"outline"}>Cancel</Button>
+              </DialogClose>
               <Button type="submit">
                 {action === "add" ? "Add" : "Edit"}
               </Button>

@@ -9,6 +9,7 @@ import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
 import { Button } from "~/shared/components/ui/button";
 import {
+  DialogClose,
   DialogFooter,
   DialogHeader,
   DialogTitle
@@ -145,7 +146,7 @@ export function UpdateCategory({ account, onSuccess }: Props) {
       intent: "update"
     }
   })
-  const { fields: children, append, update } = useFieldArray({
+  const { fields: children, append, update, remove } = useFieldArray({
     name: "children",
     control: form.control,
     keyName: "identity"
@@ -283,12 +284,16 @@ export function UpdateCategory({ account, onSuccess }: Props) {
                 key={`child.${idx}`}
                 child={buildPreviewData(c)}
                 onEditClick={() => onEditChildClicked(c, idx)}
+                onDeleteSuccess={() => remove(idx)}
               />
             ))}
           </div>
           <DialogFooter>
+            <DialogClose asChild>
+              <Button variant={"outline"}>Cancel</Button>
+            </DialogClose>
             <Button type="submit" className="min-w-24" disabled={loading}>
-              {loading ? <Throbber size={"sm"} /> : "Create"}
+              {loading ? <Throbber size={"sm"} /> : "Update"}
             </Button>
           </DialogFooter>
         </form>

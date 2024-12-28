@@ -19,9 +19,14 @@ interface Props {
     transactions?: number
   }
   onEditClick: () => void
+  onDeleteSuccess: () => void
 }
 
-export function Preview({ child: { id, name, description, icon, archivedAt, transactions = 0 }, onEditClick }: Props) {
+export function Preview({
+  child: { id, name, description, icon, archivedAt, transactions = 0 },
+  onEditClick,
+  onDeleteSuccess
+}: Props) {
   const [openArchive, setOpenArchive] = useState(false)
   const [openUnarchive, setOpenUnarchive] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
@@ -102,6 +107,7 @@ export function Preview({ child: { id, name, description, icon, archivedAt, tran
         open={openDelete}
         onOpenChanged={setOpenDelete}
         onSuccess={() => {
+          onDeleteSuccess()
           redirect(".")
           setOpenDelete(false)
         }}
