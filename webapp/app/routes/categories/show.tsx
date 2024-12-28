@@ -2,11 +2,13 @@ import { toast } from "sonner";
 import { archiveCategory } from "~/modules/categories/api/commands/archive-account";
 import { deleteCategory } from "~/modules/categories/api/commands/delete-account";
 import { unarchiveCategory } from "~/modules/categories/api/commands/unarchive-account";
+import { updateAccount } from "~/modules/categories/api/commands/update-account";
 import { Intents } from "~/modules/categories/types/actions";
+import { Update } from "~/modules/categories/types/update";
 import { Route } from "./+types/show";
 
-interface ActionRequestBody {
-  intent: Intents["archive"] | Intents["unarchive"] | Intents["delete"]
+interface ActionRequestBody extends Update {
+  intent: Intents["archive"] | Intents["unarchive"] | Intents["delete"] | Intents["update"]
 }
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
@@ -83,6 +85,29 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
         return null
       }
     },
+    update: async () => {
+      try {
+        const response = updateAccount({ ...values })
+
+        toast.promise(response, {
+          loading: "Updating...",
+          success: (data) => {
+            return `${data.name} updated`
+          },
+          error: "Oops!. Something went wrong"
+        })
+
+        const updated = await response
+
+        return updated
+      } catch (error) {
+        if (error instanceof Response && error.status === 401) throw error
+
+        console.error(error)
+
+        return null
+      }
+    }
   }
 
   const action = actions[values.intent]

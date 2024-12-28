@@ -2,18 +2,21 @@ import { Kind } from "~/shared/types/account";
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
 
+interface UpdateChild {
+  id: number
+  name: string
+  description?: string | null
+  icon: Icon
+}
+
 export interface Update {
   id: number
   name: string
   description?: string | null
   currency: Currency
-  capital: number
   color: string,
   icon: Icon,
-  history: {
-    at?: string | null,
-    balance?: number | null
-  }
+  children: UpdateChild[]
 }
 
 export interface Updated {
