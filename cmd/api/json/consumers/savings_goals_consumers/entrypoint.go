@@ -3,6 +3,9 @@ package savings_goals_consumers
 import (
 	acc_msg "financo/core/scope_accounts/domain/messages"
 	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
+	"financo/core/scope_accounts/infrastructure/consumers/on_category_deleted"
+	cat_msg "financo/core/scope_categories/domain/messages"
+	categories_broker "financo/core/scope_categories/infrastructure/broker_handler"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_account_created"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_account_deleted"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_account_updated"
@@ -16,6 +19,11 @@ import (
 
 func Subscribe() error {
 	accounts, err := accounts_broker.Instance()
+	if err != nil {
+		return err
+	}
+
+	categories, err := categories_broker.Instance()
 	if err != nil {
 		return err
 	}
@@ -41,6 +49,13 @@ func Subscribe() error {
 
 	err = accounts.UpdatedBroker().Subscribe(
 		bus.ConsumerFunc[acc_msg.Updated](on_account_updated.NewInMemory),
+	)
+	if err != nil {
+		return err
+	}
+
+	err = categories.DeletedBroker().Subscribe(
+		bus.ConsumerFunc[cat_msg.Deleted](on_category_deleted.NewInMemory),
 	)
 	if err != nil {
 		return err
