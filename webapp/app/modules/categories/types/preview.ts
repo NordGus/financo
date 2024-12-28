@@ -33,4 +33,4 @@ interface Account {
   children: Child[]
 }
 
-export type { Account };
+export type { Account, Child };

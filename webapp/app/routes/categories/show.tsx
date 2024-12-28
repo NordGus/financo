@@ -1,4 +1,3 @@
-import { redirect } from "react-router";
 import { toast } from "sonner";
 import { archiveCategory } from "~/modules/categories/api/commands/archive-account";
 import { deleteCategory } from "~/modules/categories/api/commands/delete-account";
@@ -73,9 +72,9 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
           error: "Oops!. Something went wrong"
         })
 
-        await response
+        const deleted = await response
 
-        return redirect("/categories")
+        return deleted
       } catch (error) {
         if (error instanceof Response && error.status === 401) throw error
 

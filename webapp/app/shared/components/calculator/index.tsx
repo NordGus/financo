@@ -241,8 +241,6 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
         ev.preventDefault()
         return onRevertValue()
     }
-
-    console.log(ev.key.toLocaleLowerCase())
   }
 
   useEffect(() => {
