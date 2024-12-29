@@ -5,7 +5,6 @@ import (
 	"financo/cmd/api/json/handlers/accounts"
 	"financo/cmd/api/json/handlers/categories"
 	"financo/cmd/api/json/handlers/currencies"
-	"financo/cmd/api/json/handlers/graphs"
 	"financo/cmd/api/json/handlers/health"
 	"financo/cmd/api/json/handlers/my_journey"
 	"financo/cmd/api/json/handlers/savings_goals"
@@ -102,7 +101,6 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 		r.Route("/accounts", accounts.Routes)
 		r.Route("/categories", categories.Routes)
 		r.Route("/currencies", currencies.Routes)
-		r.Route("/graphs", graphs.Routes)
 		r.Route("/health", health.Routes)
 		r.Route("/my-journey", my_journey.Routes)
 		r.Route("/savings-goals", savings_goals.Routes)
