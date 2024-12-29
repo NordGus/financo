@@ -5,9 +5,9 @@ import (
 	"financo/core/infrastructure/repositories/account_repository"
 	"financo/core/scope_transactions/application/commands/create_command"
 	"financo/core/scope_transactions/domain/requests"
-	"financo/core/scope_transactions/infrastructure/broker_handler"
 	"financo/core/scope_transactions/infrastructure/repositories/create_transaction_repository"
 	"financo/core/scope_transactions/infrastructure/repositories/detailed_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -39,7 +39,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	broker, err := broker_handler.Instance()
+	broker, err := message_broker.Instance()
 	if err != nil {
 		log.Println("failed to get broker handler instance", err)
 		http.Error(
@@ -55,7 +55,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 		account_repository.NewPostgreSQL(db),
 		create_transaction_repository.NewPostgreSQL(db),
 		detailed_transaction_repository.NewPostgreSQL(db),
-		broker.CreatedBroker(),
+		broker.Created(),
 	).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)

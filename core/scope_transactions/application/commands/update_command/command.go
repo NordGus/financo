@@ -21,7 +21,7 @@ type command struct {
 	transactionRepo repositories.TransactionRepository
 	updateRepo      repositories.UpdateTransactionRepository
 	detailedRepo    repositories.DetailedTransactionRepository
-	broker          brokers.UpdatedBroker
+	broker          brokers.Updated
 }
 
 func New(
@@ -30,7 +30,7 @@ func New(
 	transactionRepo repositories.TransactionRepository,
 	updateRepo repositories.UpdateTransactionRepository,
 	detailedRepo repositories.DetailedTransactionRepository,
-	broker brokers.UpdatedBroker,
+	broker brokers.Updated,
 ) commands.Command[responses.Detailed] {
 	return &command{
 		req:             req,

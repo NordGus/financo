@@ -7,8 +7,8 @@ import (
 	accounts_broker "financo/core/scope_accounts/infrastructure/services/message_broker"
 	categories_services "financo/core/scope_categories/domain/services"
 	categories_handler "financo/core/scope_categories/infrastructure/services/message_broker"
-	transactions_brokers "financo/core/scope_transactions/domain/brokers"
-	transactions_handler "financo/core/scope_transactions/infrastructure/broker_handler"
+	transactions_services "financo/core/scope_transactions/domain/services"
+	transactions_handler "financo/core/scope_transactions/infrastructure/services/message_broker"
 	"financo/services/message_buses/accounts"
 	"financo/services/message_buses/categories"
 	"financo/services/message_buses/savings_goals"
@@ -20,7 +20,7 @@ type service struct {
 	shutdown     bool
 	accounts     accounts_services.MessageBroker
 	categories   categories_services.MessageBroker
-	transactions transactions_brokers.Handler
+	transactions transactions_services.MessageBroker
 }
 
 var (
@@ -87,7 +87,7 @@ func (s *service) Close() error {
 	return errors.Join(
 		s.accounts.Close(),
 		s.categories.Close(),
-		s.transactions.Shutdown(),
+		s.transactions.Close(),
 	)
 }
 

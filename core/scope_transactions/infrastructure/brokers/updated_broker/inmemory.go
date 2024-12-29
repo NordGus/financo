@@ -15,7 +15,7 @@ type inMemoryBroker struct {
 	bus message_bus.Bus[messages.Updated]
 }
 
-func NewInMemory(ctx context.Context, wg *sync.WaitGroup) brokers.UpdatedBroker {
+func NewInMemory(ctx context.Context, wg *sync.WaitGroup) brokers.Updated {
 	return &inMemoryBroker{
 		ctx: ctx,
 		wg:  wg,

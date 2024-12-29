@@ -12,7 +12,7 @@ import (
 	category_msg "financo/core/scope_categories/domain/messages"
 	categories_broker "financo/core/scope_categories/infrastructure/services/message_broker"
 	transaction_msg "financo/core/scope_transactions/domain/messages"
-	transactions_broker "financo/core/scope_transactions/infrastructure/broker_handler"
+	transactions_broker "financo/core/scope_transactions/infrastructure/services/message_broker"
 	"financo/lib/message_bus"
 )
 
@@ -53,21 +53,21 @@ func Subscribe() error {
 		return err
 	}
 
-	err = transactions.CreatedBroker().Subscribe(
+	err = transactions.Created().Subscribe(
 		message_bus.ConsumerFunc[transaction_msg.Created](on_transaction_created.NewInMemory),
 	)
 	if err != nil {
 		return err
 	}
 
-	err = transactions.DeletedBroker().Subscribe(
+	err = transactions.Deleted().Subscribe(
 		message_bus.ConsumerFunc[transaction_msg.Deleted](on_transaction_deleted.NewInMemory),
 	)
 	if err != nil {
 		return err
 	}
 
-	err = transactions.UpdatedBroker().Subscribe(
+	err = transactions.Updated().Subscribe(
 		message_bus.ConsumerFunc[transaction_msg.Updated](on_transaction_updated.NewInMemory),
 	)
 	if err != nil {
