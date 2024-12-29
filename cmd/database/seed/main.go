@@ -5,20 +5,45 @@ import (
 	"financo/cmd/database/seed/accounts"
 	"financo/cmd/database/seed/savings_goals"
 	"financo/cmd/database/seed/transactions"
+	"financo/services/message_buses"
 	"financo/services/postgresql_database"
 	"log"
+	"os"
+	"sync"
 	"time"
 )
 
 func main() {
 	var (
+		wg    = new(sync.WaitGroup)
 		ctx   = context.Background()
 		start = time.Now()
+
+		postgresqlService   = postgresql_database.New()
+		messageBusesService = message_buses.Initialize(wg)
 	)
+
+	defer func() {
+		if err := postgresqlService.Close(); err != nil {
+			log.Printf("failed to close postgresql database connection: %s\n", err)
+		}
+	}()
+
+	defer func() {
+		if err := messageBusesService.Close(); err != nil {
+			log.Printf("failed to close message busses connection: %s\n", err)
+		}
+	}()
 
 	log.Println("seeding database")
 
-	conn, err := postgresql_database.New().Conn(ctx)
+	createdSG, err := savings_goals.CreateSavingsGoals(ctx)
+	if err != nil {
+		log.Println("failed to seed savings goals", err.Error())
+		os.Exit(1)
+	}
+
+	conn, err := postgresqlService.Conn(ctx)
 	if err != nil {
 		log.Fatalf("seed: failed to connect to database:\n\t err: %v\n", err)
 	}
@@ -34,14 +59,15 @@ func main() {
 		log.Fatalf("failed to seed transactions:\n\t err: %s\n", err.Error())
 	}
 
-	err = savings_goals.SeedSavingsGoals(ctx, conn, start.UTC())
-	if err != nil {
-		log.Fatalf("failed to seed savings goals:\n\t err: %s\n", err.Error())
-	}
-
 	err = accounts.SeedDynamicData(ctx, conn, start.UTC())
 	if err != nil {
 		log.Fatalf("failed to seed accounts transaction count:\n\t err: %s\n", err.Error())
+	}
+
+	_, err = savings_goals.ArchiveSavingsGoals(ctx, createdSG)
+	if err != nil {
+		log.Println("failed to mark savings goals as achieve", err.Error())
+		os.Exit(1)
 	}
 
 	log.Printf("database seeded (took %s)\n", time.Since(start))
