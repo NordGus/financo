@@ -2,7 +2,7 @@ package categories
 
 import (
 	acc_msg "financo/core/scope_accounts/domain/messages"
-	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
+	accounts_broker "financo/core/scope_accounts/infrastructure/services/message_broker"
 	"financo/core/scope_categories/infrastructure/consumers/on_account_deleted"
 	"financo/core/scope_categories/infrastructure/consumers/on_transaction_created"
 	"financo/core/scope_categories/infrastructure/consumers/on_transaction_deleted"
@@ -23,7 +23,7 @@ func Subscribe() error {
 		return err
 	}
 
-	err = accounts.DeletedBroker().Subscribe(
+	err = accounts.Deleted().Subscribe(
 		bus.ConsumerFunc[acc_msg.Deleted](on_account_deleted.NewInMemory),
 	)
 	if err != nil {

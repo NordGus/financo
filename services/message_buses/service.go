@@ -3,8 +3,8 @@ package message_buses
 import (
 	"errors"
 	"financo/core/domain/services"
-	accounts_brokers "financo/core/scope_accounts/domain/brokers"
-	accounts_handler "financo/core/scope_accounts/infrastructure/broker_handler"
+	accounts_services "financo/core/scope_accounts/domain/services"
+	accounts_broker "financo/core/scope_accounts/infrastructure/services/message_broker"
 	categories_brokers "financo/core/scope_categories/domain/brokers"
 	categories_handler "financo/core/scope_categories/infrastructure/broker_handler"
 	transactions_brokers "financo/core/scope_transactions/domain/brokers"
@@ -18,7 +18,7 @@ import (
 
 type service struct {
 	shutdown     bool
-	accounts     accounts_brokers.Handler
+	accounts     accounts_services.MessageBroker
 	categories   categories_brokers.Handler
 	transactions transactions_brokers.Handler
 }
@@ -46,7 +46,7 @@ func Initialize(wg *sync.WaitGroup) services.MessageBuses {
 
 	instance = &service{
 		shutdown:     false,
-		accounts:     accounts_handler.Initialize(wg),
+		accounts:     accounts_broker.Initialize(wg),
 		categories:   categories_handler.Initialize(wg),
 		transactions: transactions_handler.Initialize(wg),
 	}
@@ -85,7 +85,7 @@ func (s *service) Close() error {
 	}
 
 	return errors.Join(
-		s.accounts.Shutdown(),
+		s.accounts.Close(),
 		s.categories.Shutdown(),
 		s.transactions.Shutdown(),
 	)
@@ -109,7 +109,7 @@ func (s *service) Health() map[string]string {
 	stats["status"] = "up"
 	stats["message"] = "It's healthy"
 
-	_, err := accounts_handler.Instance()
+	_, err := accounts_broker.Instance()
 	if err != nil {
 		log.Println("accounts broker is down")
 		stats["accounts_broker"] = "It's down"

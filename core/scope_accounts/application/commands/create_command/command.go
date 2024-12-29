@@ -16,11 +16,11 @@ import (
 type command struct {
 	req    requests.Create
 	repo   repositories.CreateAccountRepository
-	broker brokers.CreatedBroker
+	broker brokers.Created
 }
 
 func New(
-	req requests.Create, repo repositories.CreateAccountRepository, broker brokers.CreatedBroker,
+	req requests.Create, repo repositories.CreateAccountRepository, broker brokers.Created,
 ) commands.Command[responses.Created] {
 	return &command{
 		req:    req,

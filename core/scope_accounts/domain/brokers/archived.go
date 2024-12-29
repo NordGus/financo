@@ -5,7 +5,7 @@ import (
 	"financo/lib/message_bus"
 )
 
-type ArchivedBroker interface {
+type Archived interface {
 	Subscribe(consumer message_bus.Consumer[messages.Archived]) error
 	Publish(message messages.Archived) error
 }

@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"financo/core/scope_accounts/application/commands/archive_command"
 	"financo/core/scope_accounts/domain/requests"
-	"financo/core/scope_accounts/infrastructure/broker_handler"
 	"financo/core/scope_accounts/infrastructure/repositories/accounts_repository"
 	"financo/core/scope_accounts/infrastructure/repositories/archival_repository"
+	"financo/core/scope_accounts/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -65,14 +65,14 @@ func archive(w http.ResponseWriter, r *http.Request) {
 	archivalRepo := archival_repository.NewPostgreSQL(db)
 	repo := accounts_repository.NewPostgreSQL(db)
 
-	broker, err := broker_handler.Instance()
+	broker, err := message_broker.Instance()
 	if err != nil {
 		log.Println("created broker uninitialized", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	res, err := archive_command.New(req, repo, archivalRepo, broker.ArchivedBroker()).Run(r.Context())
+	res, err := archive_command.New(req, repo, archivalRepo, broker.Archived()).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(
