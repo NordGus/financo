@@ -1,17 +1,23 @@
 package message_buses
 
 import (
-	"errors"
 	"financo/core/domain/services"
+
 	accounts_services "financo/core/scope_accounts/domain/services"
-	accounts_broker "financo/core/scope_accounts/infrastructure/services/message_broker"
 	categories_services "financo/core/scope_categories/domain/services"
-	categories_handler "financo/core/scope_categories/infrastructure/services/message_broker"
+	savings_goals_services "financo/core/scope_savings_goals/domain/services"
 	transactions_services "financo/core/scope_transactions/domain/services"
+
+	accounts_broker "financo/core/scope_accounts/infrastructure/services/message_broker"
+	categories_handler "financo/core/scope_categories/infrastructure/services/message_broker"
+	savings_goals_handler "financo/core/scope_savings_goals/infrastructure/services/message_broker"
 	transactions_handler "financo/core/scope_transactions/infrastructure/services/message_broker"
+
 	"financo/services/message_buses/accounts"
 	"financo/services/message_buses/categories"
 	"financo/services/message_buses/savings_goals"
+
+	"errors"
 	"log"
 	"sync"
 )
@@ -21,6 +27,7 @@ type service struct {
 	accounts     accounts_services.MessageBroker
 	categories   categories_services.MessageBroker
 	transactions transactions_services.MessageBroker
+	savingsGoals savings_goals_services.MessageBroker
 }
 
 var (
@@ -49,6 +56,7 @@ func Initialize(wg *sync.WaitGroup) services.MessageBuses {
 		accounts:     accounts_broker.Initialize(wg),
 		categories:   categories_handler.Initialize(wg),
 		transactions: transactions_handler.Initialize(wg),
+		savingsGoals: savings_goals_handler.Initialize(wg),
 	}
 
 	err := accounts.Subscribe()
@@ -88,6 +96,7 @@ func (s *service) Close() error {
 		s.accounts.Close(),
 		s.categories.Close(),
 		s.transactions.Close(),
+		s.savingsGoals.Close(),
 	)
 }
 
@@ -127,6 +136,13 @@ func (s *service) Health() map[string]string {
 	if err != nil {
 		log.Println("transactions broker is down")
 		stats["transactions_broker"] = "It's down"
+		stats["message"] = "One or more broker is down"
+	}
+
+	_, err = savings_goals_handler.Instance()
+	if err != nil {
+		log.Println("savings goals broker is down")
+		stats["savings_goals_broker"] = "It's down"
 		stats["message"] = "One or more broker is down"
 	}
 
