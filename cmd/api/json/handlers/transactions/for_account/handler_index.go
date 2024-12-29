@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"financo/core/scope_transactions/application/queries/executed_for_account_query"
 	"financo/core/scope_transactions/domain/requests"
-	"financo/core/scope_transactions/infrastructure/executed_transactions_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/executed_transactions_repository"
 	"financo/lib/nullable"
 	"financo/services/postgresql_database"
 	"log"
