@@ -1,6 +1,6 @@
 package services
 
-import "financo/core/scope_accounts/domain/brokers"
+import "financo/core/scope_categories/domain/brokers"
 
 type MessageBroker interface {
 	// Created returns the corresponding message broker.

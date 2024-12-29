@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"financo/core/scope_categories/application/commands/update_command"
 	"financo/core/scope_categories/domain/requests"
-	"financo/core/scope_categories/infrastructure/broker_handler"
 	"financo/core/scope_categories/infrastructure/repositories/update_repository"
+	"financo/core/scope_categories/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -61,14 +61,14 @@ func update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	broker, err := broker_handler.Instance()
+	broker, err := message_broker.Instance()
 	if err != nil {
 		log.Println("created broker uninitialized", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	res, err := update_command.New(req, update_repository.NewPostgreSQL(db), broker.UpdatedBroker()).Run(r.Context())
+	res, err := update_command.New(req, update_repository.NewPostgreSQL(db), broker.Updated()).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(

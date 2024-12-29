@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"financo/core/scope_categories/application/commands/delete_command"
 	"financo/core/scope_categories/domain/requests"
-	"financo/core/scope_categories/infrastructure/broker_handler"
 	"financo/core/scope_categories/infrastructure/repositories/delete_repository"
+	"financo/core/scope_categories/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -25,14 +25,14 @@ func destroy(w http.ResponseWriter, r *http.Request) {
 	req := requests.Delete{ID: id}
 	repo := delete_repository.NewPostgreSQL(postgresql_database.New())
 
-	broker, err := broker_handler.Instance()
+	broker, err := message_broker.Instance()
 	if err != nil {
 		log.Println("created broker uninitialized", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	res, err := delete_command.New(req, repo, broker.DeletedBroker()).Run(r.Context())
+	res, err := delete_command.New(req, repo, broker.Deleted()).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

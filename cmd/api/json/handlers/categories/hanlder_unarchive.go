@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"financo/core/scope_categories/application/commands/unarchive_command"
 	"financo/core/scope_categories/domain/requests"
-	"financo/core/scope_categories/infrastructure/broker_handler"
 	"financo/core/scope_categories/infrastructure/repositories/archival_repository"
 	"financo/core/scope_categories/infrastructure/repositories/categories_repository"
+	"financo/core/scope_categories/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -65,14 +65,14 @@ func unarchive(w http.ResponseWriter, r *http.Request) {
 	archivalRepo := archival_repository.NewPostgreSQL(db)
 	repo := categories_repository.NewPostgreSQL(db)
 
-	broker, err := broker_handler.Instance()
+	broker, err := message_broker.Instance()
 	if err != nil {
 		log.Println("created broker uninitialized", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	res, err := unarchive_command.New(req, repo, archivalRepo, broker.UnarchivedBroker()).Run(r.Context())
+	res, err := unarchive_command.New(req, repo, archivalRepo, broker.Unarchived()).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(

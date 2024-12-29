@@ -15,7 +15,7 @@ type inMemoryBroker struct {
 	bus message_bus.Bus[messages.Deleted]
 }
 
-func NewInMemory(ctx context.Context, wg *sync.WaitGroup) brokers.DeletedBroker {
+func NewInMemory(ctx context.Context, wg *sync.WaitGroup) brokers.Deleted {
 	return &inMemoryBroker{
 		ctx: ctx,
 		wg:  wg,

@@ -15,14 +15,14 @@ type command struct {
 	req          requests.Unarchive
 	repo         repositories.CategoryRepository
 	archivalRepo repositories.ArchivalRepository
-	broker       brokers.UnarchivedBroker
+	broker       brokers.Unarchived
 }
 
 func New(
 	req requests.Unarchive,
 	repo repositories.CategoryRepository,
 	archivalRepo repositories.ArchivalRepository,
-	broker brokers.UnarchivedBroker,
+	broker brokers.Unarchived,
 ) commands.Command[responses.Reactivated] {
 	return &command{
 		req:          req,

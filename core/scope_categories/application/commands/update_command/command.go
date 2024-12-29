@@ -15,13 +15,13 @@ import (
 type command struct {
 	req    requests.Update
 	repo   repositories.UpdateRepository
-	broker brokers.UpdatedBroker
+	broker brokers.Updated
 }
 
 func New(
 	req requests.Update,
 	repo repositories.UpdateRepository,
-	broker brokers.UpdatedBroker,
+	broker brokers.Updated,
 ) commands.Command[responses.Updated] {
 	return &command{
 		req:    req,
