@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"financo/core/scope_savings_goals/application/commands/create_command"
 	"financo/core/scope_savings_goals/domain/requests"
-	"financo/core/scope_savings_goals/infrastructure/lock"
 	"financo/core/scope_savings_goals/infrastructure/repositories/active_savings_goals_for_currency_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/create_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/savings_for_currency_repository"
@@ -19,9 +18,6 @@ func Create(w http.ResponseWriter, r *http.Request) {
 
 		req requests.Create
 	)
-
-	lock.GlobalLock().Lock()
-	defer lock.GlobalLock().Unlock()
 
 	body := r.Body
 	defer func() {

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"financo/core/scope_savings_goals/application/commands/delete_command"
 	"financo/core/scope_savings_goals/domain/requests"
-	"financo/core/scope_savings_goals/infrastructure/lock"
 	"financo/core/scope_savings_goals/infrastructure/repositories/active_savings_goals_for_currency_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/delete_savings_goal_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/reorder_repository"
@@ -23,9 +22,6 @@ func Destroy(w http.ResponseWriter, r *http.Request) {
 
 		req requests.Delete
 	)
-
-	lock.GlobalLock().Lock()
-	defer lock.GlobalLock().Unlock()
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {

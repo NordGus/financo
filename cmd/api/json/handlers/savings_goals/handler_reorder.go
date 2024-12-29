@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"financo/core/scope_savings_goals/application/commands/reorder_command"
 	"financo/core/scope_savings_goals/domain/requests"
-	"financo/core/scope_savings_goals/infrastructure/lock"
 	"financo/core/scope_savings_goals/infrastructure/repositories/reorder_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/savings_for_currency_repository"
 	"financo/services/postgresql_database"
@@ -18,9 +17,6 @@ func Reorder(w http.ResponseWriter, r *http.Request) {
 
 		req requests.Reorder
 	)
-
-	lock.GlobalLock().Lock()
-	defer lock.GlobalLock().Unlock()
 
 	body := r.Body
 	defer func() {
