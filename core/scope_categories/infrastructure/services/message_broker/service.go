@@ -54,7 +54,7 @@ func Initialize(wg *sync.WaitGroup) services.MessageBroker {
 
 func Instance() (services.MessageBroker, error) {
 	if instance == nil {
-		return nil, errors.ErrUninitialized
+		return nil, errors.ErrMessageBrokerUninitialized
 	}
 
 	return instance, nil
