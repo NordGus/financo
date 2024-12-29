@@ -2,9 +2,6 @@ package main
 
 import (
 	"context"
-	"financo/cmd/api/json/consumers/accounts_consumers"
-	"financo/cmd/api/json/consumers/categories_consumers"
-	"financo/cmd/api/json/consumers/savings_goals_consumers"
 	"financo/cmd/api/json/handlers/accounts"
 	"financo/cmd/api/json/handlers/categories"
 	"financo/cmd/api/json/handlers/currencies"
@@ -22,10 +19,8 @@ import (
 	"syscall"
 	"time"
 
-	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
-	categories_broker "financo/core/scope_categories/infrastructure/broker_handler"
-	transactions_broker "financo/core/scope_transactions/infrastructure/broker_handler"
 	"financo/services/in_memory_session_store"
+	"financo/services/message_buses"
 	"financo/services/postgresql_database"
 	"financo/services/umbilical"
 
@@ -42,31 +37,11 @@ func main() {
 		wg          = new(sync.WaitGroup)
 		ctx, cancel = context.WithCancel(context.Background())
 
-		pgDBService        = postgresql_database.New()
-		sessionStore       = in_memory_session_store.New()
-		umbilicalService   = umbilical.New()
-		accountsBroker     = accounts_broker.Initialize(wg)
-		categoriesBroker   = categories_broker.Initialize(wg)
-		transactionsBroker = transactions_broker.Initialize(wg)
+		pgDBService         = postgresql_database.New()
+		sessionStore        = in_memory_session_store.New()
+		umbilicalService    = umbilical.New()
+		messageBusesService = message_buses.Initialize(wg)
 	)
-
-	defer func() {
-		if err := accountsBroker.Shutdown(); err != nil {
-			log.Printf("failed to shutdown accounts broker: %s\n", err)
-		}
-	}()
-
-	defer func() {
-		if err := categoriesBroker.Shutdown(); err != nil {
-			log.Printf("failed to shutdown categories broker: %s\n", err)
-		}
-	}()
-
-	defer func() {
-		if err := transactionsBroker.Shutdown(); err != nil {
-			log.Printf("failed to shutdown transactions broker: %s\n", err)
-		}
-	}()
 
 	defer func() {
 		if err := pgDBService.Close(); err != nil {
@@ -86,23 +61,11 @@ func main() {
 		}
 	}()
 
-	err := savings_goals_consumers.Subscribe()
-	if err != nil {
-		log.Printf("failed to subscribe savings_goals_consumers: %s\n", err)
-		os.Exit(1)
-	}
-
-	err = accounts_consumers.Subscribe()
-	if err != nil {
-		log.Printf("failed to subscribe accounts_consumers: %s\n", err)
-		os.Exit(1)
-	}
-
-	err = categories_consumers.Subscribe()
-	if err != nil {
-		log.Printf("failed to subscribe categories_consumers: %s\n", err)
-		os.Exit(1)
-	}
+	defer func() {
+		if err := messageBusesService.Close(); err != nil {
+			log.Printf("failed to close message busses connection: %s\n", err)
+		}
+	}()
 
 	wg.Add(1)
 	go startHTTPServer(ctx, wg)
