@@ -1,0 +1,134 @@
+package message_buses
+
+import (
+	"errors"
+	"financo/core/domain/services"
+	accounts_brokers "financo/core/scope_accounts/domain/brokers"
+	accounts_handler "financo/core/scope_accounts/infrastructure/broker_handler"
+	categories_brokers "financo/core/scope_categories/domain/brokers"
+	categories_handler "financo/core/scope_categories/infrastructure/broker_handler"
+	transactions_brokers "financo/core/scope_transactions/domain/brokers"
+	transactions_handler "financo/core/scope_transactions/infrastructure/broker_handler"
+	"financo/services/message_buses/accounts"
+	"financo/services/message_buses/categories"
+	"financo/services/message_buses/savings_goals"
+	"log"
+	"sync"
+)
+
+type service struct {
+	shutdown     bool
+	accounts     accounts_brokers.Handler
+	categories   categories_brokers.Handler
+	transactions transactions_brokers.Handler
+}
+
+var (
+	ErrAlreadyShutdown = errors.New("message_buses: already shutdown")
+
+	instance *service
+)
+
+// Initialize returns an instance of [services.MessageBuses] for financo.
+//
+// - It will either return the exiting instance or initialize a new one.
+//
+// - It will panic if it fails to initialize a new instance.
+//
+// Must be close on program termination by calling Close to free resources.
+func Initialize(wg *sync.WaitGroup) services.MessageBuses {
+	wg.Add(1)
+	defer wg.Done()
+
+	if instance != nil {
+		return instance
+	}
+
+	instance = &service{
+		shutdown:     false,
+		accounts:     accounts_handler.Initialize(wg),
+		categories:   categories_handler.Initialize(wg),
+		transactions: transactions_handler.Initialize(wg),
+	}
+
+	err := accounts.Subscribe()
+	if err != nil {
+		_ = instance.Close()
+		log.Fatal("message_buses: failed to initialize Service", err)
+	}
+
+	err = categories.Subscribe()
+	if err != nil {
+		_ = instance.Close()
+		log.Fatal("message_buses: failed to initialize Service", err)
+	}
+
+	err = savings_goals.Subscribe()
+	if err != nil {
+		_ = instance.Close()
+		log.Fatal("message_buses: failed to initialize Service", err)
+	}
+
+	return instance
+}
+
+// Close terminates all connections to message brokers.
+// If the connections are successfully closed, it returns nil.
+// If the service is already shutdown, it returns an error.
+// If an error occurs while closing the connections, it returns the an error
+// wrapping all errors.
+func (s *service) Close() error {
+	log.Println("Shutting down message buses")
+
+	if s.shutdown {
+		return ErrAlreadyShutdown
+	}
+
+	return errors.Join(
+		s.accounts.Shutdown(),
+		s.categories.Shutdown(),
+		s.transactions.Shutdown(),
+	)
+}
+
+// Health checks the health of all connections by pinging the message_buses.
+// It returns a map with keys indicating various health statistics.
+func (s *service) Health() map[string]string {
+	// ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	// defer cancel()
+
+	stats := make(map[string]string)
+
+	if s.shutdown {
+		stats["status"] = "down"
+		stats["message"] = "message buses down: service shutdown"
+
+		return stats
+	}
+
+	stats["status"] = "up"
+	stats["message"] = "It's healthy"
+
+	_, err := accounts_handler.Instance()
+	if err != nil {
+		log.Println("accounts broker is down")
+		stats["accounts_broker"] = "It's down"
+		stats["message"] = "One or more broker is down"
+	}
+
+	_, err = categories_handler.Instance()
+	if err != nil {
+		log.Println("categories broker is down")
+		stats["categories_broker"] = "It's down"
+		stats["message"] = "One or more broker is down"
+	}
+
+	_, err = transactions_handler.Instance()
+	if err != nil {
+		log.Println("transactions broker is down")
+		stats["transactions_broker"] = "It's down"
+		stats["message"] = "One or more broker is down"
+	}
+
+	return stats
+}
