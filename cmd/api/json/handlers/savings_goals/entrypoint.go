@@ -7,7 +7,7 @@ import (
 )
 
 func Routes(r chi.Router) {
-	r.Post("/", create_handler.Create)
+	r.Post("/", create_handler.HandlerFunc)
 
 	r.Get("/active", Active)
 	r.Patch("/reorder", Reorder)

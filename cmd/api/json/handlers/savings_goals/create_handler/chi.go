@@ -13,7 +13,7 @@ import (
 	"net/http"
 )
 
-func Create(w http.ResponseWriter, r *http.Request) {
+func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
 		db      = postgresql_database.New()
 		savings = savings_repository.NewPostgreSQL(db)
