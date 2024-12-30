@@ -15,13 +15,13 @@ import (
 type command struct {
 	req         requests.Reorder
 	savingsRepo repositories.SavingsForCurrency
-	repo        repositories.Reorder
+	repo        repositories.ReorderRepository
 }
 
 func New(
 	req requests.Reorder,
 	savingsRepo repositories.SavingsForCurrency,
-	repo repositories.Reorder,
+	repo repositories.ReorderRepository,
 ) commands.Command[responses.Reorder] {
 	return &command{
 		req:         req,

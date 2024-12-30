@@ -11,7 +11,7 @@ type postgresql struct {
 	db databases.SQLAdapter
 }
 
-func NewPostgreSQL(db databases.SQLAdapter) repositories.Reorder {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.ReorderRepository {
 	return &postgresql{
 		db: db,
 	}

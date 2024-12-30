@@ -5,6 +5,6 @@ import (
 	"financo/models/achievement/savings_goal"
 )
 
-type Reorder interface {
+type ReorderRepository interface {
 	Save(ctx context.Context, records []savings_goal.Record) error
 }

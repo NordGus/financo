@@ -17,7 +17,7 @@ type command struct {
 	goalRepo    repositories.DeleteSavingsGoal
 	goalsRepo   repositories.ActiveSavingsGoalsForCurrency
 	savingsRepo repositories.SavingsForCurrency
-	reorderRepo repositories.Reorder
+	reorderRepo repositories.ReorderRepository
 }
 
 func New(
@@ -25,7 +25,7 @@ func New(
 	goalRepo repositories.DeleteSavingsGoal,
 	goalsRepo repositories.ActiveSavingsGoalsForCurrency,
 	savingsRepo repositories.SavingsForCurrency,
-	reorderRepo repositories.Reorder,
+	reorderRepo repositories.ReorderRepository,
 ) commands.Command[responses.Deleted] {
 	return &command{
 		req:         req,

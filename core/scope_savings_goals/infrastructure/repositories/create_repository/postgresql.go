@@ -11,7 +11,7 @@ type postgresql struct {
 	db databases.SQLAdapter
 }
 
-func NewPostgreSQL(db databases.SQLAdapter) repositories.Create {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.CreateRepository {
 	return &postgresql{
 		db: db,
 	}

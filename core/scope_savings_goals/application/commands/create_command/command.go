@@ -17,7 +17,7 @@ type command struct {
 	req     requests.Create
 	savings repositories.Savings
 	goals   repositories.SavingsGoals
-	create  repositories.Create
+	create  repositories.CreateRepository
 	broker  brokers.Created
 }
 
@@ -25,7 +25,7 @@ func New(
 	req requests.Create,
 	savings repositories.Savings,
 	goals repositories.SavingsGoals,
-	create repositories.Create,
+	create repositories.CreateRepository,
 	broker brokers.Created,
 ) commands.Command[responses.Created] {
 	return &command{

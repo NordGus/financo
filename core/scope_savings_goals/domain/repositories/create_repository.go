@@ -5,6 +5,6 @@ import (
 	"financo/models/achievement/savings_goal"
 )
 
-type Create interface {
+type CreateRepository interface {
 	Save(ctx context.Context, record savings_goal.Record) (savings_goal.Record, error)
 }

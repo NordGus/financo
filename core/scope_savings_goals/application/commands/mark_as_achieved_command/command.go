@@ -18,7 +18,7 @@ type command struct {
 	repo        repositories.MarkAsAchieved
 	goalsRepo   repositories.ActiveSavingsGoalsForCurrency
 	savingsRepo repositories.SavingsForCurrency
-	reorderRepo repositories.Reorder
+	reorderRepo repositories.ReorderRepository
 }
 
 func New(
@@ -26,7 +26,7 @@ func New(
 	repo repositories.MarkAsAchieved,
 	goalsRepo repositories.ActiveSavingsGoalsForCurrency,
 	savingsRepo repositories.SavingsForCurrency,
-	reorderRepo repositories.Reorder,
+	reorderRepo repositories.ReorderRepository,
 ) commands.Command[responses.MarkedAsAchieved] {
 	return &command{
 		req:         req,
