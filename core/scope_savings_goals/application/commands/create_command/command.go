@@ -3,30 +3,37 @@ package create_command
 import (
 	"context"
 	"financo/core/domain/commands"
+	"financo/core/scope_savings_goals/domain/brokers"
+	"financo/core/scope_savings_goals/domain/filters"
+	"financo/core/scope_savings_goals/domain/messages"
 	"financo/core/scope_savings_goals/domain/repositories"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
+	"financo/lib/currency"
 	"time"
 )
 
 type command struct {
-	req         requests.Create
-	savingsRepo repositories.SavingsForCurrency
-	goalsRepo   repositories.ActiveSavingsGoalsForCurrency
-	repo        repositories.Create
+	req     requests.Create
+	savings repositories.Savings
+	goals   repositories.SavingsGoals
+	create  repositories.Create
+	broker  brokers.Created
 }
 
 func New(
 	req requests.Create,
-	savingsRepo repositories.SavingsForCurrency,
-	goalsRepo repositories.ActiveSavingsGoalsForCurrency,
-	repo repositories.Create,
+	savings repositories.Savings,
+	goals repositories.SavingsGoals,
+	create repositories.Create,
+	broker brokers.Created,
 ) commands.Command[responses.Created] {
 	return &command{
-		req:         req,
-		savingsRepo: savingsRepo,
-		goalsRepo:   goalsRepo,
-		repo:        repo,
+		req:     req,
+		savings: savings,
+		goals:   goals,
+		create:  create,
+		broker:  broker,
 	}
 }
 
@@ -34,16 +41,18 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 	var (
 		timestamp = time.Now().UTC()
 		record    = c.req.ToRecord(timestamp)
+		goalsF    = filters.SavingsGoals{Currency: c.req.Currency}
+		savingsF  = filters.Savings{Currencies: []currency.Type{c.req.Currency}}
 
 		res responses.Created
 	)
 
-	savings, err := c.savingsRepo.Find(ctx, record.Settings.Currency)
+	savings, err := c.savings.Where(ctx, savingsF)
 	if err != nil {
 		return res, err
 	}
 
-	goals, err := c.goalsRepo.Find(ctx, record.Settings.Currency)
+	goals, err := c.goals.Where(ctx, goalsF)
 	if err != nil {
 		return res, err
 	}
@@ -51,29 +60,34 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 	record.Settings.Position = int16(len(goals)) + 1
 
 	goals = append(goals, record)
+	saved := savings[c.req.Currency]
+	last := len(goals) - 1
 
 	for i := 0; i < len(goals); i++ {
-		if savings.Savings < goals[i].Settings.Target && savings.Savings > 0 {
-			goals[i].Settings.Saved = savings.Savings
-			savings.Savings = 0
+		if saved < goals[i].Settings.Target && saved > 0 {
+			goals[i].Settings.Saved = saved
+			saved = 0
 			continue
 		}
 
-		if savings.Savings <= 0 {
+		if saved <= 0 {
 			goals[i].Settings.Saved = 0
 			continue
 		}
 
 		goals[i].Settings.Saved = goals[i].Settings.Target
-		savings.Savings -= goals[i].Settings.Target
+		saved -= goals[i].Settings.Target
 	}
 
-	record, err = c.repo.Save(ctx, goals[len(goals)-1])
+	record, err = c.create.Save(ctx, goals[last])
 	if err != nil {
 		return res, err
 	}
 
-	res = responses.RecordToCreated(record)
+	err = c.broker.Publish(messages.Created{Record: record})
+	if err != nil {
+		return res, err
+	}
 
-	return res, nil
+	return responses.NewCreated(record), nil
 }
