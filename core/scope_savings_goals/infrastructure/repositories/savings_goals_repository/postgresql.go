@@ -10,6 +10,7 @@ import (
 )
 
 type Repository interface {
+	repositories.SavingsGoalRepository
 	repositories.SavingsGoalsRepository
 }
 
@@ -19,6 +20,53 @@ type postgresql struct {
 
 func NewPostgreSQL(db databases.SQLAdapter) Repository {
 	return &postgresql{db: db}
+}
+
+func (p *postgresql) Find(ctx context.Context, id int64) (savings_goal.Record, error) {
+	var record savings_goal.Record
+
+	conn, err := p.db.Conn(ctx)
+	if err != nil {
+		return record, err
+	}
+	defer conn.Close()
+
+	err = conn.QueryRowContext(
+		ctx,
+		`
+			SELECT
+				id,
+				kind,
+				name,
+				description,
+				settings,
+				achieved_at,
+				deleted_at,
+				created_at,
+				updated_at
+			FROM achievements
+			WHERE
+				id = $1
+				AND achieved_at IS NULL
+				AND deleted_at IS NULL
+			`,
+		id,
+	).Scan(
+		&record.ID,
+		&record.Kind,
+		&record.Name,
+		&record.Description,
+		&record.Settings,
+		&record.AchievedAt,
+		&record.DeletedAt,
+		&record.CreatedAt,
+		&record.UpdatedAt,
+	)
+	if err != nil {
+		return record, err
+	}
+
+	return record, nil
 }
 
 func (p *postgresql) Where(ctx context.Context, f filters.SavingsGoals) ([]savings_goal.Record, error) {
