@@ -10,7 +10,7 @@ import (
 )
 
 type Repository interface {
-	repositories.SavingsGoals
+	repositories.SavingsGoalsRepository
 }
 
 type postgresql struct {

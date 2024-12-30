@@ -15,16 +15,16 @@ import (
 
 type command struct {
 	req     requests.Create
-	savings repositories.Savings
-	goals   repositories.SavingsGoals
+	savings repositories.SavingsRepository
+	goals   repositories.SavingsGoalsRepository
 	create  repositories.CreateRepository
 	broker  brokers.Created
 }
 
 func New(
 	req requests.Create,
-	savings repositories.Savings,
-	goals repositories.SavingsGoals,
+	savings repositories.SavingsRepository,
+	goals repositories.SavingsGoalsRepository,
 	create repositories.CreateRepository,
 	broker brokers.Created,
 ) commands.Command[responses.Created] {

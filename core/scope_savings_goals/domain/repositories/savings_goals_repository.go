@@ -6,6 +6,6 @@ import (
 	"financo/models/achievement/savings_goal"
 )
 
-type SavingsGoals interface {
+type SavingsGoalsRepository interface {
 	Where(ctx context.Context, f filters.SavingsGoals) ([]savings_goal.Record, error)
 }

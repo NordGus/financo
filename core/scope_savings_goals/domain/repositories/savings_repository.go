@@ -6,6 +6,6 @@ import (
 	"financo/lib/currency"
 )
 
-type Savings interface {
+type SavingsRepository interface {
 	Where(ctx context.Context, f filters.Savings) (map[currency.Type]int64, error)
 }

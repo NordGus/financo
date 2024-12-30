@@ -12,7 +12,7 @@ type postgresql struct {
 	db databases.SQLAdapter
 }
 
-func NewPostgreSQL(db databases.SQLAdapter) repositories.Savings {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.SavingsRepository {
 	return &postgresql{db: db}
 }
 
