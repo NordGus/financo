@@ -1,20 +1,12 @@
 package savings_goals
 
 import (
+	"financo/cmd/database/seed/lib/helpers"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/lib/currency"
 	"financo/lib/nullable"
-	"financo/models/achievement/savings_goal"
-	"fmt"
 	"time"
 )
-
-type goalSeed struct {
-	Record savings_goal.Record
-
-	AchievedAt func(moment time.Time) nullable.Type[time.Time]
-	DeletedAt  func(moment time.Time) nullable.Type[time.Time]
-}
 
 var (
 	create = []requests.Create{
@@ -81,13 +73,7 @@ var (
 	}
 
 	achieved = map[string]time.Time{
-		mapKey(create[0].Name, create[0].Currency): time.Now().AddDate(0, -12, 0).UTC(),
-		mapKey(create[1].Name, create[1].Currency): time.Now().AddDate(0, 0, -15).UTC(),
+		helpers.MapKey(create[0].Name, create[0].Currency): time.Now().AddDate(0, -12, 0).UTC(),
+		helpers.MapKey(create[1].Name, create[1].Currency): time.Now().AddDate(0, 0, -15).UTC(),
 	}
-
-	deleted = map[string]int64{}
 )
-
-func mapKey(name string, curr currency.Type) string {
-	return fmt.Sprintf("%s:%s", name, curr)
-}

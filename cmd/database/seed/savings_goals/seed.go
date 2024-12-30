@@ -3,6 +3,7 @@ package savings_goals
 import (
 	"context"
 	"errors"
+	"financo/cmd/database/seed/lib/helpers"
 	"financo/core/scope_savings_goals/application/commands/create_command"
 	"financo/core/scope_savings_goals/application/commands/mark_as_achieved_command"
 	"financo/core/scope_savings_goals/domain/requests"
@@ -75,14 +76,14 @@ func ArchiveSavingsGoals(ctx context.Context, created []responses.Created) ([]re
 	log.Println("\tmarking savings goals achievements as achieved")
 
 	for i := 0; i < len(created); i++ {
-		if _, ok := achieved[mapKey(created[i].Name, created[i].Currency)]; ok {
+		if _, ok := achieved[helpers.MapKey(created[i].Name, created[i].Currency)]; ok {
 			mark = append(mark, created[i])
 		}
 	}
 
 	for i := 0; i < len(mark); i++ {
 		var (
-			req  = requests.MarkAsAchieved{ID: mark[i].ID, AchievedAt: achieved[mapKey(mark[i].Name, mark[i].Currency)]}
+			req  = requests.MarkAsAchieved{ID: mark[i].ID, AchievedAt: achieved[helpers.MapKey(mark[i].Name, mark[i].Currency)]}
 			curr = mark[i].Currency
 		)
 
