@@ -1,9 +1,13 @@
 package savings_goals
 
-import "github.com/go-chi/chi/v5"
+import (
+	"financo/cmd/api/json/handlers/savings_goals/create_handler"
+
+	"github.com/go-chi/chi/v5"
+)
 
 func Routes(r chi.Router) {
-	r.Post("/", Create)
+	r.Post("/", create_handler.Create)
 
 	r.Get("/active", Active)
 	r.Patch("/reorder", Reorder)
