@@ -8,13 +8,10 @@ import (
 	"financo/core/scope_savings_goals/application/commands/mark_as_achieved_command"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
-	"financo/core/scope_savings_goals/infrastructure/repositories/active_savings_goals_for_currency_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/create_repository"
-	"financo/core/scope_savings_goals/infrastructure/repositories/mark_as_achieved_repository"
-	"financo/core/scope_savings_goals/infrastructure/repositories/reorder_repository"
-	"financo/core/scope_savings_goals/infrastructure/repositories/savings_for_currency_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/savings_repository"
+	"financo/core/scope_savings_goals/infrastructure/repositories/update_repository"
 	"financo/core/scope_savings_goals/infrastructure/services/message_broker"
 	"financo/lib/currency"
 	"financo/services/postgresql_database"
@@ -61,17 +58,20 @@ func CreateSavingsGoals(ctx context.Context) ([]responses.Created, error) {
 
 func ArchiveSavingsGoals(ctx context.Context, created []responses.Created) ([]responses.MarkedAsAchieved, error) {
 	var (
-		db          = postgresql_database.New()
-		markRepo    = mark_as_achieved_repository.NewPostgreSQL(db)
-		goalsRepo   = active_savings_goals_for_currency_repository.NewPostgreSQL(db)
-		savingsRepo = savings_for_currency_repository.NewPostgreSQL(db)
-		reorderRepo = reorder_repository.NewPostgreSQL(db)
+		db     = postgresql_database.New()
+		goals  = savings_goals_repository.NewPostgreSQL(db)
+		update = update_repository.NewPostgreSQL(db)
 
 		summary = make(map[currency.Type]uint, 10)
 
 		out  = make([]responses.MarkedAsAchieved, 0, len(created))
 		mark = make([]responses.Created, 0, len(created))
 	)
+
+	broker, err := message_broker.Instance()
+	if err != nil {
+		return nil, errors.Join(errors.New("savings_goals: failed to retrieve message_broker instance"), err)
+	}
 
 	log.Println("\tmarking savings goals achievements as achieved")
 
@@ -87,7 +87,7 @@ func ArchiveSavingsGoals(ctx context.Context, created []responses.Created) ([]re
 			curr = mark[i].Currency
 		)
 
-		res, err := mark_as_achieved_command.New(req, markRepo, goalsRepo, savingsRepo, reorderRepo).Run(ctx)
+		res, err := mark_as_achieved_command.New(req, goals, update, broker.MarkedAsAchieved()).Run(ctx)
 		if err != nil {
 			return out, errors.Join(
 				fmt.Errorf("savings_goals: failed to mark savings goal %s as achieved", create[i].Name),
