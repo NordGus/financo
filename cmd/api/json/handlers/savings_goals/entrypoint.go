@@ -2,6 +2,7 @@ package savings_goals
 
 import (
 	"financo/cmd/api/json/handlers/savings_goals/create_handler"
+	"financo/cmd/api/json/handlers/savings_goals/update_handler"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -14,7 +15,7 @@ func Routes(r chi.Router) {
 
 	r.Route("/{id}", func(r chi.Router) {
 		r.Delete("/", Destroy)
-		r.Put("/", Update)
+		r.Put("/", update_handler.HandlerFunc)
 		r.Patch("/mark-as-achieved", MarkAsAchieved)
 	})
 }
