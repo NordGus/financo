@@ -12,6 +12,9 @@ import (
 	"financo/core/scope_savings_goals/infrastructure/repositories/mark_as_achieved_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/reorder_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/savings_for_currency_repository"
+	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
+	"financo/core/scope_savings_goals/infrastructure/repositories/savings_repository"
+	"financo/core/scope_savings_goals/infrastructure/services/message_broker"
 	"financo/lib/currency"
 	"financo/services/postgresql_database"
 	"fmt"
@@ -20,20 +23,25 @@ import (
 
 func CreateSavingsGoals(ctx context.Context) ([]responses.Created, error) {
 	var (
-		db          = postgresql_database.New()
-		savingsRepo = savings_for_currency_repository.NewPostgreSQL(db)
-		goalsRepo   = active_savings_goals_for_currency_repository.NewPostgreSQL(db)
-		createRepo  = create_repository.NewPostgreSQL(db)
+		db      = postgresql_database.New()
+		savings = savings_repository.NewPostgreSQL(db)
+		goals   = savings_goals_repository.NewPostgreSQL(db)
+		repo    = create_repository.NewPostgreSQL(db)
 
 		summary = make(map[currency.Type]uint, 10)
 
 		out = make([]responses.Created, 0, len(create))
 	)
 
+	broker, err := message_broker.Instance()
+	if err != nil {
+		return nil, errors.Join(errors.New("savings_goals: failed to retrieve message_broker instance"), err)
+	}
+
 	log.Println("\tseeding savings goals achievements")
 
 	for i := 0; i < len(create); i++ {
-		res, err := create_command.New(create[i], savingsRepo, goalsRepo, createRepo).Run(ctx)
+		res, err := create_command.New(create[i], savings, goals, repo, broker.Created()).Run(ctx)
 		if err != nil {
 			return out, errors.Join(fmt.Errorf("savings_goals: failed to seed savings goal %s", create[i].Name), err)
 		}
