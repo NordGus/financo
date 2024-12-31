@@ -54,7 +54,7 @@ func main() {
 		log.Fatalf("failed to seed accounts:\n\t err: %s\n", err.Error())
 	}
 
-	err = transactions.SeedTransactions(ctx, accountRecords, conn, start.UTC())
+	err = transactions.SeedTransactions(ctx, accountRecords, start.UTC())
 	if err != nil {
 		log.Fatalf("failed to seed transactions:\n\t err: %s\n", err.Error())
 	}
