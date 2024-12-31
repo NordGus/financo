@@ -1,228 +1,136 @@
 package categories
 
+import (
+	"financo/core/scope_categories/domain/requests"
+	"financo/lib/currency"
+	"financo/lib/icon"
+	"financo/lib/nullable"
+	"financo/models/account"
+)
+
+type childCreateReq struct {
+	req     requests.CreateChild
+	key     string
+	archive bool
+}
+
+type createReq struct {
+	req      requests.Create
+	key      string
+	archive  bool
+	children []childCreateReq
+}
+
 var (
-/*
-	{
-		Account: account.Record{
-			Kind:        account.ExternalIncome,
-			Currency:    currency.EUR,
-			Name:        "Paycheck",
-			Description: nullable.New("Where the bread comes from"),
-			Color:       "#eb8934",
-			Icon:        icon.Banknote,
-			Capital:     0,
-			DynamicData: account.DynamicData{},
-		},
-		Children: []childAccountSeed{
-			{
-				Account: account.Record{
-					// ParentID will be added later after the creation of its corresponding account.
-					Kind:        account.ExternalIncome,
-					Currency:    currency.EUR,
-					Name:        "Freelancing",
-					Description: nullable.New("Hustling"),
-					Color:       "#eb8934",
-					Icon:        icon.BicepsFlexed,
-					Capital:     0,
-					DynamicData: account.DynamicData{},
-				},
-
-				ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.New(moment)
-				},
-				DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.Type[time.Time]{}
-				},
-
-				MapKey: "freelancing",
+	create = []createReq{
+		{
+			req: requests.Create{
+				Kind:        account.ExternalIncome,
+				Name:        "Paycheck",
+				Description: nullable.New("Where the bread comes from"),
+				Currency:    currency.EUR,
+				Color:       "#eb8934",
+				Icon:        icon.Banknote,
+				Children:    make([]requests.CreateChild, 0, 10),
 			},
-			{
-				Account: account.Record{
-					// ParentID will be added later after the creation of its corresponding account.
-					Kind:        account.ExternalIncome,
-					Currency:    currency.EUR,
-					Name:        "Day Job",
-					Description: nullable.New("Grinding"),
-					Color:       "#eb8934",
-					Icon:        icon.Briefcase,
-					Capital:     0,
-					DynamicData: account.DynamicData{},
+			archive: false,
+			key:     "day_job",
+			children: []childCreateReq{
+				{
+					req: requests.CreateChild{
+						Name:        "Freelancing",
+						Description: nullable.New("Hustling"),
+						Icon:        icon.BicepsFlexed,
+					},
+					archive: true,
+					key:     "freelancing",
 				},
-
-				ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.Type[time.Time]{}
+				{
+					req: requests.CreateChild{
+						Name:        "Day Job",
+						Description: nullable.New("Grinding"),
+						Icon:        icon.Briefcase,
+					},
+					archive: false,
+					key:     "day_job",
 				},
-				DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.Type[time.Time]{}
+				{
+					req: requests.CreateChild{
+						Name:        "Teaching",
+						Description: nullable.New("Side Hustle"),
+						Icon:        icon.GraduationCap,
+					},
+					archive: false,
+					key:     "teaching",
 				},
-
-				MapKey: "day_job",
-			},
-			{
-				Account: account.Record{
-					// ParentID will be added later after the creation of its corresponding account.
-					Kind:        account.ExternalIncome,
-					Currency:    currency.EUR,
-					Name:        "Teaching",
-					Description: nullable.New("Side Hustle"),
-					Color:       "#eb8934",
-					Icon:        icon.GraduationCap,
-					Capital:     0,
-					DynamicData: account.DynamicData{},
-				},
-
-				ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.Type[time.Time]{}
-				},
-				DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.Type[time.Time]{}
-				},
-
-				MapKey: "teaching",
 			},
 		},
-
-		ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
-			return nullable.Type[time.Time]{}
-		},
-		DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-			return nullable.Type[time.Time]{}
-		},
-
-		MapKey: "paycheck",
-	},
-
-	{
-		Account: account.Record{
-			Kind:        account.ExternalIncome,
-			Currency:    currency.EUR,
-			Name:        "Allowance",
-			Description: nullable.Type[string]{},
-			Color:       "#eb8934",
-			Icon:        icon.Coins,
-			Capital:     0,
-			DynamicData: account.DynamicData{},
-		},
-		Children: []childAccountSeed{},
-
-		ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
-			return nullable.New(moment.AddDate(0, 0, -1))
-		},
-		DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-			return nullable.Type[time.Time]{}
-		},
-
-		MapKey: "allowance",
-	},
-
-	{
-		Account: account.Record{
-			Kind:        account.ExternalExpense,
-			Currency:    currency.EUR,
-			Name:        "Market",
-			Description: nullable.New("I need to survive"),
-			Color:       "#34ebae",
-			Icon:        icon.ShoppingBasket,
-		},
-		Children: []childAccountSeed{
-			{
-				Account: account.Record{
-					// ParentID will be added later after the creation of its corresponding account.
-					Kind:        account.ExternalExpense,
-					Currency:    currency.EUR,
-					Name:        "Gardening supplies",
-					Description: nullable.New("My ADHD demands to be fed dopamine"),
-					Color:       "#34ebae",
-					Icon:        icon.Flower,
-					Capital:     0,
-					DynamicData: account.DynamicData{},
-				},
-
-				ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.New(moment)
-				},
-				DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.Type[time.Time]{}
-				},
-
-				MapKey: "gardening_supplies",
+		{
+			req: requests.Create{
+				Kind:     account.ExternalIncome,
+				Name:     "Allowance",
+				Currency: currency.EUR,
+				Color:    "#eb8934",
+				Icon:     icon.Coins,
+				Children: make([]requests.CreateChild, 0, 10),
 			},
-			{
-				Account: account.Record{
-					// ParentID will be added later after the creation of its corresponding account.
-					Kind:        account.ExternalExpense,
-					Currency:    currency.EUR,
-					Name:        "Food",
-					Description: nullable.New("Fuel for my body"),
-					Color:       "#34ebae",
-					Icon:        icon.Salad,
-					Capital:     0,
-					DynamicData: account.DynamicData{},
-				},
-
-				ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.Type[time.Time]{}
-				},
-				DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.Type[time.Time]{}
-				},
-
-				MapKey: "food",
+			archive:  true,
+			key:      "allowance",
+			children: []childCreateReq{},
+		},
+		{
+			req: requests.Create{
+				Kind:        account.ExternalExpense,
+				Name:        "Market",
+				Description: nullable.New("I need to survive"),
+				Currency:    currency.EUR,
+				Color:       "#34ebae",
+				Icon:        icon.ShoppingBasket,
+				Children:    make([]requests.CreateChild, 0, 10),
 			},
-			{
-				Account: account.Record{
-					// ParentID will be added later after the creation of its corresponding account.
-					Kind:        account.ExternalExpense,
-					Currency:    currency.EUR,
-					Name:        "Fruit Shop",
-					Description: nullable.Type[string]{},
-					Color:       "#34ebae",
-					Icon:        icon.Apple,
-					Capital:     0,
-					DynamicData: account.DynamicData{},
+			archive: false,
+			key:     "market",
+			children: []childCreateReq{
+				{
+					req: requests.CreateChild{
+						Name:        "Gardening supplies",
+						Description: nullable.New("My ADHD demands to be fed dopamine"),
+						Icon:        icon.Flower,
+					},
+					archive: true,
+					key:     "gardening_supplies",
 				},
-
-				ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.Type[time.Time]{}
+				{
+					req: requests.CreateChild{
+						Name:        "Food",
+						Description: nullable.New("Fuel for my body"),
+						Icon:        icon.Salad,
+					},
+					archive: false,
+					key:     "food",
 				},
-				DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-					return nullable.Type[time.Time]{}
+				{
+					req: requests.CreateChild{
+						Name: "Fruit Shop",
+						Icon: icon.Salad,
+					},
+					archive: false,
+					key:     "fruit_shop",
 				},
-
-				MapKey: "fruit_shop",
 			},
 		},
-
-		ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
-			return nullable.Type[time.Time]{}
+		{
+			req: requests.Create{
+				Kind:     account.ExternalExpense,
+				Name:     "Transport",
+				Currency: currency.EUR,
+				Color:    "#e5eb34",
+				Icon:     icon.BusFront,
+				Children: make([]requests.CreateChild, 0, 10),
+			},
+			archive:  false,
+			key:      "transport",
+			children: []childCreateReq{},
 		},
-		DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-			return nullable.Type[time.Time]{}
-		},
-
-		MapKey: "market",
-	},
-
-	{
-		Account: account.Record{
-			Kind:        account.ExternalExpense,
-			Currency:    currency.EUR,
-			Name:        "Transport",
-			Description: nullable.Type[string]{},
-			Color:       "#e5eb34",
-			Icon:        icon.BusFront,
-			DynamicData: account.DynamicData{},
-		},
-		Children: []childAccountSeed{},
-
-		ArchivedAt: func(moment time.Time) nullable.Type[time.Time] {
-			return nullable.Type[time.Time]{}
-		},
-		DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-			return nullable.Type[time.Time]{}
-		},
-
-		MapKey: "transport",
-	},
-*/
+	}
 )
