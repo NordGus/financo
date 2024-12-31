@@ -9,15 +9,15 @@ import (
 )
 
 type childCreateReq struct {
-	req     requests.CreateChild
-	key     string
-	archive bool
+	req      requests.CreateChild
+	key      string
+	archived bool
 }
 
 type createReq struct {
 	req      requests.Create
 	key      string
-	archive  bool
+	archived bool
 	children []childCreateReq
 }
 
@@ -33,8 +33,8 @@ var (
 				Icon:        icon.Banknote,
 				Children:    make([]requests.CreateChild, 0, 10),
 			},
-			archive: false,
-			key:     "day_job",
+			archived: false,
+			key:      "day_job",
 			children: []childCreateReq{
 				{
 					req: requests.CreateChild{
@@ -42,8 +42,8 @@ var (
 						Description: nullable.New("Hustling"),
 						Icon:        icon.BicepsFlexed,
 					},
-					archive: true,
-					key:     "freelancing",
+					archived: true,
+					key:      "freelancing",
 				},
 				{
 					req: requests.CreateChild{
@@ -51,8 +51,8 @@ var (
 						Description: nullable.New("Grinding"),
 						Icon:        icon.Briefcase,
 					},
-					archive: false,
-					key:     "day_job",
+					archived: false,
+					key:      "day_job",
 				},
 				{
 					req: requests.CreateChild{
@@ -60,8 +60,8 @@ var (
 						Description: nullable.New("Side Hustle"),
 						Icon:        icon.GraduationCap,
 					},
-					archive: false,
-					key:     "teaching",
+					archived: false,
+					key:      "teaching",
 				},
 			},
 		},
@@ -74,7 +74,7 @@ var (
 				Icon:     icon.Coins,
 				Children: make([]requests.CreateChild, 0, 10),
 			},
-			archive:  true,
+			archived: true,
 			key:      "allowance",
 			children: []childCreateReq{},
 		},
@@ -88,8 +88,8 @@ var (
 				Icon:        icon.ShoppingBasket,
 				Children:    make([]requests.CreateChild, 0, 10),
 			},
-			archive: false,
-			key:     "market",
+			archived: false,
+			key:      "market",
 			children: []childCreateReq{
 				{
 					req: requests.CreateChild{
@@ -97,8 +97,8 @@ var (
 						Description: nullable.New("My ADHD demands to be fed dopamine"),
 						Icon:        icon.Flower,
 					},
-					archive: true,
-					key:     "gardening_supplies",
+					archived: true,
+					key:      "gardening_supplies",
 				},
 				{
 					req: requests.CreateChild{
@@ -106,16 +106,16 @@ var (
 						Description: nullable.New("Fuel for my body"),
 						Icon:        icon.Salad,
 					},
-					archive: false,
-					key:     "food",
+					archived: false,
+					key:      "food",
 				},
 				{
 					req: requests.CreateChild{
 						Name: "Fruit Shop",
 						Icon: icon.Salad,
 					},
-					archive: false,
-					key:     "fruit_shop",
+					archived: false,
+					key:      "fruit_shop",
 				},
 			},
 		},
@@ -128,7 +128,7 @@ var (
 				Icon:     icon.BusFront,
 				Children: make([]requests.CreateChild, 0, 10),
 			},
-			archive:  false,
+			archived: false,
 			key:      "transport",
 			children: []childCreateReq{},
 		},
