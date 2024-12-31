@@ -26,9 +26,8 @@ func SeedAccounts(ctx context.Context, timestamp time.Time) (map[string]int64, e
 		accounts = accounts_repository.NewPostgreSQL(db)
 		archival = archival_repository.NewPostgreSQL(db)
 
-		out           = make(map[string]int64, 10)
-		tSummary uint = 0
-		summary       = make(map[account.Kind]uint, 8)
+		out     = make(map[string]int64, 10)
+		summary = make(map[account.Kind]uint, 8)
 	)
 
 	broker, err := message_broker.Instance()
@@ -71,15 +70,12 @@ func SeedAccounts(ctx context.Context, timestamp time.Time) (map[string]int64, e
 		}
 
 		summary[res.Kind] += 1
-		tSummary += 1
 	}
 
 	// printing summary
 	for kind, count := range summary {
 		log.Printf("\t\t%d %v accounts seeded\n", count, kind)
 	}
-
-	log.Printf("\t\t%d historic transactions seeded\n", tSummary)
 
 	return out, nil
 }
