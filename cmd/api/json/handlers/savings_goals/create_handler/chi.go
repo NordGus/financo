@@ -6,7 +6,6 @@ import (
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/infrastructure/repositories/create_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
-	"financo/core/scope_savings_goals/infrastructure/repositories/savings_repository"
 	"financo/core/scope_savings_goals/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
 	"log"
@@ -15,11 +14,10 @@ import (
 
 func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
-		db      = postgresql_database.New()
-		savings = savings_repository.NewPostgreSQL(db)
-		goals   = savings_goals_repository.NewPostgreSQL(db)
-		create  = create_repository.NewPostgreSQL(db)
-		body    = r.Body
+		db     = postgresql_database.New()
+		goals  = savings_goals_repository.NewPostgreSQL(db)
+		create = create_repository.NewPostgreSQL(db)
+		body   = r.Body
 
 		req requests.Create
 	)
@@ -39,7 +37,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := create_command.New(req, savings, goals, create, broker.Created()).Run(r.Context())
+	res, err := create_command.New(req, goals, create, broker.Created()).Run(r.Context())
 	if err != nil {
 		log.Println("savings_goals: create_handler: command failed, reason:", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

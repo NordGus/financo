@@ -10,7 +10,6 @@ import (
 	"financo/core/scope_savings_goals/domain/responses"
 	"financo/core/scope_savings_goals/infrastructure/repositories/create_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
-	"financo/core/scope_savings_goals/infrastructure/repositories/savings_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/update_repository"
 	"financo/core/scope_savings_goals/infrastructure/services/message_broker"
 	"financo/lib/currency"
@@ -21,10 +20,9 @@ import (
 
 func CreateSavingsGoals(ctx context.Context) ([]responses.Created, error) {
 	var (
-		db      = postgresql_database.New()
-		savings = savings_repository.NewPostgreSQL(db)
-		goals   = savings_goals_repository.NewPostgreSQL(db)
-		repo    = create_repository.NewPostgreSQL(db)
+		db    = postgresql_database.New()
+		goals = savings_goals_repository.NewPostgreSQL(db)
+		repo  = create_repository.NewPostgreSQL(db)
 
 		summary = make(map[currency.Type]uint, 10)
 
@@ -39,7 +37,7 @@ func CreateSavingsGoals(ctx context.Context) ([]responses.Created, error) {
 	log.Println("\tseeding savings goals achievements")
 
 	for i := 0; i < len(create); i++ {
-		res, err := create_command.New(create[i], savings, goals, repo, broker.Created()).Run(ctx)
+		res, err := create_command.New(create[i], goals, repo, broker.Created()).Run(ctx)
 		if err != nil {
 			return out, errors.Join(fmt.Errorf("savings_goals: failed to seed savings goal %s", create[i].Name), err)
 		}
