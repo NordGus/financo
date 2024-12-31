@@ -59,7 +59,7 @@ func main() {
 		log.Fatalf("failed to seed transactions:\n\t err: %s\n", err.Error())
 	}
 
-	_, err = savings_goals.ArchiveSavingsGoals(ctx, createdSG)
+	_, err = savings_goals.AchieveSavingsGoals(ctx, createdSG)
 	if err != nil {
 		log.Println("failed to mark savings goals as achieve", err.Error())
 		os.Exit(1)

@@ -54,7 +54,7 @@ func CreateSavingsGoals(ctx context.Context) ([]responses.Created, error) {
 	return out, nil
 }
 
-func ArchiveSavingsGoals(ctx context.Context, created []responses.Created) ([]responses.MarkedAsAchieved, error) {
+func AchieveSavingsGoals(ctx context.Context, created []responses.Created) ([]responses.MarkedAsAchieved, error) {
 	var (
 		db     = postgresql_database.New()
 		goals  = savings_goals_repository.NewPostgreSQL(db)
