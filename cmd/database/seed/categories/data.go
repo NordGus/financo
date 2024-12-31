@@ -34,7 +34,7 @@ var (
 				Children:    make([]requests.CreateChild, 0, 10),
 			},
 			archived: false,
-			key:      "day_job",
+			key:      "paycheck",
 			children: []childCreateReq{
 				{
 					req: requests.CreateChild{

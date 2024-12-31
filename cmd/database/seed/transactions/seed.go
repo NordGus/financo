@@ -58,7 +58,13 @@ func SeedTransactions(ctx context.Context, seeds map[string]int64, timestamp tim
 		res, err := create_command.New(req, accounts, create, detailed, broker.Created()).Run(ctx)
 		if err != nil {
 			return errors.Join(
-				fmt.Errorf("transactions: failed to seed transaction between %s and %s", data.Source, data.Target),
+				fmt.Errorf(
+					"transactions: failed to seed transaction between %s(%d) and %s(%d)",
+					data.Source,
+					source,
+					data.Target,
+					target,
+				),
 				err,
 			)
 		}
