@@ -3,7 +3,6 @@ package transactions
 import (
 	"context"
 	"errors"
-	"financo/cmd/database/seed/accounts"
 	"financo/core/infrastructure/repositories/account_repository"
 	"financo/core/scope_transactions/application/commands/create_command"
 	"financo/core/scope_transactions/application/commands/delete_command"
@@ -19,7 +18,7 @@ import (
 	"time"
 )
 
-func SeedTransactions(ctx context.Context, seeds map[string]accounts.AccountRecord, timestamp time.Time) error {
+func SeedTransactions(ctx context.Context, seeds map[string]int64, timestamp time.Time) error {
 	var (
 		db       = postgresql_database.New()
 		accounts = account_repository.NewPostgreSQL(db)
@@ -42,24 +41,16 @@ func SeedTransactions(ctx context.Context, seeds map[string]accounts.AccountReco
 	for i := 0; i < len(transactions); i++ {
 		var (
 			data   = transactions[i]
-			source = seeds[data.Source.Key].Account
-			target = seeds[data.Target.Key].Account
+			source = seeds[data.Source]
+			target = seeds[data.Target]
 		)
-
-		if data.Source.ParentKey.Valid {
-			source = seeds[data.Source.ParentKey.Val].Children[data.Source.Key]
-		}
-
-		if data.Target.ParentKey.Valid {
-			target = seeds[data.Target.ParentKey.Val].Children[data.Target.Key]
-		}
 
 		req := requests.Create{
 			IssuedAt:     data.IssuedAt(ts),
 			ExecutedAt:   data.ExecutedAt(ts),
 			Notes:        data.Notes,
-			SourceID:     source.ID,
-			TargetID:     target.ID,
+			SourceID:     source,
+			TargetID:     target,
 			SourceAmount: data.SourceAmount,
 			TargetAmount: data.TargetAmount,
 		}
@@ -67,7 +58,7 @@ func SeedTransactions(ctx context.Context, seeds map[string]accounts.AccountReco
 		res, err := create_command.New(req, accounts, create, detailed, broker.Created()).Run(ctx)
 		if err != nil {
 			return errors.Join(
-				fmt.Errorf("transactions: failed to seed transaction between %s and %s", source.Name, target.Name),
+				fmt.Errorf("transactions: failed to seed transaction between %s and %s", data.Source, data.Target),
 				err,
 			)
 		}
@@ -78,7 +69,7 @@ func SeedTransactions(ctx context.Context, seeds map[string]accounts.AccountReco
 			_, err = delete_command.New(r, transact, delete, detailed, broker.Deleted()).Run(ctx)
 			if err != nil {
 				return errors.Join(
-					fmt.Errorf("transactions: failed to delete transaction between %s and %s", source.Name, target.Name),
+					fmt.Errorf("transactions: failed to delete transaction between %s and %s", data.Source, data.Target),
 					err,
 				)
 			}
