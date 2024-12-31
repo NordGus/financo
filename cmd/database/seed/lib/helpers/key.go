@@ -5,6 +5,6 @@ import (
 	"fmt"
 )
 
-func MapKey(name string, curr currency.Type) string {
+func SavingsGoalMapKey(name string, curr currency.Type) string {
 	return fmt.Sprintf("%s:%s", name, curr)
 }

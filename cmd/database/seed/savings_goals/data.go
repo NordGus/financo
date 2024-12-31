@@ -73,7 +73,7 @@ var (
 	}
 
 	achieved = map[string]time.Time{
-		helpers.MapKey(create[0].Name, create[0].Currency): time.Now().AddDate(0, -12, 0).UTC(),
-		helpers.MapKey(create[1].Name, create[1].Currency): time.Now().AddDate(0, 0, -15).UTC(),
+		helpers.SavingsGoalMapKey(create[0].Name, create[0].Currency): time.Now().AddDate(0, -12, 0).UTC(),
+		helpers.SavingsGoalMapKey(create[1].Name, create[1].Currency): time.Now().AddDate(0, 0, -15).UTC(),
 	}
 )

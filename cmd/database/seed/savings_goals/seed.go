@@ -74,14 +74,14 @@ func ArchiveSavingsGoals(ctx context.Context, created []responses.Created) ([]re
 	log.Println("\tmarking savings goals achievements as achieved")
 
 	for i := 0; i < len(created); i++ {
-		if _, ok := achieved[helpers.MapKey(created[i].Name, created[i].Currency)]; ok {
+		if _, ok := achieved[helpers.SavingsGoalMapKey(created[i].Name, created[i].Currency)]; ok {
 			mark = append(mark, created[i])
 		}
 	}
 
 	for i := 0; i < len(mark); i++ {
 		var (
-			req  = requests.MarkAsAchieved{ID: mark[i].ID, AchievedAt: achieved[helpers.MapKey(mark[i].Name, mark[i].Currency)]}
+			req  = requests.MarkAsAchieved{ID: mark[i].ID, AchievedAt: achieved[helpers.SavingsGoalMapKey(mark[i].Name, mark[i].Currency)]}
 			curr = mark[i].Currency
 		)
 
