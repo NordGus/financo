@@ -123,7 +123,7 @@ var (
 			},
 		},
 		{ // Old Freelance payment
-			Source:       "category.freelancing.paycheck",
+			Source:       "category.paycheck.freelancing",
 			Target:       "account.freelance_bank_account",
 			SourceAmount: 800_00,
 			TargetAmount: 800_00,
