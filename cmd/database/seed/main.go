@@ -49,19 +49,14 @@ func main() {
 	}
 	defer conn.Close()
 
-	accountRecords, err := accounts.SeedAccounts(ctx, conn, start.UTC())
+	acc, err := accounts.SeedAccounts(ctx, start.UTC())
 	if err != nil {
 		log.Fatalf("failed to seed accounts:\n\t err: %s\n", err.Error())
 	}
 
-	err = transactions.SeedTransactions(ctx, accountRecords, start.UTC())
+	err = transactions.SeedTransactions(ctx, acc, start.UTC())
 	if err != nil {
 		log.Fatalf("failed to seed transactions:\n\t err: %s\n", err.Error())
-	}
-
-	err = accounts.SeedDynamicData(ctx, conn, start.UTC())
-	if err != nil {
-		log.Fatalf("failed to seed accounts transaction count:\n\t err: %s\n", err.Error())
 	}
 
 	_, err = savings_goals.ArchiveSavingsGoals(ctx, createdSG)
