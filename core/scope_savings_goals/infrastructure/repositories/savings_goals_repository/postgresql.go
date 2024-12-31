@@ -98,7 +98,7 @@ func (p *postgresql) Where(ctx context.Context, f filters.SavingsGoals) ([]savin
 			AND achieved_at IS NULL
 			AND deleted_at IS NULL
 		ORDER BY
-			settings->'currency', settings->'position' ASC
+			settings->'currency', settings->'position' ASC, created_at ASC
 		`,
 		achievement.SavingsGoal,
 		f.Currency,

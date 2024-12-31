@@ -58,3 +58,49 @@ func (p *postgresql) Save(ctx context.Context, r savings_goal.Record) error {
 
 	return nil
 }
+
+func (p *postgresql) SaveMultiple(ctx context.Context, records []savings_goal.Record) error {
+	conn, err := p.db.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < len(records); i++ {
+		r := records[i]
+
+		err = tx.QueryRowContext(
+			ctx,
+			`
+			UPDATE achievements
+			SET name = $2, description = $3, settings = $4, achieved_at = $5, deleted_at = $6, updated_at = $7
+			WHERE id = $1
+			RETURNING id
+			`,
+			r.ID,
+			r.Name,
+			r.Description,
+			r.Settings,
+			r.AchievedAt,
+			r.DeletedAt,
+			r.UpdatedAt,
+		).Scan(&r.ID)
+		if err != nil {
+			_ = tx.Rollback()
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		_ = tx.Rollback()
+		return err
+	}
+
+	return nil
+}
