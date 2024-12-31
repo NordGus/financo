@@ -6,12 +6,17 @@ import (
 	accounts_broker "financo/core/scope_accounts/infrastructure/services/message_broker"
 	cat_msg "financo/core/scope_categories/domain/messages"
 	categories_broker "financo/core/scope_categories/infrastructure/services/message_broker"
+	goals_msg "financo/core/scope_savings_goals/domain/messages"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_account_created"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_account_deleted"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_account_updated"
+	"financo/core/scope_savings_goals/infrastructure/consumers/on_savings_goal_created"
+	"financo/core/scope_savings_goals/infrastructure/consumers/on_savings_goal_deleted"
+	"financo/core/scope_savings_goals/infrastructure/consumers/on_savings_goal_marked_as_achieved"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_transaction_created"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_transaction_deleted"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_transaction_updated"
+	goals_broker "financo/core/scope_savings_goals/infrastructure/services/message_broker"
 	tr_msg "financo/core/scope_transactions/domain/messages"
 	transactions_broker "financo/core/scope_transactions/infrastructure/services/message_broker"
 	bus "financo/lib/message_bus"
@@ -33,51 +38,59 @@ func Subscribe() error {
 		return err
 	}
 
-	err = accounts.Created().Subscribe(
-		bus.ConsumerFunc[acc_msg.Created](on_account_created.NewInMemory),
+	goals, err := goals_broker.Instance()
+	if err != nil {
+		return err
+	}
+
+	err = accounts.Created().Subscribe(bus.ConsumerFunc[acc_msg.Created](on_account_created.NewInMemory))
+	if err != nil {
+		return err
+	}
+
+	err = accounts.Deleted().Subscribe(bus.ConsumerFunc[acc_msg.Deleted](on_account_deleted.NewInMemory))
+	if err != nil {
+		return err
+	}
+
+	err = accounts.Updated().Subscribe(bus.ConsumerFunc[acc_msg.Updated](on_account_updated.NewInMemory))
+	if err != nil {
+		return err
+	}
+
+	err = categories.Deleted().Subscribe(bus.ConsumerFunc[cat_msg.Deleted](on_category_deleted.NewInMemory))
+	if err != nil {
+		return err
+	}
+
+	err = goals.Created().Subscribe(bus.ConsumerFunc[goals_msg.Created](on_savings_goal_created.NewInMemory))
+	if err != nil {
+		return err
+	}
+
+	err = goals.Deleted().Subscribe(bus.ConsumerFunc[goals_msg.Deleted](on_savings_goal_deleted.NewInMemory))
+	if err != nil {
+		return err
+	}
+
+	err = goals.MarkedAsAchieved().Subscribe(
+		bus.ConsumerFunc[goals_msg.MarkedAsAchieved](on_savings_goal_marked_as_achieved.NewInMemory),
 	)
 	if err != nil {
 		return err
 	}
 
-	err = accounts.Deleted().Subscribe(
-		bus.ConsumerFunc[acc_msg.Deleted](on_account_deleted.NewInMemory),
-	)
+	err = transactions.Created().Subscribe(bus.ConsumerFunc[tr_msg.Created](on_transaction_created.NewInMemory))
 	if err != nil {
 		return err
 	}
 
-	err = accounts.Updated().Subscribe(
-		bus.ConsumerFunc[acc_msg.Updated](on_account_updated.NewInMemory),
-	)
+	err = transactions.Deleted().Subscribe(bus.ConsumerFunc[tr_msg.Deleted](on_transaction_deleted.NewInMemory))
 	if err != nil {
 		return err
 	}
 
-	err = categories.Deleted().Subscribe(
-		bus.ConsumerFunc[cat_msg.Deleted](on_category_deleted.NewInMemory),
-	)
-	if err != nil {
-		return err
-	}
-
-	err = transactions.Created().Subscribe(
-		bus.ConsumerFunc[tr_msg.Created](on_transaction_created.NewInMemory),
-	)
-	if err != nil {
-		return err
-	}
-
-	err = transactions.Deleted().Subscribe(
-		bus.ConsumerFunc[tr_msg.Deleted](on_transaction_deleted.NewInMemory),
-	)
-	if err != nil {
-		return err
-	}
-
-	err = transactions.Updated().Subscribe(
-		bus.ConsumerFunc[tr_msg.Updated](on_transaction_updated.NewInMemory),
-	)
+	err = transactions.Updated().Subscribe(bus.ConsumerFunc[tr_msg.Updated](on_transaction_updated.NewInMemory))
 	if err != nil {
 		return err
 	}
