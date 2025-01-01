@@ -13,6 +13,7 @@ import (
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_savings_goal_created"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_savings_goal_deleted"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_savings_goal_marked_as_achieved"
+	"financo/core/scope_savings_goals/infrastructure/consumers/on_savings_goal_updated"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_transaction_created"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_transaction_deleted"
 	"financo/core/scope_savings_goals/infrastructure/consumers/on_transaction_updated"
@@ -76,6 +77,11 @@ func Subscribe() error {
 	err = goals.MarkedAsAchieved().Subscribe(
 		bus.ConsumerFunc[goals_msg.MarkedAsAchieved](on_savings_goal_marked_as_achieved.NewInMemory),
 	)
+	if err != nil {
+		return err
+	}
+
+	err = goals.Updated().Subscribe(bus.ConsumerFunc[goals_msg.Updated](on_savings_goal_updated.NewInMemory))
 	if err != nil {
 		return err
 	}
