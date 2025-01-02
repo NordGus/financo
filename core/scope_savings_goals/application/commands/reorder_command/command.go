@@ -1,79 +1,124 @@
 package reorder_command
 
 import (
-	"cmp"
 	"context"
 	"financo/core/domain/commands"
+	"financo/core/scope_savings_goals/domain/brokers"
+	"financo/core/scope_savings_goals/domain/filters"
+	"financo/core/scope_savings_goals/domain/messages"
 	"financo/core/scope_savings_goals/domain/repositories"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
+	"financo/lib/currency"
 	"financo/models/achievement/savings_goal"
-	"slices"
 	"time"
 )
 
 type command struct {
-	req         requests.Reorder
-	savingsRepo repositories.SavingsForCurrency
-	repo        repositories.ReorderRepository
+	req     requests.Reorder
+	goals   repositories.ReorderRepository
+	savings repositories.SavingsRepository
+	update  repositories.UpdateRepository
+	broker  brokers.Reordered
 }
 
 func New(
 	req requests.Reorder,
-	savingsRepo repositories.SavingsForCurrency,
-	repo repositories.ReorderRepository,
-) commands.Command[responses.Reorder] {
+	goals repositories.ReorderRepository,
+	savings repositories.SavingsRepository,
+	update repositories.UpdateRepository,
+	broker brokers.Reordered,
+) commands.Command[responses.Reordered] {
 	return &command{
-		req:         req,
-		savingsRepo: savingsRepo,
-		repo:        repo,
+		req:     req,
+		goals:   goals,
+		savings: savings,
+		update:  update,
+		broker:  broker,
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Reorder, error) {
+func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
 	var (
 		timestamp = time.Now().UTC()
-		res       = responses.Reorder{
-			Currency: c.req.Currency,
-			Goals:    c.req.Goals,
-		}
 
 		savings int64
+		res     responses.Reordered
 	)
 
-	s, err := c.savingsRepo.Find(ctx, res.Currency)
+	record, err := c.goals.Find(ctx, c.req.ID)
 	if err != nil {
 		return res, err
 	}
 
-	slices.SortFunc(res.Goals, func(a, b savings_goal.Record) int {
-		return cmp.Compare(a.Settings.Position, b.Settings.Position)
-	})
+	previous, err := c.goals.Where(ctx, filters.SavingsGoals{Currency: record.Settings.Currency})
+	if err != nil {
+		return res, err
+	}
 
-	savings = s.Savings
+	goals := make([]savings_goal.Record, 0, len(previous))
 
-	for i := 0; i < len(res.Goals); i++ {
-		res.Goals[i].UpdatedAt = timestamp
+	// reordering array
+	for i := 0; i < len(previous); i++ {
+		position := int64(i + 1)
 
-		if savings < res.Goals[i].Settings.Target && savings > 0 {
-			res.Goals[i].Settings.Saved = savings
+		if c.req.From == position {
+			continue
+		}
+
+		if c.req.To == position {
+			goals = append(goals, record)
+		}
+
+		goals = append(goals, previous[i])
+	}
+
+	s, err := c.savings.Where(ctx, filters.Savings{Currencies: []currency.Type{record.Settings.Currency}})
+	if err != nil {
+		return res, err
+	}
+
+	savings = s[record.Settings.Currency]
+	updated := make([]savings_goal.Record, 0, len(goals))
+
+	// recalculating position and saved
+	for i := 0; i < len(goals); i++ {
+		goal := goals[i]
+
+		goal.UpdatedAt = timestamp
+		goal.Settings.Position = int16(i + 1)
+
+		if savings < goal.Settings.Target && savings > 0 {
+			goal.Settings.Saved = savings
 			savings = 0
+			updated = append(updated, goal)
+
 			continue
 		}
 
 		if savings <= 0 {
-			res.Goals[i].Settings.Saved = 0
+			goal.Settings.Saved = 0
+			updated = append(updated, goal)
+
 			continue
 		}
 
-		res.Goals[i].Settings.Saved = res.Goals[i].Settings.Target
-		savings -= res.Goals[i].Settings.Target
+		goal.Settings.Saved = goal.Settings.Target
+		savings -= goal.Settings.Target
+		updated = append(updated, goal)
 	}
 
-	err = c.repo.Save(ctx, res.Goals)
+	err = c.update.SaveMultiple(ctx, updated)
 	if err != nil {
 		return res, err
 	}
+
+	err = c.broker.Publish(messages.Reordered{Currency: record.Settings.Currency})
+	if err != nil {
+		return res, err
+	}
+
+	res = responses.NewReordered(record.Settings.Currency, updated)
 
 	return res, nil
 }
