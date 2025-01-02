@@ -26,7 +26,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		log.Println("savings_goals: delete_handler: failed to parse account id", err)
+		log.Println("savings_goals: delete_handler: failed to parse savings goal id", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
