@@ -138,21 +138,6 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.DebtPersonal,
-				Currency:    currency.EUR,
-				Name:        "Carlos' Lunch",
-				Description: nullable.New("Carlos' catch up lunch"),
-				Capital:     80_00,
-				Color:       "#34baeb",
-				Icon:        icon.HandPlatter,
-				History:     requests.History{},
-				Main:        false,
-			},
-			key:      "carlos_lunch",
-			archived: true,
-		},
-		{
-			req: requests.Create{
 				Kind:        account.DebtCredit,
 				Currency:    currency.EUR,
 				Name:        "Credit Card",
