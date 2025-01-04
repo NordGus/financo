@@ -203,6 +203,8 @@ func (p *postgresql) Where(ctx context.Context, f filters.Categories) ([]categor
 			acc.deleted_at IS NULL
 			AND acc.parent_id IS NULL
 			AND (acc.kind = ANY ($1) OR child.kind = ANY ($1))
+		ORDER BY
+			acc.id
 		`,
 		f.Kinds,
 	)
