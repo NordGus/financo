@@ -101,6 +101,10 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 	router.Route("/api", func(r chi.Router) {
 		r.Use(chi_middleware.AllowContentType("application/json"))
 
+		r.Group(func(public chi.Router) {
+			//
+		})
+
 		r.Group(func(protected chi.Router) {
 			// protected.Use(middleware.Session)
 
