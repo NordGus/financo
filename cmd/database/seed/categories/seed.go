@@ -75,7 +75,7 @@ func SeedCategories(ctx context.Context, timestamp time.Time) (map[string]int64,
 				out[helpers.ChildCategoryMapKey(key, children[j].key)] = c[i].ID
 
 				if children[j].archived {
-					r := requests.Archive{ID: res.ID}
+					r := requests.Archive{ID: c[i].ID}
 
 					_, err = archive_command.New(r, categories, archival, broker.Archived()).Run(ctx)
 					if err != nil {
