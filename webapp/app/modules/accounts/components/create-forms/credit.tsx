@@ -19,9 +19,9 @@ export function CreateCreditAccount({ onSuccess, keyId }: Props) {
         </DialogTitle>
       </DialogHeader>
       <CreateAccount
-        kind="debt_loan"
+        kind="debt_credit"
         defaultCurrency="EUR"
-        defaultIcon="hand_coins"
+        defaultIcon="credit_card"
         withCapital
         onSuccess={onSuccess}
         keyId={keyId}
