@@ -89,22 +89,29 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 
 	router := chi.NewRouter()
 
-	router.Use(chi_middleware.RequestID)
-	router.Use(chi_middleware.RealIP)
-	router.Use(chi_middleware.Logger)
-	router.Use(chi_middleware.Recoverer)
+	router.Use(
+		chi_middleware.RequestID,
+		chi_middleware.RealIP,
+		chi_middleware.Logger,
+		chi_middleware.Recoverer,
+		chi_middleware.ContentCharset("UTF-8"),
+		chi_middleware.Timeout(time.Second*30),
+	)
 
-	// protected routes
-	router.Group(func(r chi.Router) {
-		// r.Use(middleware.Session)
+	router.Route("/api", func(r chi.Router) {
+		r.Use(chi_middleware.AllowContentType("application/json"))
 
-		r.Route("/accounts", accounts.Routes)
-		r.Route("/categories", categories.Routes)
-		r.Route("/currencies", currencies.Routes)
-		r.Route("/health", health.Routes)
-		r.Route("/my-journey", my_journey.Routes)
-		r.Route("/savings-goals", savings_goals.Routes)
-		r.Route("/transactions", transactions.Routes)
+		r.Group(func(protected chi.Router) {
+			// protected.Use(middleware.Session)
+
+			protected.Route("/accounts", accounts.Routes)
+			protected.Route("/categories", categories.Routes)
+			protected.Route("/currencies", currencies.Routes)
+			protected.Route("/health", health.Routes)
+			protected.Route("/my-journey", my_journey.Routes)
+			protected.Route("/savings-goals", savings_goals.Routes)
+			protected.Route("/transactions", transactions.Routes)
+		})
 	})
 
 	// HTTP Server configuration
