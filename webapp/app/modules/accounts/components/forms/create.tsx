@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useFetcher } from "react-router";
 import { z } from "zod";
@@ -32,7 +32,7 @@ import { Icon } from "~/shared/types/icon";
 import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { mainAccountManual } from "../../manual/main-account-manual";
-import { schema } from "../../schemas/create";
+import { schema, schemaWithCapital } from "../../schemas/create";
 import { Created } from "../../types/create";
 
 interface Props {
@@ -58,8 +58,10 @@ export function CreateAccount({
   const [loading, setLoading] = useState(false)
   const fetcher = useFetcher<Created | null>({ key: `accounts.create.${kind}.${keyId}` })
 
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const formSchema = useMemo(() => forDebts ? schemaWithCapital : schema, [forDebts])
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       kind: kind,
       currency: defaultCurrency,
@@ -70,7 +72,7 @@ export function CreateAccount({
     }
   })
 
-  const onSubmit = async (values: z.infer<typeof schema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true)
 
     await fetcher.submit(

@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useFetcher } from "react-router";
 import { z } from "zod";
@@ -30,7 +30,7 @@ import { isCapital, isCredit, isDebt, isLoan } from "~/shared/types/account";
 import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { mainAccountManual } from "../../manual/main-account-manual";
-import { schema } from "../../schemas/update";
+import { schema, schemaWithCapital } from "../../schemas/update";
 import { Account } from "../../types/preview";
 import { Updated } from "../../types/update";
 
@@ -49,8 +49,10 @@ export function UpdateAccount({ account, onSuccess }: Props) {
   const historyAt = account.additionalData.history.at ? moment(account.additionalData.history.at).toDate() : undefined
   const historyBalance = account.additionalData.history.balance || undefined
 
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const formSchema = useMemo(() => forDebts ? schemaWithCapital : schema, [forDebts])
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       id: account.id,
       name: account.name,
@@ -65,7 +67,7 @@ export function UpdateAccount({ account, onSuccess }: Props) {
     }
   })
 
-  const onSubmit = async (values: z.infer<typeof schema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true)
 
     await fetcher.submit(
