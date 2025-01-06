@@ -8,6 +8,7 @@ import (
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/domain/responses"
+	"financo/lib/nullable"
 	"financo/models/account"
 	"fmt"
 	"time"
@@ -43,6 +44,25 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 			Interest:           c.req.Interest(timestamp),
 		}
 	)
+
+	// Fill the account balance for loans and credit full in case the account does
+	// not have an incomplete ledger. By doing this the debt is filled with
+	// capital for the user to transfer to the expected account.
+	if (account.IsCredit(args.Record.Kind) || account.IsLoan(args.Record.Kind)) && !c.req.History.At.Valid {
+		args.Record.DynamicData.Balance = args.Record.Capital * -1
+		args.Record.DynamicData.History = account.HistoryDynamicData{
+			At:      nullable.New(timestamp),
+			Balance: nullable.New(args.Record.DynamicData.Balance),
+		}
+
+		args.History.DynamicData.Balance = args.Record.Capital
+
+		args.HistoryTransaction.DeletedAt = nullable.Type[time.Time]{}
+		args.HistoryTransaction.SourceAmount = args.Record.Capital * -1
+		args.HistoryTransaction.TargetAmount = args.Record.Capital * -1
+		args.HistoryTransaction.IssuedAt = timestamp
+		args.HistoryTransaction.ExecutedAt = nullable.New(timestamp)
+	}
 
 	record, err := c.repo.Save(ctx, args)
 	if err != nil {
