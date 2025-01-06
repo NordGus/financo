@@ -65,6 +65,7 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 		}
 
 		args.History.DynamicData.Balance = args.Record.Capital
+		args.History.DynamicData.Transactions = 1
 
 		args.HistoryTransaction.DeletedAt = nullable.Type[time.Time]{}
 		args.HistoryTransaction.SourceAmount = args.Record.Capital * -1
