@@ -34,7 +34,7 @@ export default {
       transitionProperty: {
         "height": "height"
       },
-      gridTemplateColumns: {
+      gridTemplateRows: {
         "layout": "1fr fit-content(20dvw)"
       },
       colors: {

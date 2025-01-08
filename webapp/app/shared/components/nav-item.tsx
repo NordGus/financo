@@ -4,13 +4,13 @@ import { NavLink } from "react-router";
 import { cn } from "~/lib/utils";
 
 const linkVariants = cva(
-  "inline-flex items-center justify-center gap-4 rounded-md [&_svg]:pointer-events-none [&_svg]:size-6 [&_svg]:shrink-0 leading-none",
+  "inline-flex items-center justify-start gap-4 rounded-md [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 leading-none p-2",
   {
     variants: {
       variant: {
-        "active": "text-foreground dark:text-foreground",
+        "active": "text-foreground dark:text-foreground bg-muted",
         "pending": "bg-background text-foreground animate-pulse",
-        "default": "text-foreground/50 hover:text-foreground"
+        "default": "text-foreground/50 hover:text-foreground hover:bg-muted"
       }
     },
     defaultVariants: {
@@ -35,7 +35,7 @@ export function NavItem({ to, children }: PropsWithChildren<Props>) {
               : isPending
                 ? "pending"
                 : undefined
-        })
+        }),
       )}
     >
       {children}

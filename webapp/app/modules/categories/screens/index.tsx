@@ -57,7 +57,7 @@ export function Screen({ accounts }: Props) {
   return (
     <div className="flex flex-col gap-4">
       <Heading1>Categories</Heading1>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <Select value={view} onValueChange={(value) => setView(withView(value))}>
           <SelectTrigger>
             <SelectValue placeholder="Kind" />

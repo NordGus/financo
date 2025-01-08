@@ -21,7 +21,19 @@ export function ListForKind({ accounts, archived, kind }: Props) {
   const isArchived = (archivedAt?: string | null) => archived ? !!archivedAt : !archivedAt
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {accounts.map((account) => <Preview key={`category.${account.id}`} account={account} isArchived={isArchived} />)}
+      {
+        archived && accounts.length === 0 && (
+          <Card>
+            <CardHeader></CardHeader>
+            <CardContent className="text-muted-foreground text-center">
+              No categories have been archived
+            </CardContent>
+            <CardFooter></CardFooter>
+          </Card>
+        )
+      }
       {
         !archived && (
           <Dialog modal open={openCreate} onOpenChange={setOpenCreate}>
@@ -45,18 +57,6 @@ export function ListForKind({ accounts, archived, kind }: Props) {
               />
             </DialogContent>
           </Dialog>
-        )
-      }
-      {accounts.map((account) => <Preview key={`category.${account.id}`} account={account} isArchived={isArchived} />)}
-      {
-        archived && accounts.length === 0 && (
-          <Card>
-            <CardHeader></CardHeader>
-            <CardContent className="text-muted-foreground text-center">
-              No categories have been archived
-            </CardContent>
-            <CardFooter></CardFooter>
-          </Card>
         )
       }
     </div>

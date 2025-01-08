@@ -47,7 +47,7 @@ export function Breadcrumbs() {
   const last = crumbs.length - 1;
 
   return <Breadcrumb>
-    <BreadcrumbList className="mb-4">
+    <BreadcrumbList>
       {
         crumbs.map(({ data, pathname }, idx) => {
           const { breadcrumb } = data as WithBreadcrumb;

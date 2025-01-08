@@ -9,7 +9,7 @@ import {
 export default [
   layout("shared/layout.tsx", [
     index("routes/home.tsx"),
-    route("dashboard", "routes/dashboard.tsx"),
+    route("morning-brew", "routes/morning-brew/index.tsx"),
 
     ...prefix("accounts", [
       index("routes/accounts/index.tsx"),
@@ -23,6 +23,18 @@ export default [
 
     ...prefix("ledger", [
       index("routes/ledger/index.tsx")
+    ]),
+
+    ...prefix("payment-plans", [
+      index("routes/payment-plans/index.tsx")
+    ]),
+
+    ...prefix("budgets", [
+      index("routes/budgets/index.tsx")
+    ]),
+
+    ...prefix("settings", [
+      index("routes/settings/index.tsx")
     ]),
 
     route("achievements", "routes/achievements/index.tsx")
