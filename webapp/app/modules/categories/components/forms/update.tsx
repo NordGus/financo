@@ -8,12 +8,7 @@ import { CurrencyInput } from "~/shared/components/inputs/currency-input";
 import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
 import { Button } from "~/shared/components/ui/button";
-import {
-  DialogClose,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from "~/shared/components/ui/dialog";
+import { DrawerClose, DrawerFooter, DrawerHeader, DrawerTitle } from "~/shared/components/ui/drawer";
 import {
   Form,
   FormControl,
@@ -188,22 +183,50 @@ export function UpdateCategory({ account, onSuccess }: Props) {
 
   return (
     <>
+      <DrawerHeader>
+        <DrawerTitle>
+          {isExpense(account.kind) ? "Update Expense Category" : "Update Income Category"}
+        </DrawerTitle>
+      </DrawerHeader>
       <Form {...form}>
-        <DialogHeader className="flex flex-row gap-4 items-center">
-          <DialogTitle>
-            {isExpense(account.kind) ? "Update Expense Category" : "Update Income Category"}
-          </DialogTitle>
-        </DialogHeader>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          <div className="grid grid-cols-4 gap-4">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="max-h-[85dvh] overflow-auto">
+          <div className="flex flex-col gap-4 px-4">
+            <div className="grid grid-cols-4 gap-4">
+              <FormField
+                control={form.control}
+                name="icon"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Icon</FormLabel>
+                    <FormControl>
+                      <IconInput value={field.value} onChange={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem className="col-span-3">
+                    <FormLabel>Color</FormLabel>
+                    <FormControl>
+                      <Input {...field} type={"color"} className="cursor-pointer" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
-              name="icon"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Icon</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <IconInput value={field.value} onChange={field.onChange} />
+                    <Input {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -211,91 +234,65 @@ export function UpdateCategory({ account, onSuccess }: Props) {
             />
             <FormField
               control={form.control}
-              name="color"
+              name="description"
               render={({ field }) => (
-                <FormItem className="col-span-3">
-                  <FormLabel>Color</FormLabel>
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input {...field} type={"color"} className="cursor-pointer" />
+                    <Textarea
+                      rows={3}
+                      placeholder="You can add a little extra information about this Account."
+                      {...field}
+                    />
                   </FormControl>
+                  <FormDescription>
+                    You can leave this empty
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currency</FormLabel>
+                  <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} />
+                  <FormDescription>
+                    The currency this account will operate in with
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              variant="link"
+              type="button"
+              className="flex justify-center items-center leading-snug gap-2 border-2 border-dashed rounded-md"
+              onClick={onAddChildClicked}
+            >
+              <PlusIcon /> Add Child
+            </Button>
+            <div className="divide-y-2 divide-primary-foreground">
+              {children.map((c, idx) => (
+                <Preview
+                  key={`child.${idx}`}
+                  child={buildPreviewData(c)}
+                  onEditClick={() => onEditChildClicked(c, idx)}
+                  onDeleteSuccess={() => remove(idx)}
+                />
+              ))}
+            </div>
           </div>
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea
-                    rows={3}
-                    placeholder="You can add a little extra information about this Account."
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  You can leave this empty
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="currency"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Currency</FormLabel>
-                <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} />
-                <FormDescription>
-                  The currency this account will operate in with
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button
-            variant="link"
-            type="button"
-            className="flex justify-center items-center leading-snug gap-2 border-2 border-dashed rounded-md"
-            onClick={onAddChildClicked}
-          >
-            <PlusIcon /> Add Child
-          </Button>
-          <div className="divide-y-2 divide-primary-foreground">
-            {children.map((c, idx) => (
-              <Preview
-                key={`child.${idx}`}
-                child={buildPreviewData(c)}
-                onEditClick={() => onEditChildClicked(c, idx)}
-                onDeleteSuccess={() => remove(idx)}
-              />
-            ))}
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant={"outline"}>Cancel</Button>
-            </DialogClose>
+          <DrawerFooter>
             <Button type="submit" className="min-w-24" disabled={loading}>
               {loading ? <Throbber size={"sm"} /> : "Update"}
             </Button>
-          </DialogFooter>
+            <DrawerClose asChild>
+              <Button variant={"outline"}>Cancel</Button>
+            </DrawerClose>
+          </DrawerFooter>
         </form>
       </Form>
 

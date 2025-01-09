@@ -2,7 +2,7 @@ import { useState } from "react"
 import { redirect } from "react-router"
 import { cn } from "~/lib/utils"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/shared/components/ui/card"
-import { Dialog, DialogContent } from "~/shared/components/ui/dialog"
+import { Drawer, DrawerContent } from "~/shared/components/ui/drawer"
 import { icons } from "~/shared/components/ui/icon"
 import { accountKindToHuman } from "~/shared/helpers/account-kind-to-human"
 import { colorContrast } from "~/shared/helpers/color-contrast"
@@ -67,8 +67,8 @@ export function Preview({ account, isArchived }: Props) {
 
       {
         isCategory(account.kind) && (
-          <Dialog modal open={openEdit} onOpenChange={setOpenEdit}>
-            <DialogContent>
+          <Drawer modal open={openEdit} onOpenChange={setOpenEdit}>
+            <DrawerContent>
               <UpdateCategory
                 account={account}
                 onSuccess={() => {
@@ -76,8 +76,8 @@ export function Preview({ account, isArchived }: Props) {
                   setOpenEdit(false)
                 }}
               />
-            </DialogContent>
-          </Dialog>
+            </DrawerContent>
+          </Drawer>
         )
       }
     </>

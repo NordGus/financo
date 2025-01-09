@@ -6,14 +6,7 @@ import { existingChildCategoriesManual } from "~/modules/categories/manual/exist
 import { InfoAlert } from "~/shared/components/alerts/info";
 import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Button } from "~/shared/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle
-} from "~/shared/components/ui/dialog";
+import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "~/shared/components/ui/drawer";
 import {
   Form,
   FormControl,
@@ -60,75 +53,77 @@ export function ChildForm({ action, child, open, defaultIcon, onOpenChange, onSu
   useEffect(() => { if (action === "add") form.reset() }, [open])
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>
             {action === "add" ? "Add Child" : "Edit Child"}
-          </DialogTitle>
-        </DialogHeader>
+          </DrawerTitle>
+        </DrawerHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-            <InfoAlert copy={existingChildCategoriesManual} />
-            <div className="grid grid-cols-4 gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="flex flex-col gap-4 px-4">
+              <InfoAlert copy={existingChildCategoriesManual} />
+              <div className="grid grid-cols-4 gap-4">
+                <FormField
+                  control={form.control}
+                  name="icon"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Icon</FormLabel>
+                      <FormControl>
+                        <IconInput value={field.value} onChange={field.onChange} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="col-span-3">
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
-                name="icon"
+                name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Icon</FormLabel>
+                    <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <IconInput value={field.value} onChange={field.onChange} />
+                      <Textarea
+                        rows={3}
+                        placeholder="You can add a little extra information about this Account."
+                        {...field}
+                      />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="col-span-3">
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
+                    <FormDescription>
+                      You can leave this empty
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      rows={3}
-                      placeholder="You can add a little extra information about this Account."
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    You can leave this empty
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant={"outline"}>Cancel</Button>
-              </DialogClose>
+            <DrawerFooter>
               <Button type="submit">
                 {action === "add" ? "Add" : "Edit"}
               </Button>
-            </DialogFooter>
+              <DrawerClose asChild>
+                <Button variant={"outline"}>Cancel</Button>
+              </DrawerClose>
+            </DrawerFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   )
 }
