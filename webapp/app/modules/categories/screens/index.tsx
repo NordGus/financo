@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import { InfoAlert } from "~/shared/components/alerts/info";
+import { InfoDialog } from "~/shared/components/dialogs/info";
 import { Heading1 } from "~/shared/components/ui/headings";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/components/ui/select";
 import { isExpense, isIncome, KINDS } from "~/shared/types/account";
@@ -77,7 +77,17 @@ export function Screen({ accounts }: Props) {
           </SelectContent>
         </Select>
       </div>
-      {subView === "archived" && <InfoAlert copy={archivedCategoriesManual} />}
+      {subView === "archived" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <InfoDialog
+            copy={archivedCategoriesManual}
+            withTitleInButton
+            variant={"outline"}
+            size={"default"}
+            className="flex items-center justify-start"
+          />
+        </div>
+      )}
       <ListForKind
         accounts={accounts.filter((a) => kinded(a)).filter((a) => archived(a))}
         kind={view === "income" ? KINDS["external_income"] : KINDS["external_expense"]}

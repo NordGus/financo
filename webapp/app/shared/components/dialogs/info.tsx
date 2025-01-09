@@ -1,29 +1,42 @@
 import { InfoIcon } from "lucide-react";
+import { useState } from "react";
 import { Copy } from "~/shared/types/copy";
 import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "../ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle
+} from "../ui/drawer";
 
 interface Props {
   copy: Copy,
   className?: string
   size?: "default" | "sm" | "lg" | "icon" | null | undefined
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | null | undefined
+  withTitleInButton?: boolean
 }
 
-export function InfoDialog({ copy: { title, message }, className, variant = "link", size = "icon" }: Props) {
+export function InfoDialog({ copy, className, variant = "link", size = "icon", withTitleInButton = false }: Props) {
+  const [open, setOpen] = useState(false)
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant={variant} size={size} className={className}>
-          <InfoIcon />
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription className="space-y-2">
-          {message}
-        </DialogDescription>
-      </DialogContent>
-    </Dialog>
+    <>
+      <Button variant={variant} size={size} className={className} onClick={() => setOpen(true)}>
+        <InfoIcon /> {withTitleInButton && <span>{copy.title}</span>}
+      </Button>
+
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerContent className="min-h-[50dvh]">
+          <DrawerHeader>
+            <DrawerTitle>{copy.title}</DrawerTitle>
+          </DrawerHeader>
+          <DrawerDescription className="space-y-2 px-4 pb-4">
+            {copy.message}
+          </DrawerDescription>
+        </DrawerContent>
+      </Drawer >
+    </>
   )
 }

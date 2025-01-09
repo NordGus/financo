@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import { InfoAlert } from "~/shared/components/alerts/info";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { Heading1, Heading2 } from "~/shared/components/ui/headings";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/components/ui/select";
@@ -48,7 +47,17 @@ export function Screen({ accounts }: Props) {
           </SelectContent>
         </Select>
       </div>
-      {view === "archived" && <InfoAlert copy={archivedAccountsManual} />}
+      {view === "archived" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <InfoDialog
+            copy={archivedAccountsManual}
+            withTitleInButton
+            variant={"outline"}
+            size={"default"}
+            className="flex items-center justify-start"
+          />
+        </div>
+      )}
       <Heading2 className="flex gap-4 items-center">
         Capital <InfoDialog copy={accountKindsManual.capital} />
       </Heading2>
