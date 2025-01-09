@@ -1,6 +1,4 @@
-import { InfoDialog } from "~/shared/components/dialogs/info";
-import { DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
-import { accountKindsManual } from "../../manual/account-kinds-manual";
+import { DrawerHeader, DrawerTitle } from "~/shared/components/ui/drawer";
 import { CreateAccount } from "../forms/create";
 
 interface Props {
@@ -11,13 +9,9 @@ interface Props {
 export function CreateLoanAccount({ onSuccess, keyId }: Props) {
   return (
     <>
-      <DialogHeader>
-        <DialogTitle>
-          <div className="flex gap-2 items-center">
-            New Loan Account <InfoDialog copy={accountKindsManual.loans} />
-          </div>
-        </DialogTitle>
-      </DialogHeader>
+      <DrawerHeader>
+        <DrawerTitle>New Loan Account</DrawerTitle>
+      </DrawerHeader>
       <CreateAccount
         kind="debt_loan"
         defaultCurrency="EUR"

@@ -23,7 +23,7 @@ export function InfoDialog({ copy, className, variant = "link", size = "icon", w
 
   return (
     <>
-      <Button variant={variant} size={size} className={className} onClick={() => setOpen(true)}>
+      <Button variant={variant} size={size} className={className} onClick={() => setOpen(true)} type="button">
         <InfoIcon /> {withTitleInButton && <span>{copy.title}</span>}
       </Button>
 

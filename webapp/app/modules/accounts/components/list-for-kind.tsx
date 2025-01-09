@@ -1,8 +1,8 @@
 import { PlusIcon } from "lucide-react";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Button } from "~/shared/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "~/shared/components/ui/card";
-import { Dialog, DialogContent, DialogTrigger } from "~/shared/components/ui/dialog";
+import { Drawer, DrawerContent } from "~/shared/components/ui/drawer";
 import { isCapital, isCredit, isLoan, isPersonalDebt, isSavings, Kind } from "~/shared/types/account";
 import { Account } from "../types/preview";
 import { CreateCapitalAccount } from "./create-forms/capital";
@@ -30,23 +30,24 @@ export function ListForKind({ accounts, forKind, forArchived = false }: Props) {
       ))}
       {
         !forArchived && (
-          <Dialog modal open={openCreate} onOpenChange={setOpenCreate}>
-            <DialogTrigger asChild>
-              <Button
-                variant="link"
-                className="flex justify-center items-center text-base leading-snug gap-2 h-auto p-6 border-2 border-dashed rounded-xl"
-              >
-                <PlusIcon /> New
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              {isCapital(forKind) && <CreateCapitalAccount onSuccess={onSuccess} keyId={accounts.length} />}
-              {isSavings(forKind) && <CreateSavingsAccount onSuccess={onSuccess} keyId={accounts.length} />}
-              {isLoan(forKind) && <CreateLoanAccount onSuccess={onSuccess} keyId={accounts.length} />}
-              {isPersonalDebt(forKind) && <CreatePersonalDebtAccount onSuccess={onSuccess} keyId={accounts.length} />}
-              {isCredit(forKind) && <CreateCreditAccount onSuccess={onSuccess} keyId={accounts.length} />}
-            </DialogContent>
-          </Dialog>
+          <Fragment>
+            <Button
+              variant="link"
+              className="flex justify-center items-center text-base leading-snug gap-2 h-auto p-6 border-2 border-dashed rounded-xl"
+              onClick={() => setOpenCreate(true)}
+            >
+              <PlusIcon /> New
+            </Button>
+            <Drawer modal open={openCreate} onOpenChange={setOpenCreate}>
+              <DrawerContent className="overflow-clip">
+                {isCapital(forKind) && <CreateCapitalAccount onSuccess={onSuccess} keyId={accounts.length} />}
+                {isSavings(forKind) && <CreateSavingsAccount onSuccess={onSuccess} keyId={accounts.length} />}
+                {isLoan(forKind) && <CreateLoanAccount onSuccess={onSuccess} keyId={accounts.length} />}
+                {isPersonalDebt(forKind) && <CreatePersonalDebtAccount onSuccess={onSuccess} keyId={accounts.length} />}
+                {isCredit(forKind) && <CreateCreditAccount onSuccess={onSuccess} keyId={accounts.length} />}
+              </DrawerContent>
+            </Drawer>
+          </Fragment>
         )
       }
       {

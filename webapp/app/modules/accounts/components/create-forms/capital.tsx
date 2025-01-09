@@ -1,6 +1,4 @@
-import { InfoDialog } from "~/shared/components/dialogs/info";
-import { DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
-import { accountKindsManual } from "../../manual/account-kinds-manual";
+import { DrawerHeader, DrawerTitle } from "~/shared/components/ui/drawer";
 import { CreateAccount } from "../forms/create";
 
 interface Props {
@@ -11,13 +9,9 @@ interface Props {
 export function CreateCapitalAccount({ onSuccess, keyId }: Props) {
   return (
     <>
-      <DialogHeader>
-        <DialogTitle>
-          <div className="flex gap-2 items-center">
-            New Capital Account <InfoDialog copy={accountKindsManual.capital} />
-          </div>
-        </DialogTitle>
-      </DialogHeader>
+      <DrawerHeader>
+        <DrawerTitle>New Capital Account</DrawerTitle>
+      </DrawerHeader>
       <CreateAccount
         kind="capital_normal"
         defaultCurrency="EUR"

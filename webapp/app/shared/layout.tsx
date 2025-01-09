@@ -51,7 +51,7 @@ export default function Layout() {
             <DrawerTitle>Navigation Menu</DrawerTitle>
             <DrawerDescription>Navigate through financo</DrawerDescription>
           </DrawerHeader>
-          <nav className="w-[100dvw] max-w-[100dvw] md:w-[75dvw] md:max-w-[75dvw] mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 py-6 px-2">
+          <nav className="grid grid-cols-2 gap-2 py-4 px-4">
             <NavItem to="/morning-brew">
               <CoffeeIcon /> Morning Brew
             </NavItem>
@@ -70,7 +70,7 @@ export default function Layout() {
             <NavItem to="/payment-plans">
               <RouteIcon /> Payment plans
             </NavItem>
-            <span className="grow contents-[''] h-10 col-span-2 md:col-span-3 lg:col-span-4" />
+            <span className="grow contents-[''] h-10 col-span-2" />
             <NavItem to="/achievements">
               <TrophyIcon /> Achievements
             </NavItem>

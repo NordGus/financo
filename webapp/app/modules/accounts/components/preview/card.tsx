@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle
 } from "~/shared/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "~/shared/components/ui/dialog";
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "~/shared/components/ui/drawer";
 import { icons } from "~/shared/components/ui/icon";
 import { colorContrast } from "~/shared/helpers/color-contrast";
 import { currencyAmountColor } from "~/shared/helpers/currency-amount-color";
@@ -111,12 +111,12 @@ export function Preview({ account }: Props) {
           </div>
         </CardFooter>
       </Card>
-      <Dialog modal open={openEdit} onOpenChange={setOpenEdit}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Account</DialogTitle>
-            <DialogDescription className={"hidden"} data-hidden>Edit your account</DialogDescription>
-          </DialogHeader>
+      <Drawer modal open={openEdit} onOpenChange={setOpenEdit}>
+        <DrawerContent className="overflow-clip">
+          <DrawerHeader>
+            <DrawerTitle>Edit Account</DrawerTitle>
+            <DrawerDescription className={"hidden"} data-hidden>Edit your account</DrawerDescription>
+          </DrawerHeader>
           <UpdateAccount
             account={account}
             onSuccess={() => {
@@ -124,8 +124,8 @@ export function Preview({ account }: Props) {
               redirect(".")
             }}
           />
-        </DialogContent>
-      </Dialog>
+        </DrawerContent>
+      </Drawer>
     </>
   )
 }
