@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"financo/lib/nullable"
 	"financo/models/account"
 	"financo/models/transaction"
 )
@@ -11,7 +10,6 @@ type CreateAccountSaveArgs struct {
 	Record             account.Record
 	History            account.Record
 	HistoryTransaction transaction.Record
-	Interest           nullable.Type[account.Record]
 }
 
 type CreateAccountRepository interface {

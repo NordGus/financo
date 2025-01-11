@@ -41,7 +41,6 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 			Record:             c.req.Record(timestamp),
 			History:            c.req.HistoryRecord(timestamp),
 			HistoryTransaction: c.req.HistoryTransaction(timestamp),
-			Interest:           c.req.Interest(timestamp),
 		}
 	)
 

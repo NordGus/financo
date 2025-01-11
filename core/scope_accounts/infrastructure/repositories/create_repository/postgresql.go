@@ -54,16 +54,6 @@ func (p *postgresql) Save(ctx context.Context, args repositories.CreateAccountSa
 		return args.Record, err
 	}
 
-	if args.Interest.Valid {
-		args.Interest.Val.ParentID = nullable.New(args.Record.ID)
-
-		args.Interest.Val, err = p.persistAccount(ctx, tx, args.Interest.Val)
-		if err != nil {
-			_ = tx.Rollback()
-			return args.Record, err
-		}
-	}
-
 	args.HistoryTransaction = prepareHistoryTransaction(args.HistoryTransaction, args.Record, args.History)
 
 	args.HistoryTransaction, err = p.persistTransaction(ctx, tx, args.HistoryTransaction)
