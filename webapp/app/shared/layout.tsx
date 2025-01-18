@@ -38,7 +38,7 @@ export default function Layout() {
           <Outlet />
           <Toaster position="top-center" closeButton richColors />
         </main>
-        <div className="flex justify-between items-center px-4 pb-4 pt-2 bg-transparent">
+        <div className="flex justify-between items-center p-4 bg-transparent border-t">
           <Breadcrumbs />
           <Button onClick={() => setOpenNav(true)} variant={"link"}>
             <MenuIcon /> <span className="hidden md:inline-block">Menu</span>
@@ -51,7 +51,7 @@ export default function Layout() {
             <DrawerTitle>Navigation Menu</DrawerTitle>
             <DrawerDescription>Navigate through financo</DrawerDescription>
           </DrawerHeader>
-          <nav className="grid grid-cols-2 gap-2 py-4 px-4">
+          <nav className="grid grid-cols-2 gap-2 p-4">
             <NavItem to="/morning-brew">
               <CoffeeIcon /> Morning Brew
             </NavItem>
