@@ -12,7 +12,14 @@ import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
 import { Accordion, AccordionContent, AccordionItem } from "~/shared/components/ui/accordion";
 import { Button } from "~/shared/components/ui/button";
-import { DrawerClose, DrawerFooter } from "~/shared/components/ui/drawer";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle
+} from "~/shared/components/ui/drawer";
 import {
   Form,
   FormControl,
@@ -26,39 +33,80 @@ import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
 import { Switch } from "~/shared/components/ui/switch";
 import { Textarea } from "~/shared/components/ui/textarea";
-import { isCapital, isCredit, isDebt, isLoan, Kind } from "~/shared/types/account";
+import { isCapital, isCredit, isDebt, isLoan } from "~/shared/types/account";
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
 import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { mainAccountManual } from "../../manual/main-account-manual";
 import { schema, schemaWithCapital } from "../../schemas/create";
+import { ModuleKind } from "../../types/account";
 import { Created } from "../../types/create";
 
+const drawerTitle: Record<ModuleKind, string> = {
+  capital_normal: "New Capital Account",
+  capital_savings: "New Savings Account",
+  debt_loan: "New Loan Account",
+  debt_personal: "New Personal loan Account",
+  debt_credit: "New Credit Account",
+}
+
+const defaultIcons: Record<ModuleKind, Icon> = {
+  capital_normal: "landmark",
+  capital_savings: "piggy_bank",
+  debt_loan: "hand_coins",
+  debt_personal: "user",
+  debt_credit: "credit_card",
+}
+
 interface Props {
-  kind: Kind
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  kind: ModuleKind | null
   defaultCurrency: Currency
-  defaultIcon: Icon
-  keyId: number
   onSuccess: () => void
-  withCapital?: boolean
 }
 
 export function CreateAccount({
-  defaultIcon,
+  open,
+  onOpenChange,
   defaultCurrency,
   kind,
-  keyId,
   onSuccess,
-  withCapital = false,
 }: Props) {
+  return (
+    <Drawer modal open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="overflow-clip">
+        <DrawerHeader>
+          <DrawerTitle>{drawerTitle[kind!]}</DrawerTitle>
+        </DrawerHeader>
+        <CreateForm
+          kind={kind!}
+          defaultIcon={defaultIcons[kind!]}
+          defaultCurrency={defaultCurrency}
+          onSuccess={onSuccess}
+        />
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
+interface FormProps {
+  kind: ModuleKind
+  defaultCurrency: Currency
+  defaultIcon: Icon
+  onSuccess: () => void
+}
+
+function CreateForm({ kind, defaultCurrency, defaultIcon, onSuccess }: FormProps) {
   const isFixedSignDebt = isCredit(kind) || isLoan(kind)
   const forDebts = isDebt(kind)
+  const withCapital = forDebts
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
   const [loading, setLoading] = useState(false)
-  const fetcher = useFetcher<Created | null>({ key: `accounts.create.${kind}.${keyId}` })
+  const fetcher = useFetcher<Created | null>()
 
-  const formSchema = useMemo(() => forDebts ? schemaWithCapital : schema, [forDebts])
+  const formSchema = useMemo(() => withCapital ? schemaWithCapital : schema, [withCapital])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

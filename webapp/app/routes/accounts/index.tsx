@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router";
+import { URLSearchParamsInit, useLoaderData, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { createAccount } from "~/modules/accounts/api/commands/create-account";
 import { getAccountsPreviews } from "~/modules/accounts/api/queries/get-accounts-previews";
@@ -56,6 +56,9 @@ export async function clientLoader({ }: Route.ClientLoaderArgs) {
 
 export default function Index() {
   const { accounts } = useLoaderData<typeof clientLoader>()
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  return <Screen accounts={accounts} />
+  const onSearchParamsChange = (params: URLSearchParamsInit) => setSearchParams(params)
+
+  return <Screen accounts={accounts} onSearchParamsChange={onSearchParamsChange} searchParams={searchParams} />
 }
