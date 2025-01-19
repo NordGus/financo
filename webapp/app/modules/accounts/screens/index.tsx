@@ -47,32 +47,31 @@ function withView(view?: string | string[] | null): View {
 
 const _screenActions = {
   VIEW_CHANGED: "VIEW_CHANGED",
-  OPEN_SELECT_KIND_FOR_CREATE_CHANGED: "OPEN_SELECT_KIND_FOR_CREATE_CHANGED",
-  CREATE_KIND_CHANGED: "CREATE_KIND_CHANGED",
-  OPEN_CREATE_CHANGED: "OPEN_CREATE_CHANGED",
-  FORM_SUBMITTED: "FORM_SUBMITTED",
-  ACCOUNT_CREATED: "ACCOUNT_CREATED",
-  CREATE_ACCOUNT_FAILED: "CREATE_ACCOUNT_FAILED",
-  OPEN_EDIT_CHANGED: "OPEN_EDIT_CHANGED",
   ACCOUNT_CHANGED: "ACCOUNT_CHANGED",
-  ACCOUNT_UPDATED: "ACCOUNT_UPDATED",
-  UPDATE_ACCOUNT_FAILED: "UPDATE_ACCOUNT_FAILED",
+  CREATE_KIND_CHANGED: "CREATE_KIND_CHANGED",
+  OPEN_SELECT_KIND_CHANGED: "OPEN_SELECT_KIND_CHANGED",
+  OPEN_ARCHIVE_CHANGED: "OPEN_ARCHIVE_CHANGED",
+  OPEN_UNARCHIVE_CHANGED: "OPEN_UNARCHIVE_CHANGED",
+  OPEN_DELETE_CHANGED: "OPEN_DELETE_CHANGED",
+  OPEN_CREATE_CHANGED: "OPEN_CREATE_CHANGED",
+  OPEN_EDIT_CHANGED: "OPEN_EDIT_CHANGED",
+  ACTION_SUBMITTED: "ACTION_SUBMITTED",
+  ACTION_SUCCEED: "ACTION_SUCCEED",
+  ACTION_FAILED: "ACTION_FAILED",
 } as const
 
 type ScreenActions = typeof _screenActions
 
 type ScreenAction =
   { type: ScreenActions["VIEW_CHANGED"], view: View } |
-  { type: ScreenActions["OPEN_SELECT_KIND_FOR_CREATE_CHANGED"], open: boolean } |
-  { type: ScreenActions["CREATE_KIND_CHANGED"], kind: ModuleKind } |
-  { type: ScreenActions["OPEN_CREATE_CHANGED"], open: boolean } |
-  { type: ScreenActions["FORM_SUBMITTED"] } |
-  { type: ScreenActions["ACCOUNT_CREATED"] } |
-  { type: ScreenActions["CREATE_ACCOUNT_FAILED"] } |
-  { type: ScreenActions["OPEN_EDIT_CHANGED"], open: boolean } |
   { type: ScreenActions["ACCOUNT_CHANGED"], account: Account } |
-  { type: ScreenActions["ACCOUNT_UPDATED"] } |
-  { type: ScreenActions["UPDATE_ACCOUNT_FAILED"] }
+  { type: ScreenActions["CREATE_KIND_CHANGED"], kind: ModuleKind } |
+  { type: ScreenActions["OPEN_SELECT_KIND_CHANGED"], open: boolean } |
+  { type: ScreenActions["OPEN_CREATE_CHANGED"], open: boolean } |
+  { type: ScreenActions["OPEN_EDIT_CHANGED"], open: boolean } |
+  { type: ScreenActions["ACTION_SUBMITTED"] } |
+  { type: ScreenActions["ACTION_SUCCEED"] } |
+  { type: ScreenActions["ACTION_FAILED"] }
 
 type ScreenState = {
   view: View
@@ -88,12 +87,11 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
   switch (action.type) {
     case "VIEW_CHANGED":
       return { ...state, view: action.view }
-    case "OPEN_SELECT_KIND_FOR_CREATE_CHANGED":
+    case "ACCOUNT_CHANGED":
       return {
         ...state,
-        openSelectKindForCreate: action.open,
-        openCreate: false,
-        openEdit: false,
+        account: { ...action.account },
+        openEdit: true
       }
     case "CREATE_KIND_CHANGED":
       return {
@@ -103,27 +101,13 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
         openSelectKindForCreate: false,
         openEdit: false,
       }
-    case "OPEN_CREATE_CHANGED":
+    case "OPEN_SELECT_KIND_CHANGED":
       return {
         ...state,
-        openCreate: action.open,
-        openSelectKindForCreate: false,
-        openEdit: false,
-      }
-    case "FORM_SUBMITTED":
-      return { ...state, submitting: true }
-    case "ACCOUNT_UPDATED":
-    case "ACCOUNT_CREATED":
-      return {
-        ...state,
-        submitting: false,
+        openSelectKindForCreate: action.open,
         openCreate: false,
         openEdit: false,
-        openSelectKindForCreate: false,
       }
-    case "UPDATE_ACCOUNT_FAILED":
-    case "CREATE_ACCOUNT_FAILED":
-      return { ...state, submitting: false }
     case "OPEN_EDIT_CHANGED":
       return {
         ...state,
@@ -131,12 +115,25 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
         openCreate: false,
         openSelectKindForCreate: false,
       }
-    case "ACCOUNT_CHANGED":
+    case "OPEN_CREATE_CHANGED":
       return {
         ...state,
-        account: { ...action.account },
-        openEdit: true
+        openCreate: action.open,
+        openSelectKindForCreate: false,
+        openEdit: false,
       }
+    case "ACTION_SUBMITTED":
+      return { ...state, submitting: true }
+    case "ACTION_SUCCEED":
+      return {
+        ...state,
+        submitting: false,
+        openCreate: false,
+        openEdit: false,
+        openSelectKindForCreate: false,
+      }
+    case "ACTION_FAILED":
+      return { ...state, submitting: false }
     default:
       return { ...state }
   }
@@ -160,19 +157,22 @@ export function Screen({
   onSearchParamsChange,
   onCreateAccountAction,
   onUpdateAccountAction,
+  onArchiveAccountAction,
+  onUnarchiveAccountAction,
+  onDeleteAccountAction,
 }: Props) {
   const [screen, dispatch] = useReducer(reducer, { view: withView(searchParams.get("view")) }, init)
 
   const inArchivedView = useMemo(() => screen.view === "archived", [screen.view])
 
   const onOpenSelectKindForCreateChange = (open: boolean) =>
-    dispatch({ type: "OPEN_SELECT_KIND_FOR_CREATE_CHANGED", open })
-  const onSubmitForm = () =>
-    dispatch({ type: "FORM_SUBMITTED" })
-  const onCreateAccountSuccess = () =>
-    dispatch({ type: "ACCOUNT_CREATED" })
-  const onCreateAccountFailure = () =>
-    dispatch({ type: "CREATE_ACCOUNT_FAILED" })
+    dispatch({ type: "OPEN_SELECT_KIND_CHANGED", open })
+  const onSubmitAction = () =>
+    dispatch({ type: "ACTION_SUBMITTED" })
+  const onActionSuccess = () =>
+    dispatch({ type: "ACTION_SUCCEED" })
+  const onActionFailure = () =>
+    dispatch({ type: "ACTION_FAILED" })
   const onScreenViewChange = (view: View) =>
     dispatch({ type: "VIEW_CHANGED", view })
   const onOpenCreateChange = (open: boolean) =>
@@ -183,29 +183,35 @@ export function Screen({
     dispatch({ type: "OPEN_EDIT_CHANGED", open })
   const onAccountChange = (account: Account) =>
     dispatch({ type: "ACCOUNT_CHANGED", account })
-  const onUpdateAccountSuccess = () =>
-    dispatch({ type: "ACCOUNT_UPDATED" })
-  const onUpdateAccountFailure = () =>
-    dispatch({ type: "UPDATE_ACCOUNT_FAILED" })
 
   const onCreate = (values: Create) => {
-    onSubmitForm()
+    onSubmitAction()
 
-    return onCreateAccountAction(
-      values,
-      onCreateAccountSuccess,
-      onCreateAccountFailure
-    )
+    return onCreateAccountAction(values, onActionSuccess, onActionFailure)
   }
 
   const onUpdate = (values: Update) => {
-    onSubmitForm()
+    onSubmitAction()
 
-    return onUpdateAccountAction(
-      values,
-      onUpdateAccountSuccess,
-      onUpdateAccountFailure
-    )
+    return onUpdateAccountAction(values, onActionSuccess, onActionFailure)
+  }
+
+  const onArchive = (id: number) => {
+    onSubmitAction()
+
+    return onArchiveAccountAction(id, onActionSuccess, onActionFailure)
+  }
+
+  const onUnarchive = (id: number) => {
+    onSubmitAction()
+
+    return onUnarchiveAccountAction(id, onActionSuccess, onActionFailure)
+  }
+
+  const onDelete = (id: number) => {
+    onSubmitAction()
+
+    return onDeleteAccountAction(id, onActionSuccess, onActionFailure)
   }
 
   useEffect(() => onSearchParamsChange({ view: screen.view }), [screen.view])
