@@ -67,6 +67,9 @@ type ScreenAction =
   { type: ScreenActions["ACCOUNT_CHANGED"], account: Account } |
   { type: ScreenActions["CREATE_KIND_CHANGED"], kind: ModuleKind } |
   { type: ScreenActions["OPEN_SELECT_KIND_CHANGED"], open: boolean } |
+  { type: ScreenActions["OPEN_ARCHIVE_CHANGED"], open: boolean } |
+  { type: ScreenActions["OPEN_UNARCHIVE_CHANGED"], open: boolean } |
+  { type: ScreenActions["OPEN_DELETE_CHANGED"], open: boolean } |
   { type: ScreenActions["OPEN_CREATE_CHANGED"], open: boolean } |
   { type: ScreenActions["OPEN_EDIT_CHANGED"], open: boolean } |
   { type: ScreenActions["ACTION_SUBMITTED"] } |
@@ -80,6 +83,9 @@ type ScreenState = {
   createKind: ModuleKind
   account: Account | null
   openEdit: boolean
+  openArchive: boolean
+  openUnarchive: boolean
+  openDelete: boolean
   submitting: boolean
 }
 
@@ -100,6 +106,9 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
         openCreate: true,
         openSelectKindForCreate: false,
         openEdit: false,
+        openArchive: false,
+        openUnarchive: false,
+        openDelete: false,
       }
     case "OPEN_SELECT_KIND_CHANGED":
       return {
@@ -107,13 +116,30 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
         openSelectKindForCreate: action.open,
         openCreate: false,
         openEdit: false,
+        openArchive: false,
+        openUnarchive: false,
+        openDelete: false,
       }
-    case "OPEN_EDIT_CHANGED":
+    case "OPEN_ARCHIVE_CHANGED":
       return {
         ...state,
-        openEdit: action.open,
-        openCreate: false,
-        openSelectKindForCreate: false,
+        openArchive: action.open,
+        openUnarchive: false,
+        openDelete: false,
+      }
+    case "OPEN_UNARCHIVE_CHANGED":
+      return {
+        ...state,
+        openArchive: false,
+        openUnarchive: action.open,
+        openDelete: false,
+      }
+    case "OPEN_DELETE_CHANGED":
+      return {
+        ...state,
+        openArchive: false,
+        openUnarchive: false,
+        openDelete: action.open,
       }
     case "OPEN_CREATE_CHANGED":
       return {
@@ -121,6 +147,19 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
         openCreate: action.open,
         openSelectKindForCreate: false,
         openEdit: false,
+        openArchive: false,
+        openUnarchive: false,
+        openDelete: false,
+      }
+    case "OPEN_EDIT_CHANGED":
+      return {
+        ...state,
+        openEdit: action.open,
+        openCreate: false,
+        openSelectKindForCreate: false,
+        openArchive: false,
+        openUnarchive: false,
+        openDelete: false,
       }
     case "ACTION_SUBMITTED":
       return { ...state, submitting: true }
@@ -131,6 +170,9 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
         openCreate: false,
         openEdit: false,
         openSelectKindForCreate: false,
+        openArchive: false,
+        openUnarchive: false,
+        openDelete: false,
       }
     case "ACTION_FAILED":
       return { ...state, submitting: false }
@@ -147,6 +189,9 @@ function init({ view }: { view: View }): ScreenState {
     createKind: "capital_normal",
     account: null,
     openEdit: false,
+    openArchive: false,
+    openUnarchive: false,
+    openDelete: false,
     submitting: false,
   }
 }
