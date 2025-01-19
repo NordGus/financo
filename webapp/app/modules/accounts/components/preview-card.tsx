@@ -1,11 +1,9 @@
-import { isNil } from "lodash-es";
 import { useMemo } from "react";
 import { cn } from "~/lib/utils";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle
 } from "~/shared/components/ui/card";
@@ -17,10 +15,8 @@ import {
 } from "~/shared/helpers/currency-amount-to-human";
 import { isDebt } from "~/shared/types/account";
 import { Account } from "../types/preview";
-import { ArchivedAccount } from "./badges/archived-account";
 import { MainAccount } from "./badges/main-account";
 import { PaymentProgress } from "./payment-progress";
-import { ActionablesMenu } from "./preview/actionables-menu";
 
 interface Props {
   account: Account
@@ -40,16 +36,11 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
       main,
       balance,
     },
-    archivedAt,
     deletedAt
   } = account
 
   if (deletedAt) return null
 
-  const isArchived = useMemo(
-    () => !isNil(archivedAt),
-    [archivedAt]
-  )
   const balanceAmount = useMemo(
     () => currencyAmountToHuman(isDebt(kind) ? balance + capital : balance, currency),
     [balance, capital, currency]
@@ -62,7 +53,7 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
   return (
     <Card>
       <CardHeader
-        className="min-h-28 cursor-pointer"
+        className="min-h-20 cursor-pointer p-4"
         style={{
           backgroundColor: color,
           color: colorContrast(color)
@@ -81,8 +72,12 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="flex flex-row justify-end gap-2 pt-4">
+      <CardContent className="grid grid-cols-3 gap-2 p-4">
+        <div>
+          {main && <MainAccount />}
+          <PaymentProgress capital={capital} balance={balance} currency={currency} color={color} kind={kind} />
+        </div>
+        <div className="flex flex-row gap-2 justify-end col-span-2">
           {
             capital !== 0 && (
               <span>
@@ -99,18 +94,6 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
           </span>
         </div>
       </CardContent>
-      <CardFooter className="flex flex-row justify-end items-center gap-2">
-        {main && <MainAccount />}
-        {isArchived && <ArchivedAccount />}
-        <div className="flex-grow-[3]">
-          <PaymentProgress capital={capital} balance={balance} currency={currency} color={color} kind={kind} />
-        </div>
-        <div className="flex-grow flex flex-row justify-end gap-2">
-          <ActionablesMenu
-            account={account}
-          />
-        </div>
-      </CardFooter>
     </Card>
   )
 }
