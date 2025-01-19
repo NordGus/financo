@@ -8,13 +8,14 @@ import { Intents } from "~/modules/accounts/types/actions";
 import { Update } from "~/modules/accounts/types/update";
 import { Route } from "./+types/show";
 
-interface ActionRequestBody extends Update {
+type ActionRequestBody = {
+  payload?: Update
   intent: Intents["archive"] | Intents["unarchive"] | Intents["delete"] | Intents["update"]
 }
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const id = Number(params.id)
-  const values: ActionRequestBody = await request.json()
+  const { payload, intent }: ActionRequestBody = await request.json()
 
   const actions = {
     archive: async () => {
@@ -88,7 +89,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     },
     update: async () => {
       try {
-        const response = updateAccount({ ...values })
+        const response = updateAccount({ ...payload! })
 
         toast.promise(response, {
           loading: "Updating...",
@@ -111,7 +112,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     }
   }
 
-  const action = actions[values.intent]
+  const action = actions[intent]
 
   if (!action) throw new Error("invalid action")
 
