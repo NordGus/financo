@@ -51,14 +51,13 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
   )
 
   return (
-    <Card>
+    <Card onClick={() => onSelectAccount(account)} className="cursor-pointer">
       <CardHeader
-        className="min-h-20 cursor-pointer p-4"
+        className="min-h-20 p-4"
         style={{
           backgroundColor: color,
           color: colorContrast(color)
         }}
-        onClick={() => onSelectAccount(account)}
       >
         <CardTitle className="flex flex-row gap-1 items-center [&_svg]:size-5">
           {icons[icon]} {name}
@@ -75,7 +74,13 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
       <CardContent className="grid grid-cols-3 gap-2 p-4">
         <div>
           {main && <MainAccount />}
-          <PaymentProgress capital={capital} balance={balance} currency={currency} color={color} kind={kind} />
+          <PaymentProgress
+            capital={capital}
+            balance={balance}
+            currency={currency}
+            color={color}
+            kind={kind}
+          />
         </div>
         <div className="flex flex-row gap-2 justify-end col-span-2">
           {
