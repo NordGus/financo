@@ -1,4 +1,4 @@
-import { URLSearchParamsInit, useLoaderData, useSearchParams } from "react-router";
+import { URLSearchParamsInit, useFetcher, useLoaderData, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { createAccount } from "~/modules/accounts/api/commands/create-account";
 import { getAccountsPreviews } from "~/modules/accounts/api/queries/get-accounts-previews";
@@ -13,7 +13,8 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
-interface ActionRequestBody extends Create {
+interface ActionRequestBody {
+  payload: Create
   intent: "create"
 }
 
@@ -22,8 +23,10 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
   if (values.intent !== "create") throw new Error("invalid action")
 
+  console.log(values)
+
   try {
-    const response = createAccount({ ...values })
+    const response = createAccount({ ...values.payload })
 
     toast.promise(response, {
       loading: "Creating...",
@@ -37,11 +40,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
     return created
   } catch (error) {
-    if (error instanceof Response && error.status === 401) throw error
-
     console.error(error)
 
-    return null
+    throw error
   }
 }
 
@@ -57,8 +58,24 @@ export async function clientLoader({ }: Route.ClientLoaderArgs) {
 export default function Index() {
   const { accounts } = useLoaderData<typeof clientLoader>()
   const [searchParams, setSearchParams] = useSearchParams()
+  const fetcher = useFetcher<Create | null>()
 
   const onSearchParamsChange = (params: URLSearchParamsInit) => setSearchParams(params)
+  const onCreateAccount = (values: Create, success: () => void, failure: () => void) => {
+    return fetcher.submit(
+      { payload: { ...values }, intent: "create" },
+      { action: "/accounts", method: "post", encType: "application/json" }
+    ).then((__res) => success()).catch((error) => {
+      failure()
 
-  return <Screen accounts={accounts} onSearchParamsChange={onSearchParamsChange} searchParams={searchParams} />
+      throw error
+    })
+  }
+
+  return <Screen
+    accounts={accounts}
+    onSearchParamsChange={onSearchParamsChange}
+    searchParams={searchParams}
+    onCreateAccountAction={onCreateAccount}
+  />
 }

@@ -9,12 +9,15 @@ import { ListForKind } from "../components/list-for-kind";
 import { accountKindsManual } from "../manual/account-kinds-manual";
 import { archivedAccountsManual } from "../manual/archived-accounts-manual";
 import { ModuleKind } from "../types/account";
+import { CreateAccountAction } from "../types/actions";
+import { Create } from "../types/create";
 import { Account } from "../types/preview";
 
 interface Props {
   accounts: Account[]
   onSearchParamsChange: (nextInit: Record<string, string | string[]>) => void
   searchParams: URLSearchParams
+  onCreateAccountAction: CreateAccountAction
 }
 
 type View = "active" | "archived"
@@ -31,20 +34,27 @@ function withView(view?: string | string[] | null): View {
 
 const _screenActions = {
   VIEW_CHANGED: "VIEW_CHANGED",
-  OPEN_CREATE_CHANGED: "OPEN_CREATE_CHANGED"
+  OPEN_CREATE_CHANGED: "OPEN_CREATE_CHANGED",
+  FORM_SUBMITTED: "FORM_SUBMITTED",
+  ACCOUNT_CREATED: "ACCOUNT_CREATED",
+  CREATE_ACCOUNT_FAILED: "CREATE_ACCOUNT_FAILED",
 } as const
 
 type ScreenActions = typeof _screenActions
 
 type ScreenAction =
   { type: ScreenActions["VIEW_CHANGED"], view: View } |
-  { type: ScreenActions["OPEN_CREATE_CHANGED"], open: boolean, kind: ModuleKind | null }
+  { type: ScreenActions["OPEN_CREATE_CHANGED"], open: boolean, kind: ModuleKind | null } |
+  { type: ScreenActions["FORM_SUBMITTED"] } |
+  { type: ScreenActions["ACCOUNT_CREATED"] } |
+  { type: ScreenActions["CREATE_ACCOUNT_FAILED"] }
 
 type ScreenState = {
   view: View,
+  accountFilter: (value?: string | null) => boolean
   openCreate: boolean,
   createKind: ModuleKind | null,
-  accountFilter: (value?: string | null) => boolean
+  submitting: boolean
 }
 
 function reducer(state: ScreenState, action: ScreenAction): ScreenState {
@@ -59,6 +69,12 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
       }
     case "OPEN_CREATE_CHANGED":
       return { ...state, openCreate: action.open, createKind: action.kind }
+    case "FORM_SUBMITTED":
+      return { ...state, submitting: true }
+    case "ACCOUNT_CREATED":
+      return { ...state, submitting: false, createKind: null, openCreate: false }
+    case "CREATE_ACCOUNT_FAILED":
+      return { ...state, submitting: false }
     default:
       return { ...state }
   }
@@ -67,21 +83,45 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
 function init({ view }: { view: View }): ScreenState {
   return {
     view,
+    accountFilter: view === "active"
+      ? (v?: string | null) => !v
+      : (v?: string | null) => !!v,
     openCreate: false,
     createKind: null,
-    accountFilter: view === "active" ? (v?: string | null) => !v : (v?: string | null) => !!v,
+    submitting: false,
   }
 }
 
-export function Screen({ accounts, onSearchParamsChange, searchParams }: Props) {
+export function Screen({
+  accounts,
+  searchParams,
+  onSearchParamsChange,
+  onCreateAccountAction,
+}: Props) {
   const [screen, dispatch] = useReducer(reducer, { view: withView(searchParams.get("view")) }, init)
 
   const inArchivedView = useMemo(() => screen.view === "archived", [screen.view])
 
-  const onScreenViewChange = (view: View) => dispatch({ type: "VIEW_CHANGED", view })
+  const onSubmitForm = () =>
+    dispatch({ type: "FORM_SUBMITTED" })
+  const onCreateAccountSuccess = () =>
+    dispatch({ type: "ACCOUNT_CREATED" })
+  const onCreateAccountFailure = () =>
+    dispatch({ type: "CREATE_ACCOUNT_FAILED" })
+  const onScreenViewChange = (view: View) =>
+    dispatch({ type: "VIEW_CHANGED", view })
   const onOpenCreateChange = (open: boolean, kind: ModuleKind | null) =>
     dispatch({ type: "OPEN_CREATE_CHANGED", open, kind })
-  const onCreated = () => onOpenCreateChange(false, null)
+
+  const onCreate = (values: Create) => {
+    onSubmitForm()
+
+    return onCreateAccountAction(
+      values,
+      onCreateAccountSuccess,
+      onCreateAccountFailure
+    )
+  }
 
   useEffect(() => onSearchParamsChange({ view: screen.view }), [screen.view])
 
@@ -177,7 +217,8 @@ export function Screen({ accounts, onSearchParamsChange, searchParams }: Props) 
             onOpenChange={(open) => !open && onOpenCreateChange(false, null)}
             kind={screen.createKind}
             defaultCurrency="EUR"
-            onSuccess={onCreated}
+            submitting={screen.submitting}
+            onSubmitAction={onCreate}
           />
         </DrawerContent>
       </Drawer>

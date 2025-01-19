@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useFetcher } from "react-router";
 import { z } from "zod";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { CurrencyAmountInput } from "~/shared/components/inputs/currency-amount-input";
@@ -41,7 +40,7 @@ import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-ma
 import { mainAccountManual } from "../../manual/main-account-manual";
 import { schema, schemaWithCapital } from "../../schemas/create";
 import { ModuleKind } from "../../types/account";
-import { Created } from "../../types/create";
+import { OnSubmitCreateAccountAction } from "../../types/actions";
 
 const drawerTitle: Record<ModuleKind, string> = {
   capital_normal: "New Capital Account",
@@ -59,21 +58,24 @@ const defaultIcons: Record<ModuleKind, Icon> = {
   debt_credit: "credit_card",
 }
 
+const defaultColors: Record<ModuleKind, string> = {
+  capital_normal: "#31e2c2",
+  capital_savings: "#0b8fe8",
+  debt_credit: "#008afc",
+  debt_loan: "#fc004f",
+  debt_personal: "#00fc4b",
+}
+
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   kind: ModuleKind | null
   defaultCurrency: Currency
-  onSuccess: () => void
+  onSubmitAction: OnSubmitCreateAccountAction
+  submitting: boolean
 }
 
-export function CreateAccount({
-  open,
-  onOpenChange,
-  defaultCurrency,
-  kind,
-  onSuccess,
-}: Props) {
+export function CreateAccount({ open, onOpenChange, defaultCurrency, kind, submitting, onSubmitAction }: Props) {
   return (
     <Drawer modal open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="overflow-clip">
@@ -84,7 +86,8 @@ export function CreateAccount({
           kind={kind!}
           defaultIcon={defaultIcons[kind!]}
           defaultCurrency={defaultCurrency}
-          onSuccess={onSuccess}
+          onSubmitAction={onSubmitAction}
+          submitting={submitting}
         />
       </DrawerContent>
     </Drawer>
@@ -95,45 +98,45 @@ interface FormProps {
   kind: ModuleKind
   defaultCurrency: Currency
   defaultIcon: Icon
-  onSuccess: () => void
+  onSubmitAction: OnSubmitCreateAccountAction
+  submitting: boolean
 }
 
-function CreateForm({ kind, defaultCurrency, defaultIcon, onSuccess }: FormProps) {
+function CreateForm({ kind, defaultCurrency, defaultIcon, submitting, onSubmitAction }: FormProps) {
   const isFixedSignDebt = isCredit(kind) || isLoan(kind)
   const forDebts = isDebt(kind)
   const withCapital = forDebts
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const fetcher = useFetcher<Created | null>()
 
-  const formSchema = useMemo(() => withCapital ? schemaWithCapital : schema, [withCapital])
+  const formSchema = useMemo(
+    () => withCapital ? schemaWithCapital : schema,
+    [withCapital]
+  )
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       kind: kind,
+      name: "",
+      description: "",
       currency: defaultCurrency,
       capital: 0,
+      color: defaultColors[kind],
       icon: defaultIcon,
       main: false,
-      intent: "create"
     }
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setLoading(true)
-
-    await fetcher.submit(
-      {
-        ...values,
-        history: {
-          balance: values.history.balance || null,
-          at: values.history.at ? moment(values.history.at).utc().toISOString() : null,
-        }
-      },
-      { action: "/accounts", method: "post", encType: "application/json" }
-    )
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) =>
+    await onSubmitAction({
+      ...values,
+      history: {
+        balance: values.history?.balance || null,
+        at: values.history?.at
+          ? moment(values.history.at).utc().toISOString()
+          : null,
+      }
+    })
 
   useEffect(() => {
     if (hasIncompleteLedger) {
@@ -144,12 +147,6 @@ function CreateForm({ kind, defaultCurrency, defaultIcon, onSuccess }: FormProps
       form.setValue("history.balance", undefined)
     }
   }, [hasIncompleteLedger])
-
-  useEffect(() => {
-    setLoading(false)
-
-    if (loading && fetcher.data) onSuccess()
-  }, [fetcher.data])
 
   return (
     <Form {...form}>
@@ -319,8 +316,8 @@ function CreateForm({ kind, defaultCurrency, defaultIcon, onSuccess }: FormProps
           </Accordion>
         </div>
         <DrawerFooter>
-          <Button type="submit" className="min-w-24" disabled={loading}>
-            {loading ? <Throbber size={"sm"} /> : "Create"}
+          <Button type="submit" className="min-w-24" disabled={submitting}>
+            {submitting ? <Throbber size={"sm"} /> : "Create"}
           </Button>
           <DrawerClose asChild>
             <Button variant={"outline"}>Cancel</Button>
