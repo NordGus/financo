@@ -3,8 +3,11 @@ import { toast } from "sonner";
 import { createAccount } from "~/modules/accounts/api/commands/create-account";
 import { getAccountsPreviews } from "~/modules/accounts/api/queries/get-accounts-previews";
 import { Screen } from "~/modules/accounts/screens";
-import { Create } from "~/modules/accounts/types/create";
-import { Update } from "~/modules/accounts/types/update";
+import { Archived } from "~/modules/accounts/types/archived";
+import { Create, Created } from "~/modules/accounts/types/create";
+import { Deleted } from "~/modules/accounts/types/delete";
+import { Unarchived } from "~/modules/accounts/types/unarchived";
+import { Update, Updated } from "~/modules/accounts/types/update";
 import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
@@ -59,7 +62,7 @@ export async function clientLoader({ }: Route.ClientLoaderArgs) {
 export default function Index() {
   const { accounts } = useLoaderData<typeof clientLoader>()
   const [searchParams, setSearchParams] = useSearchParams()
-  const fetcher = useFetcher<Create | null>()
+  const fetcher = useFetcher<Created | Updated | Deleted | Archived | Unarchived | null>()
 
   const onSearchParamsChange = (params: URLSearchParamsInit) => setSearchParams(params)
 
@@ -85,11 +88,47 @@ export default function Index() {
     })
   }
 
+  const onArchiveAccount = (id: number, success: () => void, failure: () => void) => {
+    return fetcher.submit(
+      { payload: { id }, intent: "archive" },
+      { action: `/accounts/${id}`, method: "post", encType: "application/json" }
+    ).then((__res) => success()).catch((error) => {
+      failure()
+
+      throw error
+    })
+  }
+
+  const onUnarchiveAccount = (id: number, success: () => void, failure: () => void) => {
+    return fetcher.submit(
+      { payload: { id }, intent: "unarchive" },
+      { action: `/accounts/${id}`, method: "post", encType: "application/json" }
+    ).then((__res) => success()).catch((error) => {
+      failure()
+
+      throw error
+    })
+  }
+
+  const onDeleteAccount = (id: number, success: () => void, failure: () => void) => {
+    return fetcher.submit(
+      { payload: { id }, intent: "unarchive" },
+      { action: `/accounts/${id}`, method: "post", encType: "application/json" }
+    ).then((__res) => success()).catch((error) => {
+      failure()
+
+      throw error
+    })
+  }
+
   return <Screen
     accounts={accounts}
     onSearchParamsChange={onSearchParamsChange}
     searchParams={searchParams}
     onCreateAccountAction={onCreateAccount}
     onUpdateAccountAction={onUpdateAccount}
+    onArchiveAccountAction={onArchiveAccount}
+    onUnarchiveAccountAction={onUnarchiveAccount}
+    onDeleteAccountAction={onDeleteAccount}
   />
 }

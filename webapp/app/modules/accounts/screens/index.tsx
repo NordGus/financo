@@ -11,7 +11,13 @@ import { ListForKind } from "../components/list-for-kind";
 import { accountKindsManual } from "../manual/account-kinds-manual";
 import { archivedAccountsManual } from "../manual/archived-accounts-manual";
 import { ModuleKind } from "../types/account";
-import { CreateAccountAction, UpdateAccountAction } from "../types/actions";
+import {
+  ArchiveAccountAction,
+  CreateAccountAction,
+  DeleteAccountAction,
+  UnarchiveAccountAction,
+  UpdateAccountAction
+} from "../types/actions";
 import { Create } from "../types/create";
 import { Account } from "../types/preview";
 import { Update } from "../types/update";
@@ -22,6 +28,9 @@ interface Props {
   searchParams: URLSearchParams
   onCreateAccountAction: CreateAccountAction
   onUpdateAccountAction: UpdateAccountAction
+  onArchiveAccountAction: ArchiveAccountAction
+  onUnarchiveAccountAction: UnarchiveAccountAction
+  onDeleteAccountAction: DeleteAccountAction
 }
 
 type View = "active" | "archived"
