@@ -1,15 +1,8 @@
 import { Copy } from "~/shared/types/copy";
+import { ModuleKind } from "../types/account";
 
-interface Manual {
-  capital: Copy
-  savings: Copy
-  loans: Copy
-  personalDebt: Copy
-  credit: Copy
-}
-
-export const accountKindsManual: Manual = {
-  capital: {
+export const accountKindsManual: Record<ModuleKind, Copy> = {
+  capital_normal: {
     title: "What is a Capital Account?",
     message: <>
       <p>
@@ -20,7 +13,7 @@ export const accountKindsManual: Manual = {
       </p>
     </>
   },
-  savings: {
+  capital_savings: {
     title: "What is a Savings Account",
     message: <>
       <p>
@@ -31,7 +24,7 @@ export const accountKindsManual: Manual = {
       </p>
     </>
   },
-  loans: {
+  debt_loan: {
     title: "What is a Loan Account?",
     message: <>
       <p>
@@ -42,7 +35,7 @@ export const accountKindsManual: Manual = {
       </p>
     </>
   },
-  personalDebt: {
+  debt_personal: {
     title: "What is a Personal debt Account?",
     message: <>
       <p>
@@ -53,7 +46,7 @@ export const accountKindsManual: Manual = {
       </p>
     </>
   },
-  credit: {
+  debt_credit: {
     title: "What is a Credit Account?",
     message: <>
       <p>

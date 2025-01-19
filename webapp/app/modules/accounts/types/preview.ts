@@ -1,6 +1,6 @@
-import { Kind } from "~/shared/types/account"
 import { Currency } from "~/shared/types/currency"
 import { Icon } from "~/shared/types/icon"
+import { ModuleKind } from "./account"
 
 interface History {
   at?: string | null
@@ -16,7 +16,7 @@ interface AdditionalData {
 
 interface Account {
   id: number
-  kind: Kind
+  kind: ModuleKind
   currency: Currency
   name: string
   description?: string | null

@@ -4,6 +4,7 @@ import { createAccount } from "~/modules/accounts/api/commands/create-account";
 import { getAccountsPreviews } from "~/modules/accounts/api/queries/get-accounts-previews";
 import { Screen } from "~/modules/accounts/screens";
 import { Create } from "~/modules/accounts/types/create";
+import { Update } from "~/modules/accounts/types/update";
 import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
@@ -61,10 +62,22 @@ export default function Index() {
   const fetcher = useFetcher<Create | null>()
 
   const onSearchParamsChange = (params: URLSearchParamsInit) => setSearchParams(params)
+
   const onCreateAccount = (values: Create, success: () => void, failure: () => void) => {
     return fetcher.submit(
       { payload: { ...values }, intent: "create" },
       { action: "/accounts", method: "post", encType: "application/json" }
+    ).then((__res) => success()).catch((error) => {
+      failure()
+
+      throw error
+    })
+  }
+
+  const onUpdateAccount = (values: Update, success: () => void, failure: () => void) => {
+    return fetcher.submit(
+      { payload: { ...values }, intent: "update" },
+      { action: `/accounts/${values.id}`, method: "post", encType: "application/json" }
     ).then((__res) => success()).catch((error) => {
       failure()
 
@@ -77,5 +90,6 @@ export default function Index() {
     onSearchParamsChange={onSearchParamsChange}
     searchParams={searchParams}
     onCreateAccountAction={onCreateAccount}
+    onUpdateAccountAction={onUpdateAccount}
   />
 }

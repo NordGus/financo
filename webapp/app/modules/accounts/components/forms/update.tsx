@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useFetcher } from "react-router";
 import { z } from "zod";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { CurrencyAmountInput } from "~/shared/components/inputs/currency-amount-input";
@@ -12,7 +11,14 @@ import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
 import { Accordion, AccordionContent, AccordionItem } from "~/shared/components/ui/accordion";
 import { Button } from "~/shared/components/ui/button";
-import { DrawerClose, DrawerFooter } from "~/shared/components/ui/drawer";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle
+} from "~/shared/components/ui/drawer";
 import {
   Form,
   FormControl,
@@ -26,28 +32,59 @@ import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
 import { Switch } from "~/shared/components/ui/switch";
 import { Textarea } from "~/shared/components/ui/textarea";
+import { accountKindToHuman } from "~/shared/helpers/account-kind-to-human";
 import { isCapital, isCredit, isDebt, isLoan } from "~/shared/types/account";
+import { accountKindsManual } from "../../manual/account-kinds-manual";
 import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { mainAccountManual } from "../../manual/main-account-manual";
 import { schema, schemaWithCapital } from "../../schemas/update";
+import { OnSubmitUpdateAccountAction } from "../../types/actions";
 import { Account } from "../../types/preview";
-import { Updated } from "../../types/update";
 
 interface Props {
+  open: boolean
+  onOpenChange: (open: boolean) => void
   account: Account
-  onSuccess: () => void
+  onSubmitAction: OnSubmitUpdateAccountAction
+  submitting: boolean
 }
 
-export function UpdateAccount({ account, onSuccess }: Props) {
+export function UpdateAccount({ open, onOpenChange, account, onSubmitAction, submitting }: Props) {
+  return (
+    <Drawer modal open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="overflow-clip">
+        <DrawerHeader>
+          <DrawerTitle>
+            New {accountKindToHuman(account.kind)} Account <InfoDialog copy={accountKindsManual[account.kind]} />
+          </DrawerTitle>
+        </DrawerHeader>
+        <UpdateForm
+          account={account}
+          onSubmitAction={onSubmitAction}
+          submitting={submitting}
+        />
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
+interface FormProps {
+  account: Account
+  onSubmitAction: OnSubmitUpdateAccountAction
+  submitting: boolean
+}
+
+function UpdateForm({ account, onSubmitAction, submitting }: FormProps) {
   const isFixedSignDebt = isCredit(account.kind) || isLoan(account.kind)
   const forDebts = isDebt(account.kind)
   const withCapital = isDebt(account.kind)
-  const [hasIncompleteLedger, setHasIncompleteLedger] = useState(!!account.additionalData.history.at)
-  const [loading, setLoading] = useState(false)
-  const fetcher = useFetcher<Updated | null>({ key: `accounts.update.${account.id}` })
-  const historyAt = account.additionalData.history.at ? moment(account.additionalData.history.at).toDate() : undefined
-  const historyBalance = account.additionalData.history.balance || undefined
+  const historyAt = account.additionalData.history?.at
+    ? moment(account.additionalData.history.at).toDate()
+    : undefined
+  const historyBalance = account.additionalData.history?.balance ?? undefined
+
+  const [hasIncompleteLedger, setHasIncompleteLedger] = useState(!!historyAt)
 
   const formSchema = useMemo(() => forDebts ? schemaWithCapital : schema, [forDebts])
 
@@ -63,24 +100,19 @@ export function UpdateAccount({ account, onSuccess }: Props) {
       icon: account.icon,
       history: { at: historyAt, balance: historyBalance },
       main: isCapital(account.kind) ? account.additionalData.main : false,
-      intent: "update"
     }
   })
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setLoading(true)
-
-    await fetcher.submit(
-      {
-        ...values,
-        history: {
-          balance: values.history.balance || null,
-          at: values.history.at ? moment(values.history.at).utc().toISOString() : null,
-        }
-      },
-      { action: `/accounts/${account.id}`, method: "post", encType: "application/json" }
-    )
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) =>
+    await onSubmitAction({
+      ...values,
+      history: {
+        balance: values.history?.balance ?? null,
+        at: values.history?.at
+          ? moment(values.history.at).utc().toISOString()
+          : null,
+      }
+    })
 
   useEffect(() => {
     if (hasIncompleteLedger) {
@@ -91,12 +123,6 @@ export function UpdateAccount({ account, onSuccess }: Props) {
       form.setValue("history.balance", undefined)
     }
   }, [hasIncompleteLedger])
-
-  useEffect(() => {
-    setLoading(false)
-
-    if (loading && fetcher.data) onSuccess()
-  }, [fetcher.data])
 
   return (
     <Form {...form}>
@@ -266,8 +292,8 @@ export function UpdateAccount({ account, onSuccess }: Props) {
           </Accordion>
         </div>
         <DrawerFooter>
-          <Button type="submit" className="min-w-24" disabled={loading}>
-            {loading ? <Throbber size={"sm"} /> : "Update"}
+          <Button type="submit" className="min-w-24" disabled={submitting}>
+            {submitting ? <Throbber size={"sm"} /> : "Update"}
           </Button>
           <DrawerClose asChild>
             <Button variant={"outline"}>Cancel</Button>

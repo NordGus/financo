@@ -34,7 +34,7 @@ export default function Layout() {
       <div
         className="h-full w-full overflow-hidden grid grid-rows-layout items-stretch"
       >
-        <main className="grow h-full overflow-y-auto overflow-x-auto p-4">
+        <main className="grow h-full overflow-hidden">
           <Outlet />
           <Toaster position="top-center" closeButton richColors />
         </main>

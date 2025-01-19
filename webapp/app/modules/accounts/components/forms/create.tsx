@@ -32,44 +32,23 @@ import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
 import { Switch } from "~/shared/components/ui/switch";
 import { Textarea } from "~/shared/components/ui/textarea";
+import { accountKindToHuman } from "~/shared/helpers/account-kind-to-human";
 import { isCapital, isCredit, isDebt, isLoan } from "~/shared/types/account";
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
+import { accountKindsManual } from "../../manual/account-kinds-manual";
 import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { mainAccountManual } from "../../manual/main-account-manual";
 import { schema, schemaWithCapital } from "../../schemas/create";
 import { ModuleKind } from "../../types/account";
 import { OnSubmitCreateAccountAction } from "../../types/actions";
-
-const drawerTitle: Record<ModuleKind, string> = {
-  capital_normal: "New Capital Account",
-  capital_savings: "New Savings Account",
-  debt_loan: "New Loan Account",
-  debt_personal: "New Personal loan Account",
-  debt_credit: "New Credit Account",
-}
-
-const defaultIcons: Record<ModuleKind, Icon> = {
-  capital_normal: "landmark",
-  capital_savings: "piggy_bank",
-  debt_loan: "hand_coins",
-  debt_personal: "user",
-  debt_credit: "credit_card",
-}
-
-const defaultColors: Record<ModuleKind, string> = {
-  capital_normal: "#31e2c2",
-  capital_savings: "#0b8fe8",
-  debt_credit: "#008afc",
-  debt_loan: "#fc004f",
-  debt_personal: "#00fc4b",
-}
+import { defaultIcons } from "../../types/icons";
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  kind: ModuleKind | null
+  kind: ModuleKind
   defaultCurrency: Currency
   onSubmitAction: OnSubmitCreateAccountAction
   submitting: boolean
@@ -80,11 +59,13 @@ export function CreateAccount({ open, onOpenChange, defaultCurrency, kind, submi
     <Drawer modal open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="overflow-clip">
         <DrawerHeader>
-          <DrawerTitle>{drawerTitle[kind!]}</DrawerTitle>
+          <DrawerTitle>
+            New {accountKindToHuman(kind)} Account <InfoDialog copy={accountKindsManual[kind]} />
+          </DrawerTitle>
         </DrawerHeader>
         <CreateForm
-          kind={kind!}
-          defaultIcon={defaultIcons[kind!]}
+          kind={kind}
+          defaultIcon={defaultIcons[kind]}
           defaultCurrency={defaultCurrency}
           onSubmitAction={onSubmitAction}
           submitting={submitting}
@@ -108,10 +89,7 @@ function CreateForm({ kind, defaultCurrency, defaultIcon, submitting, onSubmitAc
   const withCapital = forDebts
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
 
-  const formSchema = useMemo(
-    () => withCapital ? schemaWithCapital : schema,
-    [withCapital]
-  )
+  const formSchema = useMemo(() => withCapital ? schemaWithCapital : schema, [withCapital])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -121,7 +99,13 @@ function CreateForm({ kind, defaultCurrency, defaultIcon, submitting, onSubmitAc
       description: "",
       currency: defaultCurrency,
       capital: 0,
-      color: defaultColors[kind],
+      color: {
+        capital_normal: "#31e2c2",
+        capital_savings: "#0b8fe8",
+        debt_credit: "#008afc",
+        debt_loan: "#fc004f",
+        debt_personal: "#00fc4b",
+      }[kind],
       icon: defaultIcon,
       main: false,
     }

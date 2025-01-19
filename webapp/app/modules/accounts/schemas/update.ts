@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { INTENTS } from "~/modules/accounts/types/actions";
 import { CURRENCIES } from "~/shared/types/currency";
 import { ICONS } from "~/shared/types/icon";
 
@@ -21,7 +20,6 @@ export const schema = z.object({
     balance: z.number().optional()
   }),
   main: z.boolean(),
-  intent: z.nativeEnum(INTENTS)
 });
 
 export const schemaWithCapital = z.object({
@@ -42,5 +40,4 @@ export const schemaWithCapital = z.object({
     balance: z.number().optional()
   }),
   main: z.boolean(),
-  intent: z.nativeEnum(INTENTS)
 });
