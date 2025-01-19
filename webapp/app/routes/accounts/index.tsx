@@ -17,7 +17,7 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
-interface ActionRequestBody {
+type ActionRequestBody = {
   payload: Create
   intent: "create"
 }
