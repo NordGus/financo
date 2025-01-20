@@ -4,7 +4,10 @@ import { InfoDialog } from "~/shared/components/dialogs/info";
 import { Button } from "~/shared/components/ui/button";
 import { Heading1, Heading2 } from "~/shared/components/ui/headings";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/components/ui/select";
+import { ArchiveAccount } from "../components/dialogs/archive";
+import { DeleteAccount } from "../components/dialogs/delete";
 import { SelectAccountKindToCreate } from "../components/dialogs/select-account-kind-to-create";
+import { UnarchiveAccount } from "../components/dialogs/unarchive";
 import { CreateAccount } from "../components/forms/create";
 import { UpdateAccount } from "../components/forms/update";
 import { ListForKind } from "../components/list-for-kind";
@@ -228,6 +231,12 @@ export function Screen({
     dispatch({ type: "OPEN_EDIT_CHANGED", open })
   const onAccountChange = (account: Account) =>
     dispatch({ type: "ACCOUNT_CHANGED", account })
+  const onOpenArchiveChange = (open: boolean) =>
+    dispatch({ type: "OPEN_ARCHIVE_CHANGED", open })
+  const onOpenUnarchiveChange = (open: boolean) =>
+    dispatch({ type: "OPEN_UNARCHIVE_CHANGED", open })
+  const onOpenDeleteChange = (open: boolean) =>
+    dispatch({ type: "OPEN_DELETE_CHANGED", open })
 
   const onCreate = (values: Create) => {
     onSubmitAction()
@@ -368,6 +377,45 @@ export function Screen({
             onOpenChange={onOpenEditChange}
             account={screen.account}
             onSubmitAction={onUpdate}
+            submitting={screen.submitting}
+            onOpenArchiveChange={onOpenArchiveChange}
+            onOpenUnarchiveChange={onOpenUnarchiveChange}
+            onOpenDeleteChange={onOpenDeleteChange}
+          />
+        )
+      }
+
+      {
+        screen.account && (
+          <ArchiveAccount
+            open={screen.openArchive}
+            onOpenChange={onOpenArchiveChange}
+            account={screen.account}
+            onConfirm={onArchive}
+            submitting={screen.submitting}
+          />
+        )
+      }
+
+      {
+        screen.account && (
+          <UnarchiveAccount
+            open={screen.openUnarchive}
+            onOpenChange={onOpenUnarchiveChange}
+            account={screen.account}
+            onConfirm={onUnarchive}
+            submitting={screen.submitting}
+          />
+        )
+      }
+
+      {
+        screen.account && (
+          <DeleteAccount
+            open={screen.openDelete}
+            onOpenChange={onOpenDeleteChange}
+            account={screen.account}
+            onConfirm={onDelete}
             submitting={screen.submitting}
           />
         )

@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { createAccount } from "~/modules/accounts/api/commands/create-account";
 import { getAccountsPreviews } from "~/modules/accounts/api/queries/get-accounts-previews";
 import { Screen } from "~/modules/accounts/screens";
+import { Intents } from "~/modules/accounts/types/actions";
 import { Archived } from "~/modules/accounts/types/archived";
 import { Create, Created } from "~/modules/accounts/types/create";
 import { Deleted } from "~/modules/accounts/types/delete";
@@ -19,7 +20,7 @@ export function meta({ }: Route.MetaArgs) {
 
 type ActionRequestBody = {
   payload: Create
-  intent: "create"
+  intent: Intents["create"]
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
@@ -112,7 +113,7 @@ export default function Index() {
 
   const onDeleteAccount = (id: number, success: () => void, failure: () => void) => {
     return fetcher.submit(
-      { payload: { id }, intent: "unarchive" },
+      { payload: { id }, intent: "delete" },
       { action: `/accounts/${id}`, method: "post", encType: "application/json" }
     ).then((__res) => success()).catch((error) => {
       failure()

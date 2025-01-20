@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PackageIcon, PackageOpenIcon, TrashIcon } from "lucide-react";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -45,12 +46,24 @@ import { Account } from "../../types/preview";
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onOpenDeleteChange: (open: boolean) => void
+  onOpenArchiveChange: (open: boolean) => void
+  onOpenUnarchiveChange: (open: boolean) => void
   account: Account
   onSubmitAction: OnSubmitUpdateAccountAction
   submitting: boolean
 }
 
-export function UpdateAccount({ open, onOpenChange, account, onSubmitAction, submitting }: Props) {
+export function UpdateAccount({
+  open,
+  onOpenChange,
+  account,
+  onSubmitAction,
+  onOpenDeleteChange,
+  onOpenArchiveChange,
+  onOpenUnarchiveChange,
+  submitting
+}: Props) {
   return (
     <Drawer modal open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="overflow-clip">
@@ -62,6 +75,9 @@ export function UpdateAccount({ open, onOpenChange, account, onSubmitAction, sub
         <UpdateForm
           account={account}
           onSubmitAction={onSubmitAction}
+          onOpenDeleteChange={onOpenDeleteChange}
+          onOpenArchiveChange={onOpenArchiveChange}
+          onOpenUnarchiveChange={onOpenUnarchiveChange}
           submitting={submitting}
         />
       </DrawerContent>
@@ -71,11 +87,21 @@ export function UpdateAccount({ open, onOpenChange, account, onSubmitAction, sub
 
 interface FormProps {
   account: Account
+  onOpenDeleteChange: (open: boolean) => void
+  onOpenArchiveChange: (open: boolean) => void
+  onOpenUnarchiveChange: (open: boolean) => void
   onSubmitAction: OnSubmitUpdateAccountAction
   submitting: boolean
 }
 
-function UpdateForm({ account, onSubmitAction, submitting }: FormProps) {
+function UpdateForm({
+  account,
+  onSubmitAction,
+  onOpenDeleteChange,
+  onOpenArchiveChange,
+  onOpenUnarchiveChange,
+  submitting
+}: FormProps) {
   const isFixedSignDebt = isCredit(account.kind) || isLoan(account.kind)
   const forDebts = isDebt(account.kind)
   const withCapital = isDebt(account.kind)
@@ -295,8 +321,37 @@ function UpdateForm({ account, onSubmitAction, submitting }: FormProps) {
           <Button type="submit" className="min-w-24" disabled={submitting}>
             {submitting ? <Throbber size={"sm"} /> : "Update"}
           </Button>
+          {
+            account.archivedAt
+              ? <Button
+                variant={"secondary"}
+                onClick={() => onOpenUnarchiveChange(true)}
+                disabled={submitting}
+                type="button"
+              >
+                <PackageOpenIcon /> Unarchive
+              </Button>
+              : <Button
+                variant={"secondary"}
+                onClick={() => onOpenArchiveChange(true)}
+                disabled={submitting}
+                type="button"
+              >
+                <PackageIcon /> Archive
+              </Button>
+          }
+          <Button
+            variant={"destructive"}
+            onClick={() => onOpenDeleteChange(true)}
+            disabled={submitting}
+            type="button"
+          >
+            <TrashIcon /> Delete
+          </Button>
           <DrawerClose asChild>
-            <Button variant={"outline"}>Cancel</Button>
+            <Button variant={"outline"} type="button" disabled={submitting}>
+              Cancel
+            </Button>
           </DrawerClose>
         </DrawerFooter>
       </form>
