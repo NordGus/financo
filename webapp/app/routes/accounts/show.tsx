@@ -89,7 +89,8 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
     },
     update: async () => {
       try {
-        const response = updateAccount({ ...payload! })
+        const data = payload as Update
+        const response = updateAccount({ ...data })
 
         toast.promise(response, {
           loading: "Updating...",
