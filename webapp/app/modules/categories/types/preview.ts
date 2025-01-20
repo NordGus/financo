@@ -1,10 +1,10 @@
-import { Kind, Kinds } from "~/shared/types/account";
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
+import { ModuleKind } from "./account";
 
-interface Child {
+type Child = {
   id: number
-  kind: Kinds["external_expense"] | Kinds["external_income"]
+  kind: ModuleKind
   currency: Currency
   name: string
   description?: string | null
@@ -17,9 +17,9 @@ interface Child {
   transactions: number
 }
 
-interface Account {
+type Account = {
   id: number
-  kind: Kind
+  kind: ModuleKind
   currency: Currency
   name: string
   description?: string | null
