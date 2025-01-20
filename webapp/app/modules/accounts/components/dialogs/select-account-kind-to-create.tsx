@@ -29,7 +29,7 @@ export function SelectAccountKindToCreate({ open, onOpenChange, onSelect }: Prop
           <DrawerTitle>Create Account</DrawerTitle>
           <DrawerDescription>What kind of account do you want to create?</DrawerDescription>
         </DrawerHeader>
-        <div className="grid grid-cols-1 p-4 gap-4">
+        <div className="grid grid-cols-2 p-4 gap-4">
           {kinds.map((kind) => (
             <Button key={`select.kind.${kind}`} onClick={() => onSelect(kind)}>
               {icons[defaultIcons[kind]]} {accountKindToHuman(kind)}
