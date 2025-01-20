@@ -72,16 +72,14 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-3 gap-2 p-4">
-        <div>
-          {main && <MainAccount />}
-          <PaymentProgress
-            capital={capital}
-            balance={balance}
-            currency={currency}
-            color={color}
-            kind={kind}
-          />
-        </div>
+        {main && <MainAccount />}
+        <PaymentProgress
+          capital={capital}
+          balance={balance}
+          currency={currency}
+          color={color}
+          kind={kind}
+        />
         <div className="flex flex-row gap-2 justify-end col-span-2">
           {
             capital !== 0 && (
