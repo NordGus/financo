@@ -8,7 +8,7 @@ import { Archived } from "~/modules/categories/types/archived";
 import { Create, Created } from "~/modules/categories/types/create";
 import { Deleted } from "~/modules/categories/types/delete";
 import { Unarchived } from "~/modules/categories/types/unarchived";
-import { Updated } from "~/modules/categories/types/update";
+import { Update, Updated } from "~/modules/categories/types/update";
 import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
@@ -59,13 +59,73 @@ export async function clientLoader({ }: Route.ClientLoaderArgs) {
 export default function Index() {
   const { accounts } = useLoaderData<typeof clientLoader>()
   const [searchParams, setSearchParams] = useSearchParams()
-  const __fetcher = useFetcher<Created | Updated | Deleted | Archived | Unarchived | null>()
+  const fetcher = useFetcher<Created | Updated | Deleted | Archived | Unarchived | null>()
 
   const onSearchParamsChange = (params: URLSearchParamsInit) => setSearchParams(params)
+
+  const create = (values: Create, success: () => void, failure: () => void) => {
+    return fetcher.submit(
+      { payload: { ...values }, intent: "create" },
+      { action: "/categories", method: "post", encType: "application/json" }
+    ).then((__res) => success()).catch((error) => {
+      failure()
+
+      throw error
+    })
+  }
+
+  const update = (values: Update, success: () => void, failure: () => void) => {
+    return fetcher.submit(
+      { payload: { ...values }, intent: "create" },
+      { action: `/accounts/${values.id}`, method: "post", encType: "application/json" }
+    ).then((__res) => success()).catch((error) => {
+      failure()
+
+      throw error
+    })
+  }
+
+  const destroy = (id: number, success: () => void, failure: () => void) => {
+    return fetcher.submit(
+      { payload: { id }, intent: "delete" },
+      { action: `/accounts/${id}`, method: "post", encType: "application/json" }
+    ).then((__res) => success()).catch((error) => {
+      failure()
+
+      throw error
+    })
+  }
+
+  const archive = (id: number, success: () => void, failure: () => void) => {
+    return fetcher.submit(
+      { payload: { id }, intent: "archive" },
+      { action: `/accounts/${id}`, method: "post", encType: "application/json" }
+    ).then((__res) => success()).catch((error) => {
+      failure()
+
+      throw error
+    })
+  }
+
+  const unarchive = (id: number, success: () => void, failure: () => void) => {
+    return fetcher.submit(
+      { payload: { id }, intent: "unarchive" },
+      { action: `/accounts/${id}`, method: "post", encType: "application/json" }
+    ).then((__res) => success()).catch((error) => {
+      failure()
+
+      throw error
+    })
+  }
 
   return <Screen
     accounts={accounts}
     searchParams={searchParams}
     onSearchParamsChange={onSearchParamsChange}
+    onCreateAction={create}
+    onUpdateAction={update}
+    onDeleteAction={destroy}
+    onArchiveAction={archive}
+    onUnarchiveAction={unarchive}
   />
 }

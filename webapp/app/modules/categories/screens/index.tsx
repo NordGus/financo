@@ -5,12 +5,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~
 import { isExpense, isIncome, KINDS } from "~/shared/types/account";
 import { ListForKind } from "../components/list-for-kind";
 import { archivedCategoriesManual } from "../manual/archived-categories-manual";
+import { ArchiveAction, CreateAction, DeleteAction, UnarchiveAction, UpdateAction } from "../types/actions";
 import { Account } from "../types/preview";
 
 interface Props {
   accounts: Account[]
   searchParams: URLSearchParams
   onSearchParamsChange: (nextInit: Record<string, string | string[]>) => void
+  onCreateAction: CreateAction
+  onUpdateAction: UpdateAction
+  onDeleteAction: DeleteAction
+  onArchiveAction: ArchiveAction
+  onUnarchiveAction: UnarchiveAction
 }
 
 type SubView = "active" | "archived"
