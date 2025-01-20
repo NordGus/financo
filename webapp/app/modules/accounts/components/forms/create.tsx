@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { InfoDialog } from "~/shared/components/dialogs/info";
@@ -122,15 +122,14 @@ function CreateForm({ kind, defaultCurrency, defaultIcon, submitting, onSubmitAc
       }
     })
 
-  useEffect(() => {
-    if (hasIncompleteLedger) {
-      form.setValue("history.at", new Date())
-      form.setValue("history.balance", 0)
-    } else {
-      form.setValue("history.at", undefined)
-      form.setValue("history.balance", undefined)
-    }
-  }, [hasIncompleteLedger])
+  const onHasIncompleteLedgerChange = (value: boolean) => {
+    setHasIncompleteLedger(() => {
+      form.setValue("history.at", value ? new Date() : undefined)
+      form.setValue("history.balance", value ? 0 : undefined)
+
+      return value
+    })
+  }
 
   return (
     <Form {...form}>
@@ -258,7 +257,7 @@ function CreateForm({ kind, defaultCurrency, defaultIcon, submitting, onSubmitAc
             )
           }
           <div className="flex items-center space-x-2">
-            <Switch id="has-form" checked={hasIncompleteLedger} onCheckedChange={setHasIncompleteLedger} />
+            <Switch id="has-form" checked={hasIncompleteLedger} onCheckedChange={onHasIncompleteLedgerChange} />
             <Label htmlFor="has-form">Has incomplete an incomplete ledger</Label>
             <InfoDialog copy={hasIncompleteLedgerManual} />
           </div>
