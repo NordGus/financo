@@ -4,8 +4,10 @@ import { Copy } from "~/shared/types/copy";
 import { Button } from "../ui/button";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle
 } from "../ui/drawer";
@@ -35,6 +37,11 @@ export function InfoDialog({ copy, className, variant = "link", size = "icon", w
           <DrawerDescription className="space-y-2 px-4 pb-4">
             {copy.message}
           </DrawerDescription>
+          <DrawerFooter>
+            <DrawerClose asChild>
+              <Button variant={"outline"}>Close</Button>
+            </DrawerClose>
+          </DrawerFooter>
         </DrawerContent>
       </Drawer >
     </>
