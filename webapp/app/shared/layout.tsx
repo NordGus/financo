@@ -38,13 +38,16 @@ export default function Layout() {
           <Outlet />
           <Toaster position="top-center" closeButton richColors />
         </main>
-        <div className="flex justify-between items-center p-4 bg-transparent border-t">
-          <Breadcrumbs />
-          <Button onClick={() => setOpenNav(true)} variant={"link"}>
+        <div className="flex justify-between items-center bg-transparent border-t">
+          <div className="px-4 flex-grow">
+            <Breadcrumbs />
+          </div>
+          <Button onClick={() => setOpenNav(true)} variant={"link"} className="p-4 h-auto">
             <MenuIcon /> <span className="hidden md:inline-block">Menu</span>
           </Button>
         </div>
       </div>
+
       <Drawer open={openNav} onOpenChange={setOpenNav}>
         <DrawerContent>
           <DrawerHeader className="hidden" data-hidden>
