@@ -7,7 +7,7 @@ import {
 } from "~/shared/components/ui/card";
 import { icons } from "~/shared/components/ui/icon";
 import { colorContrast } from "~/shared/helpers/color-contrast";
-import { Account } from "../types/preview";
+import { Account } from "../types/account";
 import { ArchivedAccount } from "./badges/archived-account";
 import { Balance } from "./badges/balance";
 import { MainAccount } from "./badges/main-account";

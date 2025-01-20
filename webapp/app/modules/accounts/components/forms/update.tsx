@@ -40,8 +40,8 @@ import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { mainAccountManual } from "../../manual/main-account-manual";
 import { schema, schemaWithCapital } from "../../schemas/update";
+import { Account } from "../../types/account";
 import { OnSubmitUpdateAccountAction } from "../../types/actions";
-import { Account } from "../../types/preview";
 
 interface Props {
   open: boolean

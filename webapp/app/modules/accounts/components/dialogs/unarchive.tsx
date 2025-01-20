@@ -8,7 +8,7 @@ import {
   DrawerFooter,
   DrawerHeader
 } from "~/shared/components/ui/drawer";
-import { Account } from "../../types/preview";
+import { Account } from "../../types/account";
 
 interface Props {
   account: Account

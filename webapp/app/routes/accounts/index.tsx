@@ -24,14 +24,10 @@ type ActionRequestBody = {
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
-  const values: ActionRequestBody = await request.json()
-
-  if (values.intent !== "create") throw new Error("invalid action")
-
-  console.log(values)
+  const { payload }: ActionRequestBody = await request.json()
 
   try {
-    const response = createAccount({ ...values.payload })
+    const response = createAccount({ ...payload })
 
     toast.promise(response, {
       loading: "Creating...",

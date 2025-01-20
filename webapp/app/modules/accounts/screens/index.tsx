@@ -13,7 +13,7 @@ import { UpdateAccount } from "../components/forms/update";
 import { ListForKind } from "../components/list-for-kind";
 import { accountKindsManual } from "../manual/account-kinds-manual";
 import { archivedAccountsManual } from "../manual/archived-accounts-manual";
-import { ModuleKind } from "../types/account";
+import { Account, ModuleKind } from "../types/account";
 import {
   ArchiveAccountAction,
   CreateAccountAction,
@@ -22,7 +22,6 @@ import {
   UpdateAccountAction
 } from "../types/actions";
 import { Create } from "../types/create";
-import { Account } from "../types/preview";
 import { Update } from "../types/update";
 
 interface Props {

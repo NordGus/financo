@@ -1,10 +1,10 @@
-import { Kind } from "~/shared/types/account"
 import { Icon } from "~/shared/types/icon"
+import { ModuleKind } from "./account"
 
-export interface Unarchived {
+export type Unarchived = {
   id: number
   name: string
-  kind: Kind
+  kind: ModuleKind
   color: string
   icon: Icon
 }

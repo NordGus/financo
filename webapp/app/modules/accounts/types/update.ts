@@ -1,8 +1,8 @@
-import { Kind } from "~/shared/types/account";
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
+import { ModuleKind } from "./account";
 
-export interface Update {
+export type Update = {
   id: number
   name: string
   description?: string | null
@@ -16,10 +16,10 @@ export interface Update {
   }
 }
 
-export interface Updated {
+export type Updated = {
   id: number
   name: string
-  kind: Kind
+  kind: ModuleKind
   color: string
   icon: Icon
 }

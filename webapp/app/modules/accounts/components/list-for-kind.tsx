@@ -1,7 +1,6 @@
 import { Card } from "~/shared/components/ui/card";
 import { accountKindToHuman } from "~/shared/helpers/account-kind-to-human";
-import { ModuleKind } from "../types/account";
-import { Account } from "../types/preview";
+import { Account, ModuleKind } from "../types/account";
 import { PreviewCard } from "./preview-card";
 
 interface Props {

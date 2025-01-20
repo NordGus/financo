@@ -1,4 +1,4 @@
-import { Account } from "../../types/preview";
+import { Account } from "../../types/account";
 
 async function getAccountsPreviews(): Promise<Account[]> {
   const response = await fetch("/api/accounts", { headers: { "Content-Type": "application/json; charset=UTF-8" } })
