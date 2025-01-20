@@ -1,5 +1,3 @@
-import { useMemo } from "react";
-import { cn } from "~/lib/utils";
 import {
   Card,
   CardContent,
@@ -9,14 +7,10 @@ import {
 } from "~/shared/components/ui/card";
 import { icons } from "~/shared/components/ui/icon";
 import { colorContrast } from "~/shared/helpers/color-contrast";
-import { currencyAmountColor } from "~/shared/helpers/currency-amount-color";
-import {
-  currencyAmountToHuman
-} from "~/shared/helpers/currency-amount-to-human";
-import { isDebt } from "~/shared/types/account";
 import { Account } from "../types/preview";
+import { ArchivedAccount } from "./badges/archived-account";
+import { Balance } from "./badges/balance";
 import { MainAccount } from "./badges/main-account";
-import { PaymentProgress } from "./payment-progress";
 
 interface Props {
   account: Account
@@ -36,19 +30,11 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
       main,
       balance,
     },
-    deletedAt
+    deletedAt,
+    archivedAt
   } = account
 
   if (deletedAt) return null
-
-  const balanceAmount = useMemo(
-    () => currencyAmountToHuman(isDebt(kind) ? balance + capital : balance, currency),
-    [balance, capital, currency]
-  )
-  const balanceColorClass = useMemo(
-    () => currencyAmountColor(isDebt(kind) ? balance + capital : balance),
-    [balance, capital]
-  )
 
   return (
     <Card onClick={() => onSelectAccount(account)} className="cursor-pointer">
@@ -71,37 +57,10 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid grid-cols-3 gap-2 p-4">
-        {
-          main
-            ? <MainAccount />
-            : isDebt(kind)
-              ? null :
-              <span className="contents-['']" />
-        }
-        <PaymentProgress
-          capital={capital}
-          balance={balance}
-          currency={currency}
-          color={color}
-          kind={kind}
-        />
-        <div className="flex flex-row gap-2 justify-end col-span-2">
-          {
-            capital !== 0 && (
-              <span>
-                {
-                  capital > 0
-                    ? "I'm owed"
-                    : "I owe"
-                }
-              </span>
-            )
-          }
-          <span className={cn("font-semibold", balanceColorClass)}>
-            {balanceAmount}
-          </span>
-        </div>
+      <CardContent className="flex justify-between gap-2 p-4 items-end">
+        {main && <MainAccount />}
+        {archivedAt && <ArchivedAccount />}
+        <Balance kind={kind} capital={capital} balance={balance} currency={currency} className="flex-grow" />
       </CardContent>
     </Card>
   )
