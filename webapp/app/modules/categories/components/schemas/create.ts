@@ -1,8 +1,13 @@
 import { z } from "zod";
-import { KINDS } from "~/shared/types/account";
 import { CURRENCIES } from "~/shared/types/currency";
 import { ICONS } from "~/shared/types/icon";
+import { ModuleKind } from "../../types/account";
 import { INTENTS } from "../../types/actions";
+
+const KINDS: Record<ModuleKind, ModuleKind> = {
+  external_expense: "external_expense",
+  external_income: "external_income",
+} as const
 
 export const schema = z.object({
   kind: z.nativeEnum(KINDS),

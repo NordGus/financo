@@ -5,6 +5,7 @@ import { Button } from "~/shared/components/ui/button";
 import { Heading1 } from "~/shared/components/ui/headings";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/components/ui/select";
 import { isExpense, isIncome, KINDS } from "~/shared/types/account";
+import { SelectKindToCreate } from "../components/dialogs/select-kind-to-create";
 import { ListForKind } from "../components/list-for-kind";
 import { archivedCategoriesManual } from "../manual/archived-categories-manual";
 import { ModuleKind } from "../types/account";
@@ -144,6 +145,8 @@ export function Screen({ accounts, searchParams, onSearchParamsChange }: Props) 
   }
   const onOpenSelectKindChange = (open: boolean) =>
     dispatch({ type: "OPEN_SELECT_KIND_CHANGED", open })
+  const onKindChange = (kind: ModuleKind) =>
+    dispatch({ type: "KIND_CHANGED", kind })
 
   return (
     <Fragment>
@@ -195,6 +198,13 @@ export function Screen({ accounts, searchParams, onSearchParamsChange }: Props) 
           />
         </div>
       </div>
+
+      <SelectKindToCreate
+        open={screen.openSelectKind}
+        onOpenChange={onOpenSelectKindChange}
+        onSelect={onKindChange}
+      />
+
     </Fragment>
   )
 }
