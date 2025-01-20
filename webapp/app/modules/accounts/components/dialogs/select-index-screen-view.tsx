@@ -23,10 +23,10 @@ export function SelectIndexScreenView({ value, onValueChange }: Props) {
     <>
       <Button
         variant={"outline"}
-        className="justify-between"
+        className="justify-between shadow-lg"
         onClick={() => setOpen(true)}
       >
-        {viewToHuman[value]} <ChevronsUpDownIcon />
+        <span>View: {viewToHuman[value]}</span> <ChevronsUpDownIcon />
       </Button>
 
       <Drawer open={open} onOpenChange={setOpen}>
