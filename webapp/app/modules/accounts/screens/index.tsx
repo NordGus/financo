@@ -1,5 +1,5 @@
 import { PlusIcon } from "lucide-react";
-import { Fragment, useEffect, useMemo, useReducer } from "react";
+import { Fragment, useMemo, useReducer } from "react";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { Button } from "~/shared/components/ui/button";
 import { Heading1, Heading2 } from "~/shared/components/ui/headings";
@@ -221,8 +221,6 @@ export function Screen({
     dispatch({ type: "ACTION_SUCCEED" })
   const onActionFailure = () =>
     dispatch({ type: "ACTION_FAILED" })
-  const onScreenViewChange = (view: View) =>
-    dispatch({ type: "VIEW_CHANGED", view })
   const onOpenCreateChange = (open: boolean) =>
     dispatch({ type: "OPEN_CREATE_CHANGED", open })
   const onCreateKindChange = (kind: ModuleKind) =>
@@ -237,6 +235,10 @@ export function Screen({
     dispatch({ type: "OPEN_UNARCHIVE_CHANGED", open })
   const onOpenDeleteChange = (open: boolean) =>
     dispatch({ type: "OPEN_DELETE_CHANGED", open })
+  const onScreenViewChange = (view: View) => {
+    dispatch({ type: "VIEW_CHANGED", view })
+    onSearchParamsChange({ view })
+  }
 
   const onCreate = (values: Create) => {
     onSubmitAction()
@@ -267,8 +269,6 @@ export function Screen({
 
     return onDeleteAccountAction(id, onActionSuccess, onActionFailure)
   }
-
-  useEffect(() => onSearchParamsChange({ view: screen.view }), [screen.view])
 
   return (
     <Fragment>
