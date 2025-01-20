@@ -3,10 +3,10 @@ import { Fragment, useEffect, useMemo, useReducer } from "react";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { Button } from "~/shared/components/ui/button";
 import { Heading1, Heading2 } from "~/shared/components/ui/headings";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/components/ui/select";
 import { ArchiveAccount } from "../components/dialogs/archive";
 import { DeleteAccount } from "../components/dialogs/delete";
 import { SelectAccountKindToCreate } from "../components/dialogs/select-account-kind-to-create";
+import { SelectIndexScreenView } from "../components/dialogs/select-index-screen-view";
 import { UnarchiveAccount } from "../components/dialogs/unarchive";
 import { CreateAccount } from "../components/forms/create";
 import { UpdateAccount } from "../components/forms/update";
@@ -284,15 +284,10 @@ export function Screen({
           <div className="flex flex-col gap-4">
             <Heading1>Accounts</Heading1>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <Select value={screen.view} onValueChange={(value) => onScreenViewChange(withView(value))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="View" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="archived">Archived</SelectItem>
-                </SelectContent>
-              </Select>
+              <SelectIndexScreenView
+                value={screen.view}
+                onValueChange={(value) => onScreenViewChange(withView(value))}
+              />
             </div>
             {inArchivedView && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
