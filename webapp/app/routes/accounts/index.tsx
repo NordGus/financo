@@ -45,9 +45,11 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
     return created
   } catch (error) {
+    if (error instanceof Response && error.status === 401) throw error
+
     console.error(error)
 
-    throw error
+    return null
   }
 }
 
