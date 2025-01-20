@@ -1,4 +1,4 @@
-import { Card, CardContent, CardFooter, CardHeader } from "~/shared/components/ui/card";
+import { Card } from "~/shared/components/ui/card";
 import { accountKindToHuman } from "~/shared/helpers/account-kind-to-human";
 import { ModuleKind } from "../types/account";
 import { Account } from "../types/preview";
@@ -28,17 +28,13 @@ export function ListForKind({ accounts, kind, onSelectAccount, forArchived = fal
         )
       }
       {
-        accounts.length === 0 && (
-          <Card>
-            <CardHeader></CardHeader>
-            <CardContent className="text-muted-foreground text-center">
-              {
-                forArchived
-                  ? `No ${accountKindToHuman(kind)} Accounts have been archived`
-                  : `No ${accountKindToHuman(kind)} Accounts are active`
-              }
-            </CardContent>
-            <CardFooter></CardFooter>
+        filtered.length === 0 && (
+          <Card className="text-muted-foreground text-center p-4">
+            {
+              forArchived
+                ? `No ${accountKindToHuman(kind)} Accounts have been archived`
+                : `No ${accountKindToHuman(kind)} Accounts are active`
+            }
           </Card>
         )
       }
