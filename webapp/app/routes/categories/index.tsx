@@ -1,10 +1,14 @@
-import { useLoaderData } from "react-router";
+import { URLSearchParamsInit, useFetcher, useLoaderData, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { createCategory } from "~/modules/categories/api/commands/create-category";
 import { getCategoriesPreviews } from "~/modules/categories/api/queries/get-categories-previews";
 import { Screen } from "~/modules/categories/screens";
-import { Intent } from "~/modules/categories/types/actions";
-import { Create } from "~/modules/categories/types/create";
+import { Intents } from "~/modules/categories/types/actions";
+import { Archived } from "~/modules/categories/types/archived";
+import { Create, Created } from "~/modules/categories/types/create";
+import { Deleted } from "~/modules/categories/types/delete";
+import { Unarchived } from "~/modules/categories/types/unarchived";
+import { Updated } from "~/modules/categories/types/update";
 import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
@@ -14,17 +18,16 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
-interface ActionRequestBody extends Create {
-  intent: Intent
+type ActionRequestBody = {
+  payload: Create
+  intent: Intents["create"]
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
-  const values: ActionRequestBody = await request.json()
-
-  if (values.intent !== "create") throw new Error("invalid action")
+  const { payload }: ActionRequestBody = await request.json()
 
   try {
-    const response = createCategory({ ...values })
+    const response = createCategory({ ...payload })
 
     toast.promise(response, {
       loading: "Creating...",
@@ -55,6 +58,14 @@ export async function clientLoader({ }: Route.ClientLoaderArgs) {
 
 export default function Index() {
   const { accounts } = useLoaderData<typeof clientLoader>()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const __fetcher = useFetcher<Created | Updated | Deleted | Archived | Unarchived | null>()
 
-  return <Screen accounts={accounts} />
+  const onSearchParamsChange = (params: URLSearchParamsInit) => setSearchParams(params)
+
+  return <Screen
+    accounts={accounts}
+    searchParams={searchParams}
+    onSearchParamsChange={onSearchParamsChange}
+  />
 }

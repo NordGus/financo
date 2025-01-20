@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { Heading1 } from "~/shared/components/ui/headings";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/components/ui/select";
@@ -10,6 +9,8 @@ import { Account } from "../types/preview";
 
 interface Props {
   accounts: Account[]
+  searchParams: URLSearchParams
+  onSearchParamsChange: (nextInit: Record<string, string | string[]>) => void
 }
 
 type SubView = "active" | "archived"
@@ -36,8 +37,7 @@ function withView(view?: string | null): View {
   }
 }
 
-export function Screen({ accounts }: Props) {
-  const [searchParams, setSearchParams] = useSearchParams();
+export function Screen({ accounts, searchParams, onSearchParamsChange }: Props) {
   const [view, setView] = useState<View>(withView(searchParams.get("view")))
   const [subView, setSubView] = useState<SubView>(withSubView(searchParams.get("sub-view")))
 
@@ -52,7 +52,7 @@ export function Screen({ accounts }: Props) {
     return filterFn(account.kind) || account.children.filter(({ kind }) => filterFn(kind)).length > 0
   }
 
-  useEffect(() => setSearchParams({ view: view, ["sub-view"]: subView }), [view, subView])
+  useEffect(() => onSearchParamsChange({ view: view, ["sub-view"]: subView }), [view, subView])
 
   return (
     <div className="flex flex-col gap-4">
