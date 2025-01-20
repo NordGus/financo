@@ -72,7 +72,13 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
         </CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-3 gap-2 p-4">
-        {main && <MainAccount />}
+        {
+          main
+            ? <MainAccount />
+            : isDebt(kind)
+              ? null :
+              <span className="contents-['']" />
+        }
         <PaymentProgress
           capital={capital}
           balance={balance}
