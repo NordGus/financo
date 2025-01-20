@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useReducer } from "react";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { Heading1 } from "~/shared/components/ui/headings";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/components/ui/select";
@@ -43,28 +43,75 @@ function withView(view?: string | null): View {
   }
 }
 
+const _screenActions = {
+  VIEW_CHANGED: "VIEW_CHANGED",
+  SUBVIEW_CHANGED: "SUBVIEW_CHANGED",
+} as const
+
+type ScreenActions = typeof _screenActions
+
+type ScreenAction =
+  { type: ScreenActions["VIEW_CHANGED"], value: View } |
+  { type: ScreenActions["SUBVIEW_CHANGED"], value: SubView }
+
+type ScreenState = {
+  view: View
+  subView: SubView
+}
+
+function reducer(state: ScreenState, action: ScreenAction): ScreenState {
+  switch (action.type) {
+    case "VIEW_CHANGED":
+      return { ...state, view: action.value }
+    case "SUBVIEW_CHANGED":
+      return { ...state, subView: action.value }
+    default:
+      return { ...state }
+  }
+}
+
+function init({ view, subView }: { view: View, subView: SubView }): ScreenState {
+  return {
+    view,
+    subView
+  }
+}
+
 export function Screen({ accounts, searchParams, onSearchParamsChange }: Props) {
-  const [view, setView] = useState<View>(withView(searchParams.get("view")))
-  const [subView, setSubView] = useState<SubView>(withSubView(searchParams.get("sub-view")))
+  const [screen, dispatch] = useReducer(
+    reducer,
+    {
+      view: withView(searchParams.get("view")),
+      subView: withSubView(searchParams.get("sub-view"))
+    },
+    init
+  )
 
   const archived = (account: Account) => {
-    const filterFn = (archivedAt?: string | null) => subView === "active" ? !archivedAt : !!archivedAt
+    const filterFn = (archivedAt?: string | null) => screen.subView === "active" ? !archivedAt : !!archivedAt
 
     return filterFn(account.archivedAt) || account.children.filter((child) => filterFn(child.archivedAt)).length > 0
   }
   const kinded = (account: Account) => {
-    const filterFn = view === "income" ? isIncome : isExpense
+    const filterFn = screen.view === "income" ? isIncome : isExpense
 
     return filterFn(account.kind) || account.children.filter(({ kind }) => filterFn(kind)).length > 0
   }
 
-  useEffect(() => onSearchParamsChange({ view: view, ["sub-view"]: subView }), [view, subView])
+  const onViewChange = (value: View) => {
+    dispatch({ type: "VIEW_CHANGED", value })
+    onSearchParamsChange({ view: value, ["sub-view"]: screen.subView })
+  }
+  const onSubViewChange = (value: SubView) => {
+    dispatch({ type: "SUBVIEW_CHANGED", value })
+    onSearchParamsChange({ view: screen.view, ["sub-view"]: value })
+  }
 
   return (
     <div className="flex flex-col gap-4">
       <Heading1>Categories</Heading1>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <Select value={view} onValueChange={(value) => setView(withView(value))}>
+        <Select value={screen.view} onValueChange={(value) => onViewChange(withView(value))}>
           <SelectTrigger>
             <SelectValue placeholder="Kind" />
           </SelectTrigger>
@@ -73,7 +120,7 @@ export function Screen({ accounts, searchParams, onSearchParamsChange }: Props) 
             <SelectItem value="income">Income</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={subView} onValueChange={(value) => setSubView(withSubView(value))}>
+        <Select value={screen.subView} onValueChange={(value) => onSubViewChange(withSubView(value))}>
           <SelectTrigger>
             <SelectValue placeholder="View" />
           </SelectTrigger>
@@ -83,7 +130,7 @@ export function Screen({ accounts, searchParams, onSearchParamsChange }: Props) 
           </SelectContent>
         </Select>
       </div>
-      {subView === "archived" && (
+      {screen.subView === "archived" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <InfoDialog
             copy={archivedCategoriesManual}
@@ -96,8 +143,8 @@ export function Screen({ accounts, searchParams, onSearchParamsChange }: Props) 
       )}
       <ListForKind
         accounts={accounts.filter((a) => kinded(a)).filter((a) => archived(a))}
-        kind={view === "income" ? KINDS["external_income"] : KINDS["external_expense"]}
-        archived={subView === "archived"}
+        kind={screen.view === "income" ? KINDS["external_income"] : KINDS["external_expense"]}
+        archived={screen.subView === "archived"}
       />
     </div >
   )
