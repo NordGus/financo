@@ -1,14 +1,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "lucide-react";
-import { useEffect, useReducer, useState } from "react";
+import { useReducer } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { useFetcher } from "react-router";
 import { z } from "zod";
 import { CurrencyInput } from "~/shared/components/inputs/currency-input";
 import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
 import { Button } from "~/shared/components/ui/button";
-import { DrawerClose, DrawerFooter, DrawerHeader, DrawerTitle } from "~/shared/components/ui/drawer";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle
+} from "~/shared/components/ui/drawer";
 import {
   Form,
   FormControl,
@@ -20,18 +26,50 @@ import {
 } from "~/shared/components/ui/form";
 import { Input } from "~/shared/components/ui/input";
 import { Textarea } from "~/shared/components/ui/textarea";
-import { isCategory, isExpense, Kind } from "~/shared/types/account";
+import { accountKindToHuman as kindToHuman } from "~/shared/helpers/account-kind-to-human";
 import { Currency } from "~/shared/types/currency";
 import { Icon, ICONS } from "~/shared/types/icon";
-import { Created } from "../../types/create";
+import { ModuleKind } from "../../types/account";
+import { OnSubmitCreateAction } from "../../types/actions";
+import { defaultIcons } from "../../types/icons";
 import { Preview } from "../preview/child/create";
 import { schema } from "../schemas/create";
 import { ChildForm } from "./child/create";
 
 interface Props {
-  kind: Kind
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  kind: ModuleKind
   defaultCurrency: Currency
-  onSuccess: () => void
+  onSubmitAction: OnSubmitCreateAction
+  submitting: boolean
+}
+
+export function CreateCategory({ open, onOpenChange, defaultCurrency, kind, submitting, onSubmitAction }: Props) {
+  return (
+    <Drawer modal open={open} onOpenChange={onOpenChange}>
+      <DrawerContent className="overflow-clip">
+        <DrawerHeader>
+          <DrawerTitle>
+            New {kindToHuman(kind)} Category
+          </DrawerTitle>
+        </DrawerHeader>
+        <CreateForm
+          kind={kind}
+          defaultCurrency={defaultCurrency}
+          onSubmitAction={onSubmitAction}
+          submitting={submitting}
+        />
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
+interface FormProps {
+  kind: ModuleKind
+  defaultCurrency: Currency
+  onSubmitAction: OnSubmitCreateAction
+  submitting: boolean
 }
 
 interface ChildData {
@@ -50,7 +88,7 @@ interface ChildState {
 interface ChildInitialState {
   name?: string
   description?: string
-  icon?: Icon
+  icon: Icon
 }
 
 const __childAction = {
@@ -100,7 +138,7 @@ function reducer(state: ChildState, action: ChildAction): ChildState {
   }
 }
 
-function initChildForm({ name = "", description, icon = ICONS.bookmark }: ChildInitialState): ChildState {
+function initChildForm({ name = "", description, icon }: ChildInitialState): ChildState {
   return {
     data: { name, description, icon },
     onSubmit: (__data) => { },
@@ -109,20 +147,19 @@ function initChildForm({ name = "", description, icon = ICONS.bookmark }: ChildI
   }
 }
 
-export function CreateCategory({ kind, defaultCurrency, onSuccess }: Props) {
-  if (!isCategory(kind)) throw new Error(`CreateCategory invalid kind ${kind}`)
-
-  const [loading, setLoading] = useState(false)
-  const [child, childDispatch] = useReducer(reducer, {}, initChildForm)
-  const fetcher = useFetcher<Created | null>({ key: `categories.create.${kind}` })
-  const defaultIcon = isExpense(kind) ? ICONS.bookmark : ICONS.banknote
+function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormProps) {
+  const [child, childDispatch] = useReducer(reducer, { icon: defaultIcons[kind] }, initChildForm)
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
       kind: kind,
+      color: {
+        external_expense: "#db002b",
+        external_income: "#0ef23f"
+      }[kind],
       currency: defaultCurrency,
-      icon: defaultIcon,
+      icon: defaultIcons[kind],
       intent: "create"
     }
   })
@@ -132,47 +169,34 @@ export function CreateCategory({ kind, defaultCurrency, onSuccess }: Props) {
     keyName: "identity"
   })
 
-  const onSubmit = async (values: z.infer<typeof schema>) => {
-    setLoading(true)
+  const onSubmit = async (values: z.infer<typeof schema>) =>
+    onSubmitAction({ ...values })
 
-    await fetcher.submit(
-      values,
-      { action: "/categories", method: "post", encType: "application/json" }
-    )
-  }
+  const onChildOpenChanged = (open: boolean) =>
+    childDispatch({ type: "OPEN_CHANGED", open })
+  const onChildSubmitted = () =>
+    childDispatch({ type: "CLOSE" })
+  const onAddChildClicked = () =>
+    childDispatch({
+      type: "ADD",
+      onSubmit: (data) => {
+        append({ name: data.name, description: data.description, icon: data.icon })
 
-  const onChildOpenChanged = (open: boolean) => childDispatch({ type: "OPEN_CHANGED", open })
-  const onChildSubmitted = () => childDispatch({ type: "CLOSE" })
-  const onAddChildClicked = () => childDispatch({
-    type: "ADD",
-    onSubmit: (data) => {
-      append({ name: data.name, description: data.description, icon: data.icon })
-
-      onChildSubmitted()
-    }
-  })
-  const onEditChildClicked = (c: ChildData, idx: number) => childDispatch({
-    type: "EDIT",
-    data: { name: c.name, description: c.description, icon: c.icon },
-    onSubmit: (data) => {
-      update(idx, { ...data })
-      onChildSubmitted()
-    }
-  })
-
-  useEffect(() => {
-    setLoading(false)
-
-    if (loading && fetcher.data) onSuccess()
-  }, [fetcher.data])
+        onChildSubmitted()
+      }
+    })
+  const onEditChildClicked = (c: ChildData, idx: number) =>
+    childDispatch({
+      type: "EDIT",
+      data: { name: c.name, description: c.description, icon: c.icon },
+      onSubmit: (data) => {
+        update(idx, { ...data })
+        onChildSubmitted()
+      }
+    })
 
   return (
     <>
-      <DrawerHeader>
-        <DrawerTitle>
-          {isExpense(kind) ? "Create Expense Category" : "Create Income Category"}
-        </DrawerTitle>
-      </DrawerHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="max-h-[85dvh] overflow-auto">
           <div className="flex flex-col gap-4 px-4">
@@ -272,10 +296,10 @@ export function CreateCategory({ kind, defaultCurrency, onSuccess }: Props) {
             </div>
           </div>
           <DrawerFooter>
-            <Button type="submit" className="min-w-24" disabled={loading}>
-              {loading ? <Throbber size={"sm"} /> : "Create"}
+            <Button type="submit" className="min-w-24" disabled={submitting}>
+              {submitting ? <Throbber size={"sm"} /> : "Create"}
             </Button>
-            <DrawerClose asChild>
+            <DrawerClose asChild disabled={submitting}>
               <Button variant={"outline"}>Cancel</Button>
             </DrawerClose>
           </DrawerFooter>
@@ -288,7 +312,7 @@ export function CreateCategory({ kind, defaultCurrency, onSuccess }: Props) {
         open={child.open}
         onSubmit={child.onSubmit}
         onOpenChange={onChildOpenChanged}
-        defaultIcon={defaultIcon}
+        defaultIcon={defaultIcons[kind]}
       />
     </>
   )

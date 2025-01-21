@@ -6,10 +6,12 @@ import { Heading1 } from "~/shared/components/ui/headings";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/components/ui/select";
 import { isExpense, isIncome, KINDS } from "~/shared/types/account";
 import { SelectKindToCreate } from "../components/dialogs/select-kind-to-create";
+import { CreateCategory } from "../components/forms/create";
 import { ListForKind } from "../components/list-for-kind";
 import { archivedCategoriesManual } from "../manual/archived-categories-manual";
 import { ModuleKind } from "../types/account";
 import { ArchiveAction, CreateAction, DeleteAction, UnarchiveAction, UpdateAction } from "../types/actions";
+import { Create } from "../types/create";
 import { Account } from "../types/preview";
 
 interface Props {
@@ -53,6 +55,9 @@ const _screenActions = {
   KIND_CHANGED: "KIND_CHANGED",
   OPEN_SELECT_KIND_CHANGED: "OPEN_SELECT_KIND_CHANGED",
   OPEN_CREATE_CHANGED: "OPEN_CREATE_CHANGED",
+  ACTION_SUBMITTED: "ACTION_SUBMITTED",
+  ACTION_SUCCEED: "ACTION_SUCCEED",
+  ACTION_FAILED: "ACTION_FAILED",
 } as const
 
 type ScreenActions = typeof _screenActions
@@ -62,7 +67,10 @@ type ScreenAction =
   { type: ScreenActions["SUBVIEW_CHANGED"], value: SubView } |
   { type: ScreenActions["KIND_CHANGED"], kind: ModuleKind } |
   { type: ScreenActions["OPEN_SELECT_KIND_CHANGED"], open: boolean } |
-  { type: ScreenActions["OPEN_CREATE_CHANGED"], open: boolean }
+  { type: ScreenActions["OPEN_CREATE_CHANGED"], open: boolean } |
+  { type: ScreenActions["ACTION_SUBMITTED"] } |
+  { type: ScreenActions["ACTION_SUCCEED"] } |
+  { type: ScreenActions["ACTION_FAILED"] }
 
 type ScreenState = {
   view: View
@@ -98,6 +106,17 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
         openSelectKind: false,
         openCreate: action.open
       }
+    case "ACTION_SUBMITTED":
+      return { ...state, submitting: true }
+    case "ACTION_SUCCEED":
+      return {
+        ...state,
+        submitting: false,
+        openSelectKind: false,
+        openCreate: false
+      }
+    case "ACTION_FAILED":
+      return { ...state, submitting: false }
     default:
       return { ...state }
   }
@@ -114,7 +133,12 @@ function init({ view, subView }: { view: View, subView: SubView }): ScreenState 
   }
 }
 
-export function Screen({ accounts, searchParams, onSearchParamsChange }: Props) {
+export function Screen({
+  accounts,
+  searchParams,
+  onSearchParamsChange,
+  onCreateAction,
+}: Props) {
   const [screen, dispatch] = useReducer(
     reducer,
     {
@@ -147,6 +171,21 @@ export function Screen({ accounts, searchParams, onSearchParamsChange }: Props) 
     dispatch({ type: "OPEN_SELECT_KIND_CHANGED", open })
   const onKindChange = (kind: ModuleKind) =>
     dispatch({ type: "KIND_CHANGED", kind })
+  const onOpenCreateChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CREATE_CHANGED", open })
+
+  const onActionSubmit = () =>
+    dispatch({ type: "ACTION_SUBMITTED" })
+  const onActionSuccess = () =>
+    dispatch({ type: "ACTION_SUCCEED" })
+  const onActionFailure = () =>
+    dispatch({ type: "ACTION_FAILED" })
+
+  const onCreate = (values: Create) => {
+    onActionSubmit()
+
+    return onCreateAction(values, onActionSuccess, onActionFailure)
+  }
 
   return (
     <Fragment>
@@ -203,6 +242,15 @@ export function Screen({ accounts, searchParams, onSearchParamsChange }: Props) 
         open={screen.openSelectKind}
         onOpenChange={onOpenSelectKindChange}
         onSelect={onKindChange}
+      />
+
+      <CreateCategory
+        open={screen.openCreate}
+        onOpenChange={onOpenCreateChange}
+        kind={screen.kind}
+        defaultCurrency="EUR"
+        submitting={screen.submitting}
+        onSubmitAction={onCreate}
       />
 
     </Fragment>
