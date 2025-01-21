@@ -28,11 +28,11 @@ import { Input } from "~/shared/components/ui/input";
 import { Textarea } from "~/shared/components/ui/textarea";
 import { accountKindToHuman as kindToHuman } from "~/shared/helpers/account-kind-to-human";
 import { Currency } from "~/shared/types/currency";
-import { Icon, ICONS } from "~/shared/types/icon";
+import { Icon } from "~/shared/types/icon";
 import { ModuleKind } from "../../types/account";
 import { OnSubmitCreateAction } from "../../types/actions";
 import { defaultIcons } from "../../types/icons";
-import { Preview } from "../preview/child/create";
+import { PreviewCard } from "../child/preview-card";
 import { schema } from "../schemas/create";
 import { ChildForm } from "./child/create";
 
@@ -101,9 +101,9 @@ const __childAction = {
 type ChildActions = typeof __childAction
 
 type ChildAction =
-  { type: ChildActions["ADD"], onSubmit: (data: ChildData) => void } |
+  { type: ChildActions["ADD"], onSubmit: (data: ChildData) => void, icon: Icon } |
   { type: ChildActions["EDIT"], data: ChildData, onSubmit: (data: ChildData) => void } |
-  { type: ChildActions["CLOSE"] } |
+  { type: ChildActions["CLOSE"], icon: Icon } |
   { type: ChildActions["OPEN_CHANGED"], open: boolean }
 
 function reducer(state: ChildState, action: ChildAction): ChildState {
@@ -111,7 +111,7 @@ function reducer(state: ChildState, action: ChildAction): ChildState {
     case "ADD":
       return {
         ...state,
-        data: { name: "", description: undefined, icon: ICONS.bookmark },
+        data: { name: "", description: undefined, icon: action.icon },
         onSubmit: action.onSubmit,
         action: "add",
         open: true
@@ -127,7 +127,7 @@ function reducer(state: ChildState, action: ChildAction): ChildState {
     case "CLOSE":
       return {
         ...state,
-        data: { name: "", description: undefined, icon: ICONS.bookmark },
+        data: { name: "", description: undefined, icon: action.icon },
         onSubmit: (__data) => { },
         open: false
       }
@@ -163,7 +163,7 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
       intent: "create"
     }
   })
-  const { fields: children, append, update } = useFieldArray({
+  const { fields: children, append, update, remove } = useFieldArray({
     name: "children",
     control: form.control,
     keyName: "identity"
@@ -175,17 +175,18 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
   const onChildOpenChanged = (open: boolean) =>
     childDispatch({ type: "OPEN_CHANGED", open })
   const onChildSubmitted = () =>
-    childDispatch({ type: "CLOSE" })
-  const onAddChildClicked = () =>
+    childDispatch({ type: "CLOSE", icon: defaultIcons[kind] })
+  const onAddChildClick = () =>
     childDispatch({
       type: "ADD",
       onSubmit: (data) => {
         append({ name: data.name, description: data.description, icon: data.icon })
 
         onChildSubmitted()
-      }
+      },
+      icon: defaultIcons[kind],
     })
-  const onEditChildClicked = (c: ChildData, idx: number) =>
+  const onEditChildClick = (c: ChildData, idx: number) =>
     childDispatch({
       type: "EDIT",
       data: { name: c.name, description: c.description, icon: c.icon },
@@ -195,6 +196,7 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
         onChildSubmitted()
       }
     })
+  const onDeleteChildClick = (idx: number) => remove(idx)
 
   return (
     <>
@@ -283,18 +285,23 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
             <Button
               variant="outline"
               type="button"
-              onClick={onAddChildClicked}
+              onClick={onAddChildClick}
             >
               <PlusIcon /> Add Child
             </Button>
             <div className="divide-y-2 divide-primary-foreground">
               {children.map((c, idx) => (
-                <Preview
+                <PreviewCard
                   key={`child.${idx}`}
                   name={c.name}
                   description={c.description}
                   icon={c.icon}
-                  onClick={() => onEditChildClicked(c, idx)}
+                  onEditClick={() => onEditChildClick(c, idx)}
+                  onDeleteClick={() => onDeleteChildClick(idx)}
+                  onArchiveClick={() => { }}
+                  onUnarchiveClick={() => { }}
+                  submitting={false}
+                  create
                 />
               ))}
             </div>
