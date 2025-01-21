@@ -379,7 +379,9 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
           currencyAmountColor(runCalcStack(state.value, state.calc))
         )}
       >
-        <div className="flex items-center justify-end gap-2 text-lg text-muted-foreground h-4">
+        <div
+          className="flex flex-wrap items-center justify-end gap-2 text-lg text-muted-foreground min-h-4 max-h-[30dvh]"
+        >
           {state.calc.length > 0 && renderCalcStack(state.value, currency, state.calc)}
         </div>
         <p className="w-full">

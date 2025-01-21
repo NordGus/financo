@@ -1,11 +1,19 @@
-import { BanknoteIcon } from "lucide-react";
+import { BanknoteIcon, XIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { currencyAmountColor } from "~/shared/helpers/currency-amount-color";
 import { currencyAmountToHuman } from "~/shared/helpers/currency-amount-to-human";
 import { Currency } from "~/shared/types/currency";
 import { Calculator } from "../calculator";
 import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger
+} from "../ui/drawer";
 import { FormControl } from "../ui/form";
 
 interface Props {
@@ -22,8 +30,8 @@ export function CurrencyAmountInput({
 }: Props) {
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Drawer>
+      <DrawerTrigger asChild>
         <FormControl>
           <Button
             variant="outline"
@@ -44,18 +52,28 @@ export function CurrencyAmountInput({
             />
           </Button>
         </FormControl>
-      </DialogTrigger>
-      <DialogContent className="max-w-[400px] overflow-clip">
-        <DialogHeader>
-          <DialogTitle className="hidden">{name}</DialogTitle>
-        </DialogHeader>
-        <Calculator
-          initialValue={value}
-          onChange={onChange}
-          currency={currency}
-          disableFlipSign={fixedSign}
-        />
-      </DialogContent>
-    </Dialog>
+      </DrawerTrigger>
+      <DrawerContent className="overflow-clip">
+        <DrawerHeader className="hidden">
+          <DrawerTitle>{name}</DrawerTitle>
+          <DrawerDescription>Input the currency amount</DrawerDescription>
+        </DrawerHeader>
+        <div className="flex justify-end px-2">
+          <DrawerClose asChild>
+            <Button type="button" variant={"link"} size={"icon"}>
+              <XIcon />
+            </Button>
+          </DrawerClose>
+        </div>
+        <div className="px-4 pb-4">
+          <Calculator
+            initialValue={value}
+            onChange={onChange}
+            currency={currency}
+            disableFlipSign={fixedSign}
+          />
+        </div>
+      </DrawerContent>
+    </Drawer>
   )
 }
