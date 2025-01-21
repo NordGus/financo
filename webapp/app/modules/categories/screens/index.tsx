@@ -3,8 +3,9 @@ import { Fragment, useReducer } from "react";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { Button } from "~/shared/components/ui/button";
 import { Heading1 } from "~/shared/components/ui/headings";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/shared/components/ui/select";
 import { isExpense, isIncome, KINDS } from "~/shared/types/account";
+import { SelectIndexScreenSubView } from "../components/dialogs/select-index-screen-sub-view";
+import { SelectIndexScreenView } from "../components/dialogs/select-index-screen-view";
 import { SelectKindToCreate } from "../components/dialogs/select-kind-to-create";
 import { CreateCategory } from "../components/forms/create";
 import { ListForKind } from "../components/list-for-kind";
@@ -200,24 +201,8 @@ export function Screen({
         <div className="overflow-x-hidden overflow-y-auto h-full p-4 flex flex-col gap-4">
           <Heading1>Categories</Heading1>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <Select value={screen.view} onValueChange={(value) => onViewChange(withView(value))}>
-              <SelectTrigger>
-                <SelectValue placeholder="Kind" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="expense">Expenses</SelectItem>
-                <SelectItem value="income">Income</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={screen.subView} onValueChange={(value) => onSubViewChange(withSubView(value))}>
-              <SelectTrigger>
-                <SelectValue placeholder="View" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="archived">Archived</SelectItem>
-              </SelectContent>
-            </Select>
+            <SelectIndexScreenView value={screen.view} onValueChange={onViewChange} />
+            <SelectIndexScreenSubView value={screen.subView} onValueChange={onSubViewChange} />
           </div>
           {screen.subView === "archived" && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
