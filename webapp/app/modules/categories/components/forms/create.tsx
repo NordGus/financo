@@ -80,9 +80,10 @@ interface ChildData {
 
 interface ChildState {
   data: ChildData
-  onSubmit: (data: ChildData) => void
   open: boolean
   action: "add" | "edit"
+  onSubmit: (data: ChildData) => void
+  onDelete: () => void
 }
 
 interface ChildInitialState {
@@ -102,7 +103,7 @@ type ChildActions = typeof __childAction
 
 type ChildAction =
   { type: ChildActions["ADD"], onSubmit: (data: ChildData) => void, icon: Icon } |
-  { type: ChildActions["EDIT"], data: ChildData, onSubmit: (data: ChildData) => void } |
+  { type: ChildActions["EDIT"], data: ChildData, onSubmit: (data: ChildData) => void, onDelete: () => void } |
   { type: ChildActions["CLOSE"], icon: Icon } |
   { type: ChildActions["OPEN_CHANGED"], open: boolean }
 
@@ -120,19 +121,26 @@ function reducer(state: ChildState, action: ChildAction): ChildState {
       return {
         ...state,
         data: { ...action.data },
-        onSubmit: action.onSubmit,
         action: "edit",
-        open: true
+        open: true,
+        onSubmit: action.onSubmit,
+        onDelete: action.onDelete,
       }
     case "CLOSE":
       return {
         ...state,
         data: { name: "", description: undefined, icon: action.icon },
+        open: false,
         onSubmit: (__data) => { },
-        open: false
+        onDelete: () => { },
       }
     case "OPEN_CHANGED":
-      return { ...state, onSubmit: (__data) => { }, open: action.open }
+      return {
+        ...state,
+        open: action.open,
+        onSubmit: (__data) => { },
+        onDelete: () => { },
+      }
     default:
       throw new Error(`ChildForm invalid action`)
   }
@@ -141,9 +149,10 @@ function reducer(state: ChildState, action: ChildAction): ChildState {
 function initChildForm({ name = "", description, icon }: ChildInitialState): ChildState {
   return {
     data: { name, description, icon },
-    onSubmit: (__data) => { },
     open: false,
-    action: "add"
+    action: "add",
+    onSubmit: (__data) => { },
+    onDelete: () => { },
   }
 }
 
@@ -192,11 +201,13 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
       data: { name: c.name, description: c.description, icon: c.icon },
       onSubmit: (data) => {
         update(idx, { ...data })
-
         onChildSubmitted()
-      }
+      },
+      onDelete: () => {
+        onChildSubmitted()
+        remove(idx)
+      },
     })
-  const onDeleteChildClick = (idx: number) => remove(idx)
 
   return (
     <>
@@ -296,12 +307,7 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
                   name={c.name}
                   description={c.description}
                   icon={c.icon}
-                  onEditClick={() => onEditChildClick(c, idx)}
-                  onDeleteClick={() => onDeleteChildClick(idx)}
-                  onArchiveClick={() => { }}
-                  onUnarchiveClick={() => { }}
-                  submitting={false}
-                  create
+                  onClick={() => onEditChildClick(c, idx)}
                 />
               ))}
             </div>
@@ -320,10 +326,11 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
       <ChildForm
         action={child.action}
         child={child.data}
-        open={child.open}
-        onSubmit={child.onSubmit}
-        onOpenChange={onChildOpenChanged}
         defaultIcon={defaultIcons[kind]}
+        open={child.open}
+        onOpenChange={onChildOpenChanged}
+        onSubmit={child.onSubmit}
+        onDelete={child.onDelete}
       />
     </>
   )

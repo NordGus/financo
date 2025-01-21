@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { TrashIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -28,13 +29,14 @@ interface Child {
 interface Props {
   action: "add" | "edit"
   child: Child
-  onSubmit: (data: Child) => void
+  defaultIcon: Icon
   open: boolean
   onOpenChange: (open: boolean) => void
-  defaultIcon: Icon
+  onSubmit: (data: Child) => void
+  onDelete: () => void
 }
 
-export function ChildForm({ action, child, open, defaultIcon, onOpenChange, onSubmit }: Props) {
+export function ChildForm({ action, child, open, defaultIcon, onOpenChange, onSubmit, onDelete }: Props) {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: { name: "", description: undefined, icon: defaultIcon }
@@ -110,8 +112,15 @@ export function ChildForm({ action, child, open, defaultIcon, onOpenChange, onSu
             </div>
             <DrawerFooter>
               <Button type="submit">
-                {action === "add" ? "Add" : "Edit"}
+                {action === "add" ? "Add" : "Update"}
               </Button>
+              {
+                action === "edit" && (
+                  <Button type="button" onClick={onDelete} variant={"destructive"}>
+                    <TrashIcon /> Delete
+                  </Button>
+                )
+              }
               <DrawerClose asChild>
                 <Button variant={"outline"}>Cancel</Button>
               </DrawerClose>
