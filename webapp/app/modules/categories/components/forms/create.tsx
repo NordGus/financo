@@ -191,6 +191,7 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
       data: { name: c.name, description: c.description, icon: c.icon },
       onSubmit: (data) => {
         update(idx, { ...data })
+
         onChildSubmitted()
       }
     })
@@ -208,7 +209,11 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
                   <FormItem>
                     <FormLabel>Icon</FormLabel>
                     <FormControl>
-                      <IconInput value={field.value} onChange={field.onChange} />
+                      <IconInput
+                        value={field.value}
+                        onChange={field.onChange}
+                        entity="category"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -276,9 +281,8 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
               )}
             />
             <Button
-              variant="link"
+              variant="outline"
               type="button"
-              className="flex justify-center items-center leading-snug gap-2 border-2 border-dashed rounded-md"
               onClick={onAddChildClicked}
             >
               <PlusIcon /> Add Child

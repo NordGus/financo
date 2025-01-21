@@ -164,7 +164,11 @@ function UpdateForm({
                 <FormItem>
                   <FormLabel>Icon</FormLabel>
                   <FormControl>
-                    <IconInput value={field.value} onChange={field.onChange} />
+                    <IconInput
+                      value={field.value}
+                      onChange={field.onChange}
+                      entity="account"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

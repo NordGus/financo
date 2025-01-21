@@ -199,7 +199,11 @@ export function UpdateCategory({ account, onSuccess }: Props) {
                   <FormItem>
                     <FormLabel>Icon</FormLabel>
                     <FormControl>
-                      <IconInput value={field.value} onChange={field.onChange} />
+                      <IconInput
+                        value={field.value}
+                        onChange={field.onChange}
+                        entity="category"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
