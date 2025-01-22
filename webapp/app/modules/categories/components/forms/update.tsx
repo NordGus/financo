@@ -1,14 +1,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon } from "lucide-react";
-import { useEffect, useReducer, useState } from "react";
+import { useReducer } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { useFetcher } from "react-router";
 import { z } from "zod";
 import { CurrencyInput } from "~/shared/components/inputs/currency-input";
 import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
 import { Button } from "~/shared/components/ui/button";
-import { DrawerClose, DrawerFooter, DrawerHeader, DrawerTitle } from "~/shared/components/ui/drawer";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle
+} from "~/shared/components/ui/drawer";
 import {
   Form,
   FormControl,
@@ -20,56 +26,71 @@ import {
 } from "~/shared/components/ui/form";
 import { Input } from "~/shared/components/ui/input";
 import { Textarea } from "~/shared/components/ui/textarea";
-import { isCategory, isExpense } from "~/shared/types/account";
+import { accountKindToHuman as kindToHuman } from "~/shared/helpers/account-kind-to-human";
+import { isExpense } from "~/shared/types/account";
 import { Icon, ICONS } from "~/shared/types/icon";
-import { Created } from "../../types/create";
+import {
+  ArchiveAction,
+  DeleteAction,
+  OnSubmitUpdateAction,
+  UnarchiveAction
+} from "../../types/actions";
+import { defaultIcons } from "../../types/icons";
 import { Account } from "../../types/preview";
-import { Preview } from "../preview/child/edit";
+import { PreviewCard } from "../child/preview-card";
 import { schema } from "../schemas/update";
 import { ChildForm } from "./child/edit";
 
-interface Props {
-  account: Account
-  onSuccess: () => void
+type Props = {
+  category: Account
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSubmitAction: OnSubmitUpdateAction
+  onDeleteAction: DeleteAction
+  onArchiveAction: ArchiveAction
+  onUnarchiveAction: UnarchiveAction
+  submitting: boolean
 }
 
-interface ChildData {
+interface Child {
   id: number
   name: string
   description?: string
   icon: Icon
+  archivedAt?: string
 }
 
-interface ChildState {
-  data: ChildData
-  onSubmit: (data: ChildData) => void
+interface State {
+  data: Child
+  onSubmit: (data: Child) => void
   open: boolean
   action: "add" | "edit"
+  submitting: boolean
 }
 
-interface ChildInitialState {
+interface InitialState {
   id?: number
   name?: string
   description?: string
-  icon?: Icon
+  icon: Icon
 }
 
-const __childAction = {
+const __actions = {
   ADD: "ADD",
   EDIT: "EDIT",
   CLOSE: "CLOSE",
   OPEN_CHANGED: "OPEN_CHANGED"
 } as const
 
-type ChildActions = typeof __childAction
+type Actions = typeof __actions
 
-type ChildAction =
-  { type: ChildActions["ADD"], onSubmit: (data: ChildData) => void } |
-  { type: ChildActions["EDIT"], data: ChildData, onSubmit: (data: ChildData) => void } |
-  { type: ChildActions["CLOSE"] } |
-  { type: ChildActions["OPEN_CHANGED"], open: boolean }
+type Action =
+  { type: Actions["ADD"], onSubmit: (data: Child) => void } |
+  { type: Actions["EDIT"], data: Child, onSubmit: (data: Child) => void } |
+  { type: Actions["CLOSE"] } |
+  { type: Actions["OPEN_CHANGED"], open: boolean }
 
-function reducer(state: ChildState, action: ChildAction): ChildState {
+function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "ADD":
       return {
@@ -101,91 +122,126 @@ function reducer(state: ChildState, action: ChildAction): ChildState {
   }
 }
 
-function initChildForm({ id = -1, name = "", description, icon = ICONS.bookmark }: ChildInitialState): ChildState {
+function init({ id = -1, name = "", description, icon }: InitialState): State {
   return {
     data: { id, name, description, icon },
     onSubmit: (__data) => { },
     open: false,
-    action: "add"
+    action: "add",
+    submitting: false,
   }
 }
 
-export function UpdateCategory({ account, onSuccess }: Props) {
-  if (!isCategory(account.kind)) throw new Error(`CreateCategory invalid kind ${account.kind}`)
+export function UpdateCategory({
+  category,
+  open,
+  onOpenChange,
+  onSubmitAction,
+  onDeleteAction,
+  onArchiveAction,
+  onUnarchiveAction,
+  submitting
+}: Props) {
+  const [state, dispatch] = useReducer(reducer, { icon: defaultIcons[category.kind] }, init)
 
-  const [loading, setLoading] = useState(false)
-  const [child, childDispatch] = useReducer(reducer, {}, initChildForm)
-  const fetcher = useFetcher<Created | null>({ key: `categories.create.${account.kind}` })
-  const defaultIcon = isExpense(account.kind) ? ICONS.bookmark : ICONS.banknote
-  const buildPreviewData = (data: ChildData) => {
-    const child = account.children.find((c) => c.id === data.id)
+  const onOpenFormChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open })
+  const onChildClick = (payload: { data: Child, onSubmit: (data: Child) => void }) =>
+    dispatch({ type: "EDIT", ...payload })
+  const onAddClick = (payload: { onSubmit: (data: Child) => void }) =>
+    dispatch({ type: "ADD", ...payload })
 
-    return { ...data, archivedAt: child?.archivedAt, transactions: child?.transactions }
-  }
+  const onFormSubmitted = () =>
+    dispatch({ type: "CLOSE" })
 
+  return (
+    <>
+      <Drawer modal open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="overflow-clip">
+          <DrawerHeader>
+            <DrawerTitle>
+              New {kindToHuman(category.kind)} Category
+            </DrawerTitle>
+          </DrawerHeader>
+          <UpdateForm
+            category={category}
+            onSubmitAction={onSubmitAction}
+            onDeleteAction={onDeleteAction}
+            onArchiveAction={onArchiveAction}
+            onUnarchiveAction={onUnarchiveAction}
+            submitting={submitting || state.submitting}
+            onChildClick={onChildClick}
+            onAddChildClick={onAddClick}
+            onFormSubmitted={onFormSubmitted}
+          />
+        </DrawerContent>
+      </Drawer>
+
+      <ChildForm
+        action={state.action}
+        child={state.data}
+        open={state.open}
+        onSubmit={state.onSubmit}
+        onOpenChange={onOpenFormChange}
+        defaultIcon={defaultIcons[category.kind]}
+      />
+    </>
+  )
+}
+
+type FormProps = {
+  category: Account
+  onSubmitAction: OnSubmitUpdateAction
+  onDeleteAction: DeleteAction
+  onArchiveAction: ArchiveAction
+  onUnarchiveAction: UnarchiveAction
+  onChildClick: (payload: { data: Child, onSubmit: (data: Child) => void }) => void
+  onAddChildClick: (payload: { onSubmit: (data: Child) => void }) => void
+  onFormSubmitted: () => void
+  submitting: boolean
+}
+
+function UpdateForm({
+  category,
+  onSubmitAction,
+  onChildClick,
+  onAddChildClick,
+  onFormSubmitted,
+  submitting
+}: FormProps) {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      id: account.id,
-      currency: account.currency,
-      name: account.name,
-      description: account.description ?? undefined,
-      color: account.color,
-      icon: account.icon,
-      children: account.children.map((child) => ({
+      id: category.id,
+      currency: category.currency,
+      name: category.name,
+      description: category.description ?? undefined,
+      color: category.color,
+      icon: category.icon,
+      children: category.children.map((child) => ({
         id: child.id,
         name: child.name,
         description: child.description ?? undefined,
         icon: child.icon,
+        archivedAt: child.archivedAt || undefined,
       })),
       intent: "update"
     }
   })
-  const { fields: children, append, update, remove } = useFieldArray({
+  const { fields: children, append, update } = useFieldArray({
     name: "children",
     control: form.control,
     keyName: "identity"
   })
 
-  const onSubmit = async (values: z.infer<typeof schema>) => {
-    setLoading(true)
-
-    await fetcher.submit(
-      values,
-      { action: `/categories/${account.id}`, method: "post", encType: "application/json" }
-    )
-  }
-
-  const onChildOpenChanged = (open: boolean) => childDispatch({ type: "OPEN_CHANGED", open })
-  const onChildSubmitted = () => childDispatch({ type: "CLOSE" })
-  const onAddChildClicked = () => childDispatch({
-    type: "ADD",
-    onSubmit: (data) => {
-      append({ ...data })
-
-      onChildSubmitted()
-    }
-  })
-  const onEditChildClicked = (c: ChildData, idx: number) => childDispatch({
-    type: "EDIT",
-    data: { id: c.id, name: c.name, description: c.description ?? undefined, icon: c.icon },
-    onSubmit: (data) => {
-      update(idx, { ...data })
-      onChildSubmitted()
-    }
-  })
-
-  useEffect(() => {
-    setLoading(false)
-
-    if (loading && fetcher.data) onSuccess()
-  }, [fetcher.data])
+  const onSubmit = async (values: z.infer<typeof schema>) =>
+    await onSubmitAction({ ...values })
 
   return (
     <>
       <DrawerHeader>
         <DrawerTitle>
-          {isExpense(account.kind) ? "Update Expense Category" : "Update Income Category"}
+          {isExpense(category.kind) ? "Update Expense Category" : "Update Income Category"}
         </DrawerTitle>
       </DrawerHeader>
       <Form {...form}>
@@ -271,43 +327,45 @@ export function UpdateCategory({ account, onSuccess }: Props) {
               )}
             />
             <Button
-              variant="link"
+              variant="outline"
               type="button"
-              className="flex justify-center items-center leading-snug gap-2 border-2 border-dashed rounded-md"
-              onClick={onAddChildClicked}
+              onClick={() => onAddChildClick({
+                onSubmit: (data) => {
+                  append({ ...data })
+                  onFormSubmitted()
+                }
+              })}
             >
               <PlusIcon /> Add Child
             </Button>
-            <div className="divide-y-2 divide-primary-foreground">
+            <div className="space-y-2">
               {children.map((c, idx) => (
-                <Preview
+                <PreviewCard
                   key={`child.${idx}`}
-                  child={buildPreviewData(c)}
-                  onEditClick={() => onEditChildClicked(c, idx)}
-                  onDeleteSuccess={() => remove(idx)}
+                  name={c.name}
+                  description={c.description}
+                  icon={c.icon}
+                  onClick={() => onChildClick({
+                    data: { ...c },
+                    onSubmit: (data) => {
+                      update(idx, { ...data })
+                      onFormSubmitted()
+                    }
+                  })}
                 />
               ))}
             </div>
           </div>
           <DrawerFooter>
-            <Button type="submit" className="min-w-24" disabled={loading}>
-              {loading ? <Throbber size={"sm"} /> : "Update"}
+            <Button type="submit" className="min-w-24" disabled={submitting}>
+              {submitting ? <Throbber size={"sm"} /> : "Update"}
             </Button>
             <DrawerClose asChild>
-              <Button variant={"outline"}>Cancel</Button>
+              <Button variant={"outline"} disabled={submitting}>Cancel</Button>
             </DrawerClose>
           </DrawerFooter>
         </form>
       </Form>
-
-      <ChildForm
-        action={child.action}
-        child={child.data}
-        open={child.open}
-        onSubmit={child.onSubmit}
-        onOpenChange={onChildOpenChanged}
-        defaultIcon={defaultIcon}
-      />
     </>
   )
 }
