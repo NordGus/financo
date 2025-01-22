@@ -300,7 +300,7 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
             >
               <PlusIcon /> Add Child
             </Button>
-            <div className="divide-y-2 divide-primary-foreground">
+            <div className="space-y-2">
               {children.map((c, idx) => (
                 <PreviewCard
                   key={`child.${idx}`}
