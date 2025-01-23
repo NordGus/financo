@@ -4,8 +4,16 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { IconInput } from "~/shared/components/inputs/icon-input";
+import { Throbber } from "~/shared/components/throbber";
 import { Button } from "~/shared/components/ui/button";
-import { Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerHeader, DrawerTitle } from "~/shared/components/ui/drawer";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle
+} from "~/shared/components/ui/drawer";
 import {
   Form,
   FormControl,
@@ -34,9 +42,19 @@ interface Props {
   onOpenChange: (open: boolean) => void
   onSubmit: (data: Child) => void
   onDelete: () => void
+  submitting?: boolean
 }
 
-export function ChildForm({ action, child, open, defaultIcon, onOpenChange, onSubmit, onDelete }: Props) {
+export function ChildForm({
+  action,
+  child,
+  open,
+  defaultIcon,
+  onOpenChange,
+  onSubmit,
+  onDelete,
+  submitting = false
+}: Props) {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: { name: "", description: undefined, icon: defaultIcon }
@@ -111,17 +129,23 @@ export function ChildForm({ action, child, open, defaultIcon, onOpenChange, onSu
               />
             </div>
             <DrawerFooter>
-              <Button type="submit">
-                {action === "add" ? "Add" : "Update"}
+              <Button type="submit" disabled={submitting}>
+                {
+                  submitting
+                    ? <Throbber size={"sm"} />
+                    : action === "add"
+                      ? "Add"
+                      : "Update"
+                }
               </Button>
               {
                 action === "edit" && (
-                  <Button type="button" onClick={onDelete} variant={"destructive"}>
+                  <Button type="button" onClick={onDelete} variant={"destructive"} disabled={submitting}>
                     <TrashIcon /> Delete
                   </Button>
                 )
               }
-              <DrawerClose asChild>
+              <DrawerClose asChild disabled={submitting}>
                 <Button variant={"outline"}>Cancel</Button>
               </DrawerClose>
             </DrawerFooter>
