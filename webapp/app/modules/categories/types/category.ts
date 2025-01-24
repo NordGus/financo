@@ -1,6 +1,8 @@
+import { Kinds } from "~/shared/types/account";
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
-import { ModuleKind } from "./account";
+
+type ModuleKind = Kinds["external_expense"] | Kinds["external_income"]
 
 type Child = {
   id: number
@@ -17,7 +19,7 @@ type Child = {
   transactions: number
 }
 
-type Account = {
+type Category = {
   id: number
   kind: ModuleKind
   currency: Currency
@@ -33,4 +35,4 @@ type Account = {
   children: Child[]
 }
 
-export type { Account, Child };
+export type { Category, Child, ModuleKind };

@@ -1,5 +1,5 @@
 import { Icon } from "~/shared/types/icon";
-import { ModuleKind } from "./account";
+import { ModuleKind } from "./category";
 
 export const defaultIcons: Record<ModuleKind, Icon> = {
   external_expense: "bookmark",
