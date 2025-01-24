@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { CURRENCIES } from "~/shared/types/currency";
 import { ICONS } from "~/shared/types/icon";
-import { INTENTS } from "../../types/actions";
 
 export const schema = z.object({
   id: z.number(),
@@ -22,5 +21,4 @@ export const schema = z.object({
     icon: z.nativeEnum(ICONS),
     archivedAt: z.string().datetime().optional(),
   }).array(),
-  intent: z.nativeEnum(INTENTS)
 })

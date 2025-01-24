@@ -2,7 +2,6 @@ import { z } from "zod";
 import { CURRENCIES } from "~/shared/types/currency";
 import { ICONS } from "~/shared/types/icon";
 import { ModuleKind } from "../../types/account";
-import { INTENTS } from "../../types/actions";
 
 const KINDS: Record<ModuleKind, ModuleKind> = {
   external_expense: "external_expense",
@@ -26,5 +25,4 @@ export const schema = z.object({
     description: z.string().trim().max(256).optional(),
     icon: z.nativeEnum(ICONS),
   }).array(),
-  intent: z.nativeEnum(INTENTS)
 })

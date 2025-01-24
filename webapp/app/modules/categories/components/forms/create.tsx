@@ -169,7 +169,6 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
       }[kind],
       currency: defaultCurrency,
       icon: defaultIcons[kind],
-      intent: "create"
     }
   })
   const { fields: children, append, update, remove } = useFieldArray({
