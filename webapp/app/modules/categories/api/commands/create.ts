@@ -1,6 +1,7 @@
-import { Create, Created } from "../../types/create";
+import { Category } from "../../types/category";
+import { Create } from "../../types/create";
 
-export async function createCategory(data: Create): Promise<Created> {
+export async function create(data: Create): Promise<Category> {
   const response = await fetch("/api/categories", {
     method: "POST",
     headers: { "Content-Type": "application/json; charset=UTF-8" },

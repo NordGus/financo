@@ -1,6 +1,7 @@
-import { Update, Updated } from "../../types/update";
+import { Category } from "../../types/category";
+import { Update } from "../../types/update";
 
-export async function updateAccount(data: Update): Promise<Updated> {
+export async function update(data: Update): Promise<Category> {
   const response = await fetch(`/api/categories/${data.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json; charset=UTF-8" },

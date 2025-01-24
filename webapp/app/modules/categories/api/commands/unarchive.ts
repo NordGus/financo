@@ -1,6 +1,6 @@
-import { Unarchived } from "../../types/unarchived";
+import { Category } from "../../types/category";
 
-export async function unarchiveCategory(id: number): Promise<Unarchived> {
+export async function unarchive(id: number): Promise<Category> {
   const response = await fetch(`/api/categories/${id}/unarchive`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json; charset=UTF-8" },

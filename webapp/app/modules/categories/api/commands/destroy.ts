@@ -1,6 +1,6 @@
-import { Deleted } from "../../types/delete";
+import { Category } from "../../types/category";
 
-export async function deleteCategory(id: number): Promise<Deleted> {
+export async function destroy(id: number): Promise<Category> {
   const response = await fetch(`/api/categories/${id}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json; charset=UTF-8" }
