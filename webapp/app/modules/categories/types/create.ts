@@ -2,7 +2,7 @@ import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
 import { ModuleKind } from "./account";
 
-type CreateChild = {
+export type CreateChild = {
   name: string
   description?: string | null
   icon: Icon

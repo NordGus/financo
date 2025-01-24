@@ -1,9 +1,11 @@
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
 import { ModuleKind } from "./account";
+import { Child } from "./preview";
 
-type UpdateChild = {
+export type UpdateChild = {
   id: number
+  parentId: number
   name: string
   description?: string | null
   icon: Icon
@@ -16,7 +18,6 @@ export type Update = {
   currency: Currency
   color: string,
   icon: Icon,
-  children: UpdateChild[]
 }
 
 export type Updated = {
@@ -26,3 +27,5 @@ export type Updated = {
   color: string
   icon: Icon
 }
+
+export type ChildUpdated = Child
