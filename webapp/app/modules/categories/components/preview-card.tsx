@@ -2,7 +2,7 @@ import { useMemo } from "react"
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "~/shared/components/ui/card"
 import { icons } from "~/shared/components/ui/icon"
 import { colorContrast } from "~/shared/helpers/color-contrast"
-import { Account } from "../types/preview"
+import { Account } from "../types/category"
 
 interface Props {
   account: Account

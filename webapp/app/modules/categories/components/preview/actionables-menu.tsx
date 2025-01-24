@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger
 } from "~/shared/components/ui/dropdown-menu"
 import { isCategory } from "~/shared/types/account"
-import { Account } from "../../types/preview"
+import { Account } from "../../types/category"
 import { ArchiveDialog } from "../dialogs/archive"
 import { DeleteDialog } from "../dialogs/delete"
 import { UnarchiveDialog } from "../dialogs/unarchive"

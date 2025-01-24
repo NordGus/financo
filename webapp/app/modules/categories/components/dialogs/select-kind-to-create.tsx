@@ -10,7 +10,7 @@ import {
 } from "~/shared/components/ui/drawer"
 import { icons } from "~/shared/components/ui/icon"
 import { accountKindToHuman } from "~/shared/helpers/account-kind-to-human"
-import { ModuleKind } from "../../types/account"
+import { ModuleKind } from "../../types/category"
 import { defaultIcons } from "../../types/icons"
 
 interface Props {

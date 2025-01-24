@@ -1,28 +1,27 @@
 import { Card } from "~/shared/components/ui/card";
 import { accountKindToHuman } from "~/shared/helpers/account-kind-to-human";
-import { ModuleKind } from "../types/account";
-import { Account } from "../types/preview";
+import { Category, ModuleKind } from "../types/category";
 import { PreviewCard } from "./preview-card";
 
 interface Props {
-  accounts: Account[]
+  categories: Category[]
   kind: ModuleKind
   forArchived: boolean
-  onClick: (account: Account) => void
+  onClick: (account: Category) => void
 }
 
-export function ListForKind({ accounts, forArchived, kind, onClick }: Props) {
-  const filtered = accounts
+export function ListForKind({ categories, forArchived, kind, onClick }: Props) {
+  const filtered = categories
     .filter((account) => account.kind === kind)
     .filter(({ archivedAt }) => !!archivedAt === forArchived)
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {filtered.map((account) => (
+      {filtered.map((category) => (
         <PreviewCard
-          key={`category.${account.id}`}
-          account={account}
-          onClick={() => onClick(account)}
+          key={`category.${category.id}`}
+          account={category}
+          onClick={() => onClick(category)}
         />
       ))}
       {

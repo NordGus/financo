@@ -29,8 +29,8 @@ import { Textarea } from "~/shared/components/ui/textarea";
 import { accountKindToHuman as kindToHuman } from "~/shared/helpers/account-kind-to-human";
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
-import { ModuleKind } from "../../types/account";
 import { OnSubmitCreateAction } from "../../types/actions";
+import { ModuleKind } from "../../types/category";
 import { defaultIcons } from "../../types/icons";
 import { PreviewCard } from "../child/preview-card";
 import { schema } from "../schemas/create";
@@ -267,7 +267,7 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
                   <FormControl>
                     <Textarea
                       rows={3}
-                      placeholder="You can add a little extra information about this Account."
+                      placeholder="You can add a little extra information about this Category."
                       {...field}
                     />
                   </FormControl>
@@ -286,7 +286,7 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
                   <FormLabel>Currency</FormLabel>
                   <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} />
                   <FormDescription>
-                    The currency this account will operate in with
+                    The currency this category will operate in with
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

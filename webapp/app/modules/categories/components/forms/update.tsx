@@ -34,15 +34,15 @@ import {
   OnSubmitUpdateAction,
   UnarchiveAction
 } from "../../types/actions";
+import { Category } from "../../types/category";
 import { defaultIcons } from "../../types/icons";
-import { Account } from "../../types/preview";
 import { PreviewCard } from "../child/preview-card";
 import { schema } from "../schemas/update";
 import { ChildForm as CreateChild } from "./child/create";
 import { ChildForm as UpdateChild } from "./child/update";
 
 type Props = {
-  category: Account
+  category: Category
   open: boolean
   onOpenChange: (open: boolean) => void
   onSubmitAction: OnSubmitUpdateAction
@@ -203,7 +203,7 @@ export function UpdateCategory({
 }
 
 type FormProps = {
-  category: Account
+  category: Category
   onSubmitAction: OnSubmitUpdateAction
   onDeleteAction: DeleteAction
   onArchiveAction: ArchiveAction
