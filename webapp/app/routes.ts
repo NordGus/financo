@@ -16,10 +16,7 @@ export default [
       route(":id", "routes/accounts/show.tsx"), // for actions/loaders only it does not contain a view
     ]),
 
-    ...prefix("categories", [
-      index("routes/categories/index.tsx"),
-      route(":id", "routes/categories/show.tsx"), // for actions/loaders only it does not contain a view
-    ]),
+    route("categories", "routes/categories/index.tsx"),
 
     ...prefix("ledger", [
       index("routes/ledger/index.tsx")
