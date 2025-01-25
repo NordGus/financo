@@ -73,6 +73,7 @@ type CreateChildForParent struct {
 func (req *CreateChildForParent) ToRecord(parent account.Record, timestamp time.Time) account.Record {
 	return account.Record{
 		ID:          -1,
+		ParentID:    nullable.New(parent.ID),
 		Kind:        parent.Kind,
 		Currency:    parent.Currency,
 		Name:        req.Name,

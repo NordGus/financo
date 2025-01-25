@@ -25,9 +25,7 @@ func Routes(r chi.Router) {
 		cat.Route("/children", func(children chi.Router) {
 			children.Post("/", create_child_handler.HandlerFunc)
 
-			children.Route("/{childId}", func(child chi.Router) {
-
-			})
+			children.Route("/{childId}", func(child chi.Router) {})
 		})
 	})
 }

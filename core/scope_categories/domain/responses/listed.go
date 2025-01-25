@@ -58,7 +58,7 @@ func NewListedFromCategoryRecord(r category.Record) Listed {
 		Children:     make([]ListedChild, 0, len(r.Children)),
 	}
 
-	for i := 0; i < len(out.Children); i++ {
+	for i := 0; i < len(r.Children); i++ {
 		out.Children = append(out.Children, ListedChild{
 			ID:           r.Children[i].ID,
 			Kind:         r.Children[i].Kind,

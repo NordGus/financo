@@ -1,15 +1,17 @@
 import { Card } from "~/shared/components/ui/card"
 import { icons } from "~/shared/components/ui/icon"
 import { Icon } from "~/shared/types/icon"
+import { Archived } from "../badges/archived"
 
 type Props = {
   name: string
   description?: string | null
   icon: Icon
+  archived: boolean
   onClick: () => void
 }
 
-export function PreviewCard({ name, description, icon, onClick }: Props) {
+export function PreviewCard({ name, description, icon, archived, onClick }: Props) {
   return (
     <Card className="px-4 py-3 cursor-pointer" onClick={onClick}>
       <div className="flex gap-2">
@@ -19,6 +21,11 @@ export function PreviewCard({ name, description, icon, onClick }: Props) {
         <p className="text-muted-foreground text-sm">
           {description}
         </p>
+      )}
+      {archived && (
+        <div className="mt-4 flex items-center gap-2 text-muted-foreground">
+          <Archived /> Archived
+        </div>
       )}
     </Card>
   )

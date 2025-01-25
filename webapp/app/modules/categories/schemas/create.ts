@@ -1,9 +1,15 @@
 import { z } from "zod";
 import { CURRENCIES } from "~/shared/types/currency";
 import { ICONS } from "~/shared/types/icon";
+import { ModuleKind } from "../types/category";
+
+const KINDS: Record<ModuleKind, ModuleKind> = {
+  external_expense: "external_expense",
+  external_income: "external_income",
+} as const
 
 export const schema = z.object({
-  id: z.number(),
+  kind: z.nativeEnum(KINDS),
   name: z.string().trim().min(3).max(128),
   description: z.string().trim().max(256).optional(),
   currency: z.nativeEnum(CURRENCIES),
@@ -15,10 +21,8 @@ export const schema = z.object({
   }, { message: `must be a valid color code` }),
   icon: z.nativeEnum(ICONS),
   children: z.object({
-    id: z.number(),
     name: z.string().trim().min(3).max(128),
     description: z.string().trim().max(256).optional(),
     icon: z.nativeEnum(ICONS),
-    archivedAt: z.string().datetime().optional(),
   }).array(),
 })

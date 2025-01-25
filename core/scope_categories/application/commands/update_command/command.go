@@ -44,7 +44,7 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	}
 
 	current.Parent = c.req.ToRecord(previous.Parent, timestamp)
-	current.Children = c.req.ToChildrenRecords(previous.Children, previous.Parent, timestamp)
+	current.Children = previous.Children
 
 	err = c.repo.Save(ctx, current)
 	if err != nil {

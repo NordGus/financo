@@ -11,7 +11,7 @@ import {
   AlertDialogTitle
 } from "~/shared/components/ui/alert-dialog";
 import { Button } from "~/shared/components/ui/button";
-import { Unarchived } from "../../types/unarchived";
+import { Unarchived } from "../../types/unarchive";
 
 interface Account {
   id: number

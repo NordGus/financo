@@ -1,8 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon } from "lucide-react";
-import { useReducer } from "react";
+import { PackageIcon, PackageOpenIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { useEffect, useReducer } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { OnSubmitDeleteAccountAction } from "~/modules/accounts/types/actions";
 import { CurrencyInput } from "~/shared/components/inputs/currency-input";
 import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
@@ -27,109 +28,151 @@ import {
 import { Input } from "~/shared/components/ui/input";
 import { Textarea } from "~/shared/components/ui/textarea";
 import { accountKindToHuman as kindToHuman } from "~/shared/helpers/account-kind-to-human";
-import { Icon, ICONS } from "~/shared/types/icon";
-import {
-  ArchiveAction,
-  DeleteAction,
-  OnSubmitUpdateAction,
-  UnarchiveAction
-} from "../../types/actions";
+import { Icon } from "~/shared/types/icon";
+import { schema } from "../../schemas/update";
+import { OnSubmitArchiveAction } from "../../types/archive";
 import { Category } from "../../types/category";
+import { CreateChildAction } from "../../types/create";
 import { defaultIcons } from "../../types/icons";
+import { OnSubmitUnarchiveAction } from "../../types/unarchive";
+import { OnSubmitUpdateAction } from "../../types/update";
 import { PreviewCard } from "../child/preview-card";
-import { schema } from "../schemas/update";
-import { ChildForm as CreateChild } from "./child/create";
-import { ChildForm as UpdateChild } from "./child/update";
+import { ChildForm as CreateChildForm } from "./child/create";
+import { ChildForm as UpdateChildForm } from "./child/update";
 
 type Props = {
   category: Category
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSubmitAction: OnSubmitUpdateAction
-  onDeleteAction: DeleteAction
-  onArchiveAction: ArchiveAction
-  onUnarchiveAction: UnarchiveAction
+  onSubmit: OnSubmitUpdateAction
+  onDelete: OnSubmitDeleteAccountAction
+  onArchive: OnSubmitArchiveAction
+  onUnarchive: OnSubmitUnarchiveAction
+  onCreateChildAction: CreateChildAction
   submitting: boolean
 }
 
-type Child = {
+type NewChild = {
   name: string
   description?: string
   icon: Icon
-  archivedAt?: string
+}
+
+type Child = {
+  id: number
+  parentId: number
+  name: string
+  description?: string
+  icon: Icon
+  archivedAt?: string | null
 }
 
 type Open = "update" | "create" | "delete" | "archive" | "unarchive" | null
 
 type State = {
-  data: Child
+  child: Child
   onSubmit: (data: Child) => void
+  onDelete?: () => void
+  onArchive?: () => void
+  onUnarchive?: () => void
   open: Open
   submitting: boolean
 }
 
 type InitialState = {
-  id?: number
-  name?: string
-  description?: string
+  category: Category
   icon: Icon
 }
 
-type OnSubmit = (data: Child) => void
-type OnChildClick = (payload: { data: Child, onSubmit: (data: Child) => void }) => void
+type OnChildClickPayload = {
+  child: Child,
+  onSubmit: (data: Child) => void,
+  onDelete?: () => void,
+  onArchive?: () => void,
+  onUnarchive?: () => void,
+}
+
+type OnChildClick = (payload: OnChildClickPayload) => void
 type OnAddChildClick = () => void
 
 const __actions = {
   ADD: "ADD",
   UPDATE: "UPDATE",
   CLOSE: "CLOSE",
-  OPEN_CHANGED: "OPEN_CHANGED"
+  OPEN_CHANGED: "OPEN_CHANGED",
+  ACTION_SUBMITTED: "ACTION_SUBMITTED",
+  ACTION_FAILED: "ACTION_FAILED",
+  CHILD_CREATED: "CHILD_CREATED",
+  ACTION_SUCCEED: "ACTION_SUCCEED",
 } as const
 
 type Actions = typeof __actions
 
 type Action =
   { type: Actions["ADD"] } |
-  { type: Actions["UPDATE"], data: Child, onSubmit: OnSubmit } |
+  { type: Actions["UPDATE"], payload: OnChildClickPayload } |
   { type: Actions["CLOSE"] } |
-  { type: Actions["OPEN_CHANGED"], open: Open }
+  { type: Actions["OPEN_CHANGED"], open: Open } |
+  { type: Actions["ACTION_SUBMITTED"] } |
+  { type: Actions["ACTION_FAILED"] } |
+  { type: Actions["ACTION_SUCCEED"] }
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "ADD":
       return {
         ...state,
-        data: { name: "", description: undefined, icon: ICONS.bookmark },
-        onSubmit: (__data) => { },
         open: "create"
       }
     case "UPDATE":
       return {
         ...state,
-        data: { ...action.data },
-        onSubmit: action.onSubmit,
+        child: { ...action.payload.child },
+        onSubmit: action.payload.onSubmit,
+        onDelete: action.payload.onDelete,
+        onArchive: action.payload.onArchive,
+        onUnarchive: action.payload.onUnarchive,
         open: "update"
       }
     case "CLOSE":
       return {
         ...state,
-        data: { name: "", description: undefined, icon: ICONS.bookmark },
         onSubmit: (__data) => { },
-        open: null
+        onDelete: undefined,
+        onArchive: undefined,
+        onUnarchive: undefined,
+        open: null,
+        submitting: false
       }
     case "OPEN_CHANGED":
       return {
         ...state,
-        onSubmit: (__data) => { },
         open: action.open
+      }
+    case "ACTION_SUBMITTED":
+      return { ...state, submitting: true }
+    case "ACTION_FAILED":
+      return { ...state, submitting: false }
+    case "ACTION_SUCCEED":
+      return {
+        ...state,
+        onSubmit: (__data) => { },
+        onDelete: undefined,
+        onArchive: undefined,
+        onUnarchive: undefined,
+        open: null,
+        submitting: false
       }
   }
 }
 
-function init({ name = "", description, icon }: InitialState): State {
+function init({ category, icon }: InitialState): State {
   return {
-    data: { name, description, icon },
+    child: { id: -1, parentId: category.id, name: "", description: "", icon },
     onSubmit: (__data) => { },
+    onDelete: () => { },
+    onArchive: () => { },
+    onUnarchive: () => { },
     open: null,
     submitting: false,
   }
@@ -139,24 +182,38 @@ export function UpdateCategory({
   category,
   open,
   onOpenChange,
-  onSubmitAction,
-  onDeleteAction,
-  onArchiveAction,
-  onUnarchiveAction,
+  onSubmit,
+  onDelete,
+  onArchive,
+  onUnarchive,
+  onCreateChildAction,
   submitting
 }: Props) {
-  const [state, dispatch] = useReducer(reducer, { icon: defaultIcons[category.kind] }, init)
+  const [state, dispatch] = useReducer(reducer, { category, icon: defaultIcons[category.kind] }, init)
 
   const onOpenChildChange = (open: Open) =>
     dispatch({ type: "OPEN_CHANGED", open })
   const onChildClick: OnChildClick = (payload) =>
-    dispatch({ type: "UPDATE", ...payload })
+    dispatch({ type: "UPDATE", payload })
   const onAddChildClick: OnAddChildClick = () =>
     dispatch({ type: "ADD" })
 
-  const onCreateChild = (__data: Child) => {
-    /* TODO: create action on the api that creates a child for a given parent */
+  const onChildActionSubmit = () =>
+    dispatch({ type: "ACTION_SUBMITTED" })
+  const onChildActionSuccess = () =>
+    dispatch({ type: "ACTION_SUCCEED" })
+  const onChildActionFailure = () =>
+    dispatch({ type: "ACTION_FAILED" })
+
+  const onCreateChild = (data: NewChild) => {
+    onChildActionSubmit()
+
+    onCreateChildAction(category.id, data, onChildActionSuccess, onChildActionFailure)
   }
+
+  const destroy = () => onDelete(category.id)
+  const archive = () => onArchive(category.id)
+  const unarchive = () => onUnarchive(category.id)
 
   return (
     <>
@@ -169,10 +226,10 @@ export function UpdateCategory({
           </DrawerHeader>
           <UpdateForm
             category={category}
-            onSubmitAction={onSubmitAction}
-            onDeleteAction={onDeleteAction}
-            onArchiveAction={onArchiveAction}
-            onUnarchiveAction={onUnarchiveAction}
+            onSubmit={onSubmit}
+            onDelete={destroy}
+            onArchive={archive}
+            onUnarchive={unarchive}
             submitting={submitting || state.submitting}
             onAddChildClick={onAddChildClick}
             onChildClick={onChildClick}
@@ -180,18 +237,17 @@ export function UpdateCategory({
         </DrawerContent>
       </Drawer>
 
-      <UpdateChild
-        child={state.data}
+      <UpdateChildForm
+        child={state.child}
         open={state.open === "update"}
         onSubmit={state.onSubmit}
         onOpenChange={(open) => onOpenChildChange(open ? "update" : null)}
-        defaultIcon={defaultIcons[category.kind]}
         submitting={state.submitting}
       />
 
-      <CreateChild
+      <CreateChildForm
         action="add"
-        child={state.data}
+        child={state.child}
         open={state.open === "create"}
         onSubmit={onCreateChild}
         onOpenChange={(open) => onOpenChildChange(open ? "create" : null)}
@@ -204,10 +260,10 @@ export function UpdateCategory({
 
 type FormProps = {
   category: Category
-  onSubmitAction: OnSubmitUpdateAction
-  onDeleteAction: DeleteAction
-  onArchiveAction: ArchiveAction
-  onUnarchiveAction: UnarchiveAction
+  onSubmit: OnSubmitUpdateAction
+  onDelete: () => void
+  onArchive: () => void
+  onUnarchive: () => void
   onChildClick: OnChildClick
   onAddChildClick: OnAddChildClick
   submitting: boolean
@@ -215,8 +271,11 @@ type FormProps = {
 
 function UpdateForm({
   category,
-  onSubmitAction,
-  onChildClick: onExistingChildClick,
+  onSubmit: onSubmitAction,
+  onDelete,
+  onArchive,
+  onUnarchive,
+  onChildClick,
   onAddChildClick,
   submitting
 }: FormProps) {
@@ -234,6 +293,12 @@ function UpdateForm({
 
   const onSubmit = async (values: z.infer<typeof schema>) =>
     await onSubmitAction({ ...values })
+
+  useEffect(() => {
+    if (Object.keys(form.formState.errors).length === 0) return
+
+    console.error(form.formState.errors)
+  }, [form.formState.errors])
 
   return (
     <>
@@ -322,29 +387,71 @@ function UpdateForm({
             <Button
               variant="outline"
               type="button"
-              onClick={() => onAddChildClick()}
+              onClick={onAddChildClick}
             >
               <PlusIcon /> Add Child
             </Button>
-            <div className="space-y-2">
-              {category.children.map(({ id, name, description, icon }) => (
-                <PreviewCard
-                  key={`child.${id}`}
-                  name={name}
-                  description={description}
-                  icon={icon}
-                  onClick={() => onExistingChildClick({
-                    data: { name, description: description ?? undefined, icon },
-                    onSubmit: (__data) => { }
-                  })
-                  }
-                />
-              ))}
-            </div>
+            {category.children.map(({ id, name, description, icon, archivedAt }) => (
+              <PreviewCard
+                key={`child.${id}`}
+                name={name}
+                description={description}
+                icon={icon}
+                archived={!!archivedAt}
+                onClick={() => onChildClick({
+                  child: {
+                    id,
+                    parentId: category.id,
+                    name,
+                    description: description ?? undefined,
+                    icon,
+                    archivedAt
+                  },
+                  onSubmit: (__data) => { },
+                  onDelete: undefined,
+                  onArchive: undefined,
+                  onUnarchive: undefined,
+                })
+                }
+              />
+            ))}
           </div>
           <DrawerFooter>
             <Button type="submit" className="min-w-24" disabled={submitting}>
               {submitting ? <Throbber size={"sm"} /> : "Update"}
+            </Button>
+            {
+              !category.archivedAt && (
+                <Button
+                  variant={"secondary"}
+                  onClick={onArchive}
+                  disabled={submitting}
+                  type="button"
+                >
+                  <PackageIcon /> Archive
+                </Button>
+              )
+            }
+            {
+              !!category.archivedAt && (
+                <Button
+                  variant={"secondary"}
+                  onClick={onUnarchive}
+                  disabled={submitting}
+                  type="button"
+                >
+                  <PackageOpenIcon /> Unarchive
+                </Button>
+              )
+            }
+
+            <Button
+              variant={"destructive"}
+              onClick={onDelete}
+              disabled={submitting}
+              type="button"
+            >
+              <TrashIcon /> Delete
             </Button>
             <DrawerClose asChild>
               <Button variant={"outline"} disabled={submitting}>Cancel</Button>

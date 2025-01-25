@@ -10,10 +10,12 @@ import { CreateCategory } from "../components/forms/create";
 import { UpdateCategory } from "../components/forms/update";
 import { ListForKind } from "../components/list-for-kind";
 import { archivedCategoriesManual } from "../manual/archived-categories-manual";
-import { ArchiveAction, CreateAction, DeleteAction, UnarchiveAction, UpdateAction } from "../types/actions";
+import { ArchiveAction } from "../types/archive";
 import { Category, ModuleKind } from "../types/category";
-import { Create } from "../types/create";
-import { Update } from "../types/update";
+import { Create, CreateAction, CreateChildAction } from "../types/create";
+import { DeleteAction } from "../types/delete";
+import { UnarchiveAction } from "../types/unarchive";
+import { Update, UpdateAction } from "../types/update";
 
 interface Props {
   categories: Category[]
@@ -24,6 +26,7 @@ interface Props {
   onDeleteAction: DeleteAction
   onArchiveAction: ArchiveAction
   onUnarchiveAction: UnarchiveAction
+  onCreateChildAction: CreateChildAction
 }
 
 type SubView = "active" | "archived"
@@ -173,6 +176,7 @@ export function Screen({
   onArchiveAction,
   onUnarchiveAction,
   onDeleteAction,
+  onCreateChildAction,
 }: Props) {
   const [screen, dispatch] = useReducer(
     reducer,
@@ -221,6 +225,24 @@ export function Screen({
     onActionSubmit()
 
     return onUpdateAction(values, onActionSuccess, onActionFailure)
+  }
+
+  const onDelete = (id: number) => {
+    onActionSubmit()
+
+    return onDeleteAction(id, onActionSuccess, onActionFailure)
+  }
+
+  const onArchive = (id: number) => {
+    onActionSubmit()
+
+    return onArchiveAction(id, onActionSuccess, onActionFailure)
+  }
+
+  const onUnarchive = (id: number) => {
+    onActionSubmit()
+
+    return onUnarchiveAction(id, onActionSuccess, onActionFailure)
   }
 
   return (
@@ -279,12 +301,20 @@ export function Screen({
           <UpdateCategory
             open={screen.openEdit}
             onOpenChange={onOpenEditChange}
-            category={screen.category}
+
+            category={
+              categories.find((c) => c.id === screen.category?.id)
+              ?? screen.category
+            }
+
             submitting={screen.submitting}
-            onSubmitAction={onUpdate}
-            onDeleteAction={onDeleteAction}
-            onArchiveAction={onArchiveAction}
-            onUnarchiveAction={onUnarchiveAction}
+
+            onSubmit={onUpdate}
+            onDelete={onDelete}
+            onArchive={onArchive}
+            onUnarchive={onUnarchive}
+
+            onCreateChildAction={onCreateChildAction}
           />
         )
       }

@@ -3,6 +3,7 @@ import { ICONS } from "~/shared/types/icon";
 
 export const schema = z.object({
   id: z.number(),
+  parentId: z.number(),
   name: z.string().trim().min(3).max(128),
   description: z.string().trim().max(256).optional(),
   icon: z.nativeEnum(ICONS),

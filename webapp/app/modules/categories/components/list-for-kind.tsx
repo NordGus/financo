@@ -20,7 +20,7 @@ export function ListForKind({ categories, forArchived, kind, onClick }: Props) {
       {filtered.map((category) => (
         <PreviewCard
           key={`category.${category.id}`}
-          account={category}
+          category={category}
           onClick={() => onClick(category)}
         />
       ))}

@@ -1,6 +1,5 @@
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
-import { Child, ModuleKind } from "./category";
 
 export type UpdateChild = {
   id: number
@@ -19,12 +18,5 @@ export type Update = {
   icon: Icon,
 }
 
-export type Updated = {
-  id: number
-  name: string
-  kind: ModuleKind
-  color: string
-  icon: Icon
-}
-
-export type ChildUpdated = Child
+export type UpdateAction = (values: Update, success: () => void, failure: () => void) => Promise<void>
+export type OnSubmitUpdateAction = (values: Update) => Promise<void>
