@@ -45,7 +45,11 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	}
 
 	if previous.Parent.ParentID.Valid {
-		return res, fmt.Errorf("update_command: (%d) is not a parent category", c.req.ID)
+		return res, fmt.Errorf("update_command: category id=(%d) is not a parent category", c.req.ID)
+	}
+
+	if previous.Parent.ID <= 0 {
+		return res, fmt.Errorf("update_command: category id=(%d) not found", c.req.ID)
 	}
 
 	current.Parent = c.req.ToRecord(previous.Parent, timestamp)
