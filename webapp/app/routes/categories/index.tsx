@@ -180,7 +180,7 @@ export default function CategoriesRoute() {
         toast.promise(res, {
           loading: "Updating...",
           success: (data) => {
-            return `${data.name} created`
+            return `${data.name} updated`
           },
           error: "Oops!. Something went wrong"
         })
@@ -205,7 +205,7 @@ export default function CategoriesRoute() {
         toast.promise(res, {
           loading: "Deleting...",
           success: (data) => {
-            return `${data.name} created`
+            return `${data.name} deleted`
           },
           error: "Oops!. Something went wrong"
         })
