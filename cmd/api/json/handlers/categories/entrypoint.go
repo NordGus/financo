@@ -28,7 +28,7 @@ func Routes(r chi.Router) {
 			children.Post("/", create_child_handler.HandlerFunc)
 
 			children.Route("/{childId}", func(child chi.Router) {
-				cat.Delete("/", destroy_child_handler.HandlerFunc)
+				child.Delete("/", destroy_child_handler.HandlerFunc)
 				child.Put("/", update_child_handler.HandlerFunc)
 			})
 		})
