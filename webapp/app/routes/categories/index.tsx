@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react";
 import { URLSearchParamsInit, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { Screen } from "~/modules/categories/screens";
-import { useCategoryStore } from "~/modules/categories/stores/category";
+import { useCategoriesStore } from "~/modules/categories/stores/categories";
 import { Create } from "~/modules/categories/types/create";
 import { Update } from "~/modules/categories/types/update";
 import { Route } from "./+types/index";
@@ -19,15 +19,15 @@ export async function clientLoader({ }: Route.ClientLoaderArgs) {
 }
 
 export default function CategoriesRoute() {
-  const categories = useCategoryStore((state) => state.categories)
+  const categories = useCategoriesStore((state) => state.categories)
 
-  const listQuery = useCategoryStore((state) => state.list)
+  const listQuery = useCategoriesStore((state) => state.list)
 
-  const createAction = useCategoryStore((state) => state.create)
-  const updateAction = useCategoryStore((state) => state.update)
-  const archiveAction = useCategoryStore((state) => state.archive)
-  const unarchiveAction = useCategoryStore((state) => state.unarchive)
-  const destroyAction = useCategoryStore((state) => state.destroy)
+  const createAction = useCategoriesStore((state) => state.create)
+  const updateAction = useCategoriesStore((state) => state.update)
+  const archiveAction = useCategoriesStore((state) => state.archive)
+  const unarchiveAction = useCategoriesStore((state) => state.unarchive)
+  const destroyAction = useCategoriesStore((state) => state.destroy)
   const [searchParams, setSearchParams] = useSearchParams()
 
   const onSearchParamsChange = (params: URLSearchParamsInit) => setSearchParams(params)
