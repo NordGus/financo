@@ -3,7 +3,6 @@ import { URLSearchParamsInit, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { Screen } from "~/modules/categories/screens";
 import { useCategoriesStore } from "~/modules/categories/stores/categories";
-import { Child } from "~/modules/categories/types/category";
 import { Create, CreateChild } from "~/modules/categories/types/create";
 import { Update } from "~/modules/categories/types/update";
 import { Route } from "./+types/index";
@@ -147,7 +146,7 @@ export default function CategoriesRoute() {
   }, [unarchiveAction])
 
   const createChild = useCallback(
-    async (parentId: number, data: CreateChild, success: (child: Child) => void, failure: () => void) => {
+    async (parentId: number, data: CreateChild, success: () => void, failure: () => void) => {
       try {
         const res = createChildAction(parentId, data)
 
@@ -159,9 +158,9 @@ export default function CategoriesRoute() {
           error: "Oops!. Something went wrong"
         })
 
-        const created = await res
+        await res
 
-        success(created)
+        success()
       } catch (error) {
         failure()
 
