@@ -14,20 +14,20 @@ import (
 )
 
 type command struct {
-	req    requests.DeleteChild
-	repo   repositories.DeleteRepository
-	broker brokers.Deleted
+	req     requests.DeleteChild
+	destroy repositories.DeleteRepository
+	broker  brokers.Deleted
 }
 
 func New(
 	req requests.DeleteChild,
-	repo repositories.DeleteRepository,
+	destroy repositories.DeleteRepository,
 	broker brokers.Deleted,
 ) commands.Command[responses.ListedChild] {
 	return &command{
-		req:    req,
-		repo:   repo,
-		broker: broker,
+		req:     req,
+		destroy: destroy,
+		broker:  broker,
 	}
 }
 
@@ -38,12 +38,12 @@ func (c *command) Run(ctx context.Context) (responses.ListedChild, error) {
 		res responses.ListedChild
 	)
 
-	parent, err := c.repo.Find(ctx, c.req.ParentID)
+	parent, err := c.destroy.Find(ctx, c.req.ParentID)
 	if err != nil {
 		return res, err
 	}
 
-	record, err := c.repo.Find(ctx, c.req.ID)
+	record, err := c.destroy.Find(ctx, c.req.ID)
 	if err != nil {
 		return res, err
 	}
@@ -72,7 +72,7 @@ func (c *command) Run(ctx context.Context) (responses.ListedChild, error) {
 		record.Children[i].UpdatedAt = timestamp
 	}
 
-	err = c.repo.SoftDelete(ctx, record)
+	err = c.destroy.SoftDelete(ctx, record)
 	if err != nil {
 		return res, err
 	}
