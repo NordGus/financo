@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Screen } from "~/modules/categories/screens";
 import { useCategoriesStore } from "~/modules/categories/stores/categories";
 import { Create, CreateChild } from "~/modules/categories/types/create";
-import { Update } from "~/modules/categories/types/update";
+import { Update, UpdateChild } from "~/modules/categories/types/update";
 import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
@@ -30,6 +30,7 @@ export default function CategoriesRoute() {
   const destroyAction = useCategoriesStore((state) => state.destroy)
 
   const createChildAction = useCategoriesStore((state) => state.createChild)
+  const updateChildAction = useCategoriesStore((state) => state.updateChild)
 
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -170,6 +171,31 @@ export default function CategoriesRoute() {
     [createChildAction]
   )
 
+  const updateChild = useCallback(
+    async (data: UpdateChild, success: () => void, failure: () => void) => {
+      try {
+        const res = updateChildAction(data)
+
+        toast.promise(res, {
+          loading: "Updating...",
+          success: (data) => {
+            return `${data.name} created`
+          },
+          error: "Oops!. Something went wrong"
+        })
+
+        await res
+
+        success()
+      } catch (error) {
+        failure()
+
+        throw error
+      }
+    },
+    [updateChildAction]
+  )
+
   useEffect(() => {
     listQuery()
   }, [])
@@ -187,5 +213,6 @@ export default function CategoriesRoute() {
     onUnarchiveAction={unarchive}
 
     onCreateChildAction={createChild}
+    onUpdateChildAction={updateChild}
   />
 }

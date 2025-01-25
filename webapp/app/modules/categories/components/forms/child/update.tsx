@@ -34,6 +34,7 @@ interface Child {
   name: string
   description?: string
   icon: Icon
+  archivedAt?: string | null
 }
 
 interface Props {
