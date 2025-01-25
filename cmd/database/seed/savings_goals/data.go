@@ -1,230 +1,79 @@
 package savings_goals
 
 import (
+	"financo/cmd/database/seed/lib/helpers"
+	"financo/core/scope_savings_goals/domain/requests"
 	"financo/lib/currency"
 	"financo/lib/nullable"
-	"financo/models/achievement"
-	"financo/models/achievement/savings_goal"
 	"time"
 )
 
-type goalSeed struct {
-	Record savings_goal.Record
-
-	AchievedAt func(moment time.Time) nullable.Type[time.Time]
-	DeletedAt  func(moment time.Time) nullable.Type[time.Time]
-}
-
 var (
-	achievements = []goalSeed{
+	create = []requests.Create{
 		{
-			Record: savings_goal.Record{
-				Kind:        achievement.SavingsGoal,
-				Name:        "To the baby steps",
-				Description: nullable.New("A journey of a thousand kilometers start with a single step."),
-				Settings: savings_goal.Settings{
-					Position: 1,
-					Target:   100_00,
-					Saved:    100_00,
-					Currency: currency.EUR,
-				},
-			},
-			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.New(moment.AddDate(0, -1, -15).UTC())
-			},
-			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
+			Name:        "To the baby steps",
+			Description: nullable.New("A journey of a thousand kilometers start with a single step."),
+			Currency:    currency.EUR,
+			Target:      100_00,
 		},
 		{
-			Record: savings_goal.Record{
-				Kind:        achievement.SavingsGoal,
-				Name:        "USD To the baby steps",
-				Description: nullable.New("A journey of a thousand kilometers start with a single step."),
-				Settings: savings_goal.Settings{
-					Position: 1,
-					Target:   100_00,
-					Saved:    100_00,
-					Currency: currency.USD,
-				},
-			},
-			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.New(moment.AddDate(0, 0, -15).UTC())
-			},
-			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
+			Name:        "To the baby steps",
+			Description: nullable.New("A journey of a thousand miles start with a single step."),
+			Currency:    currency.USD,
+			Target:      100_00,
 		},
 		{
-			Record: savings_goal.Record{
-				Kind:        achievement.SavingsGoal,
-				Name:        "My first emergency fund",
-				Description: nullable.New("Now an unexpected expense can't derail you."),
-				Settings: savings_goal.Settings{
-					Position: 1,
-					Target:   1_000_00,
-					Saved:    1_000_00,
-					Currency: currency.EUR,
-				},
-			},
-			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
+			Name:        "My first emergency fund",
+			Description: nullable.New("Now an unexpected expense can't derail you."),
+			Currency:    currency.EUR,
+			Target:      1_000_00,
 		},
 		{
-			Record: savings_goal.Record{
-				Kind:        achievement.SavingsGoal,
-				Name:        "This is not even my final form",
-				Description: nullable.New("Take the emergency fund to cover 3 months of expenses."),
-				Settings: savings_goal.Settings{
-					Position: 1,
-					Target:   6_000_00,
-					Saved:    0,
-					Currency: currency.EUR,
-				},
-			},
-			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
+			Name:        "This is not even my final form",
+			Description: nullable.New("Take the emergency fund to cover 3 months of expenses."),
+			Currency:    currency.EUR,
+			Target:      6_000_00,
 		},
 		{
-			Record: savings_goal.Record{
-				Kind:        achievement.SavingsGoal,
-				Name:        "Inner Peace",
-				Description: nullable.New("Your emergency fund gives you 6 months of runway."),
-				Settings: savings_goal.Settings{
-					Position: 2,
-					Target:   12_000_00,
-					Saved:    0,
-					Currency: currency.EUR,
-				},
-			},
-			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
+			Name:        "Inner Peace",
+			Description: nullable.New("Your emergency fund gives you 6 months of runway."),
+			Currency:    currency.EUR,
+			Target:      12_000_00,
 		},
 		{
-			Record: savings_goal.Record{
-				Kind:        achievement.SavingsGoal,
-				Name:        "Harmony within, Hurricane without",
-				Description: nullable.New("Now your emergency fund covers for a year's worth of expenses."),
-				Settings: savings_goal.Settings{
-					Position: 3,
-					Target:   24_000_00,
-					Saved:    0,
-					Currency: currency.EUR,
-				},
-			},
-			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
+			Name:        "Harmony within, Hurricane without",
+			Description: nullable.New("Now your emergency fund covers for a year's worth of expenses."),
+			Currency:    currency.EUR,
+			Target:      24_000_00,
 		},
 		{
-			Record: savings_goal.Record{
-				Kind:        achievement.SavingsGoal,
-				Name:        "Upgrades for my Desktop",
-				Description: nullable.Type[string]{},
-				Settings: savings_goal.Settings{
-					Position: 4,
-					Target:   1_000_00,
-					Saved:    0,
-					Currency: currency.EUR,
-				},
-			},
-			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
+			Name:        "Upgrades for my Desktop",
+			Description: nullable.Type[string]{},
+			Currency:    currency.EUR,
+			Target:      1_000_00,
 		},
 		{
-			Record: savings_goal.Record{
-				Kind:        achievement.SavingsGoal,
-				Name:        "Investment for the Studio",
-				Description: nullable.New("Buying some hardware to create games better."),
-				Settings: savings_goal.Settings{
-					Position: 5,
-					Target:   6_000_00,
-					Saved:    0,
-					Currency: currency.EUR,
-				},
-			},
-			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
+			Name:        "Investment for the Studio",
+			Description: nullable.New("Buying some hardware to create games better."),
+			Currency:    currency.EUR,
+			Target:      6_000_00,
 		},
 		{
-			Record: savings_goal.Record{
-				Kind:        achievement.SavingsGoal,
-				Name:        "Honeymoon",
-				Description: nullable.New("A little treat for my spouse."),
-				Settings: savings_goal.Settings{
-					Position: 6,
-					Target:   20_000_00,
-					Saved:    0,
-					Currency: currency.EUR,
-				},
-			},
-			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
+			Name:        "Honeymoon",
+			Description: nullable.New("A little treat for my spouse."),
+			Currency:    currency.EUR,
+			Target:      20_000_00,
 		},
 		{
-			Record: savings_goal.Record{
-				Kind:        achievement.SavingsGoal,
-				Name:        "To the forest!",
-				Description: nullable.New("For that mountain cabin."),
-				Settings: savings_goal.Settings{
-					Position: 6,
-					Target:   100_000_00,
-					Saved:    0,
-					Currency: currency.EUR,
-				},
-			},
-			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
+			Name:        "USD First Emergency Fund",
+			Description: nullable.New("An emergency fund for the family outside of Europe."),
+			Currency:    currency.USD,
+			Target:      1_000_00,
 		},
-		{
-			Record: savings_goal.Record{
-				Kind:        achievement.SavingsGoal,
-				Name:        "USD First Emergency Fund",
-				Description: nullable.New("An emergency fund for the family outside of Europe."),
-				Settings: savings_goal.Settings{
-					Position: 1,
-					Target:   1_000_00,
-					Saved:    0,
-					Currency: currency.USD,
-				},
-			},
-			AchievedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-			DeletedAt: func(moment time.Time) nullable.Type[time.Time] {
-				return nullable.Type[time.Time]{}
-			},
-		},
+	}
+
+	achieved = map[string]time.Time{
+		helpers.SavingsGoalMapKey(create[0].Name, create[0].Currency): time.Now().AddDate(0, -12, 0).UTC(),
+		helpers.SavingsGoalMapKey(create[1].Name, create[1].Currency): time.Now().AddDate(0, 0, -15).UTC(),
 	}
 )

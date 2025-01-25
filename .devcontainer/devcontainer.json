@@ -73,6 +73,25 @@
           "source.fixAll": "explicit",
           "source.fixAll.eslint": "explicit",
           "source.organizeImports": "explicit"
+        },
+        "[javascript]": {
+          "editor.tabSize": 2
+        },
+        "[javascriptreact]": {
+          "editor.tabSize": 2
+        },
+        "[typescript]": {
+          "editor.tabSize": 2
+        },
+        "[typescriptreact]": {
+          "editor.tabSize": 2
+        },
+        "[json]": {
+          "editor.quickSuggestions": {
+            "strings": true
+          },
+          "editor.suggest.insertMode": "replace",
+          "editor.tabSize": 2
         }
       }
     }
@@ -80,6 +99,6 @@
   "postStartCommand": {
     "go:install:dependencies": "go mod download",
     "npm:install:dependencies": "npm install",
-    "db:setup": "make db-setup && make db-reset"
+    "db:setup": "make db-setup"
   }
 }

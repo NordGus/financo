@@ -2,110 +2,89 @@ package transactions
 
 import (
 	"context"
-	"database/sql"
 	"errors"
-	"financo/cmd/database/seed/accounts"
-	"financo/models/transaction"
+	"financo/core/infrastructure/repositories/account_repository"
+	"financo/core/scope_transactions/application/commands/create_command"
+	"financo/core/scope_transactions/application/commands/delete_command"
+	"financo/core/scope_transactions/domain/requests"
+	"financo/core/scope_transactions/infrastructure/repositories/create_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/delete_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/detailed_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/transaction_repository"
+	"financo/core/scope_transactions/infrastructure/services/message_broker"
+	"financo/services/postgresql_database"
 	"fmt"
 	"log"
 	"time"
 )
 
-func SeedTransactions(
-	ctx context.Context,
-	seeds map[string]accounts.AccountRecord,
-	conn *sql.Conn,
-	timestamp time.Time,
-) error {
-	var summary uint = 0
+func SeedTransactions(ctx context.Context, seeds map[string]int64, timestamp time.Time) error {
+	var (
+		db       = postgresql_database.New()
+		accounts = account_repository.NewPostgreSQL(db)
+		create   = create_transaction_repository.NewPostgreSQL(db)
+		detailed = detailed_transaction_repository.NewPostgreSQL(db)
+		transact = transaction_repository.NewPostgreSQL(db)
+		delete   = delete_transaction_repository.NewPostgreSQL(db)
+
+		summary uint = 0
+		ts           = timestamp.UTC()
+	)
+
+	broker, err := message_broker.Instance()
+	if err != nil {
+		return errors.Join(errors.New("transactions: failed to retrieve message_broker instance"), err)
+	}
 
 	log.Println("\tseeding transactions")
-
-	tx, err := conn.BeginTx(ctx, nil)
-	if err != nil {
-		return errors.Join(errors.New("transactions: failed to seed"), err)
-	}
-	defer tx.Rollback()
 
 	for i := 0; i < len(transactions); i++ {
 		var (
 			data   = transactions[i]
-			source = seeds[data.Source.Key].Account
-			target = seeds[data.Target.Key].Account
+			source = seeds[data.Source]
+			target = seeds[data.Target]
 		)
 
-		if data.Source.ParentKey.Valid {
-			source = seeds[data.Source.ParentKey.Val].Children[data.Source.Key]
-		}
-
-		if data.Target.ParentKey.Valid {
-			target = seeds[data.Target.ParentKey.Val].Children[data.Target.Key]
-		}
-
-		tr := transaction.Record{
-			SourceID:     source.ID,
-			TargetID:     target.ID,
+		req := requests.Create{
+			IssuedAt:     data.IssuedAt(ts),
+			ExecutedAt:   data.ExecutedAt(ts),
+			Notes:        data.Notes,
+			SourceID:     source,
+			TargetID:     target,
 			SourceAmount: data.SourceAmount,
 			TargetAmount: data.TargetAmount,
-			Notes:        data.Notes,
-			IssuedAt:     data.IssuedAt(timestamp.UTC()),
-			ExecutedAt:   data.ExecutedAt(timestamp.UTC()),
-			DeletedAt:    data.DeletedAt(timestamp.UTC()),
-			CreatedAt:    timestamp.UTC(),
-			UpdatedAt:    timestamp.UTC(),
 		}
 
-		err := create(ctx, tr, tx)
+		res, err := create_command.New(req, accounts, create, detailed, broker.Created()).Run(ctx)
 		if err != nil {
 			return errors.Join(
-				fmt.Errorf("transactions: failed to seed transaction between %s and %s", source.Name, target.Name),
+				fmt.Errorf(
+					"transactions: failed to seed transaction between %s(%d) and %s(%d)",
+					data.Source,
+					source,
+					data.Target,
+					target,
+				),
 				err,
 			)
+		}
+
+		if data.DeletedAt(ts).Valid {
+			r := requests.Delete{ID: res.ID}
+
+			_, err = delete_command.New(r, transact, delete, detailed, broker.Deleted()).Run(ctx)
+			if err != nil {
+				return errors.Join(
+					fmt.Errorf("transactions: failed to delete transaction between %s and %s", data.Source, data.Target),
+					err,
+				)
+			}
 		}
 
 		summary += 1
 	}
 
-	err = tx.Commit()
-	if err != nil {
-		return errors.Join(errors.New("transactions: failed to seed"), err)
-	}
-
 	log.Printf("\t\t%d transactions seeded\n", summary)
 
 	return nil
-}
-
-func create(ctx context.Context, tr transaction.Record, tx *sql.Tx) error {
-	err := tx.QueryRowContext(
-		ctx,
-		`
-		INSERT INTO
-			transactions(
-				source_id,
-				target_id,
-				source_amount,
-				target_amount,
-				notes,
-				issued_at,
-				executed_at,
-				created_at,
-				updated_at
-			)
-		VALUES
-			($1, $2, $3, $4, $5, $6, $7, $8, $9)
-		RETURNING id
-		`,
-		tr.SourceID,
-		tr.TargetID,
-		tr.SourceAmount,
-		tr.TargetAmount,
-		tr.Notes,
-		tr.IssuedAt,
-		tr.ExecutedAt,
-		tr.CreatedAt,
-		tr.UpdatedAt,
-	).Scan(&tr.ID)
-
-	return err
 }

@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"financo/core/scope_transactions/application/commands/delete_command"
 	"financo/core/scope_transactions/domain/requests"
-	"financo/core/scope_transactions/infrastructure/broker_handler"
-	"financo/core/scope_transactions/infrastructure/delete_transaction_repository"
-	"financo/core/scope_transactions/infrastructure/detailed_transaction_repository"
-	"financo/core/scope_transactions/infrastructure/transaction_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/delete_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/detailed_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/transaction_repository"
+	"financo/core/scope_transactions/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -36,7 +36,7 @@ func destroy(w http.ResponseWriter, r *http.Request) {
 
 	req.ID = id
 
-	broker, err := broker_handler.Instance()
+	broker, err := message_broker.Instance()
 	if err != nil {
 		log.Println("failed to acquire broker handler instance", err)
 		http.Error(
@@ -52,7 +52,7 @@ func destroy(w http.ResponseWriter, r *http.Request) {
 		transaction_repository.NewPostgreSQL(db),
 		delete_transaction_repository.NewPostgreSQL(db),
 		detailed_transaction_repository.NewPostgreSQL(db),
-		broker.DeletedBroker(),
+		broker.Deleted(),
 	).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)

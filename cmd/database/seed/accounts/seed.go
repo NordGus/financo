@@ -2,56 +2,74 @@ package accounts
 
 import (
 	"context"
-	"database/sql"
 	"errors"
-	"financo/lib/nullable"
+	"financo/cmd/database/seed/lib/helpers"
+	"financo/core/domain/services"
+	"financo/core/scope_accounts/application/commands/archive_command"
+	"financo/core/scope_accounts/application/commands/create_command"
+	"financo/core/scope_accounts/domain/requests"
+	"financo/core/scope_accounts/infrastructure/repositories/accounts_repository"
+	"financo/core/scope_accounts/infrastructure/repositories/archival_repository"
+	"financo/core/scope_accounts/infrastructure/repositories/create_repository"
+	"financo/core/scope_accounts/infrastructure/services/message_broker"
 	"financo/models/account"
-	"financo/models/transaction"
+	"financo/services/postgresql_database"
 	"fmt"
 	"log"
 	"time"
 )
 
-type AccountRecord struct {
-	Account  account.Record
-	Children map[string]account.Record
-}
-
-func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map[string]AccountRecord, error) {
+func SeedAccounts(ctx context.Context, timestamp time.Time) (map[string]int64, error) {
 	var (
-		out           = make(map[string]AccountRecord, 10)
-		tSummary uint = 0
-		summary       = make(map[account.Kind]uint, 8)
+		db       = postgresql_database.New()
+		repo     = create_repository.NewPostgreSQL(db)
+		accounts = accounts_repository.NewPostgreSQL(db)
+		archival = archival_repository.NewPostgreSQL(db)
+
+		out     = make(map[string]int64, 10)
+		summary = make(map[account.Kind]uint, 8)
 	)
+
+	broker, err := message_broker.Instance()
+	if err != nil {
+		return out, err
+	}
 
 	log.Println("\tseeding accounts")
 
-	tx, err := conn.BeginTx(ctx, nil)
-	if err != nil {
-		return out, errors.Join(errors.New("accounts: failed to seed"), err)
-	}
-	defer tx.Rollback()
+	for i := 0; i < len(create); i++ {
+		var (
+			key     = create[i].key
+			archive = create[i].archived
+			req     = create[i].req
+		)
 
-	for i := 0; i < len(accounts); i++ {
-		key := accounts[i].MapKey
-
-		record, sum, tc, err := seed(ctx, tx, accounts[i], timestamp)
+		res, err := create_command.New(req, repo, broker.Created()).Run(ctx)
 		if err != nil {
-			return out, errors.Join(fmt.Errorf("accounts: failed to seed %s", key), err)
+			return out, errors.Join(fmt.Errorf("accounts: failed to seed account %s", req.Name), err)
 		}
 
-		out[key] = record
+		out[helpers.AccountMapKey(key)] = res.ID
 
-		for kind, count := range sum {
-			summary[kind] += count
+		children, err := getChildrenCategories(ctx, db, res.ID)
+		if err != nil {
+			return out, errors.Join(fmt.Errorf("accounts: failed to retrieve account %s children", req.Name), err)
 		}
 
-		tSummary += tc
-	}
+		for i := 0; i < len(children); i++ {
+			out[helpers.ChildCategoryMapKey(key, "interest")] = children[i]
+		}
 
-	err = tx.Commit()
-	if err != nil {
-		return out, errors.Join(errors.New("accounts: failed to seed"), err)
+		if archive {
+			r := requests.Archive{ID: res.ID}
+
+			_, err = archive_command.New(r, accounts, archival, broker.Archived()).Run(ctx)
+			if err != nil {
+				return out, errors.Join(fmt.Errorf("accounts: failed to archive account %s", req.Name), err)
+			}
+		}
+
+		summary[res.Kind] += 1
 	}
 
 	// printing summary
@@ -59,190 +77,49 @@ func SeedAccounts(ctx context.Context, conn *sql.Conn, timestamp time.Time) (map
 		log.Printf("\t\t%d %v accounts seeded\n", count, kind)
 	}
 
-	log.Printf("\t\t%d historic transactions seeded\n", tSummary)
-
 	return out, nil
 }
 
-func seed(
-	ctx context.Context,
-	tx *sql.Tx,
-	s accountSeed,
-	timestamp time.Time,
-) (AccountRecord, map[account.Kind]uint, uint, error) {
-	var (
-		tc        uint = 0
-		ac             = make(map[account.Kind]uint, 3)
-		children       = make(map[string]account.Record, 0)
-		historyAt      = s.HistoryAt(timestamp)
-		history        = historyTemplate
-		parent         = s.Account
-		pKey           = s.MapKey
-	)
+func getChildrenCategories(ctx context.Context, db services.SQLDatabaseService, parent int64) ([]int64, error) {
+	ids := make([]int64, 0, 10)
 
-	parent.ArchivedAt = s.ArchivedAt(timestamp)
-	parent.DeletedAt = s.DeletedAt(timestamp)
-	parent.CreatedAt = timestamp
-	parent.UpdatedAt = timestamp
-
-	parent, err := createAccount(ctx, parent, tx)
+	conn, err := db.Conn(ctx)
 	if err != nil {
-		return AccountRecord{}, ac, tc, errors.Join(fmt.Errorf("accounts: failed to seed %s", pKey), err)
+		return ids, err
 	}
+	defer conn.Close()
 
-	ac[parent.Kind] += 1
-
-	if !account.IsExternal(parent.Kind) {
-		history.ParentID = nullable.New(parent.ID)
-		history.Currency = parent.Currency
-		history.ArchivedAt = parent.ArchivedAt
-		history.DeletedAt = parent.DeletedAt
-		history.CreatedAt = timestamp
-		history.UpdatedAt = timestamp
-
-		history, err = createAccount(ctx, history, tx)
-		if err != nil {
-			return AccountRecord{},
-				ac,
-				tc,
-				errors.Join(fmt.Errorf("accounts: failed to seed %s history", pKey), err)
-		}
-
-		ac[history.Kind] += 1
-	}
-
-	if !account.IsExternal(parent.Kind) && historyAt.Valid {
-		tr := historyTransactionTemplate
-
-		tr.SourceID = history.ID
-		tr.TargetID = parent.ID
-		tr.SourceAmount = s.HistoryCapital
-		tr.TargetAmount = s.HistoryCapital
-		tr.IssuedAt = historyAt.Val
-		tr.ExecutedAt = historyAt
-		tr.CreatedAt = timestamp
-		tr.UpdatedAt = timestamp
-
-		if tr.SourceAmount < 0 {
-			tr.SourceID, tr.TargetID = tr.TargetID, tr.SourceID
-			tr.SourceAmount = -tr.SourceAmount
-			tr.TargetAmount = -tr.TargetAmount
-		}
-
-		tr, err = createTransaction(ctx, tr, tx)
-		if err != nil {
-			return AccountRecord{},
-				ac,
-				tc,
-				errors.Join(fmt.Errorf("accounts: failed to seed %s history transaction", pKey), err)
-		}
-
-		tc += 1
-	}
-
-	for i := 0; i < len(s.Children); i++ {
-		var (
-			child = s.Children[i].Account
-			key   = s.Children[i].MapKey
-		)
-
-		child.ParentID = nullable.New(parent.ID)
-		child.Currency = parent.Currency
-		child.ArchivedAt = s.Children[i].ArchivedAt(timestamp)
-		child.DeletedAt = s.Children[i].DeletedAt(timestamp)
-		child.CreatedAt = timestamp
-		child.UpdatedAt = timestamp
-
-		child, err = createAccount(ctx, child, tx)
-		if err != nil {
-			return AccountRecord{},
-				ac,
-				tc,
-				errors.Join(fmt.Errorf("accounts: failed to seed %s child %s", pKey, key), err)
-		}
-
-		ac[child.Kind] += 1
-		children[key] = child
-	}
-
-	rec := AccountRecord{
-		Account:  parent,
-		Children: children,
-	}
-
-	return rec, ac, tc, nil
-}
-
-func createAccount(ctx context.Context, record account.Record, tx *sql.Tx) (account.Record, error) {
-	err := tx.QueryRowContext(
+	rows, err := conn.QueryContext(
 		ctx,
 		`
-		INSERT INTO
-			accounts(
-				parent_id,
-				kind,
-				currency,
-				name,
-				description,
-				color,
-				icon,
-				capital,
-				archived_at,
-				deleted_at,
-				created_at,
-				updated_at
-			)
-		VALUES
-			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-		RETURNING id
+		SELECT id
+		FROM accounts
+		WHERE
+			parent_id = $1
+			AND deleted_at IS NULL
+			AND archived_at IS NULL
+			AND kind != $2
 		`,
-		record.ParentID,
-		record.Kind,
-		record.Currency,
-		record.Name,
-		record.Description,
-		record.Color,
-		record.Icon,
-		record.Capital,
-		record.ArchivedAt,
-		record.DeletedAt,
-		record.CreatedAt,
-		record.UpdatedAt,
-	).Scan(&record.ID)
+		parent,
+		account.SystemHistoric,
+	)
+	if err != nil {
+		return ids, err
+	}
 
-	return record, err
-}
+	for rows.Next() {
+		var id int64
 
-func createTransaction(ctx context.Context, tr transaction.Record, tx *sql.Tx) (transaction.Record, error) {
-	err := tx.QueryRowContext(
-		ctx,
-		`
-		INSERT INTO
-			transactions(
-				source_id,
-				target_id,
-				source_amount,
-				target_amount,
-				notes,
-				issued_at,
-				executed_at,
-				created_at,
-				updated_at
-			)
-		VALUES
-			($1, $2, $3, $4, $5, $6, $7, $8, $9)
-		RETURNING id
-		`,
-		tr.SourceID,
-		tr.TargetID,
-		tr.SourceAmount,
-		tr.TargetAmount,
-		tr.Notes,
-		tr.IssuedAt,
-		tr.ExecutedAt,
-		tr.CreatedAt,
-		tr.UpdatedAt,
-	).Scan(&tr.ID)
+		err = rows.Scan(&id)
+		if err != nil {
+			_ = rows.Close()
+			return ids, err
+		}
 
-	return tr, err
+		ids = append(ids, id)
+	}
+
+	_ = rows.Close()
+
+	return ids, nil
 }

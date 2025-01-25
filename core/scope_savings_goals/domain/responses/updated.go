@@ -12,7 +12,7 @@ type Updated struct {
 	Target   int64         `json:"target"`
 }
 
-func RecordToUpdated(r savings_goal.Record) Updated {
+func NewUpdated(r savings_goal.Record) Updated {
 	return Updated{
 		ID:       r.ID,
 		Name:     r.Name,

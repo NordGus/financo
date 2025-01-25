@@ -11,7 +11,7 @@ webapp-lint:
 
 
 # Database targets
-db-setup: db-create db-migrate db-seed
+db-setup: db-drop db-create db-migrate db-seed
 db-reset: db-migration-reset db-migrate db-seed
 db-migrate:
 	@echo "running migrations"

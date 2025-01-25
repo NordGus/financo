@@ -22,4 +22,5 @@ type Record struct {
 	DeletedAt   nullable.Type[time.Time]
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
+	DynamicData DynamicData
 }

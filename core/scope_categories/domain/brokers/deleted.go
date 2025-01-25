@@ -1,0 +1,11 @@
+package brokers
+
+import (
+	"financo/core/scope_categories/domain/messages"
+	"financo/lib/message_bus"
+)
+
+type Deleted interface {
+	Subscribe(consumer message_bus.Consumer[messages.Deleted]) error
+	Publish(message messages.Deleted) error
+}

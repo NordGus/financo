@@ -1,7 +1,6 @@
 package requests
 
 import (
-	"financo/core/scope_accounts/domain/repositories"
 	"financo/lib/color"
 	"financo/lib/currency"
 	"financo/lib/icon"
@@ -11,118 +10,114 @@ import (
 	"time"
 )
 
+// UpdateHistory is the DTO that handles the processes related to accounts with
+// an incomplete ledger history inside financo.
 type UpdateHistory struct {
-	Present bool                     `json:"present"`
-	Balance nullable.Type[int64]     `json:"balance"`
 	At      nullable.Type[time.Time] `json:"at"`
+	Balance nullable.Type[int64]     `json:"balance"`
 }
 
-type UpdateChild struct {
-	ID          nullable.Type[int64]  `json:"id"`
-	Kind        account.Kind          `json:"kind"`
-	Currency    currency.Type         `json:"currency"`
-	Name        string                `json:"name"`
-	Description nullable.Type[string] `json:"description"`
-	Capital     int64                 `json:"capital"`
-	History     UpdateHistory         `json:"history"`
-	Color       color.Type            `json:"color"`
-	Icon        icon.Type             `json:"icon"`
-	Archive     bool                  `json:"archive"`
-	Delete      bool                  `json:"delete"`
-}
-
+// Update is the DTO for requests that want to update an existing account inside
+// financo
 type Update struct {
 	ID          int64                 `json:"id"`
-	Kind        account.Kind          `json:"kind"`
 	Currency    currency.Type         `json:"currency"`
 	Name        string                `json:"name"`
 	Description nullable.Type[string] `json:"description"`
 	Capital     int64                 `json:"capital"`
-	History     UpdateHistory         `json:"history"`
 	Color       color.Type            `json:"color"`
 	Icon        icon.Type             `json:"icon"`
-	Archive     bool                  `json:"archive"`
-	Children    []UpdateChild         `json:"children"`
+	History     History               `json:"history"`
+	Main        bool                  `json:"main"`
 }
 
-func UpdateToAccountRecord(req Update, timestamp time.Time) account.Record {
-	record := account.Record{
-		ID:          req.ID,
-		Kind:        req.Kind,
-		Currency:    req.Currency,
-		Name:        req.Name,
-		Description: req.Description,
-		Capital:     req.Capital,
-		Color:       req.Color,
-		Icon:        req.Icon,
-		UpdatedAt:   timestamp,
+// Record maps [Update] into the given [account.Record] use by financo to update
+// it.
+func (req *Update) Record(r account.Record, timestamp time.Time) account.Record {
+	// Builds the basic record data
+	r.Currency = req.Currency
+	r.Name = req.Name
+	r.Description = req.Description
+	r.Color = req.Color
+	r.Icon = req.Icon
+	r.UpdatedAt = timestamp
+
+	// Sets the capital to the one send by the request only if the account been
+	// updated is [account.DebtLoan], [account.DebtPersonal] or
+	// [account.DebtCredit]
+	if account.IsDebt(r.Kind) {
+		r.Capital = req.Capital
 	}
 
-	if req.Archive {
-		record.ArchivedAt = nullable.New(timestamp)
+	// Sets the DynamicData Main attribute to the one set by the request only if
+	// the account been updated is [account.CapitalNormal]
+	if account.IsCapital(r.Kind) {
+		r.DynamicData.Main = req.Main
 	}
 
-	return record
+	// Sets the DynamicData History attributes to the one set by the request only
+	// if the request History attributes contains a At date.
+	//
+	// When the request contains a valid At attribute it means that the account
+	// been created has an incomplete ledger.
+	if req.History.At.Valid {
+		r.DynamicData.History.At.Val = req.History.At.Val.UTC()
+		r.DynamicData.History.Balance = nullable.New(req.History.Balance.OrElse(0))
+	} else {
+		r.DynamicData.History.At = nullable.Type[time.Time]{}
+		r.DynamicData.History.Balance = nullable.Type[int64]{}
+	}
+
+	return r
 }
 
-func UpdateChildToAccountRecord(parent account.Record, req UpdateChild, timestamp time.Time) account.Record {
-	record := account.Record{
-		ID:          req.ID.OrElse(-1),
-		ParentID:    nullable.New(parent.ID),
-		Kind:        parent.Kind,
-		Currency:    parent.Currency,
-		Name:        req.Name,
-		Description: req.Description,
-		Capital:     req.Capital,
-		Color:       parent.Color,
-		Icon:        req.Icon,
-		UpdatedAt:   timestamp,
+// Record maps [Update] into the given [account.Record] with [account.Kind] set
+// to [account.SystemHistoric] use by financo to update it.
+func (req *Update) HistoryRecord(r account.Record, timestamp time.Time) account.Record {
+	// Builds the basic record data
+	r.Currency = req.Currency
+	r.UpdatedAt = timestamp
+
+	// Sets the DynamicData attributes to the one set by the request only
+	// if the request History attributes contains a At date.
+	//
+	// When the request contains a valid At attribute it means that the account
+	// been created has an incomplete ledger.
+	if req.History.At.Valid {
+		r.DynamicData.Transactions = 1
+		r.DynamicData.Balance = req.History.Balance.OrElse(0) * -1
+	} else {
+		r.DynamicData.Transactions = 0
+		r.DynamicData.Balance = 0
 	}
 
-	if record.ID <= 0 {
-		record.CreatedAt = timestamp
-	}
-
-	if req.Archive {
-		record.ArchivedAt = nullable.New(timestamp)
-	}
-
-	return record
+	return r
 }
 
-func UpdateHistoryToTransactionRecord(
-	req UpdateHistory,
-	records repositories.AccountWithHistory,
-	timestamp time.Time,
-) nullable.Type[transaction.Record] {
-	if !req.Present {
-		return nullable.Type[transaction.Record]{}
+// HistoryTransaction maps [Update] into the given [transaction.Record] to
+// update it
+func (req *Update) HistoryTransaction(t transaction.Record, timestamp time.Time) transaction.Record {
+	// Sets the transaction as deleted in the case the request doesn't contains a
+	// a valid History At attribute.
+	//
+	// This means the the account no longer has an incomplete ledger.
+	if !req.History.At.Valid {
+		t.DeletedAt = nullable.New(t.DeletedAt.OrElse(timestamp))
+
+		return t
 	}
 
-	if !req.Present {
-		return nullable.Type[transaction.Record]{}
-	}
+	t.SourceAmount = req.History.Balance.OrElse(0)
+	t.TargetAmount = req.History.Balance.OrElse(0)
+	t.IssuedAt = req.History.At.Val.UTC()
+	t.ExecutedAt = req.History.At
+	t.UpdatedAt = timestamp
 
-	if !req.Balance.Valid {
-		return nullable.Type[transaction.Record]{}
-	}
+	// Set DeletedAt to null to reactivated
+	t.DeletedAt = nullable.Type[time.Time]{}
 
-	tr := transaction.Record{
-		SourceID:     records.Record.ID,
-		TargetID:     records.History.ID,
-		SourceAmount: req.Balance.Val,
-		TargetAmount: req.Balance.Val,
-		IssuedAt:     req.At.OrElse(timestamp),
-		ExecutedAt:   nullable.New(req.At.OrElse(timestamp)),
-		UpdatedAt:    timestamp,
-		CreatedAt:    timestamp,
-	}
+	// Change the date into UTC
+	t.ExecutedAt.Val = t.ExecutedAt.Val.UTC()
 
-	if tr.SourceAmount < 0 {
-		tr.SourceID, tr.TargetID = tr.TargetID, tr.SourceID
-		tr.SourceAmount = -tr.SourceAmount
-		tr.TargetAmount = -tr.TargetAmount
-	}
-
-	return nullable.New(tr)
+	return t
 }

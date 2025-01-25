@@ -28,6 +28,10 @@ func (h *handler) Handle(event messages.Updated) error {
 		timestamp = time.Now().UTC()
 	)
 
+	if !account.IsSavings(event.Current.Kind) && !account.IsSavings(event.Previous.Kind) {
+		return nil // Only process savings account
+	}
+
 	err := h.handle(ctx, timestamp, event.Current)
 	if err != nil {
 		return err

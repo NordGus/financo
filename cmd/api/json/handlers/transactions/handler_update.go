@@ -5,10 +5,10 @@ import (
 	"financo/core/infrastructure/repositories/account_repository"
 	"financo/core/scope_transactions/application/commands/update_command"
 	"financo/core/scope_transactions/domain/requests"
-	"financo/core/scope_transactions/infrastructure/broker_handler"
-	"financo/core/scope_transactions/infrastructure/detailed_transaction_repository"
-	"financo/core/scope_transactions/infrastructure/transaction_repository"
-	"financo/core/scope_transactions/infrastructure/update_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/detailed_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/transaction_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/update_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -64,7 +64,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	broker, err := broker_handler.Instance()
+	broker, err := message_broker.Instance()
 	if err != nil {
 		log.Println("failed to get broker handler instance", err)
 		http.Error(
@@ -81,7 +81,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		transaction_repository.NewPostgreSQL(db),
 		update_transaction_repository.NewPostgreSQL(db),
 		detailed_transaction_repository.NewPostgreSQL(db),
-		broker.UpdatedBroker(),
+		broker.Updated(),
 	).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)

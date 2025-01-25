@@ -5,14 +5,9 @@ import (
 	"time"
 )
 
-type accountKey struct {
-	Key       string
-	ParentKey nullable.Type[string]
-}
-
 type transactionsSeed struct {
-	Source       accountKey
-	Target       accountKey
+	Source       string
+	Target       string
 	SourceAmount int64
 	TargetAmount int64
 	Notes        nullable.Type[string]
@@ -24,13 +19,8 @@ type transactionsSeed struct {
 var (
 	transactions = []transactionsSeed{
 		{ // Paycheck
-			Source: accountKey{
-				Key:       "day_job",
-				ParentKey: nullable.New("paycheck"),
-			},
-			Target: accountKey{
-				Key: "personal_bank_account",
-			},
+			Source:       "category.paycheck.day_job",
+			Target:       "account.personal_bank_account",
 			SourceAmount: 2_000_00,
 			TargetAmount: 2_000_00,
 			Notes:        nullable.Type[string]{},
@@ -57,12 +47,8 @@ var (
 			},
 		},
 		{ // Monthly Savings
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				Key: "personal_savings_account",
-			},
+			Source:       "account.personal_bank_account",
+			Target:       "account.personal_savings_account",
 			SourceAmount: 300_00,
 			TargetAmount: 300_00,
 			Notes:        nullable.New("Monthly savings"),
@@ -81,12 +67,8 @@ var (
 			},
 		},
 		{ // Credit Card Payment
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				Key: "credit_card",
-			},
+			Source:       "account.personal_bank_account",
+			Target:       "account.credit_card",
 			SourceAmount: 150_00,
 			TargetAmount: 150_00,
 			Notes:        nullable.Type[string]{},
@@ -113,12 +95,8 @@ var (
 			},
 		},
 		{ // Car Payment
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				Key: "car_loan",
-			},
+			Source:       "account.personal_bank_account",
+			Target:       "account.car_loan",
 			SourceAmount: 100_00,
 			TargetAmount: 100_00,
 			Notes:        nullable.Type[string]{},
@@ -145,13 +123,8 @@ var (
 			},
 		},
 		{ // Old Freelance payment
-			Source: accountKey{
-				ParentKey: nullable.New("paycheck"),
-				Key:       "freelancing",
-			},
-			Target: accountKey{
-				Key: "freelance_bank_account",
-			},
+			Source:       "category.paycheck.freelancing",
+			Target:       "account.freelance_bank_account",
 			SourceAmount: 800_00,
 			TargetAmount: 800_00,
 			Notes:        nullable.New("Wrestling Gig"),
@@ -166,12 +139,8 @@ var (
 			},
 		},
 		{ // Old Freelance paying to credit card
-			Source: accountKey{
-				Key: "freelance_bank_account",
-			},
-			Target: accountKey{
-				Key: "personal_savings_account",
-			},
+			Source:       "account.freelance_bank_account",
+			Target:       "account.personal_savings_account",
 			SourceAmount: 500_00,
 			TargetAmount: 500_00,
 			Notes:        nullable.New("For the piggy bag"),
@@ -186,12 +155,8 @@ var (
 			},
 		},
 		{ // Old Freelance paying to credit card
-			Source: accountKey{
-				Key: "freelance_bank_account",
-			},
-			Target: accountKey{
-				Key: "credit_card",
-			},
+			Source:       "account.freelance_bank_account",
+			Target:       "account.credit_card",
 			SourceAmount: 300_00,
 			TargetAmount: 300_00,
 			Notes:        nullable.Type[string]{},
@@ -206,13 +171,8 @@ var (
 			},
 		},
 		{ // Teaching payment
-			Source: accountKey{
-				Key:       "teaching",
-				ParentKey: nullable.New("paycheck"),
-			},
-			Target: accountKey{
-				Key: "personal_bank_account",
-			},
+			Source:       "category.paycheck.teaching",
+			Target:       "account.personal_bank_account",
 			SourceAmount: 500_00,
 			TargetAmount: 500_00,
 			Notes:        nullable.Type[string]{},
@@ -227,12 +187,8 @@ var (
 			},
 		},
 		{ // Personal loan with morgan (I'm owed)
-			Source: accountKey{
-				Key: "morgan_loan",
-			},
-			Target: accountKey{
-				Key: "personal_bank_account",
-			},
+			Source:       "account.morgan_loan",
+			Target:       "account.personal_bank_account",
 			SourceAmount: 200_00,
 			TargetAmount: 200_00,
 			Notes:        nullable.Type[string]{},
@@ -247,12 +203,8 @@ var (
 			},
 		},
 		{ // Transport expense without ExecutedAt
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				Key: "transport",
-			},
+			Source:       "account.personal_bank_account",
+			Target:       "category.transport",
 			SourceAmount: 50_00,
 			TargetAmount: 50_00,
 			Notes:        nullable.Type[string]{},
@@ -267,13 +219,8 @@ var (
 			},
 		},
 		{ // Hobby expense without ExecutedAt
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				ParentKey: nullable.New("market"),
-				Key:       "gardening_supplies",
-			},
+			Source:       "account.personal_bank_account",
+			Target:       "category.market.gardening_supplies",
 			SourceAmount: 80_00,
 			TargetAmount: 80_00,
 			Notes:        nullable.Type[string]{},
@@ -288,12 +235,8 @@ var (
 			},
 		},
 		{ // Savings in the US, different currency account
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				Key: "us_savings_account",
-			},
+			Source:       "account.personal_bank_account",
+			Target:       "account.us_savings_account",
 			SourceAmount: 150_00,
 			TargetAmount: 163_50,
 			Notes:        nullable.Type[string]{},
@@ -308,12 +251,8 @@ var (
 			},
 		},
 		{ // Groceries
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				Key: "market",
-			},
+			Source:       "account.personal_bank_account",
+			Target:       "category.market",
 			SourceAmount: 100_00,
 			TargetAmount: 100_00,
 			Notes:        nullable.Type[string]{},
@@ -328,13 +267,8 @@ var (
 			},
 		},
 		{ // Fruits
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				ParentKey: nullable.New("market"),
-				Key:       "fruit_shop",
-			},
+			Source:       "account.personal_bank_account",
+			Target:       "category.market.fruit_shop",
 			SourceAmount: 40_00,
 			TargetAmount: 40_00,
 			Notes:        nullable.Type[string]{},
@@ -349,13 +283,8 @@ var (
 			},
 		},
 		{ // Some meat
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				ParentKey: nullable.New("market"),
-				Key:       "food",
-			},
+			Source:       "account.personal_bank_account",
+			Target:       "category.market.food",
 			SourceAmount: 100_00,
 			TargetAmount: 100_00,
 			Notes:        nullable.Type[string]{},
@@ -370,12 +299,8 @@ var (
 			},
 		},
 		{ // Carlos' lunch
-			Source: accountKey{
-				Key: "carlos_lunch",
-			},
-			Target: accountKey{
-				Key: "personal_bank_account",
-			},
+			Source:       "account.carlos_lunch",
+			Target:       "account.personal_bank_account",
 			SourceAmount: 80_00,
 			TargetAmount: 80_00,
 			Notes:        nullable.Type[string]{},
@@ -390,14 +315,10 @@ var (
 			},
 		},
 		{ // Carlos' lunch
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				Key: "laptop_credit",
-			},
-			SourceAmount: 1_234_69,
-			TargetAmount: 1_234_69,
+			Source:       "account.personal_bank_account",
+			Target:       "account.laptop_credit",
+			SourceAmount: 1_162_58,
+			TargetAmount: 1_162_58,
 			Notes:        nullable.Type[string]{},
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, -4, 0).UTC()
@@ -410,12 +331,8 @@ var (
 			},
 		},
 		{ // Next Credit Card Payment
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				Key: "credit_card",
-			},
+			Source:       "account.personal_bank_account",
+			Target:       "account.credit_card",
 			SourceAmount: 150_00,
 			TargetAmount: 150_00,
 			Notes:        nullable.Type[string]{},
@@ -442,12 +359,8 @@ var (
 			},
 		},
 		{ // Next Car Payment
-			Source: accountKey{
-				Key: "personal_bank_account",
-			},
-			Target: accountKey{
-				Key: "car_loan",
-			},
+			Source:       "account.personal_bank_account",
+			Target:       "account.car_loan",
 			SourceAmount: 100_00,
 			TargetAmount: 100_00,
 			Notes:        nullable.Type[string]{},

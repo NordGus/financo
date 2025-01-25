@@ -33,6 +33,27 @@ var (
 	}
 )
 
+// New returns the [currency.Type] that matches the value of the given currency
+// string.
+//
+// It returns an error if a match is not found.
+func New(currency string) (Type, error) {
+	switch strings.ToUpper(currency) {
+	default:
+		return "", fmt.Errorf("currency: invalid currency \"%s\"", currency)
+	case "CAD":
+		return CAD, nil
+	case "USD":
+		return USD, nil
+	case "EUR":
+		return EUR, nil
+	case "CHF":
+		return CHF, nil
+	case "GBP":
+		return GBP, nil
+	}
+}
+
 // UnmarshalJSON receives a buffer b, and ensures that the provided value is a
 // valid [Type]. So [Type] satisfies the [json.Unmarshaler] interface.
 //

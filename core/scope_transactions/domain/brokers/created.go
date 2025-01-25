@@ -5,7 +5,7 @@ import (
 	"financo/lib/message_bus"
 )
 
-type CreatedBroker interface {
+type Created interface {
 	Subscribe(consumer message_bus.Consumer[messages.Created]) error
 	Publish(message messages.Created) error
 }

@@ -2,45 +2,17 @@ package repositories
 
 import (
 	"context"
-	"financo/core/scope_accounts/domain/responses"
-	"financo/lib/nullable"
 	"financo/models/account"
 	"financo/models/transaction"
 )
 
-type AccountWithHistory struct {
+type UpdateAccountState struct {
 	Record      account.Record
 	History     account.Record
-	Transaction nullable.Type[transaction.Record]
-}
-
-type AccountWithChildren struct {
-	Record   account.Record
-	Children []account.Record
-}
-
-type SaveAccountWithHistoryArgs struct {
-	Record      account.Record
-	History     account.Record
-	Transaction nullable.Type[transaction.Record]
-}
-
-type SaveAccountWithChildrenArgs struct {
-	Record   account.Record
-	Children []account.Record
-}
-
-type UpdateAccountWithHistoryRepository interface {
-	FindWithHistory(ctx context.Context, id int64) (AccountWithHistory, error)
-	SaveWithHistory(ctx context.Context, args SaveAccountWithHistoryArgs) (responses.Detailed, error)
-}
-
-type UpdateAccountWithChildrenRepository interface {
-	FindWithChildren(ctx context.Context, id int64) (AccountWithChildren, error)
-	SaveWithChildren(ctx context.Context, args SaveAccountWithChildrenArgs) (responses.Detailed, error)
+	Transaction transaction.Record
 }
 
 type UpdateAccountRepository interface {
-	UpdateAccountWithHistoryRepository
-	UpdateAccountWithChildrenRepository
+	Find(ctx context.Context, id int64) (UpdateAccountState, error)
+	Save(ctx context.Context, state UpdateAccountState) error
 }

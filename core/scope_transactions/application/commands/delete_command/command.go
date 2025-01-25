@@ -17,7 +17,7 @@ type command struct {
 	trRepo       repositories.TransactionRepository
 	deleteRepo   repositories.DeleteTransactionRepository
 	detailedRepo repositories.DetailedTransactionRepository
-	broker       brokers.DeletedBroker
+	broker       brokers.Deleted
 }
 
 func New(
@@ -25,7 +25,7 @@ func New(
 	trRepo repositories.TransactionRepository,
 	deleteRepo repositories.DeleteTransactionRepository,
 	detailedRepo repositories.DetailedTransactionRepository,
-	broker brokers.DeletedBroker,
+	broker brokers.Deleted,
 ) commands.Command[responses.Detailed] {
 	return &command{
 		req:          req,

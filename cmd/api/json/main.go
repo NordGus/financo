@@ -2,15 +2,13 @@ package main
 
 import (
 	"context"
-	"financo/cmd/api/json/consumers/savings_goals_consumers"
 	"financo/cmd/api/json/handlers/accounts"
+	"financo/cmd/api/json/handlers/categories"
 	"financo/cmd/api/json/handlers/currencies"
-	"financo/cmd/api/json/handlers/graphs"
 	"financo/cmd/api/json/handlers/health"
 	"financo/cmd/api/json/handlers/my_journey"
 	"financo/cmd/api/json/handlers/savings_goals"
 	"financo/cmd/api/json/handlers/transactions"
-	"financo/cmd/api/json/middleware"
 	"fmt"
 	"log"
 	"net/http"
@@ -20,9 +18,8 @@ import (
 	"syscall"
 	"time"
 
-	accounts_broker "financo/core/scope_accounts/infrastructure/broker_handler"
-	transactions_broker "financo/core/scope_transactions/infrastructure/broker_handler"
 	"financo/services/in_memory_session_store"
+	"financo/services/message_buses"
 	"financo/services/postgresql_database"
 	"financo/services/umbilical"
 
@@ -39,24 +36,11 @@ func main() {
 		wg          = new(sync.WaitGroup)
 		ctx, cancel = context.WithCancel(context.Background())
 
-		pgDBService        = postgresql_database.New()
-		sessionStore       = in_memory_session_store.New()
-		umbilicalService   = umbilical.New()
-		accountsBroker     = accounts_broker.Initialize(wg)
-		transactionsBroker = transactions_broker.Initialize(wg)
+		pgDBService         = postgresql_database.New()
+		sessionStore        = in_memory_session_store.New()
+		umbilicalService    = umbilical.New()
+		messageBusesService = message_buses.Initialize(wg)
 	)
-
-	defer func() {
-		if err := accountsBroker.Shutdown(); err != nil {
-			log.Printf("failed to shutdown accounts broker: %s\n", err)
-		}
-	}()
-
-	defer func() {
-		if err := transactionsBroker.Shutdown(); err != nil {
-			log.Printf("failed to shutdown transactions broker: %s\n", err)
-		}
-	}()
 
 	defer func() {
 		if err := pgDBService.Close(); err != nil {
@@ -76,11 +60,11 @@ func main() {
 		}
 	}()
 
-	err := savings_goals_consumers.Subscribe()
-	if err != nil {
-		log.Printf("failed to subscribe savings_goals_consumers: %s\n", err)
-		os.Exit(1)
-	}
+	defer func() {
+		if err := messageBusesService.Close(); err != nil {
+			log.Printf("failed to close message busses connection: %s\n", err)
+		}
+	}()
 
 	wg.Add(1)
 	go startHTTPServer(ctx, wg)
@@ -105,22 +89,33 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 
 	router := chi.NewRouter()
 
-	router.Use(chi_middleware.RequestID)
-	router.Use(chi_middleware.RealIP)
-	router.Use(chi_middleware.Logger)
-	router.Use(chi_middleware.Recoverer)
+	router.Use(
+		chi_middleware.RequestID,
+		chi_middleware.RealIP,
+		chi_middleware.Logger,
+		chi_middleware.Recoverer,
+		chi_middleware.ContentCharset("UTF-8"),
+		chi_middleware.Timeout(time.Second*30),
+	)
 
-	// protected routes
-	router.Group(func(r chi.Router) {
-		r.Use(middleware.Session)
+	router.Route("/api", func(r chi.Router) {
+		r.Use(chi_middleware.AllowContentType("application/json"))
 
-		r.Route("/accounts", accounts.Routes)
-		r.Route("/currencies", currencies.Routes)
-		r.Route("/graphs", graphs.Routes)
-		r.Route("/health", health.Routes)
-		r.Route("/my-journey", my_journey.Routes)
-		r.Route("/savings-goals", savings_goals.Routes)
-		r.Route("/transactions", transactions.Routes)
+		r.Group(func(public chi.Router) {
+			//
+		})
+
+		r.Group(func(protected chi.Router) {
+			// protected.Use(middleware.Session)
+
+			protected.Route("/accounts", accounts.Routes)
+			protected.Route("/categories", categories.Routes)
+			protected.Route("/currencies", currencies.Routes)
+			protected.Route("/health", health.Routes)
+			protected.Route("/my-journey", my_journey.Routes)
+			protected.Route("/savings-goals", savings_goals.Routes)
+			protected.Route("/transactions", transactions.Routes)
+		})
 	})
 
 	// HTTP Server configuration

@@ -6,6 +6,7 @@ import (
 	"financo/core/domain/event_handlers"
 	"financo/core/scope_accounts/domain/messages"
 	"financo/core/scope_savings_goals/domain/repositories"
+	"financo/models/account"
 	"financo/models/achievement/savings_goal"
 	"slices"
 	"time"
@@ -26,6 +27,10 @@ func (h *handler) Handle(event messages.Created) error {
 		ctx       = context.Background()
 		timestamp = time.Now().UTC()
 	)
+
+	if !account.IsSavings(event.Record.Kind) {
+		return nil // Only process savings account
+	}
 
 	data, err := h.repo.Find(ctx, event.Record.Currency)
 	if err != nil {

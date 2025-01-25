@@ -30,8 +30,24 @@ func IsDebt(kind Kind) bool {
 	return kind == DebtLoan || kind == DebtPersonal || kind == DebtCredit
 }
 
+func IsCredit(kind Kind) bool {
+	return kind == DebtCredit
+}
+
+func IsLoan(kind Kind) bool {
+	return kind == DebtLoan
+}
+
+func IsPersonalDebt(kind Kind) bool {
+	return kind == DebtPersonal
+}
+
 func IsSavings(kind Kind) bool {
 	return kind == CapitalSavings
+}
+
+func IsCapital(kind Kind) bool {
+	return kind == CapitalNormal
 }
 
 // UnmarshalJSON receives a buffer b, and ensures that the provided value is a
@@ -165,4 +181,9 @@ func (k Kind) Value() (driver.Value, error) {
 	}
 
 	return s, nil
+}
+
+// String returns the cast value of [Kind] as a string
+func (k Kind) String() string {
+	return string(k)
 }
