@@ -1,15 +1,27 @@
 package categories
 
-import "github.com/go-chi/chi/v5"
+import (
+	"financo/cmd/api/json/handlers/categories/create_child_handler"
+
+	"github.com/go-chi/chi/v5"
+)
 
 func Routes(r chi.Router) {
 	r.Get("/", index)
 	r.Post("/", create)
 
-	r.Route("/{id}", func(r chi.Router) {
-		r.Delete("/", destroy)
-		r.Put("/", update)
-		r.Patch("/archive", archive)
-		r.Patch("/unarchive", unarchive)
+	r.Route("/{id}", func(cat chi.Router) {
+		cat.Delete("/", destroy)
+		cat.Put("/", update)
+		cat.Patch("/archive", archive)
+		cat.Patch("/unarchive", unarchive)
+
+		cat.Route("/children", func(children chi.Router) {
+			children.Post("/", create_child_handler.HandlerFunc)
+
+			children.Route("/{childId}", func(child chi.Router) {
+
+			})
+		})
 	})
 }

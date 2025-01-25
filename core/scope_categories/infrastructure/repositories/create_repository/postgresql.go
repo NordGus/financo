@@ -63,6 +63,33 @@ func (p *postgresql) Save(ctx context.Context, r account.Record, c []account.Rec
 	}, nil
 }
 
+func (p *postgresql) SaveChild(ctx context.Context, c account.Record) (account.Record, error) {
+	conn, err := p.db.Conn(ctx)
+	if err != nil {
+		return c, err
+	}
+	defer conn.Close()
+
+	tx, err := conn.BeginTx(ctx, nil)
+	if err != nil {
+		return c, err
+	}
+
+	c, err = p.persist(ctx, tx, c)
+	if err != nil {
+		_ = tx.Rollback()
+		return c, err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		_ = tx.Rollback()
+		return c, err
+	}
+
+	return c, nil
+}
+
 func (p *postgresql) persist(ctx context.Context, tx *sql.Tx, r account.Record) (account.Record, error) {
 	err := tx.QueryRowContext(
 		ctx,

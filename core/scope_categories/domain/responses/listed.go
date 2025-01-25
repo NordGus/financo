@@ -77,3 +77,20 @@ func NewListedFromCategoryRecord(r category.Record) Listed {
 
 	return out
 }
+
+func NewListedChildFromAccountRecord(child account.Record) ListedChild {
+	return ListedChild{
+		ID:           child.ID,
+		Kind:         child.Kind,
+		Currency:     child.Currency,
+		Name:         child.Name,
+		Description:  child.Description,
+		Color:        child.Color,
+		Icon:         child.Icon,
+		ArchivedAt:   child.ArchivedAt,
+		DeletedAt:    child.DeletedAt,
+		CreatedAt:    child.CreatedAt,
+		UpdatedAt:    child.UpdatedAt,
+		Transactions: child.DynamicData.Transactions,
+	}
+}

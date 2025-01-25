@@ -8,4 +8,5 @@ import (
 
 type CreateRepository interface {
 	Save(ctx context.Context, parent account.Record, children []account.Record) (category.Record, error)
+	SaveChild(ctx context.Context, child account.Record) (account.Record, error)
 }
