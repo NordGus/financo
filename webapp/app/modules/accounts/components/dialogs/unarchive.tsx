@@ -6,7 +6,8 @@ import {
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
-  DrawerHeader
+  DrawerHeader,
+  DrawerTitle
 } from "~/shared/components/ui/drawer";
 import { Account } from "../../types/account";
 
@@ -25,7 +26,7 @@ export function UnarchiveAccount({ account, open, onOpenChange, onConfirm, submi
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerHeader>Are you sure?</DrawerHeader>
+          <DrawerTitle>Are you sure?</DrawerTitle>
           <DrawerDescription className="space-y-2">
             You are about to unarchive <span className="font-bold">{name}</span>. This will make it reappear as an selectable option in <span className="font-bold text-foreground">financo</span>. <span className="font-bold">This action can be reverted from the Accounts</span>.
           </DrawerDescription>

@@ -52,8 +52,20 @@ func (c *command) Run(ctx context.Context) (responses.ListedChild, error) {
 		return res, err
 	}
 
-	if parent.Parent.ID != previous.Parent.ParentID.Val {
-		return res, fmt.Errorf("update_child_command: (%d) is not the parent of (%d)", c.req.ParentID, c.req.ID)
+	if !previous.Parent.ParentID.Valid {
+		return res, fmt.Errorf("update_child_command: category id=(%d) is not a child category", c.req.ID)
+	}
+
+	if previous.Parent.ParentID.Val != parent.Parent.ID {
+		return res, fmt.Errorf(
+			"update_child_command: category id=(%d) is not the parent of category id=(%d)",
+			c.req.ParentID,
+			c.req.ID,
+		)
+	}
+
+	if previous.Parent.ID <= 0 {
+		return res, fmt.Errorf("update_child_command: category id=(%d) not found", previous.Parent.ID)
 	}
 
 	current.Parent = c.req.ToRecord(previous.Parent, timestamp)

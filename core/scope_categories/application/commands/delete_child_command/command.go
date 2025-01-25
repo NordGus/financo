@@ -1,4 +1,4 @@
-package delete_command
+package delete_child_command
 
 import (
 	"context"
@@ -14,16 +14,16 @@ import (
 )
 
 type command struct {
-	req     requests.Delete
+	req     requests.DeleteChild
 	destroy repositories.DeleteRepository
 	broker  brokers.Deleted
 }
 
 func New(
-	req requests.Delete,
+	req requests.DeleteChild,
 	destroy repositories.DeleteRepository,
 	broker brokers.Deleted,
-) commands.Command[responses.Listed] {
+) commands.Command[responses.ListedChild] {
 	return &command{
 		req:     req,
 		destroy: destroy,
@@ -31,24 +31,37 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Listed, error) {
+func (c *command) Run(ctx context.Context) (responses.ListedChild, error) {
 	var (
 		timestamp = time.Now().UTC()
 
-		res responses.Listed
+		res responses.ListedChild
 	)
+
+	parent, err := c.destroy.Find(ctx, c.req.ParentID)
+	if err != nil {
+		return res, err
+	}
 
 	record, err := c.destroy.Find(ctx, c.req.ID)
 	if err != nil {
 		return res, err
 	}
 
-	if record.Parent.ID <= 0 {
-		return res, fmt.Errorf("delete_command: category id=(%d) not found", record.Parent.ID)
+	if !record.Parent.ParentID.Valid {
+		return res, fmt.Errorf("delete_child_command: category id=(%d) is not a child category", c.req.ID)
 	}
 
-	if record.Parent.ParentID.Valid {
-		return res, fmt.Errorf("delete_command: category id=(%d) is not a parent category", c.req.ID)
+	if record.Parent.ParentID.Val != parent.Parent.ID {
+		return res, fmt.Errorf(
+			"delete_child_command: category id=(%d) is not the parent of category id=(%d)",
+			c.req.ParentID,
+			c.req.ID,
+		)
+	}
+
+	if record.Parent.ID <= 0 {
+		return res, fmt.Errorf("delete_child_command: category id=(%d) not found", record.Parent.ID)
 	}
 
 	record.Parent.DeletedAt = nullable.New(timestamp)
@@ -69,5 +82,5 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 		return res, err
 	}
 
-	return responses.NewListedFromCategoryRecord(record), nil
+	return responses.NewListedChildFromAccountRecord(record.Parent), nil
 }

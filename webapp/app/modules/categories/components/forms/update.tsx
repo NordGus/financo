@@ -3,7 +3,6 @@ import { PackageIcon, PackageOpenIcon, PlusIcon, TrashIcon } from "lucide-react"
 import { useEffect, useReducer } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { OnSubmitDeleteAccountAction } from "~/modules/accounts/types/actions";
 import { CurrencyInput } from "~/shared/components/inputs/currency-input";
 import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
@@ -28,15 +27,16 @@ import {
 import { Input } from "~/shared/components/ui/input";
 import { Textarea } from "~/shared/components/ui/textarea";
 import { accountKindToHuman as kindToHuman } from "~/shared/helpers/account-kind-to-human";
+import { childName } from "~/shared/helpers/child-name";
 import { Icon } from "~/shared/types/icon";
 import { schema } from "../../schemas/update";
-import { OnSubmitArchiveAction } from "../../types/archive";
 import { Category } from "../../types/category";
 import { CreateChildAction } from "../../types/create";
+import { DeleteChildAction } from "../../types/delete";
 import { defaultIcons } from "../../types/icons";
-import { OnSubmitUnarchiveAction } from "../../types/unarchive";
-import { OnSubmitUpdateAction, UpdateChildAction } from "../../types/update";
+import { OnSubmitUpdateAction, UpdateChild, UpdateChildAction } from "../../types/update";
 import { PreviewCard } from "../child/preview-card";
+import { DeleteDialog as DeleteChildDialog } from "../dialogs/child/delete";
 import { ChildForm as CreateChildForm } from "./child/create";
 import { ChildForm as UpdateChildForm } from "./child/update";
 
@@ -45,11 +45,12 @@ type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSubmit: OnSubmitUpdateAction
-  onDelete: OnSubmitDeleteAccountAction
-  onArchive: OnSubmitArchiveAction
-  onUnarchive: OnSubmitUnarchiveAction
+  onDelete: () => void
+  onArchive: () => void
+  onUnarchive: () => void
   onCreateChildAction: CreateChildAction
   onUpdateChildAction: UpdateChildAction
+  onDeleteChildAction: DeleteChildAction
   submitting: boolean
 }
 
@@ -66,13 +67,16 @@ type Child = {
   description?: string
   icon: Icon
   archivedAt?: string | null
+  transactions: number
 }
 
-type Open = "update" | "create" | "delete" | "archive" | "unarchive" | null
+type Open = "update" | "create" | null
+type OpenChildMenu = "delete" | "archive" | "unarchive" | null
 
 type State = {
   child: Child
   open: Open
+  openChildMenu: OpenChildMenu
   submitting: boolean
 }
 
@@ -87,8 +91,8 @@ type OnAddChildClick = () => void
 const __actions = {
   ADD: "ADD",
   UPDATE: "UPDATE",
-  CLOSE: "CLOSE",
   OPEN_CHANGED: "OPEN_CHANGED",
+  OPEN_CHILD_MENU_CHANGED: "OPEN_CHILD_MENU_CHANGED",
   ACTION_SUBMITTED: "ACTION_SUBMITTED",
   ACTION_FAILED: "ACTION_FAILED",
   CHILD_CREATED: "CHILD_CREATED",
@@ -100,8 +104,8 @@ type Actions = typeof __actions
 type Action =
   { type: Actions["ADD"] } |
   { type: Actions["UPDATE"], child: Child } |
-  { type: Actions["CLOSE"] } |
   { type: Actions["OPEN_CHANGED"], open: Open } |
+  { type: Actions["OPEN_CHILD_MENU_CHANGED"], open: OpenChildMenu } |
   { type: Actions["ACTION_SUBMITTED"] } |
   { type: Actions["ACTION_FAILED"] } |
   { type: Actions["ACTION_SUCCEED"] }
@@ -119,16 +123,16 @@ function reducer(state: State, action: Action): State {
         child: { ...action.child },
         open: "update"
       }
-    case "CLOSE":
-      return {
-        ...state,
-        open: null,
-        submitting: false
-      }
     case "OPEN_CHANGED":
       return {
         ...state,
-        open: action.open
+        open: action.open,
+        openChildMenu: null,
+      }
+    case "OPEN_CHILD_MENU_CHANGED":
+      return {
+        ...state,
+        openChildMenu: state.open === "update" ? action.open : null,
       }
     case "ACTION_SUBMITTED":
       return { ...state, submitting: true }
@@ -138,6 +142,7 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         open: null,
+        openChildMenu: null,
         submitting: false
       }
   }
@@ -145,8 +150,16 @@ function reducer(state: State, action: Action): State {
 
 function init({ category, icon }: InitialState): State {
   return {
-    child: { id: -1, parentId: category.id, name: "", description: "", icon },
+    child: {
+      id: -1,
+      parentId: category.id,
+      name: "",
+      description: "",
+      icon,
+      transactions: 0
+    },
     open: null,
+    openChildMenu: null,
     submitting: false,
   }
 }
@@ -161,6 +174,7 @@ export function UpdateCategory({
   onUnarchive,
   onCreateChildAction,
   onUpdateChildAction,
+  onDeleteChildAction,
   submitting
 }: Props) {
   const [state, dispatch] = useReducer(reducer, { category, icon: defaultIcons[category.kind] }, init)
@@ -171,6 +185,8 @@ export function UpdateCategory({
     dispatch({ type: "UPDATE", child })
   const onAddChildClick: OnAddChildClick = () =>
     dispatch({ type: "ADD" })
+  const onOpenChildMenuChange = (open: OpenChildMenu) =>
+    dispatch({ type: "OPEN_CHILD_MENU_CHANGED", open })
 
   const onChildActionSubmit = () =>
     dispatch({ type: "ACTION_SUBMITTED" })
@@ -185,15 +201,22 @@ export function UpdateCategory({
     onCreateChildAction(category.id, data, onChildActionSuccess, onChildActionFailure)
   }
 
-  const onUpdateChild = (data: Child) => {
+  const onUpdateChild = (data: UpdateChild) => {
     onChildActionSubmit()
 
-    onUpdateChildAction(data, onChildActionSuccess, onChildActionFailure)
+    return onUpdateChildAction(data, onChildActionSuccess, onChildActionFailure)
   }
 
-  const destroy = () => onDelete(category.id)
-  const archive = () => onArchive(category.id)
-  const unarchive = () => onUnarchive(category.id)
+  const onDeleteChild = () => {
+    onChildActionSubmit()
+
+    return onDeleteChildAction(
+      state.child.parentId,
+      state.child.id,
+      onChildActionSuccess,
+      onChildActionFailure
+    )
+  }
 
   return (
     <>
@@ -207,9 +230,9 @@ export function UpdateCategory({
           <UpdateForm
             category={category}
             onSubmit={onSubmit}
-            onDelete={destroy}
-            onArchive={archive}
-            onUnarchive={unarchive}
+            onDelete={onDelete}
+            onArchive={onArchive}
+            onUnarchive={onUnarchive}
             submitting={submitting || state.submitting}
             onAddChildClick={onAddChildClick}
             onChildClick={onChildClick}
@@ -222,6 +245,7 @@ export function UpdateCategory({
         open={state.open === "update"}
         onSubmit={onUpdateChild}
         onOpenChange={(open) => onOpenChildChange(open ? "update" : null)}
+        onDelete={() => onOpenChildMenuChange("delete")}
         submitting={state.submitting}
       />
 
@@ -232,8 +256,23 @@ export function UpdateCategory({
         onSubmit={onCreateChild}
         onOpenChange={(open) => onOpenChildChange(open ? "create" : null)}
         defaultIcon={defaultIcons[category.kind]}
-        onDelete={() => { }}
+        onDelete={() => onOpenChildMenuChange("delete")}
       />
+
+      {
+        state.child.id > 0 && (
+          <>
+            <DeleteChildDialog
+              open={state.openChildMenu === "delete"}
+              onOpenChange={(open) => onOpenChildMenuChange(open ? "delete" : null)}
+              name={childName(category, state.child)}
+              transactions={state.child.transactions}
+              onConfirm={onDeleteChild}
+              submitting={state.submitting}
+            />
+          </>
+        )
+      }
     </>
   )
 }
@@ -371,7 +410,7 @@ function UpdateForm({
             >
               <PlusIcon /> Add Child
             </Button>
-            {category.children.map(({ id, name, description, icon, archivedAt }) => (
+            {category.children.map(({ id, name, description, icon, archivedAt, transactions }) => (
               <PreviewCard
                 key={`child.${id}`}
                 name={name}
@@ -384,7 +423,8 @@ function UpdateForm({
                   name,
                   description: description ?? undefined,
                   icon,
-                  archivedAt
+                  archivedAt,
+                  transactions
                 })
                 }
               />
@@ -418,7 +458,6 @@ function UpdateForm({
                 </Button>
               )
             }
-
             <Button
               variant={"destructive"}
               onClick={onDelete}
@@ -428,7 +467,9 @@ function UpdateForm({
               <TrashIcon /> Delete
             </Button>
             <DrawerClose asChild>
-              <Button variant={"outline"} disabled={submitting}>Cancel</Button>
+              <Button variant={"outline"} disabled={submitting}>
+                Cancel
+              </Button>
             </DrawerClose>
           </DrawerFooter>
         </form>

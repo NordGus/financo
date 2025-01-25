@@ -31,6 +31,7 @@ export default function CategoriesRoute() {
 
   const createChildAction = useCategoriesStore((state) => state.createChild)
   const updateChildAction = useCategoriesStore((state) => state.updateChild)
+  const destroyChildAction = useCategoriesStore((state) => state.destroyChild)
 
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -179,7 +180,7 @@ export default function CategoriesRoute() {
         toast.promise(res, {
           loading: "Updating...",
           success: (data) => {
-            return `${data.name} created`
+            return `${data.name} updated`
           },
           error: "Oops!. Something went wrong"
         })
@@ -194,6 +195,31 @@ export default function CategoriesRoute() {
       }
     },
     [updateChildAction]
+  )
+
+  const destroyChild = useCallback(
+    async (parentId: number, id: number, success: () => void, failure: () => void) => {
+      try {
+        const res = destroyChildAction(parentId, id)
+
+        toast.promise(res, {
+          loading: "Deleting...",
+          success: (data) => {
+            return `${data.name} deleted`
+          },
+          error: "Oops!. Something went wrong"
+        })
+
+        await res
+
+        success()
+      } catch (error) {
+        failure()
+
+        throw error
+      }
+    },
+    [destroyChildAction]
   )
 
   useEffect(() => {
@@ -214,5 +240,6 @@ export default function CategoriesRoute() {
 
     onCreateChildAction={createChild}
     onUpdateChildAction={updateChild}
+    onDeleteChildAction={destroyChild}
   />
 }

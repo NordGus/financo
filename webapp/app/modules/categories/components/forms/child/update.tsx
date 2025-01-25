@@ -3,6 +3,7 @@ import { PackageIcon, PackageOpenIcon, TrashIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { OnSubmitUpdateChildAction } from "~/modules/categories/types/update";
 import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
 import { Button } from "~/shared/components/ui/button";
@@ -42,8 +43,8 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   submitting: boolean
-  onSubmit: (data: Child) => void
-  onDelete?: () => void
+  onSubmit: OnSubmitUpdateChildAction
+  onDelete: () => void
   onArchive?: () => void
   onUnarchive?: () => void
 }
@@ -134,7 +135,7 @@ export function ChildForm({
                 {submitting ? <Throbber /> : "Update"}
               </Button>
               {
-                onArchive && (
+                !child.archivedAt && (
                   <Button
                     variant={"secondary"}
                     onClick={onArchive}
@@ -145,8 +146,9 @@ export function ChildForm({
                   </Button>
                 )
               }
+
               {
-                onUnarchive && (
+                child.archivedAt && (
                   <Button
                     variant={"secondary"}
                     onClick={onUnarchive}
@@ -157,18 +159,16 @@ export function ChildForm({
                   </Button>
                 )
               }
-              {
-                onDelete && (
-                  <Button
-                    variant={"destructive"}
-                    onClick={onDelete}
-                    disabled={submitting}
-                    type="button"
-                  >
-                    <TrashIcon /> Delete
-                  </Button>
-                )
-              }
+
+              <Button
+                variant={"destructive"}
+                onClick={onDelete}
+                disabled={submitting}
+                type="button"
+              >
+                <TrashIcon /> Delete
+              </Button>
+
               <DrawerClose asChild disabled={submitting}>
                 <Button variant={"outline"} type="button">Cancel</Button>
               </DrawerClose>

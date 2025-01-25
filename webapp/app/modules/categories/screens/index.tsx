@@ -13,21 +13,25 @@ import { archivedCategoriesManual } from "../manual/archived-categories-manual";
 import { ArchiveAction } from "../types/archive";
 import { Category, ModuleKind } from "../types/category";
 import { Create, CreateAction, CreateChildAction } from "../types/create";
-import { DeleteAction } from "../types/delete";
+import { DeleteAction, DeleteChildAction } from "../types/delete";
 import { UnarchiveAction } from "../types/unarchive";
 import { Update, UpdateAction, UpdateChildAction } from "../types/update";
 
 interface Props {
   categories: Category[]
+
   searchParams: URLSearchParams
   onSearchParamsChange: (nextInit: Record<string, string | string[]>) => void
+
   onCreateAction: CreateAction
   onUpdateAction: UpdateAction
   onDeleteAction: DeleteAction
   onArchiveAction: ArchiveAction
   onUnarchiveAction: UnarchiveAction
+
   onCreateChildAction: CreateChildAction
   onUpdateChildAction: UpdateChildAction
+  onDeleteChildAction: DeleteChildAction
 }
 
 type SubView = "active" | "archived"
@@ -53,6 +57,8 @@ function withView(view?: string | null): View {
       return "expense"
   }
 }
+
+type Open = "kind" | "create" | "update" | null
 
 const _screenActions = {
   VIEW_CHANGED: "VIEW_CHANGED",
@@ -86,9 +92,7 @@ type ScreenState = {
   subView: SubView
   kind: ModuleKind
   category: Category | null
-  openSelectKind: boolean
-  openCreate: boolean
-  openEdit: boolean
+  open: Open
   submitting: boolean
 }
 
@@ -102,9 +106,7 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
       return {
         ...state,
         kind: action.kind,
-        openSelectKind: false,
-        openCreate: true,
-        openEdit: false,
+        open: "create",
       }
     case "CATEGORY_CHANGED":
       return {
@@ -113,30 +115,22 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
           ...action.category,
           children: [...action.category.children.map((c) => ({ ...c }))]
         },
-        openSelectKind: false,
-        openCreate: false,
-        openEdit: true,
+        open: "update",
       }
     case "OPEN_SELECT_KIND_CHANGED":
       return {
         ...state,
-        openSelectKind: action.open,
-        openCreate: false,
-        openEdit: false,
+        open: action.open ? "kind" : null
       }
     case "OPEN_CREATE_CHANGED":
       return {
         ...state,
-        openSelectKind: false,
-        openCreate: action.open,
-        openEdit: false,
+        open: action.open ? "create" : null,
       }
     case "OPEN_EDIT_CHANGED":
       return {
         ...state,
-        openSelectKind: false,
-        openCreate: false,
-        openEdit: action.open,
+        open: action.open ? "update" : null
       }
     case "ACTION_SUBMITTED":
       return { ...state, submitting: true }
@@ -144,14 +138,10 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
       return {
         ...state,
         submitting: false,
-        openSelectKind: false,
-        openCreate: false,
-        openEdit: false,
+        open: null
       }
     case "ACTION_FAILED":
       return { ...state, submitting: false }
-    default:
-      return { ...state }
   }
 }
 
@@ -161,9 +151,7 @@ function init({ view, subView }: { view: View, subView: SubView }): ScreenState 
     subView,
     kind: "external_expense",
     category: null,
-    openSelectKind: false,
-    openCreate: false,
-    openEdit: false,
+    open: null,
     submitting: false,
   }
 }
@@ -179,6 +167,7 @@ export function Screen({
   onDeleteAction,
   onCreateChildAction,
   onUpdateChildAction,
+  onDeleteChildAction,
 }: Props) {
   const [screen, dispatch] = useReducer(
     reducer,
@@ -229,19 +218,23 @@ export function Screen({
     return onUpdateAction(values, onActionSuccess, onActionFailure)
   }
 
-  const onDelete = (id: number) => {
+  const onDelete = () => { }
+  const onArchive = () => { }
+  const onUnarchive = () => { }
+
+  const onDeleteConfirm = (id: number) => {
     onActionSubmit()
 
     return onDeleteAction(id, onActionSuccess, onActionFailure)
   }
 
-  const onArchive = (id: number) => {
+  const onArchiveConfirm = (id: number) => {
     onActionSubmit()
 
     return onArchiveAction(id, onActionSuccess, onActionFailure)
   }
 
-  const onUnarchive = (id: number) => {
+  const onUnarchiveConfirm = (id: number) => {
     onActionSubmit()
 
     return onUnarchiveAction(id, onActionSuccess, onActionFailure)
@@ -284,13 +277,13 @@ export function Screen({
       </div>
 
       <SelectKindToCreate
-        open={screen.openSelectKind}
+        open={screen.open === "kind"}
         onOpenChange={onOpenSelectKindChange}
         onSelect={onKindChange}
       />
 
       <CreateCategory
-        open={screen.openCreate}
+        open={screen.open === "create"}
         onOpenChange={onOpenCreateChange}
         kind={screen.kind}
         defaultCurrency="EUR"
@@ -301,7 +294,7 @@ export function Screen({
       {
         screen.category && (
           <UpdateCategory
-            open={screen.openEdit}
+            open={screen.open === "update"}
             onOpenChange={onOpenEditChange}
 
             category={
@@ -318,6 +311,7 @@ export function Screen({
 
             onCreateChildAction={onCreateChildAction}
             onUpdateChildAction={onUpdateChildAction}
+            onDeleteChildAction={onDeleteChildAction}
           />
         )
       }

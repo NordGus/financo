@@ -8,27 +8,28 @@ import (
 	"financo/core/scope_categories/domain/repositories"
 	"financo/core/scope_categories/domain/requests"
 	"financo/core/scope_categories/domain/responses"
+	"fmt"
 	"time"
 )
 
 type command struct {
-	req          requests.Archive
-	repo         repositories.CategoryRepository
-	archivalRepo repositories.ArchivalRepository
-	broker       brokers.Archived
+	req        requests.Archive
+	categories repositories.CategoryRepository
+	archival   repositories.ArchivalRepository
+	broker     brokers.Archived
 }
 
 func New(
 	req requests.Archive,
-	repo repositories.CategoryRepository,
-	archivalRepo repositories.ArchivalRepository,
+	categories repositories.CategoryRepository,
+	archival repositories.ArchivalRepository,
 	broker brokers.Archived,
 ) commands.Command[responses.Listed] {
 	return &command{
-		req:          req,
-		repo:         repo,
-		archivalRepo: archivalRepo,
-		broker:       broker,
+		req:        req,
+		categories: categories,
+		archival:   archival,
+		broker:     broker,
 	}
 }
 
@@ -39,12 +40,20 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 		res responses.Listed
 	)
 
-	err := c.archivalRepo.Archive(ctx, c.req.ID, timestamp)
+	record, err := c.categories.Find(ctx, c.req.ID)
 	if err != nil {
 		return res, err
 	}
 
-	record, err := c.repo.Find(ctx, c.req.ID)
+	if record.Parent.ParentID.Valid {
+		return res, fmt.Errorf("archive_command: category id=(%d) is not a parent category", c.req.ID)
+	}
+
+	if record.Parent.ID <= 0 {
+		return res, fmt.Errorf("archive_command: category id=(%d) not found", c.req.ID)
+	}
+
+	record, err = c.archival.Unarchive(ctx, record, timestamp)
 	if err != nil {
 		return res, err
 	}
