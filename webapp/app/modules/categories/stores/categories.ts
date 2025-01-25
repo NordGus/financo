@@ -3,6 +3,7 @@ import { archive } from "../api/commands/archive";
 import { create } from "../api/commands/create";
 import { createChild } from "../api/commands/create-child";
 import { destroy } from "../api/commands/destroy";
+import { destroyChild } from "../api/commands/destroy-child";
 import { unarchive } from "../api/commands/unarchive";
 import { update } from "../api/commands/update";
 import { updateChild } from "../api/commands/update-child";
@@ -21,6 +22,7 @@ interface CategoryState {
   destroy: (id: number) => Promise<Category>
   createChild: (parentId: number, data: CreateChild) => Promise<ChildCategory>
   updateChild: (data: UpdateChild) => Promise<ChildCategory>
+  destroyChild: (parentId: number, id: number) => Promise<ChildCategory>
 }
 
 const useCategoriesStore = createStore<CategoryState>((set) => ({
@@ -118,6 +120,24 @@ const useCategoriesStore = createStore<CategoryState>((set) => ({
     }))
 
     return updated
+  },
+  destroyChild: async (parentId, id) => {
+    const deleted = await destroyChild(parentId, id)
+
+    set((state) => ({
+      ...state,
+      categories: [
+        ...state.categories.map((category) => {
+          if (category.id !== parentId) return category
+
+          return {
+            ...category,
+            children: [...category.children.filter((child) => child.id !== id)]
+          }
+        })]
+    }))
+
+    return deleted
   },
 }))
 
