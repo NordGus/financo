@@ -23,7 +23,7 @@ func New(
 	repo repositories.CategoryRepository,
 	archivalRepo repositories.ArchivalRepository,
 	broker brokers.Unarchived,
-) commands.Command[responses.Reactivated] {
+) commands.Command[responses.Listed] {
 	return &command{
 		req:          req,
 		repo:         repo,
@@ -32,11 +32,11 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Reactivated, error) {
+func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	var (
 		timestamp = time.Now().UTC()
 
-		res responses.Reactivated
+		res responses.Listed
 	)
 
 	err := c.archivalRepo.Unarchive(ctx, c.req.ID, timestamp)
@@ -54,11 +54,5 @@ func (c *command) Run(ctx context.Context) (responses.Reactivated, error) {
 		return res, err
 	}
 
-	return responses.Reactivated{
-		ID:    record.Parent.ID,
-		Name:  record.Parent.Name,
-		Kind:  record.Parent.Kind,
-		Color: record.Parent.Color,
-		Icon:  record.Parent.Icon,
-	}, nil
+	return responses.NewListedFromCategoryRecord(record), nil
 }
