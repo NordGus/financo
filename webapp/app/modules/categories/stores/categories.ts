@@ -5,10 +5,11 @@ import { createChild } from "../api/commands/create-child";
 import { destroy } from "../api/commands/destroy";
 import { unarchive } from "../api/commands/unarchive";
 import { update } from "../api/commands/update";
+import { updateChild } from "../api/commands/update-child";
 import { list } from "../api/queries/list";
 import { Category, Child as ChildCategory } from "../types/category";
 import { Create, CreateChild } from "../types/create";
-import { Update } from "../types/update";
+import { Update, UpdateChild } from "../types/update";
 
 interface CategoryState {
   categories: Category[]
@@ -19,6 +20,7 @@ interface CategoryState {
   unarchive: (id: number) => Promise<Category>
   destroy: (id: number) => Promise<Category>
   createChild: (parentId: number, data: CreateChild) => Promise<ChildCategory>
+  updateChild: (data: UpdateChild) => Promise<ChildCategory>
 }
 
 const useCategoriesStore = createStore<CategoryState>((set) => ({
@@ -98,6 +100,24 @@ const useCategoriesStore = createStore<CategoryState>((set) => ({
     }))
 
     return created
+  },
+  updateChild: async (data) => {
+    const updated = await updateChild(data)
+
+    set((state) => ({
+      ...state,
+      categories: [
+        ...state.categories.map((category) => {
+          if (category.id !== data.parentId) return category
+
+          return {
+            ...category,
+            children: [...category.children.map((child) => child.id === updated.id ? updated : child)]
+          }
+        })]
+    }))
+
+    return updated
   },
 }))
 

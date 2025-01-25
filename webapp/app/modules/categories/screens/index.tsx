@@ -15,7 +15,7 @@ import { Category, ModuleKind } from "../types/category";
 import { Create, CreateAction, CreateChildAction } from "../types/create";
 import { DeleteAction } from "../types/delete";
 import { UnarchiveAction } from "../types/unarchive";
-import { Update, UpdateAction } from "../types/update";
+import { Update, UpdateAction, UpdateChildAction } from "../types/update";
 
 interface Props {
   categories: Category[]
@@ -27,6 +27,7 @@ interface Props {
   onArchiveAction: ArchiveAction
   onUnarchiveAction: UnarchiveAction
   onCreateChildAction: CreateChildAction
+  onUpdateChildAction: UpdateChildAction
 }
 
 type SubView = "active" | "archived"
@@ -177,6 +178,7 @@ export function Screen({
   onUnarchiveAction,
   onDeleteAction,
   onCreateChildAction,
+  onUpdateChildAction,
 }: Props) {
   const [screen, dispatch] = useReducer(
     reducer,
@@ -315,6 +317,7 @@ export function Screen({
             onUnarchive={onUnarchive}
 
             onCreateChildAction={onCreateChildAction}
+            onUpdateChildAction={onUpdateChildAction}
           />
         )
       }

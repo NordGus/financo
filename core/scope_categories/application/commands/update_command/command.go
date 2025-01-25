@@ -9,6 +9,7 @@ import (
 	"financo/core/scope_categories/domain/repositories"
 	"financo/core/scope_categories/domain/requests"
 	"financo/core/scope_categories/domain/responses"
+	"fmt"
 	"time"
 )
 
@@ -41,6 +42,10 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	previous, err := c.repo.Find(ctx, c.req.ID)
 	if err != nil {
 		return res, err
+	}
+
+	if previous.Parent.ParentID.Valid {
+		return res, fmt.Errorf("update_command: (%d) is not a parent category", c.req.ID)
 	}
 
 	current.Parent = c.req.ToRecord(previous.Parent, timestamp)

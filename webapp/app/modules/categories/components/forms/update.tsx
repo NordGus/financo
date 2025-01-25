@@ -35,7 +35,7 @@ import { Category } from "../../types/category";
 import { CreateChildAction } from "../../types/create";
 import { defaultIcons } from "../../types/icons";
 import { OnSubmitUnarchiveAction } from "../../types/unarchive";
-import { OnSubmitUpdateAction } from "../../types/update";
+import { OnSubmitUpdateAction, UpdateChildAction } from "../../types/update";
 import { PreviewCard } from "../child/preview-card";
 import { ChildForm as CreateChildForm } from "./child/create";
 import { ChildForm as UpdateChildForm } from "./child/update";
@@ -49,6 +49,7 @@ type Props = {
   onArchive: OnSubmitArchiveAction
   onUnarchive: OnSubmitUnarchiveAction
   onCreateChildAction: CreateChildAction
+  onUpdateChildAction: UpdateChildAction
   submitting: boolean
 }
 
@@ -71,10 +72,6 @@ type Open = "update" | "create" | "delete" | "archive" | "unarchive" | null
 
 type State = {
   child: Child
-  onSubmit: (data: Child) => void
-  onDelete?: () => void
-  onArchive?: () => void
-  onUnarchive?: () => void
   open: Open
   submitting: boolean
 }
@@ -84,15 +81,7 @@ type InitialState = {
   icon: Icon
 }
 
-type OnChildClickPayload = {
-  child: Child,
-  onSubmit: (data: Child) => void,
-  onDelete?: () => void,
-  onArchive?: () => void,
-  onUnarchive?: () => void,
-}
-
-type OnChildClick = (payload: OnChildClickPayload) => void
+type OnChildClick = (child: Child) => void
 type OnAddChildClick = () => void
 
 const __actions = {
@@ -110,7 +99,7 @@ type Actions = typeof __actions
 
 type Action =
   { type: Actions["ADD"] } |
-  { type: Actions["UPDATE"], payload: OnChildClickPayload } |
+  { type: Actions["UPDATE"], child: Child } |
   { type: Actions["CLOSE"] } |
   { type: Actions["OPEN_CHANGED"], open: Open } |
   { type: Actions["ACTION_SUBMITTED"] } |
@@ -127,20 +116,12 @@ function reducer(state: State, action: Action): State {
     case "UPDATE":
       return {
         ...state,
-        child: { ...action.payload.child },
-        onSubmit: action.payload.onSubmit,
-        onDelete: action.payload.onDelete,
-        onArchive: action.payload.onArchive,
-        onUnarchive: action.payload.onUnarchive,
+        child: { ...action.child },
         open: "update"
       }
     case "CLOSE":
       return {
         ...state,
-        onSubmit: (__data) => { },
-        onDelete: undefined,
-        onArchive: undefined,
-        onUnarchive: undefined,
         open: null,
         submitting: false
       }
@@ -156,10 +137,6 @@ function reducer(state: State, action: Action): State {
     case "ACTION_SUCCEED":
       return {
         ...state,
-        onSubmit: (__data) => { },
-        onDelete: undefined,
-        onArchive: undefined,
-        onUnarchive: undefined,
         open: null,
         submitting: false
       }
@@ -169,10 +146,6 @@ function reducer(state: State, action: Action): State {
 function init({ category, icon }: InitialState): State {
   return {
     child: { id: -1, parentId: category.id, name: "", description: "", icon },
-    onSubmit: (__data) => { },
-    onDelete: () => { },
-    onArchive: () => { },
-    onUnarchive: () => { },
     open: null,
     submitting: false,
   }
@@ -187,14 +160,15 @@ export function UpdateCategory({
   onArchive,
   onUnarchive,
   onCreateChildAction,
+  onUpdateChildAction,
   submitting
 }: Props) {
   const [state, dispatch] = useReducer(reducer, { category, icon: defaultIcons[category.kind] }, init)
 
   const onOpenChildChange = (open: Open) =>
     dispatch({ type: "OPEN_CHANGED", open })
-  const onChildClick: OnChildClick = (payload) =>
-    dispatch({ type: "UPDATE", payload })
+  const onChildClick: OnChildClick = (child) =>
+    dispatch({ type: "UPDATE", child })
   const onAddChildClick: OnAddChildClick = () =>
     dispatch({ type: "ADD" })
 
@@ -209,6 +183,12 @@ export function UpdateCategory({
     onChildActionSubmit()
 
     onCreateChildAction(category.id, data, onChildActionSuccess, onChildActionFailure)
+  }
+
+  const onUpdateChild = (data: Child) => {
+    onChildActionSubmit()
+
+    onUpdateChildAction(data, onChildActionSuccess, onChildActionFailure)
   }
 
   const destroy = () => onDelete(category.id)
@@ -240,7 +220,7 @@ export function UpdateCategory({
       <UpdateChildForm
         child={state.child}
         open={state.open === "update"}
-        onSubmit={state.onSubmit}
+        onSubmit={onUpdateChild}
         onOpenChange={(open) => onOpenChildChange(open ? "update" : null)}
         submitting={state.submitting}
       />
@@ -399,18 +379,12 @@ function UpdateForm({
                 icon={icon}
                 archived={!!archivedAt}
                 onClick={() => onChildClick({
-                  child: {
-                    id,
-                    parentId: category.id,
-                    name,
-                    description: description ?? undefined,
-                    icon,
-                    archivedAt
-                  },
-                  onSubmit: (__data) => { },
-                  onDelete: undefined,
-                  onArchive: undefined,
-                  onUnarchive: undefined,
+                  id,
+                  parentId: category.id,
+                  name,
+                  description: description ?? undefined,
+                  icon,
+                  archivedAt
                 })
                 }
               />

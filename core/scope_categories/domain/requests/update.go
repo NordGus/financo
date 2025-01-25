@@ -37,7 +37,7 @@ type UpdateChild struct {
 	Icon        icon.Type             `json:"icon"`
 }
 
-func (req *UpdateChild) ToRecords(child account.Record, timestamp time.Time) account.Record {
+func (req *UpdateChild) ToRecord(child account.Record, timestamp time.Time) account.Record {
 	child.Name = req.Name
 	child.Description = req.Description
 	child.Icon = req.Icon
