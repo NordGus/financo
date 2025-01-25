@@ -49,16 +49,16 @@ func (c *command) Run(ctx context.Context) (responses.Reactivated, error) {
 		return res, err
 	}
 
-	err = c.broker.Publish(messages.Unarchived{Record: record.Account})
+	err = c.broker.Publish(messages.Unarchived{Record: record.Parent})
 	if err != nil {
 		return res, err
 	}
 
 	return responses.Reactivated{
-		ID:    record.Account.ID,
-		Name:  record.Account.Name,
-		Kind:  record.Account.Kind,
-		Color: record.Account.Color,
-		Icon:  record.Account.Icon,
+		ID:    record.Parent.ID,
+		Name:  record.Parent.Name,
+		Kind:  record.Parent.Kind,
+		Color: record.Parent.Color,
+		Icon:  record.Parent.Icon,
 	}, nil
 }

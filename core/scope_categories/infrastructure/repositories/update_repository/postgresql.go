@@ -118,8 +118,8 @@ func (p *postgresql) Find(ctx context.Context, id int64) (category.Record, error
 			return out, err
 		}
 
-		if out.Account.ID != r.Parent.ID {
-			out.Account = r.Parent
+		if out.Parent.ID != r.Parent.ID {
+			out.Parent = r.Parent
 		}
 
 		if r.ID.Valid {
@@ -159,7 +159,7 @@ func (p *postgresql) Save(ctx context.Context, r category.Record) error {
 		return err
 	}
 
-	err = p.save(ctx, tx, r.Account)
+	err = p.save(ctx, tx, r.Parent)
 	if err != nil {
 		_ = tx.Rollback()
 		return err

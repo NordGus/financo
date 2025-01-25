@@ -43,24 +43,24 @@ func (c *command) Run(ctx context.Context) (responses.Updated, error) {
 		return res, err
 	}
 
-	current.Account = c.req.ToRecord(previous.Account, timestamp)
-	current.Children = c.req.ToChildrenRecords(previous.Children, previous.Account, timestamp)
+	current.Parent = c.req.ToRecord(previous.Parent, timestamp)
+	current.Children = c.req.ToChildrenRecords(previous.Children, previous.Parent, timestamp)
 
 	err = c.repo.Save(ctx, current)
 	if err != nil {
 		return res, err
 	}
 
-	err = c.broker.Publish(messages.Updated{Current: current.Account, Previous: previous.Account})
+	err = c.broker.Publish(messages.Updated{Current: current.Parent, Previous: previous.Parent})
 	if err != nil {
 		return res, err
 	}
 
 	return responses.Updated{
-		ID:    current.Account.ID,
-		Name:  current.Account.Name,
-		Kind:  current.Account.Kind,
-		Color: current.Account.Color,
-		Icon:  current.Account.Icon,
+		ID:    current.Parent.ID,
+		Name:  current.Parent.Name,
+		Kind:  current.Parent.Kind,
+		Color: current.Parent.Color,
+		Icon:  current.Parent.Icon,
 	}, nil
 }

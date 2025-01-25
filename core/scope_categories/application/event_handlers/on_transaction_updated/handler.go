@@ -55,20 +55,20 @@ func (h *handler) Handle(event messages.Updated) error {
 		return err
 	}
 
-	if prevSource.Account.ID > 0 {
-		ids = append(ids, prevSource.Account.ID)
+	if prevSource.Parent.ID > 0 {
+		ids = append(ids, prevSource.Parent.ID)
 	}
 
-	if prevTarget.Account.ID > 0 {
-		ids = append(ids, prevSource.Account.ID)
+	if prevTarget.Parent.ID > 0 {
+		ids = append(ids, prevSource.Parent.ID)
 	}
 
-	if source.Account.ID > 0 {
-		ids = append(ids, source.Account.ID)
+	if source.Parent.ID > 0 {
+		ids = append(ids, source.Parent.ID)
 	}
 
-	if target.Account.ID > 0 {
-		ids = append(ids, target.Account.ID)
+	if target.Parent.ID > 0 {
+		ids = append(ids, target.Parent.ID)
 	}
 
 	counts, err := h.transactionsRepo.CountFor(ctx, ids)
@@ -76,30 +76,30 @@ func (h *handler) Handle(event messages.Updated) error {
 		return err
 	}
 
-	if prevSource.Account.ID > 0 {
-		prevSource.Account.UpdatedAt = timestamp
-		prevSource.Account.DynamicData.Transactions = counts[prevSource.Account.ID]
+	if prevSource.Parent.ID > 0 {
+		prevSource.Parent.UpdatedAt = timestamp
+		prevSource.Parent.DynamicData.Transactions = counts[prevSource.Parent.ID]
 
 		update = append(update, prevSource)
 	}
 
-	if prevTarget.Account.ID > 0 {
-		prevTarget.Account.UpdatedAt = timestamp
-		prevTarget.Account.DynamicData.Transactions = counts[prevTarget.Account.ID]
+	if prevTarget.Parent.ID > 0 {
+		prevTarget.Parent.UpdatedAt = timestamp
+		prevTarget.Parent.DynamicData.Transactions = counts[prevTarget.Parent.ID]
 
 		update = append(update, prevTarget)
 	}
 
-	if source.Account.ID > 0 {
-		source.Account.UpdatedAt = timestamp
-		source.Account.DynamicData.Transactions = counts[source.Account.ID]
+	if source.Parent.ID > 0 {
+		source.Parent.UpdatedAt = timestamp
+		source.Parent.DynamicData.Transactions = counts[source.Parent.ID]
 
 		update = append(update, source)
 	}
 
-	if target.Account.ID > 0 {
-		target.Account.UpdatedAt = timestamp
-		target.Account.DynamicData.Transactions = counts[target.Account.ID]
+	if target.Parent.ID > 0 {
+		target.Parent.UpdatedAt = timestamp
+		target.Parent.DynamicData.Transactions = counts[target.Parent.ID]
 
 		update = append(update, target)
 	}

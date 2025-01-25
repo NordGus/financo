@@ -45,12 +45,12 @@ func (h *handler) Handle(event messages.Created) error {
 		return err
 	}
 
-	if source.Account.ID > 0 {
-		ids = append(ids, source.Account.ID)
+	if source.Parent.ID > 0 {
+		ids = append(ids, source.Parent.ID)
 	}
 
-	if target.Account.ID > 0 {
-		ids = append(ids, target.Account.ID)
+	if target.Parent.ID > 0 {
+		ids = append(ids, target.Parent.ID)
 	}
 
 	counts, err := h.transactionsRepo.CountFor(ctx, ids)
@@ -58,16 +58,16 @@ func (h *handler) Handle(event messages.Created) error {
 		return err
 	}
 
-	if source.Account.ID > 0 {
-		source.Account.UpdatedAt = timestamp
-		source.Account.DynamicData.Transactions = counts[source.Account.ID]
+	if source.Parent.ID > 0 {
+		source.Parent.UpdatedAt = timestamp
+		source.Parent.DynamicData.Transactions = counts[source.Parent.ID]
 
 		update = append(update, source)
 	}
 
-	if target.Account.ID > 0 {
-		target.Account.UpdatedAt = timestamp
-		target.Account.DynamicData.Transactions = counts[target.Account.ID]
+	if target.Parent.ID > 0 {
+		target.Parent.UpdatedAt = timestamp
+		target.Parent.DynamicData.Transactions = counts[target.Parent.ID]
 
 		update = append(update, target)
 	}

@@ -43,12 +43,12 @@ func (c *command) Run(ctx context.Context) (responses.Deleted, error) {
 		return res, err
 	}
 
-	if record.Account.ID <= 0 {
-		return res, fmt.Errorf("delete_command: category id=(%d) not found", record.Account.ID)
+	if record.Parent.ID <= 0 {
+		return res, fmt.Errorf("delete_command: category id=(%d) not found", record.Parent.ID)
 	}
 
-	record.Account.DeletedAt = nullable.New(timestamp)
-	record.Account.UpdatedAt = timestamp
+	record.Parent.DeletedAt = nullable.New(timestamp)
+	record.Parent.UpdatedAt = timestamp
 
 	for i := 0; i < len(record.Children); i++ {
 		record.Children[i].DeletedAt = nullable.New(timestamp)
@@ -60,16 +60,16 @@ func (c *command) Run(ctx context.Context) (responses.Deleted, error) {
 		return res, err
 	}
 
-	err = c.broker.Publish(messages.Deleted{Record: record.Account})
+	err = c.broker.Publish(messages.Deleted{Record: record.Parent})
 	if err != nil {
 		return res, err
 	}
 
 	return responses.Deleted{
-		ID:    record.Account.ID,
-		Name:  record.Account.Name,
-		Kind:  record.Account.Kind,
-		Color: record.Account.Color,
-		Icon:  record.Account.Icon,
+		ID:    record.Parent.ID,
+		Name:  record.Parent.Name,
+		Kind:  record.Parent.Kind,
+		Color: record.Parent.Color,
+		Icon:  record.Parent.Icon,
 	}, nil
 }

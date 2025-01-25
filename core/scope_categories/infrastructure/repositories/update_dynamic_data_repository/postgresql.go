@@ -32,7 +32,7 @@ func (p *postgresql) Save(ctx context.Context, records []category.Record) error 
 	}
 
 	for i := 0; i < len(records); i++ {
-		err = p.save(ctx, tx, records[i].Account)
+		err = p.save(ctx, tx, records[i].Parent)
 		if err != nil {
 			_ = tx.Rollback()
 			return err

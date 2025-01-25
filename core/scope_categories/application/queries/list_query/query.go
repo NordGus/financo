@@ -34,18 +34,18 @@ func (q *query) Find(ctx context.Context) ([]responses.Listed, error) {
 
 	for i := 0; i < len(records); i++ {
 		r := responses.Listed{
-			ID:           records[i].Account.ID,
-			Kind:         records[i].Account.Kind,
-			Currency:     records[i].Account.Currency,
-			Name:         records[i].Account.Name,
-			Description:  records[i].Account.Description,
-			Color:        records[i].Account.Color,
-			Icon:         records[i].Account.Icon,
-			ArchivedAt:   records[i].Account.ArchivedAt,
-			DeletedAt:    records[i].Account.DeletedAt,
-			CreatedAt:    records[i].Account.CreatedAt,
-			UpdatedAt:    records[i].Account.UpdatedAt,
-			Transactions: records[i].Account.DynamicData.Transactions,
+			ID:           records[i].Parent.ID,
+			Kind:         records[i].Parent.Kind,
+			Currency:     records[i].Parent.Currency,
+			Name:         records[i].Parent.Name,
+			Description:  records[i].Parent.Description,
+			Color:        records[i].Parent.Color,
+			Icon:         records[i].Parent.Icon,
+			ArchivedAt:   records[i].Parent.ArchivedAt,
+			DeletedAt:    records[i].Parent.DeletedAt,
+			CreatedAt:    records[i].Parent.CreatedAt,
+			UpdatedAt:    records[i].Parent.UpdatedAt,
+			Transactions: records[i].Parent.DynamicData.Transactions,
 			Children:     make([]responses.ListedChild, 0, len(records[i].Children)),
 		}
 

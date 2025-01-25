@@ -47,7 +47,7 @@ func (h *handler) Handle(event messages.Deleted) error {
 	ids := make([]int64, 0, len(records))
 
 	for i := 0; i < len(records); i++ {
-		ids = append(ids, records[i].Account.ID)
+		ids = append(ids, records[i].Parent.ID)
 		for j := 0; j < len(records[i].Children); j++ {
 			ids = append(ids, records[i].Children[j].ID)
 		}
@@ -59,8 +59,8 @@ func (h *handler) Handle(event messages.Deleted) error {
 	}
 
 	for i := 0; i < len(records); i++ {
-		records[i].Account.UpdatedAt = timestamp
-		records[i].Account.DynamicData.Transactions = counts[records[i].Account.ID]
+		records[i].Parent.UpdatedAt = timestamp
+		records[i].Parent.DynamicData.Transactions = counts[records[i].Parent.ID]
 		for j := 0; j < len(records[i].Children); j++ {
 			records[i].Children[j].UpdatedAt = timestamp
 			records[i].Children[j].DynamicData.Transactions = counts[records[i].Children[j].ID]

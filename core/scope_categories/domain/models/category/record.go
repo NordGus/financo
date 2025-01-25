@@ -3,6 +3,6 @@ package category
 import "financo/models/account"
 
 type Record struct {
-	Account  account.Record
+	Parent   account.Record
 	Children []account.Record
 }

@@ -117,8 +117,8 @@ func (p *postgresql) Find(ctx context.Context, id int64) (category.Record, error
 			return out, err
 		}
 
-		if out.Account.ID != r.Parent.ID {
-			out.Account = r.Parent
+		if out.Parent.ID != r.Parent.ID {
+			out.Parent = r.Parent
 		}
 
 		if r.ID.Valid {
@@ -158,13 +158,13 @@ func (p *postgresql) SoftDelete(ctx context.Context, record category.Record) err
 		return err
 	}
 
-	ids, err := p.softDeleteCategories(ctx, tx, record.Account)
+	ids, err := p.softDeleteCategories(ctx, tx, record.Parent)
 	if err != nil {
 		_ = tx.Rollback()
 		return err
 	}
 
-	err = p.softDeleteTransactions(ctx, tx, ids, record.Account)
+	err = p.softDeleteTransactions(ctx, tx, ids, record.Parent)
 	if err != nil {
 		_ = tx.Rollback()
 		return err
