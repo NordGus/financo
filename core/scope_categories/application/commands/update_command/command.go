@@ -22,7 +22,7 @@ func New(
 	req requests.Update,
 	repo repositories.UpdateRepository,
 	broker brokers.Updated,
-) commands.Command[responses.Updated] {
+) commands.Command[responses.Listed] {
 	return &command{
 		req:    req,
 		repo:   repo,
@@ -30,11 +30,11 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Updated, error) {
+func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	var (
 		timestamp = time.Now().UTC()
 
-		res     responses.Updated
+		res     responses.Listed
 		current category.Record
 	)
 
@@ -56,11 +56,5 @@ func (c *command) Run(ctx context.Context) (responses.Updated, error) {
 		return res, err
 	}
 
-	return responses.Updated{
-		ID:    current.Parent.ID,
-		Name:  current.Parent.Name,
-		Kind:  current.Parent.Kind,
-		Color: current.Parent.Color,
-		Icon:  current.Parent.Icon,
-	}, nil
+	return responses.NewListedFromCategoryRecord(current), nil
 }
