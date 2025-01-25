@@ -234,9 +234,9 @@ export function UpdateCategory({
     onCreateChildAction(state.category.id, data, onChildCreated, onChildActionFailure)
   }
 
-  const destroy = () => onDelete(category.id)
-  const archive = () => onArchive(category.id)
-  const unarchive = () => onUnarchive(category.id)
+  const destroy = () => onDelete(state.category.id)
+  const archive = () => onArchive(state.category.id)
+  const unarchive = () => onUnarchive(state.category.id)
 
   useEffect(() => dispatch({ type: "CATEGORY_CHANGED", category }), [category.id])
 
@@ -246,11 +246,11 @@ export function UpdateCategory({
         <DrawerContent className="overflow-clip">
           <DrawerHeader>
             <DrawerTitle>
-              Update {kindToHuman(category.kind)} Category
+              Update {kindToHuman(state.category.kind)} Category
             </DrawerTitle>
           </DrawerHeader>
           <UpdateForm
-            category={category}
+            category={state.category}
             onSubmit={onSubmit}
             onDelete={destroy}
             onArchive={archive}
