@@ -44,7 +44,7 @@ interface Props {
   onOpenChange: (open: boolean) => void
   submitting: boolean
   onSubmit: OnSubmitUpdateChildAction
-  onDelete?: () => void
+  onDelete: () => void
   onArchive?: () => void
   onUnarchive?: () => void
 }
@@ -135,7 +135,7 @@ export function ChildForm({
                 {submitting ? <Throbber /> : "Update"}
               </Button>
               {
-                onArchive && (
+                !child.archivedAt && (
                   <Button
                     variant={"secondary"}
                     onClick={onArchive}
@@ -146,8 +146,9 @@ export function ChildForm({
                   </Button>
                 )
               }
+
               {
-                onUnarchive && (
+                child.archivedAt && (
                   <Button
                     variant={"secondary"}
                     onClick={onUnarchive}
@@ -158,18 +159,16 @@ export function ChildForm({
                   </Button>
                 )
               }
-              {
-                onDelete && (
-                  <Button
-                    variant={"destructive"}
-                    onClick={onDelete}
-                    disabled={submitting}
-                    type="button"
-                  >
-                    <TrashIcon /> Delete
-                  </Button>
-                )
-              }
+
+              <Button
+                variant={"destructive"}
+                onClick={onDelete}
+                disabled={submitting}
+                type="button"
+              >
+                <TrashIcon /> Delete
+              </Button>
+
               <DrawerClose asChild disabled={submitting}>
                 <Button variant={"outline"} type="button">Cancel</Button>
               </DrawerClose>
