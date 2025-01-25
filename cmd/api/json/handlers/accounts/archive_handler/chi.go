@@ -1,4 +1,4 @@
-package accounts
+package archive_handler
 
 import (
 	"encoding/json"
@@ -15,9 +15,11 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func archive(w http.ResponseWriter, r *http.Request) {
+func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
-		db = postgresql_database.New()
+		db       = postgresql_database.New()
+		archival = archival_repository.NewPostgreSQL(db)
+		repo     = accounts_repository.NewPostgreSQL(db)
 
 		req requests.Archive
 	)
@@ -62,17 +64,14 @@ func archive(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	archivalRepo := archival_repository.NewPostgreSQL(db)
-	repo := accounts_repository.NewPostgreSQL(db)
-
 	broker, err := message_broker.Instance()
 	if err != nil {
-		log.Println("created broker uninitialized", err)
+		log.Println("broker uninitialized", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	res, err := archive_command.New(req, repo, archivalRepo, broker.Archived()).Run(r.Context())
+	res, err := archive_command.New(req, repo, archival, broker.Archived()).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(
