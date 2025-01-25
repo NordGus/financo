@@ -1,6 +1,7 @@
 package accounts
 
 import (
+	"financo/cmd/api/json/handlers/accounts/create_handler"
 	"financo/cmd/api/json/handlers/accounts/list_handler"
 
 	"github.com/go-chi/chi/v5"
@@ -8,7 +9,7 @@ import (
 
 func Routes(r chi.Router) {
 	r.Get("/", list_handler.HandlerFunc)
-	r.Post("/", create)
+	r.Post("/", create_handler.HandlerFunc)
 
 	r.Route("/{id}", func(r chi.Router) {
 		r.Delete("/", destroy)
