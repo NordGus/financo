@@ -7,6 +7,7 @@ import (
 	"financo/cmd/api/json/handlers/categories/destroy_handler"
 	"financo/cmd/api/json/handlers/categories/list_handler"
 	"financo/cmd/api/json/handlers/categories/unarchive_handler"
+	"financo/cmd/api/json/handlers/categories/update_child_handler"
 	"financo/cmd/api/json/handlers/categories/update_handler"
 
 	"github.com/go-chi/chi/v5"
@@ -25,7 +26,9 @@ func Routes(r chi.Router) {
 		cat.Route("/children", func(children chi.Router) {
 			children.Post("/", create_child_handler.HandlerFunc)
 
-			children.Route("/{childId}", func(child chi.Router) {})
+			children.Route("/{childId}", func(child chi.Router) {
+				child.Put("/", update_child_handler.HandlerFunc)
+			})
 		})
 	})
 }
