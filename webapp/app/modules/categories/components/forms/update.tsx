@@ -29,6 +29,7 @@ import { Input } from "~/shared/components/ui/input";
 import { Textarea } from "~/shared/components/ui/textarea";
 import { accountKindToHuman as kindToHuman } from "~/shared/helpers/account-kind-to-human";
 import { Icon } from "~/shared/types/icon";
+import { schema } from "../../schemas/update";
 import { OnSubmitArchiveAction } from "../../types/archive";
 import { Category } from "../../types/category";
 import { CreateChildAction } from "../../types/create";
@@ -36,7 +37,6 @@ import { defaultIcons } from "../../types/icons";
 import { OnSubmitUnarchiveAction } from "../../types/unarchive";
 import { OnSubmitUpdateAction } from "../../types/update";
 import { PreviewCard } from "../child/preview-card";
-import { schema } from "../schemas/update";
 import { ChildForm as CreateChildForm } from "./child/create";
 import { ChildForm as UpdateChildForm } from "./child/update";
 
@@ -397,6 +397,7 @@ function UpdateForm({
                 name={name}
                 description={description}
                 icon={icon}
+                archived={!!archivedAt}
                 onClick={() => onChildClick({
                   child: {
                     id,
