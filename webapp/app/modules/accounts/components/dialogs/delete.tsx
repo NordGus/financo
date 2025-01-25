@@ -6,7 +6,8 @@ import {
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
-  DrawerHeader
+  DrawerHeader,
+  DrawerTitle
 } from "~/shared/components/ui/drawer";
 import { Account } from "../../types/account";
 
@@ -25,7 +26,7 @@ export function DeleteAccount({ account, open, onOpenChange, onConfirm, submitti
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerHeader>Are you absolutely sure?</DrawerHeader>
+          <DrawerTitle>Are you absolutely sure?</DrawerTitle>
           <DrawerDescription className="space-y-2">
             You are about to permanently delete <span className="font-bold">{name}</span> from your Accounts and its related <span className="font-bold">{transactions}</span> transaction(s) from your ledger. <span className="font-bold">This action cannot be undone</span>.
           </DrawerDescription>
