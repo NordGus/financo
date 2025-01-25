@@ -25,3 +25,7 @@ export type Created = {
   color: string
   icon: Icon
 }
+
+export type CreateAction = (values: Create, success: () => void, failure: () => void) => Promise<void>
+
+export type OnSubmitCreateAction = (values: Create) => Promise<void>

@@ -10,10 +10,12 @@ import { CreateCategory } from "../components/forms/create";
 import { UpdateCategory } from "../components/forms/update";
 import { ListForKind } from "../components/list-for-kind";
 import { archivedCategoriesManual } from "../manual/archived-categories-manual";
-import { ArchiveAction, CreateAction, DeleteAction, UnarchiveAction, UpdateAction } from "../types/actions";
+import { ArchiveAction } from "../types/archive";
 import { Category, ModuleKind } from "../types/category";
-import { Create } from "../types/create";
-import { Update } from "../types/update";
+import { Create, CreateAction } from "../types/create";
+import { DeleteAction } from "../types/delete";
+import { UnarchiveAction } from "../types/unarchive";
+import { Update, UpdateAction } from "../types/update";
 
 interface Props {
   categories: Category[]
