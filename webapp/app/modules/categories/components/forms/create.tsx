@@ -29,11 +29,11 @@ import { Textarea } from "~/shared/components/ui/textarea";
 import { accountKindToHuman as kindToHuman } from "~/shared/helpers/account-kind-to-human";
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
-import { OnSubmitCreateAction } from "../../types/actions";
+import { schema } from "../../schemas/create";
 import { ModuleKind } from "../../types/category";
+import { OnSubmitCreateAction } from "../../types/create";
 import { defaultIcons } from "../../types/icons";
 import { PreviewCard } from "../child/preview-card";
-import { schema } from "../schemas/create";
 import { ChildForm } from "./child/create";
 
 interface Props {
@@ -307,6 +307,7 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
                   description={c.description}
                   icon={c.icon}
                   onClick={() => onEditChildClick(c, idx)}
+                  archived={false}
                 />
               ))}
             </div>

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { CURRENCIES } from "~/shared/types/currency";
 import { ICONS } from "~/shared/types/icon";
-import { ModuleKind } from "../../types/category";
+import { ModuleKind } from "../types/category";
 
 const KINDS: Record<ModuleKind, ModuleKind> = {
   external_expense: "external_expense",
