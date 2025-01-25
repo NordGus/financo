@@ -1,79 +1,54 @@
-import { useEffect, useState } from "react";
-import { useFetcher } from "react-router";
 import { Throbber } from "~/shared/components/throbber";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle
-} from "~/shared/components/ui/alert-dialog";
 import { Button } from "~/shared/components/ui/button";
-import { Deleted } from "../../types/delete";
-
-interface Account {
-  id: number
-  name: string
-  transactions: number
-  children: number
-}
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle
+} from "~/shared/components/ui/drawer";
 
 interface Props {
   open: boolean
-  account: Account
-  onOpenChanged: (open: boolean) => void
-  onSuccess: () => void
+  onOpenChange: (open: boolean) => void
+  name: string
+  transactions: number
+  children: number
+  onConfirm: () => void
+  submitting: boolean
 }
 
-export function DeleteDialog({ open, onOpenChanged, onSuccess, account: { id, name, transactions, children } }: Props) {
-  const [loading, setLoading] = useState(false)
-  const fetcher = useFetcher<Deleted | null>({ key: `delete.category.${id}` })
-
-  useEffect(() => {
-    setLoading(false)
-
-    if (loading && !!fetcher.data) onSuccess()
-  }, [fetcher.data])
-
+export function DeleteDialog({
+  open,
+  onOpenChange,
+  name,
+  transactions,
+  children,
+  onConfirm,
+  submitting
+}: Props) {
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChanged}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription className="space-y-2">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Are you absolutely sure?</DrawerTitle>
+          <DrawerDescription className="space-y-2">
             You are about to permanently delete <span className="font-bold">{name}</span> from your Categories and its related <span className="font-bold">{transactions}</span> transaction(s) from your ledger and its <span className="font-bold">{children}</span> child(ren). <span className="font-bold">This action cannot be undone</span>.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          {
-            loading
-              ? <Button variant={"ghost"} size={"icon"}>
-                <Throbber size={"sm"} />
-              </Button>
-              : <>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <Button
-                  onClick={() => {
-                    setLoading(true)
-
-                    fetcher.submit(
-                      { intent: "delete" },
-                      {
-                        action: `/categories/${id}`,
-                        method: "post",
-                        encType: "application/json"
-                      }
-                    )
-                  }}
-                >
-                  Confirm
-                </Button>
-              </>
-          }
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </DrawerDescription>
+        </DrawerHeader>
+        <DrawerFooter>
+          <Button onClick={onConfirm} disabled={submitting}>
+            {submitting ? <Throbber size={"sm"} /> : "Confirm"}
+          </Button>
+          <DrawerClose asChild>
+            <Button variant={"outline"} disabled={submitting}>
+              Cancel
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   )
 }

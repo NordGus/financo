@@ -34,7 +34,6 @@ export default function CategoriesRoute() {
   const destroyChildAction = useCategoriesStore((state) => state.destroyChild)
 
   const [searchParams, setSearchParams] = useSearchParams()
-
   const onSearchParamsChange = (params: URLSearchParamsInit) => setSearchParams(params)
 
   const create = useCallback(async (data: Create, success: () => void, failure: () => void) => {
