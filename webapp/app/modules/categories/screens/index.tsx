@@ -302,7 +302,10 @@ export function Screen({
             open={screen.openEdit}
             onOpenChange={onOpenEditChange}
 
-            category={screen.category}
+            category={
+              categories.find((c) => c.id === screen.category?.id)
+              ?? screen.category
+            }
 
             submitting={screen.submitting}
 
