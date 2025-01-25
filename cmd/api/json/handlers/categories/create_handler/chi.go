@@ -1,4 +1,4 @@
-package categories
+package create_handler
 
 import (
 	"encoding/json"
@@ -11,13 +11,21 @@ import (
 	"net/http"
 )
 
-func create(w http.ResponseWriter, r *http.Request) {
+func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
-		body = r.Body
+		db   = postgresql_database.New()
+		repo = create_repository.NewPostgreSQL(db)
 
 		req requests.Create
 	)
-	defer body.Close()
+
+	body := r.Body
+	defer func() {
+		err := body.Close()
+		if err != nil {
+			log.Println("failed to close body", err)
+		}
+	}()
 
 	err := json.NewDecoder(body).Decode(&req)
 	if err != nil {
@@ -26,11 +34,9 @@ func create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	repo := create_repository.NewPostgreSQL(postgresql_database.New())
-
 	broker, err := message_broker.Instance()
 	if err != nil {
-		log.Println("created broker uninitialized", err)
+		log.Println("broker uninitialized", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
