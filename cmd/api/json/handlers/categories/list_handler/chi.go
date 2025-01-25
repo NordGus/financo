@@ -1,4 +1,4 @@
-package categories
+package list_handler
 
 import (
 	"encoding/json"
@@ -10,13 +10,15 @@ import (
 	"net/http"
 )
 
-func index(w http.ResponseWriter, r *http.Request) {
-	var req requests.List
+func HandlerFunc(w http.ResponseWriter, r *http.Request) {
+	var (
+		db   = postgresql_database.New()
+		repo = categories_repository.NewPostgreSQL(db)
 
-	res, err := list_query.New(
-		req,
-		categories_repository.NewPostgreSQL(postgresql_database.New()),
-	).Find(r.Context())
+		req requests.List
+	)
+
+	res, err := list_query.New(req, repo).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(
@@ -27,7 +29,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := json.Marshal(res)
+	resp, err := json.Marshal(res)
 	if err != nil {
 		log.Println("failed json Marshal", err)
 		http.Error(
@@ -38,7 +40,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = w.Write(response)
+	_, err = w.Write(resp)
 	if err != nil {
 		log.Println("failed to write response", err)
 		http.Error(
