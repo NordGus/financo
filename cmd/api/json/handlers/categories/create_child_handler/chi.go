@@ -24,9 +24,9 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 		req requests.CreateChildForParent
 	)
 
-	parentId, err := strconv.ParseInt(chi.URLParam(r, "parentId"), 10, 64)
+	parentId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
-		log.Println("failed to parse category parentId", err)
+		log.Println("failed to parse category parent id", err)
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),

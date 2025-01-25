@@ -21,13 +21,11 @@ func Routes(r chi.Router) {
 		cat.Put("/", update_handler.HandlerFunc)
 		cat.Patch("/archive", archive_handler.HandlerFunc)
 		cat.Patch("/unarchive", unarchive_handler.HandlerFunc)
-	})
 
-	r.Route("/{parentId}", func(cat chi.Router) {
 		cat.Route("/children", func(children chi.Router) {
 			children.Post("/", create_child_handler.HandlerFunc)
 
-			children.Route("/{id}", func(child chi.Router) {})
+			children.Route("/{childId}", func(child chi.Router) {})
 		})
 	})
 }
