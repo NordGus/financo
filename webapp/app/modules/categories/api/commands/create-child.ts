@@ -5,7 +5,7 @@ export async function createChild(parentId: number, data: CreateChild): Promise<
   const response = await fetch(`/api/categories/${parentId}/children`, {
     method: "POST",
     headers: { "Content-Type": "application/json; charset=UTF-8" },
-    body: JSON.stringify(data)
+    body: JSON.stringify({ ...data, parentId })
   })
 
   if (!response.ok) throw response
