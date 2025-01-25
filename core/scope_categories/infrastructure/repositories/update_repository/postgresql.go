@@ -67,7 +67,6 @@ func (p *postgresql) Find(ctx context.Context, id int64) (category.Record, error
 		WHERE
 			acc.deleted_at IS NULL
 			AND acc.id = $1
-			AND acc.parent_id IS NULL
 			AND acc.kind = ANY($2)
 		`,
 		id,
@@ -165,22 +164,6 @@ func (p *postgresql) Save(ctx context.Context, r category.Record) error {
 		return err
 	}
 
-	for i := 0; i < len(r.Children); i++ {
-		var action func(ctx context.Context, tx *sql.Tx, r account.Record) error
-
-		if r.Children[i].ID > 0 {
-			action = p.save
-		} else {
-			action = p.create
-		}
-
-		err = action(ctx, tx, r.Children[i])
-		if err != nil {
-			_ = tx.Rollback()
-			return err
-		}
-	}
-
 	err = tx.Commit()
 	if err != nil {
 		_ = tx.Rollback()
@@ -215,42 +198,6 @@ func (p *postgresql) save(ctx context.Context, tx *sql.Tx, r account.Record) err
 		r.CreatedAt,
 		r.UpdatedAt,
 		r.DynamicData,
-	).Scan(&r.ID)
-
-	return err
-}
-
-func (p *postgresql) create(ctx context.Context, tx *sql.Tx, r account.Record) error {
-	err := tx.QueryRowContext(
-		ctx,
-		`
-		INSERT INTO accounts(
-			parent_id,
-			kind,
-			currency,
-			name,
-			description,
-			color,
-			icon,
-			capital,
-			dynamic_data,
-			created_at,
-			updated_at
-		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-		RETURNING id
-		`,
-		r.ParentID,
-		r.Kind,
-		r.Currency,
-		r.Name,
-		r.Description,
-		r.Color,
-		r.Icon,
-		r.Capital,
-		r.DynamicData,
-		r.CreatedAt,
-		r.UpdatedAt,
 	).Scan(&r.ID)
 
 	return err
