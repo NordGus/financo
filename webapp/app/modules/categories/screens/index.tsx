@@ -10,14 +10,13 @@ import { CreateCategory } from "../components/forms/create";
 import { UpdateCategory } from "../components/forms/update";
 import { ListForKind } from "../components/list-for-kind";
 import { archivedCategoriesManual } from "../manual/archived-categories-manual";
-import { ModuleKind } from "../types/account";
 import { ArchiveAction, CreateAction, DeleteAction, UnarchiveAction, UpdateAction } from "../types/actions";
+import { Category, ModuleKind } from "../types/category";
 import { Create } from "../types/create";
-import { Account } from "../types/preview";
 import { Update } from "../types/update";
 
 interface Props {
-  accounts: Account[]
+  categories: Category[]
   searchParams: URLSearchParams
   onSearchParamsChange: (nextInit: Record<string, string | string[]>) => void
   onCreateAction: CreateAction
@@ -70,7 +69,7 @@ type ScreenAction =
   { type: ScreenActions["VIEW_CHANGED"], value: View } |
   { type: ScreenActions["SUBVIEW_CHANGED"], value: SubView } |
   { type: ScreenActions["KIND_CHANGED"], kind: ModuleKind } |
-  { type: ScreenActions["CATEGORY_CHANGED"], category: Account } |
+  { type: ScreenActions["CATEGORY_CHANGED"], category: Category } |
   { type: ScreenActions["OPEN_SELECT_KIND_CHANGED"], open: boolean } |
   { type: ScreenActions["OPEN_CREATE_CHANGED"], open: boolean } |
   { type: ScreenActions["OPEN_EDIT_CHANGED"], open: boolean } |
@@ -82,7 +81,7 @@ type ScreenState = {
   view: View
   subView: SubView
   kind: ModuleKind
-  category: Account | null
+  category: Category | null
   openSelectKind: boolean
   openCreate: boolean
   openEdit: boolean
@@ -166,7 +165,7 @@ function init({ view, subView }: { view: View, subView: SubView }): ScreenState 
 }
 
 export function Screen({
-  accounts,
+  categories,
   searchParams,
   onSearchParamsChange,
   onCreateAction,
@@ -179,18 +178,18 @@ export function Screen({
     reducer,
     {
       view: withView(searchParams.get("view")),
-      subView: withSubView(searchParams.get("sub-view"))
+      subView: withSubView(searchParams.get("subSiew"))
     },
     init
   )
 
   const onViewChange = (value: View) => {
     dispatch({ type: "VIEW_CHANGED", value })
-    onSearchParamsChange({ view: value, ["sub-view"]: screen.subView })
+    onSearchParamsChange({ view: value, subView: screen.subView })
   }
   const onSubViewChange = (value: SubView) => {
     dispatch({ type: "SUBVIEW_CHANGED", value })
-    onSearchParamsChange({ view: screen.view, ["sub-view"]: value })
+    onSearchParamsChange({ view: screen.view, subView: value })
   }
 
   const onOpenSelectKindChange = (open: boolean) =>
@@ -200,7 +199,7 @@ export function Screen({
   const onOpenCreateChange = (open: boolean) =>
     dispatch({ type: "OPEN_CREATE_CHANGED", open })
 
-  const onCategoryChange = (category: Account) =>
+  const onCategoryChange = (category: Category) =>
     dispatch({ type: "CATEGORY_CHANGED", category })
   const onOpenEditChange = (open: boolean) =>
     dispatch({ type: "OPEN_EDIT_CHANGED", open })
@@ -252,7 +251,7 @@ export function Screen({
             </div>
           )}
           <ListForKind
-            accounts={accounts}
+            categories={categories}
             kind={screen.view === "income" ? "external_income" : "external_expense"}
             forArchived={screen.subView === "archived"}
             onClick={onCategoryChange}
