@@ -47,6 +47,10 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 		return res, fmt.Errorf("delete_command: category id=(%d) not found", record.Parent.ID)
 	}
 
+	if record.Parent.ParentID.Valid {
+		return res, fmt.Errorf("delete_command: category id=(%d) is not a parent category", c.req.ID)
+	}
+
 	record.Parent.DeletedAt = nullable.New(timestamp)
 	record.Parent.UpdatedAt = timestamp
 
