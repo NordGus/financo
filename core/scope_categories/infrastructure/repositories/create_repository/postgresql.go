@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"financo/core/domain/databases"
+	"financo/core/scope_categories/domain/models/category"
 	"financo/core/scope_categories/domain/repositories"
 	"financo/lib/nullable"
 	"financo/models/account"
@@ -19,22 +20,24 @@ func NewPostgreSQL(db databases.SQLAdapter) repositories.CreateRepository {
 	}
 }
 
-func (p *postgresql) Save(ctx context.Context, r account.Record, c []account.Record) (account.Record, error) {
+func (p *postgresql) Save(ctx context.Context, r account.Record, c []account.Record) (category.Record, error) {
+	var out category.Record
+
 	conn, err := p.db.Conn(ctx)
 	if err != nil {
-		return r, err
+		return out, err
 	}
 	defer conn.Close()
 
 	tx, err := conn.BeginTx(ctx, nil)
 	if err != nil {
-		return r, err
+		return out, err
 	}
 
 	r, err = p.persist(ctx, tx, r)
 	if err != nil {
 		_ = tx.Rollback()
-		return r, err
+		return out, err
 	}
 
 	for i := 0; i < len(c); i++ {
@@ -44,17 +47,20 @@ func (p *postgresql) Save(ctx context.Context, r account.Record, c []account.Rec
 		c[i], err = p.persist(ctx, tx, child)
 		if err != nil {
 			_ = tx.Rollback()
-			return r, err
+			return out, err
 		}
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		_ = tx.Rollback()
-		return r, err
+		return out, err
 	}
 
-	return r, nil
+	return category.Record{
+		Parent:   r,
+		Children: c,
+	}, nil
 }
 
 func (p *postgresql) persist(ctx context.Context, tx *sql.Tx, r account.Record) (account.Record, error) {

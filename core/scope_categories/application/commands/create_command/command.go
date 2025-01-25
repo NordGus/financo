@@ -23,7 +23,7 @@ func New(
 	req requests.Create,
 	repo repositories.CreateRepository,
 	broker brokers.Created,
-) commands.Command[responses.Created] {
+) commands.Command[responses.Listed] {
 	return &command{
 		req:    req,
 		repo:   repo,
@@ -31,11 +31,11 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Created, error) {
+func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	var (
 		timestamp = time.Now().UTC()
 
-		res responses.Created
+		res responses.Listed
 	)
 
 	if !account.IsExternal(c.req.Kind) {
@@ -45,21 +45,15 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 	record := c.req.ToRecord(timestamp)
 	children := c.req.ToChildrenRecords(timestamp)
 
-	record, err := c.repo.Save(ctx, record, children)
+	cat, err := c.repo.Save(ctx, record, children)
 	if err != nil {
 		return res, err
 	}
 
-	err = c.broker.Publish(messages.Created{Record: record})
+	err = c.broker.Publish(messages.Created{Record: cat.Parent})
 	if err != nil {
 		return res, err
 	}
 
-	return responses.Created{
-		ID:    record.ID,
-		Name:  record.Name,
-		Kind:  record.Kind,
-		Color: record.Color,
-		Icon:  record.Icon,
-	}, nil
+	return responses.NewListedFromCategoryRecord(cat), nil
 }
