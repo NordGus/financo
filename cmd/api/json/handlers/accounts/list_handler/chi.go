@@ -1,4 +1,4 @@
-package accounts
+package list_handler
 
 import (
 	"encoding/json"
@@ -10,15 +10,15 @@ import (
 	"net/http"
 )
 
-func index(w http.ResponseWriter, r *http.Request) {
+func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
-		req = requests.List{}
-		db  = postgresql_database.New()
+		db       = postgresql_database.New()
+		accounts = accounts_repository.NewPostgreSQL(db)
+
+		req requests.List
 	)
 
-	repo := accounts_repository.NewPostgreSQL(db)
-
-	res, err := list_query.New(req, repo).Find(r.Context())
+	res, err := list_query.New(req, accounts).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(
