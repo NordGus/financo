@@ -1,6 +1,6 @@
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
-import { ModuleKind } from "./category";
+import { Child, ModuleKind } from "./category";
 
 export type CreateChild = {
   name: string
@@ -26,6 +26,10 @@ export type Created = {
   icon: Icon
 }
 
-export type CreateAction = (values: Create, success: () => void, failure: () => void) => Promise<void>
+export type CreateAction = (data: Create, success: () => void, failure: () => void) => Promise<void>
+export type OnSubmitCreateAction = (data: Create) => Promise<void>
 
-export type OnSubmitCreateAction = (values: Create) => Promise<void>
+export type CreateChildAction =
+  (parentId: number, data: CreateChild, success: (child: Child) => void, failure: () => void) => Promise<void>
+export type OnSubmitCreateChildAction =
+  (parentId: number, data: CreateChild) => Promise<void>

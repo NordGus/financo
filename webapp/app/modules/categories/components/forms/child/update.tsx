@@ -29,6 +29,8 @@ import { Icon } from "~/shared/types/icon";
 import { schema } from "../../schemas/child/update";
 
 interface Child {
+  id: number
+  parentId: number
   name: string
   description?: string
   icon: Icon
@@ -38,7 +40,6 @@ interface Props {
   child: Child
   open: boolean
   onOpenChange: (open: boolean) => void
-  defaultIcon: Icon
   submitting: boolean
   onSubmit: (data: Child) => void
   onDelete?: () => void
@@ -49,7 +50,6 @@ interface Props {
 export function ChildForm({
   child,
   open,
-  defaultIcon,
   onOpenChange,
   submitting,
   onSubmit,
@@ -59,14 +59,16 @@ export function ChildForm({
 }: Props) {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", description: undefined, icon: defaultIcon }
+    defaultValues: { ...child }
   })
 
   useEffect(() => {
+    form.setValue("id", child.id)
+    form.setValue("parentId", child.parentId)
     form.setValue("name", child.name)
     form.setValue("description", child.description)
     form.setValue("icon", child.icon)
-  }, [child.name, child.description, child.icon])
+  }, [child.id, child.parentId, child.name, child.description, child.icon])
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
