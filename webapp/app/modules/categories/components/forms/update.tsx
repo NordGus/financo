@@ -35,7 +35,7 @@ import { Category } from "../../types/category";
 import { CreateChildAction } from "../../types/create";
 import { defaultIcons } from "../../types/icons";
 import { OnSubmitUnarchiveAction } from "../../types/unarchive";
-import { OnSubmitUpdateAction, UpdateChildAction } from "../../types/update";
+import { OnSubmitUpdateAction, UpdateChild, UpdateChildAction } from "../../types/update";
 import { PreviewCard } from "../child/preview-card";
 import { ChildForm as CreateChildForm } from "./child/create";
 import { ChildForm as UpdateChildForm } from "./child/update";
@@ -185,10 +185,10 @@ export function UpdateCategory({
     onCreateChildAction(category.id, data, onChildActionSuccess, onChildActionFailure)
   }
 
-  const onUpdateChild = (data: Child) => {
+  const onUpdateChild = (data: UpdateChild) => {
     onChildActionSubmit()
 
-    onUpdateChildAction(data, onChildActionSuccess, onChildActionFailure)
+    return onUpdateChildAction(data, onChildActionSuccess, onChildActionFailure)
   }
 
   const destroy = () => onDelete(category.id)

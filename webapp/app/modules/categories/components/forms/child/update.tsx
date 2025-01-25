@@ -3,6 +3,7 @@ import { PackageIcon, PackageOpenIcon, TrashIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { OnSubmitUpdateChildAction } from "~/modules/categories/types/update";
 import { IconInput } from "~/shared/components/inputs/icon-input";
 import { Throbber } from "~/shared/components/throbber";
 import { Button } from "~/shared/components/ui/button";
@@ -42,7 +43,7 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   submitting: boolean
-  onSubmit: (data: Child) => void
+  onSubmit: OnSubmitUpdateChildAction
   onDelete?: () => void
   onArchive?: () => void
   onUnarchive?: () => void

@@ -22,4 +22,4 @@ export type UpdateAction = (values: Update, success: () => void, failure: () => 
 export type OnSubmitUpdateAction = (values: Update) => Promise<void>
 
 export type UpdateChildAction = (values: UpdateChild, success: () => void, failure: () => void) => Promise<void>
-export type OnSubmitChildAction = (values: UpdateChild) => Promise<void>
+export type OnSubmitUpdateChildAction = (values: UpdateChild) => Promise<void>
