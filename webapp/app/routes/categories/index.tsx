@@ -1,14 +1,10 @@
-import { URLSearchParamsInit, useFetcher, useLoaderData, useSearchParams } from "react-router";
+import { useCallback, useEffect } from "react";
+import { URLSearchParamsInit, useSearchParams } from "react-router";
 import { toast } from "sonner";
-import { createCategory } from "~/modules/categories/api/commands/create-category";
-import { getCategoriesPreviews } from "~/modules/categories/api/queries/get-categories-previews";
 import { Screen } from "~/modules/categories/screens";
-import { Intents } from "~/modules/categories/types/actions";
-import { Archived } from "~/modules/categories/types/archived";
-import { Create, Created } from "~/modules/categories/types/create";
-import { Deleted } from "~/modules/categories/types/delete";
-import { Unarchived } from "~/modules/categories/types/unarchived";
-import { Update, Updated } from "~/modules/categories/types/update";
+import { useCategoryStore } from "~/modules/categories/stores/category";
+import { Create } from "~/modules/categories/types/create";
+import { Update } from "~/modules/categories/types/update";
 import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
@@ -18,108 +14,140 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
-type ActionRequestBody = {
-  payload: Create
-  intent: Intents["create"]
-}
-
-export async function clientAction({ request }: Route.ClientActionArgs) {
-  const { payload }: ActionRequestBody = await request.json()
-
-  try {
-    const response = createCategory({ ...payload })
-
-    toast.promise(response, {
-      loading: "Creating...",
-      success: (data) => {
-        return `${data.name} created`
-      },
-      error: "Oops!. Something went wrong"
-    })
-
-    const created = await response
-
-    return created
-  } catch (error) {
-    if (error instanceof Response && error.status === 401) throw error
-
-    return null
-  }
-}
-
 export async function clientLoader({ }: Route.ClientLoaderArgs) {
-  const accounts = await getCategoriesPreviews()
-
-  return {
-    breadcrumb: "Categories",
-    accounts
-  }
+  return { breadcrumb: "Categories" }
 }
 
-export default function Index() {
-  const { accounts } = useLoaderData<typeof clientLoader>()
+export default function CategoriesRoute() {
+  const categories = useCategoryStore((state) => state.categories)
+
+  const listQuery = useCategoryStore((state) => state.list)
+
+  const createAction = useCategoryStore((state) => state.create)
+  const updateAction = useCategoryStore((state) => state.update)
+  const archiveAction = useCategoryStore((state) => state.archive)
+  const unarchiveAction = useCategoryStore((state) => state.unarchive)
+  const destroyAction = useCategoryStore((state) => state.destroy)
   const [searchParams, setSearchParams] = useSearchParams()
-  const fetcher = useFetcher<Created | Updated | Deleted | Archived | Unarchived | null>()
 
   const onSearchParamsChange = (params: URLSearchParamsInit) => setSearchParams(params)
 
-  const create = (values: Create, success: () => void, failure: () => void) => {
-    return fetcher.submit(
-      { payload: { ...values }, intent: "create" },
-      { action: "/categories", method: "post", encType: "application/json" }
-    ).then((__res) => success()).catch((error) => {
+  const create = useCallback(async (values: Create, success: () => void, failure: () => void) => {
+    try {
+      const res = createAction(values)
+
+      toast.promise(res, {
+        loading: "Creating...",
+        success: (data) => {
+          return `${data.name} created`
+        },
+        error: "Oops!. Something went wrong"
+      })
+
+      await res
+
+      success()
+    } catch (error) {
       failure()
 
       throw error
-    })
-  }
+    }
+  }, [])
 
-  const update = (values: Update, success: () => void, failure: () => void) => {
-    return fetcher.submit(
-      { payload: { ...values }, intent: "create" },
-      { action: `/accounts/${values.id}`, method: "post", encType: "application/json" }
-    ).then((__res) => success()).catch((error) => {
+  const update = useCallback(async (values: Update, success: () => void, failure: () => void) => {
+    try {
+      const res = updateAction(values)
+
+      toast.promise(res, {
+        loading: "Updating...",
+        success: (data) => {
+          return `${data.name} updated`
+        },
+        error: "Oops!. Something went wrong"
+      })
+
+      await res
+
+      success()
+    } catch (error) {
       failure()
 
       throw error
-    })
-  }
+    }
+  }, [])
 
-  const destroy = (id: number, success: () => void, failure: () => void) => {
-    return fetcher.submit(
-      { payload: { id }, intent: "delete" },
-      { action: `/accounts/${id}`, method: "post", encType: "application/json" }
-    ).then((__res) => success()).catch((error) => {
+  const destroy = useCallback(async (id: number, success: () => void, failure: () => void) => {
+    try {
+      const res = destroyAction(id)
+
+      toast.promise(res, {
+        loading: "Deleting...",
+        success: (data) => {
+          return `${data.name} deleted`
+        },
+        error: "Oops!. Something went wrong"
+      })
+
+      await res
+
+      success()
+    } catch (error) {
       failure()
 
       throw error
-    })
-  }
+    }
+  }, [])
 
-  const archive = (id: number, success: () => void, failure: () => void) => {
-    return fetcher.submit(
-      { payload: { id }, intent: "archive" },
-      { action: `/accounts/${id}`, method: "post", encType: "application/json" }
-    ).then((__res) => success()).catch((error) => {
+  const archive = useCallback(async (id: number, success: () => void, failure: () => void) => {
+    try {
+      const res = archiveAction(id)
+
+      toast.promise(res, {
+        loading: "Archiving...",
+        success: (data) => {
+          return `${data.name} archived`
+        },
+        error: "Oops!. Something went wrong"
+      })
+
+      await res
+
+      success()
+    } catch (error) {
       failure()
 
       throw error
-    })
-  }
+    }
+  }, [])
 
-  const unarchive = (id: number, success: () => void, failure: () => void) => {
-    return fetcher.submit(
-      { payload: { id }, intent: "unarchive" },
-      { action: `/accounts/${id}`, method: "post", encType: "application/json" }
-    ).then((__res) => success()).catch((error) => {
+  const unarchive = useCallback(async (id: number, success: () => void, failure: () => void) => {
+    try {
+      const res = unarchiveAction(id)
+
+      toast.promise(res, {
+        loading: "Unarchiving...",
+        success: (data) => {
+          return `${data.name} unarchived`
+        },
+        error: "Oops!. Something went wrong"
+      })
+
+      await res
+
+      success()
+    } catch (error) {
       failure()
 
       throw error
-    })
-  }
+    }
+  }, [])
+
+  useEffect(() => {
+    listQuery()
+  }, [])
 
   return <Screen
-    accounts={accounts}
+    categories={categories}
     searchParams={searchParams}
     onSearchParamsChange={onSearchParamsChange}
     onCreateAction={create}
