@@ -27,6 +27,7 @@ import {
 import { Input } from "~/shared/components/ui/input";
 import { Textarea } from "~/shared/components/ui/textarea";
 import { accountKindToHuman as kindToHuman } from "~/shared/helpers/account-kind-to-human";
+import { childName } from "~/shared/helpers/child-name";
 import { Icon } from "~/shared/types/icon";
 import { schema } from "../../schemas/update";
 import { Category } from "../../types/category";
@@ -264,7 +265,7 @@ export function UpdateCategory({
             <DeleteChildDialog
               open={state.openChildMenu === "delete"}
               onOpenChange={(open) => onOpenChildMenuChange(open ? "delete" : null)}
-              name={state.child.name}
+              name={childName(category, state.child)}
               transactions={state.child.transactions}
               onConfirm={onDeleteChild}
               submitting={state.submitting}
