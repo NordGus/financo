@@ -1,6 +1,5 @@
 import { Currency } from "~/shared/types/currency";
 import { Icon } from "~/shared/types/icon";
-import { ModuleKind } from "./account";
 
 export type Update = {
   id: number
@@ -16,10 +15,5 @@ export type Update = {
   }
 }
 
-export type Updated = {
-  id: number
-  name: string
-  kind: ModuleKind
-  color: string
-  icon: Icon
-}
+export type UpdateAccountAction = (values: Update, success: () => void, failure: () => void) => Promise<void>
+export type OnSubmitUpdateAccountAction = (values: Update) => Promise<void>

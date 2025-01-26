@@ -16,10 +16,5 @@ export type Create = {
   }
 }
 
-export type Created = {
-  id: number
-  name: string
-  kind: ModuleKind
-  color: string
-  icon: Icon
-}
+export type CreateAccountAction = (values: Create, success: () => void, failure: () => void) => Promise<void>
+export type OnSubmitCreateAccountAction = (values: Create) => Promise<void>

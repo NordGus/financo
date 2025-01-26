@@ -1,10 +1,2 @@
-import { Icon } from "~/shared/types/icon"
-import { ModuleKind } from "./account"
-
-export type Deleted = {
-  id: number
-  name: string
-  kind: ModuleKind
-  color: string
-  icon: Icon
-}
+export type DeleteAccountAction = (id: number, success: () => void, failure: () => void) => Promise<void>
+export type OnSubmitDeleteAccountAction = (id: number) => Promise<void>
