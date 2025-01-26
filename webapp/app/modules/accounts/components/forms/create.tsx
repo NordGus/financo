@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { InfoDialog } from "~/shared/components/dialogs/info";
@@ -106,6 +106,7 @@ function CreateForm({ kind, defaultCurrency, defaultIcon, submitting, onSubmitAc
         debt_loan: "#fc004f",
         debt_personal: "#00fc4b",
       }[kind],
+      history: {},
       icon: defaultIcon,
       main: false,
     }
@@ -130,6 +131,16 @@ function CreateForm({ kind, defaultCurrency, defaultIcon, submitting, onSubmitAc
       return value
     })
   }
+
+  useEffect(() => {
+
+  }, [])
+
+  useEffect(() => {
+    if (Object.keys(form.formState.errors).length === 0) return
+
+    console.error(form.formState.errors)
+  }, [form.formState.errors])
 
   return (
     <Form {...form}>
