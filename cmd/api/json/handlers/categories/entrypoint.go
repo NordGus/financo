@@ -33,7 +33,7 @@ func Routes(r chi.Router) {
 				child.Delete("/", destroy_child_handler.HandlerFunc)
 				child.Put("/", update_child_handler.HandlerFunc)
 				child.Patch("/archive", archive_child_handler.HandlerFunc)
-				cat.Patch("/unarchive", unarchive_child_handler.HandlerFunc)
+				child.Patch("/unarchive", unarchive_child_handler.HandlerFunc)
 			})
 		})
 	})
