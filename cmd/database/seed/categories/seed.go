@@ -5,6 +5,7 @@ import (
 	"errors"
 	"financo/cmd/database/seed/lib/helpers"
 	"financo/core/domain/services"
+	"financo/core/scope_categories/application/commands/archive_child_command"
 	"financo/core/scope_categories/application/commands/archive_command"
 	"financo/core/scope_categories/application/commands/create_command"
 	"financo/core/scope_categories/domain/requests"
@@ -75,9 +76,9 @@ func SeedCategories(ctx context.Context, timestamp time.Time) (map[string]int64,
 				out[helpers.ChildCategoryMapKey(key, children[j].key)] = c[i].ID
 
 				if children[j].archived {
-					r := requests.Archive{ID: c[i].ID}
+					r := requests.ArchiveChild{ID: c[i].ID, ParentID: res.ID}
 
-					_, err = archive_command.New(r, categories, archival, broker.Archived()).Run(ctx)
+					_, err = archive_child_command.New(r, categories, archival, broker.Archived()).Run(ctx)
 					if err != nil {
 						return out, errors.Join(
 							fmt.Errorf("categories: failed to archive category %s (%s)", req.Name, children[j].req.Name),
