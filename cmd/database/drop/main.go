@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"financo/services/shutdown"
 	"fmt"
 	"log"
 	"os"
@@ -25,7 +26,11 @@ func main() {
 		ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 		connStr     = fmt.Sprintf("postgres://%s:%s@%s:%s/postgres?sslmode=disable", username, password, host, port)
 	)
-	defer cancel()
+
+	shutdown.Defer(shutdown.Closure{
+		Name: "context.CancelFunc",
+		Func: cancel,
+	})
 
 	log.Println("dropping database")
 
@@ -33,12 +38,17 @@ func main() {
 	if err != nil {
 		log.Fatalln("failed to connect to database server", err)
 	}
-	defer db.Close()
+	shutdown.Defer(shutdown.Closure{
+		Name: "db.Close",
+		Func: func() { db.Close() },
+	})
 
 	_, err = db.ExecContext(ctx, fmt.Sprintf("DROP DATABASE IF EXISTS %v;", database))
 	if err != nil {
-		log.Fatalln("failed to drop database:", err.Error())
+		log.Println("failed to drop database:", err.Error())
+		shutdown.Exit(1)
 	}
 
 	log.Printf("\"%s\" dropped\n", database)
+	shutdown.Exit(0)
 }
