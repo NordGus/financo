@@ -26,7 +26,7 @@ func New(
 	repo repositories.UpdateAccountRepository,
 	transactionsRepo repositories.TransactionsRepository,
 	broker brokers.Updated,
-) commands.Command[responses.Updated] {
+) commands.Command[responses.Listed] {
 	return &command{
 		req:              req,
 		repo:             repo,
@@ -35,11 +35,11 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Updated, error) {
+func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	var (
 		timestamp = time.Now().UTC()
 
-		res responses.Updated
+		res responses.Listed
 	)
 
 	// Retrieve the previous state for the account
@@ -129,11 +129,5 @@ func (c *command) Run(ctx context.Context) (responses.Updated, error) {
 		return res, err
 	}
 
-	return responses.Updated{
-		ID:    current.Record.ID,
-		Name:  current.Record.Name,
-		Kind:  current.Record.Kind,
-		Color: current.Record.Color,
-		Icon:  current.Record.Icon,
-	}, nil
+	return responses.AccountRecordToListed(current.Record), nil
 }

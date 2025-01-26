@@ -22,7 +22,7 @@ type command struct {
 
 func New(
 	req requests.Create, repo repositories.CreateAccountRepository, broker brokers.Created,
-) commands.Command[responses.Created] {
+) commands.Command[responses.Listed] {
 	return &command{
 		req:    req,
 		repo:   repo,
@@ -30,9 +30,11 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Created, error) {
+func (c *command) Run(ctx context.Context) (responses.Listed, error) {
+	var res responses.Listed
+
 	if account.IsExternal(c.req.Kind) {
-		return responses.Created{}, fmt.Errorf("create_command: invalid account kind %s", c.req.Kind)
+		return res, fmt.Errorf("create_command: invalid account kind %s", c.req.Kind)
 	}
 
 	var (
@@ -46,7 +48,7 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 
 	// Prevents the creation of a zero capital debt in the system.
 	if account.IsDebt(args.Record.Kind) && args.Record.Capital == 0 {
-		return responses.Created{}, fmt.Errorf(
+		return res, fmt.Errorf(
 			"create_command: invalid capital %d for kind %s, reason: can't be zero",
 			c.req.Capital,
 			c.req.Kind,
@@ -75,19 +77,13 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 
 	record, err := c.repo.Save(ctx, args)
 	if err != nil {
-		return responses.Created{}, err
+		return res, err
 	}
 
 	err = c.broker.Publish(messages.Created{Record: record})
 	if err != nil {
-		return responses.Created{}, err
+		return res, err
 	}
 
-	return responses.Created{
-		ID:    record.ID,
-		Name:  record.Name,
-		Kind:  record.Kind,
-		Color: record.Color,
-		Icon:  record.Icon,
-	}, nil
+	return responses.AccountRecordToListed(record), nil
 }

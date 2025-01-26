@@ -22,7 +22,7 @@ func New(
 	req requests.Delete,
 	repo repositories.DeleteAccountRepository,
 	broker brokers.Deleted,
-) commands.Command[responses.Deleted] {
+) commands.Command[responses.Listed] {
 	return &command{
 		req:    req,
 		repo:   repo,
@@ -30,11 +30,11 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Deleted, error) {
+func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	var (
 		timestamp = time.Now().UTC()
 
-		res responses.Deleted
+		res responses.Listed
 	)
 
 	record, err := c.repo.Find(ctx, c.req.ID)
@@ -55,11 +55,5 @@ func (c *command) Run(ctx context.Context) (responses.Deleted, error) {
 		return res, err
 	}
 
-	return responses.Deleted{
-		ID:    record.ID,
-		Name:  record.Name,
-		Kind:  record.Kind,
-		Color: record.Color,
-		Icon:  record.Icon,
-	}, nil
+	return responses.AccountRecordToListed(record), nil
 }
