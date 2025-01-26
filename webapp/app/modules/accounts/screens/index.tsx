@@ -121,17 +121,23 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
     case "OPEN_ARCHIVE_CHANGED":
       return {
         ...state,
-        dialog: action.open ? "archive" : null
+        dialog: state.open === "update" && action.open
+          ? "archive"
+          : null
       }
     case "OPEN_UNARCHIVE_CHANGED":
       return {
         ...state,
-        dialog: action.open ? "unarchive" : null
+        dialog: state.open === "update" && action.open
+          ? "unarchive"
+          : null
       }
     case "OPEN_DELETE_CHANGED":
       return {
         ...state,
-        dialog: action.open ? "delete" : null
+        dialog: state.open === "update" && action.open
+          ? "delete"
+          : null
       }
     case "OPEN_CREATE_CHANGED":
       return {
