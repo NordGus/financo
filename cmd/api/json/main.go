@@ -21,6 +21,7 @@ import (
 	"financo/services/in_memory_session_store"
 	"financo/services/message_buses"
 	"financo/services/postgresql_database"
+	"financo/services/shutdown"
 	"financo/services/umbilical"
 
 	"github.com/go-chi/chi/v5"
@@ -42,29 +43,41 @@ func main() {
 		messageBusesService = message_buses.Initialize(wg)
 	)
 
-	defer func() {
-		if err := pgDBService.Close(); err != nil {
-			log.Printf("failed to close database connections: %s\n", err)
-		}
-	}()
+	shutdown.Defer(shutdown.Closure{
+		Name: "postgresql_database",
+		Func: func() {
+			if err := pgDBService.Close(); err != nil {
+				log.Printf("failed to close database connections: %s\n", err)
+			}
+		},
+	})
 
-	defer func() {
-		if err := umbilicalService.Close(); err != nil {
-			log.Printf("failed to close umbilical connection: %s\n", err)
-		}
-	}()
+	shutdown.Defer(shutdown.Closure{
+		Name: "umbilical",
+		Func: func() {
+			if err := umbilicalService.Close(); err != nil {
+				log.Printf("failed to close umbilical connection: %s\n", err)
+			}
+		},
+	})
 
-	defer func() {
-		if err := sessionStore.Close(); err != nil {
-			log.Printf("failed to close session store connection: %s\n", err)
-		}
-	}()
+	shutdown.Defer(shutdown.Closure{
+		Name: "in_memory_session_store",
+		Func: func() {
+			if err := sessionStore.Close(); err != nil {
+				log.Printf("failed to close session store connection: %s\n", err)
+			}
+		},
+	})
 
-	defer func() {
-		if err := messageBusesService.Close(); err != nil {
-			log.Printf("failed to close message busses connection: %s\n", err)
-		}
-	}()
+	shutdown.Defer(shutdown.Closure{
+		Name: "message_buses",
+		Func: func() {
+			if err := messageBusesService.Close(); err != nil {
+				log.Printf("failed to close message busses connection: %s\n", err)
+			}
+		},
+	})
 
 	wg.Add(1)
 	go startHTTPServer(ctx, wg)
@@ -82,6 +95,7 @@ func main() {
 	wg.Wait()
 
 	log.Println("Shutdown complete.")
+	shutdown.Exit(0)
 }
 
 func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
