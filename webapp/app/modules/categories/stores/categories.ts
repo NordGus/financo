@@ -1,5 +1,6 @@
 import { create as createStore } from "zustand";
 import { archive } from "../api/commands/archive";
+import { archiveChild } from "../api/commands/archive-child";
 import { create } from "../api/commands/create";
 import { createChild } from "../api/commands/create-child";
 import { destroy } from "../api/commands/destroy";
@@ -14,14 +15,18 @@ import { Update, UpdateChild } from "../types/update";
 
 interface CategoryState {
   categories: Category[]
+
   list: () => void
+
   create: (data: Create) => Promise<Category>
   update: (data: Update) => Promise<Category>
   archive: (id: number) => Promise<Category>
   unarchive: (id: number) => Promise<Category>
   destroy: (id: number) => Promise<Category>
+
   createChild: (parentId: number, data: CreateChild) => Promise<ChildCategory>
   updateChild: (data: UpdateChild) => Promise<ChildCategory>
+  archiveChild: (parentId: number, id: number) => Promise<ChildCategory>
   destroyChild: (parentId: number, id: number) => Promise<ChildCategory>
 }
 
@@ -120,6 +125,24 @@ const useCategoriesStore = createStore<CategoryState>((set) => ({
     }))
 
     return updated
+  },
+  archiveChild: async (parentId, id) => {
+    const archived = await archiveChild(parentId, id)
+
+    set((state) => ({
+      ...state,
+      categories: [
+        ...state.categories.map((category) => {
+          if (category.id !== parentId) return category
+
+          return {
+            ...category,
+            children: [...category.children.map((child) => child.id === archived.id ? archived : child)]
+          }
+        })]
+    }))
+
+    return archived
   },
   destroyChild: async (parentId, id) => {
     const deleted = await destroyChild(parentId, id)

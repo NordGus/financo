@@ -30,12 +30,14 @@ import { accountKindToHuman as kindToHuman } from "~/shared/helpers/account-kind
 import { childName } from "~/shared/helpers/child-name";
 import { Icon } from "~/shared/types/icon";
 import { schema } from "../../schemas/update";
+import { ArchiveChildAction } from "../../types/archive";
 import { Category } from "../../types/category";
 import { CreateChildAction } from "../../types/create";
 import { DeleteChildAction } from "../../types/delete";
 import { defaultIcons } from "../../types/icons";
 import { OnSubmitUpdateAction, UpdateChild, UpdateChildAction } from "../../types/update";
 import { PreviewCard } from "../child/preview-card";
+import { ArchiveDialog as ArchiveChildDialog } from "../dialogs/child/archive";
 import { DeleteDialog as DeleteChildDialog } from "../dialogs/child/delete";
 import { ChildForm as CreateChildForm } from "./child/create";
 import { ChildForm as UpdateChildForm } from "./child/update";
@@ -48,9 +50,12 @@ type Props = {
   onDelete: () => void
   onArchive: () => void
   onUnarchive: () => void
+
   onCreateChildAction: CreateChildAction
   onUpdateChildAction: UpdateChildAction
   onDeleteChildAction: DeleteChildAction
+  onArchiveChildAction: ArchiveChildAction
+
   submitting: boolean
 }
 
@@ -71,12 +76,12 @@ type Child = {
 }
 
 type Open = "update" | "create" | null
-type OpenChildMenu = "delete" | "archive" | "unarchive" | null
+type Dialog = "delete" | "archive" | "unarchive" | null
 
 type State = {
   child: Child
   open: Open
-  openChildMenu: OpenChildMenu
+  dialog: Dialog
   submitting: boolean
 }
 
@@ -92,7 +97,9 @@ const __actions = {
   ADD: "ADD",
   UPDATE: "UPDATE",
   OPEN_CHANGED: "OPEN_CHANGED",
-  OPEN_CHILD_MENU_CHANGED: "OPEN_CHILD_MENU_CHANGED",
+  OPEN_DELETE_CHANGED: "OPEN_DELETE_CHANGED",
+  OPEN_ARCHIVE_CHANGED: "OPEN_ARCHIVE_CHANGED",
+  OPEN_UNARCHIVE_CHANGED: "OPEN_UNARCHIVE_CHANGED",
   ACTION_SUBMITTED: "ACTION_SUBMITTED",
   ACTION_FAILED: "ACTION_FAILED",
   CHILD_CREATED: "CHILD_CREATED",
@@ -105,7 +112,9 @@ type Action =
   { type: Actions["ADD"] } |
   { type: Actions["UPDATE"], child: Child } |
   { type: Actions["OPEN_CHANGED"], open: Open } |
-  { type: Actions["OPEN_CHILD_MENU_CHANGED"], open: OpenChildMenu } |
+  { type: Actions["OPEN_DELETE_CHANGED"], open: boolean } |
+  { type: Actions["OPEN_ARCHIVE_CHANGED"], open: boolean } |
+  { type: Actions["OPEN_UNARCHIVE_CHANGED"], open: boolean } |
   { type: Actions["ACTION_SUBMITTED"] } |
   { type: Actions["ACTION_FAILED"] } |
   { type: Actions["ACTION_SUCCEED"] }
@@ -127,12 +136,34 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         open: action.open,
-        openChildMenu: null,
+        dialog: null,
       }
-    case "OPEN_CHILD_MENU_CHANGED":
+    case "OPEN_DELETE_CHANGED":
       return {
         ...state,
-        openChildMenu: state.open === "update" ? action.open : null,
+        dialog: state.open === "update"
+          ? action.open
+            ? "delete"
+            : null
+          : null,
+      }
+    case "OPEN_ARCHIVE_CHANGED":
+      return {
+        ...state,
+        dialog: state.open === "update"
+          ? action.open
+            ? "archive"
+            : null
+          : null,
+      }
+    case "OPEN_UNARCHIVE_CHANGED":
+      return {
+        ...state,
+        dialog: state.open === "update"
+          ? action.open
+            ? "unarchive"
+            : null
+          : null,
       }
     case "ACTION_SUBMITTED":
       return { ...state, submitting: true }
@@ -142,7 +173,7 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         open: null,
-        openChildMenu: null,
+        dialog: null,
         submitting: false
       }
   }
@@ -159,7 +190,7 @@ function init({ category, icon }: InitialState): State {
       transactions: 0
     },
     open: null,
-    openChildMenu: null,
+    dialog: null,
     submitting: false,
   }
 }
@@ -175,18 +206,25 @@ export function UpdateCategory({
   onCreateChildAction,
   onUpdateChildAction,
   onDeleteChildAction,
+  onArchiveChildAction,
   submitting
 }: Props) {
   const [state, dispatch] = useReducer(reducer, { category, icon: defaultIcons[category.kind] }, init)
 
-  const onOpenChildChange = (open: Open) =>
-    dispatch({ type: "OPEN_CHANGED", open })
+  const onOpenCreateChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "create" : null })
+  const onOpenUpdateChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "update" : null })
   const onChildClick: OnChildClick = (child) =>
     dispatch({ type: "UPDATE", child })
   const onAddChildClick: OnAddChildClick = () =>
     dispatch({ type: "ADD" })
-  const onOpenChildMenuChange = (open: OpenChildMenu) =>
-    dispatch({ type: "OPEN_CHILD_MENU_CHANGED", open })
+  const onOpenDeleteChange = (open: boolean) =>
+    dispatch({ type: "OPEN_DELETE_CHANGED", open })
+  const onOpenArchiveChange = (open: boolean) =>
+    dispatch({ type: "OPEN_ARCHIVE_CHANGED", open })
+  const onOpenUnarchiveChange = (open: boolean) =>
+    dispatch({ type: "OPEN_UNARCHIVE_CHANGED", open })
 
   const onChildActionSubmit = () =>
     dispatch({ type: "ACTION_SUBMITTED" })
@@ -211,6 +249,17 @@ export function UpdateCategory({
     onChildActionSubmit()
 
     return onDeleteChildAction(
+      state.child.parentId,
+      state.child.id,
+      onChildActionSuccess,
+      onChildActionFailure
+    )
+  }
+
+  const onArchiveChild = () => {
+    onChildActionSubmit()
+
+    return onArchiveChildAction(
       state.child.parentId,
       state.child.id,
       onChildActionSuccess,
@@ -244,8 +293,10 @@ export function UpdateCategory({
         child={state.child}
         open={state.open === "update"}
         onSubmit={onUpdateChild}
-        onOpenChange={(open) => onOpenChildChange(open ? "update" : null)}
-        onDelete={() => onOpenChildMenuChange("delete")}
+        onOpenChange={onOpenCreateChange}
+        onDelete={() => onOpenDeleteChange(true)}
+        onArchive={() => onOpenArchiveChange(true)}
+        onUnarchive={() => onOpenUnarchiveChange(true)}
         submitting={state.submitting}
       />
 
@@ -254,20 +305,29 @@ export function UpdateCategory({
         child={state.child}
         open={state.open === "create"}
         onSubmit={onCreateChild}
-        onOpenChange={(open) => onOpenChildChange(open ? "create" : null)}
+        onOpenChange={onOpenUpdateChange}
         defaultIcon={defaultIcons[category.kind]}
-        onDelete={() => onOpenChildMenuChange("delete")}
+        onDelete={() => { }} // onDelete is not used because it only opens as add
       />
 
       {
         state.child.id > 0 && (
           <>
             <DeleteChildDialog
-              open={state.openChildMenu === "delete"}
-              onOpenChange={(open) => onOpenChildMenuChange(open ? "delete" : null)}
+              open={state.dialog === "delete"}
+              onOpenChange={onOpenDeleteChange}
               name={childName(category, state.child)}
               transactions={state.child.transactions}
               onConfirm={onDeleteChild}
+              submitting={state.submitting}
+            />
+
+            <ArchiveChildDialog
+              open={state.dialog === "archive"}
+              onOpenChange={onOpenArchiveChange}
+              name={childName(category, state.child)}
+              transactions={state.child.transactions}
+              onConfirm={onArchiveChild}
               submitting={state.submitting}
             />
           </>
