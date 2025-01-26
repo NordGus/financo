@@ -38,6 +38,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("failed to connect to database server", err)
 	}
+
 	shutdown.Defer(shutdown.Closure{
 		Name: "db.Close",
 		Func: func() { db.Close() },

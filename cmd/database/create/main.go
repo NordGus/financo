@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"financo/services/shutdown"
 	"fmt"
 	"log"
 	"os"
@@ -26,7 +27,11 @@ func main() {
 		ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 		connStr     = fmt.Sprintf("postgres://%s:%s@%s:%s/postgres?sslmode=disable", username, password, host, port)
 	)
-	defer cancel()
+
+	shutdown.Defer(shutdown.Closure{
+		Name: "context.CancelFunc",
+		Func: cancel,
+	})
 
 	log.Println("creating database")
 
@@ -34,7 +39,11 @@ func main() {
 	if err != nil {
 		log.Fatalln("failed to connect to database server", err)
 	}
-	defer db.Close()
+
+	shutdown.Defer(shutdown.Closure{
+		Name: "db.Close",
+		Func: func() { db.Close() },
+	})
 
 	_, err = db.ExecContext(ctx, fmt.Sprintf("CREATE DATABASE %v;", database))
 	if err != nil {
@@ -43,12 +52,14 @@ func main() {
 	}
 
 	log.Printf("\"%s\" created\n", database)
+	shutdown.Exit(0)
 }
 
 func errCreateDatabase(err error) {
 	if strings.Contains(err.Error(), fmt.Sprintf("database \"%s\" already exists", database)) {
 		log.Printf("\"%s\" already exists\n", database)
 	} else {
-		log.Fatalln("failed to create database:", err.Error())
+		log.Printf("failed to create database: %s\n", err.Error())
+		shutdown.Exit(1)
 	}
 }
