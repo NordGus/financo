@@ -15,35 +15,35 @@ import (
 )
 
 type command struct {
-	req              requests.Update
-	repo             repositories.UpdateAccountRepository
-	transactionsRepo repositories.TransactionsRepository
-	broker           brokers.Updated
+	req          requests.Update
+	update       repositories.UpdateAccountRepository
+	transactions repositories.TransactionsRepository
+	broker       brokers.Updated
 }
 
 func New(
 	req requests.Update,
-	repo repositories.UpdateAccountRepository,
-	transactionsRepo repositories.TransactionsRepository,
+	update repositories.UpdateAccountRepository,
+	transactions repositories.TransactionsRepository,
 	broker brokers.Updated,
-) commands.Command[responses.Updated] {
+) commands.Command[responses.Listed] {
 	return &command{
-		req:              req,
-		repo:             repo,
-		transactionsRepo: transactionsRepo,
-		broker:           broker,
+		req:          req,
+		update:       update,
+		transactions: transactions,
+		broker:       broker,
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Updated, error) {
+func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	var (
 		timestamp = time.Now().UTC()
 
-		res responses.Updated
+		res responses.Listed
 	)
 
 	// Retrieve the previous state for the account
-	prev, err := c.repo.Find(ctx, c.req.ID)
+	prev, err := c.update.Find(ctx, c.req.ID)
 	if err != nil {
 		return res, err
 	}
@@ -65,13 +65,13 @@ func (c *command) Run(ctx context.Context) (responses.Updated, error) {
 	}
 
 	// Retrieve the account balance excluding the account's history to recalculate
-	current.Record.DynamicData.Balance, err = c.transactionsRepo.BalanceWithoutHistoryFor(ctx, current.Record.ID)
+	current.Record.DynamicData.Balance, err = c.transactions.BalanceWithoutHistoryFor(ctx, current.Record.ID)
 	if err != nil {
 		return res, err
 	}
 
 	// Retrieve the account transaction count excluding the account's history to recalculate
-	current.Record.DynamicData.Transactions, err = c.transactionsRepo.CountWithoutHistoryFor(ctx, current.Record.ID)
+	current.Record.DynamicData.Transactions, err = c.transactions.CountWithoutHistoryFor(ctx, current.Record.ID)
 	if err != nil {
 		return res, err
 	}
@@ -118,7 +118,7 @@ func (c *command) Run(ctx context.Context) (responses.Updated, error) {
 	}
 
 	// Persist the current state
-	err = c.repo.Save(ctx, current)
+	err = c.update.Save(ctx, current)
 	if err != nil {
 		return res, err
 	}
@@ -129,11 +129,5 @@ func (c *command) Run(ctx context.Context) (responses.Updated, error) {
 		return res, err
 	}
 
-	return responses.Updated{
-		ID:    current.Record.ID,
-		Name:  current.Record.Name,
-		Kind:  current.Record.Kind,
-		Color: current.Record.Color,
-		Icon:  current.Record.Icon,
-	}, nil
+	return responses.AccountRecordToListed(current.Record), nil
 }

@@ -14,7 +14,7 @@ import { Category, Child as ChildCategory } from "../types/category";
 import { Create, CreateChild } from "../types/create";
 import { Update, UpdateChild } from "../types/update";
 
-interface CategoryState {
+interface CategoriesState {
   categories: Category[]
 
   list: () => void
@@ -32,7 +32,7 @@ interface CategoryState {
   destroyChild: (parentId: number, id: number) => Promise<ChildCategory>
 }
 
-const useCategoriesStore = createStore<CategoryState>((set) => ({
+const useCategoriesStore = createStore<CategoriesState>((set) => ({
   categories: [],
   list: async () => {
     const categories = await list()

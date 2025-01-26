@@ -41,7 +41,7 @@ import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-ma
 import { mainAccountManual } from "../../manual/main-account-manual";
 import { schema, schemaWithCapital } from "../../schemas/update";
 import { Account } from "../../types/account";
-import { OnSubmitUpdateAccountAction } from "../../types/actions";
+import { OnSubmitUpdateAccountAction } from "../../types/update";
 
 interface Props {
   open: boolean

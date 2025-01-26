@@ -42,7 +42,7 @@ import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-ma
 import { mainAccountManual } from "../../manual/main-account-manual";
 import { schema, schemaWithCapital } from "../../schemas/create";
 import { ModuleKind } from "../../types/account";
-import { OnSubmitCreateAccountAction } from "../../types/actions";
+import { OnSubmitCreateAccountAction } from "../../types/create";
 import { defaultIcons } from "../../types/icons";
 
 interface Props {

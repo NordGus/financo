@@ -1,11 +1,12 @@
 import { ConfirmationDialog } from "~/shared/components/dialogs/confirmation";
 import { Account } from "../../types/account";
+import { OnSubmitArchiveAccountAction } from "../../types/archive";
 
 interface Props {
   account: Account
   open: boolean
   onOpenChange: (open: boolean) => void
-  onConfirm: (id: number) => Promise<void>
+  onConfirm: OnSubmitArchiveAccountAction
   submitting: boolean
 }
 

@@ -1,11 +1,12 @@
 import { ConfirmationDialog } from "~/shared/components/dialogs/confirmation";
 import { Account } from "../../types/account";
+import { OnSubmitDeleteAccountAction } from "../../types/delete";
 
 interface Props {
   account: Account
   open: boolean
   onOpenChange: (open: boolean) => void
-  onConfirm: (id: number) => Promise<void>
+  onConfirm: OnSubmitDeleteAccountAction
   submitting: boolean
 }
 

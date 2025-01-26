@@ -9,13 +9,9 @@ import {
 export default [
   layout("shared/layout.tsx", [
     index("routes/home.tsx"),
+
     route("morning-brew", "routes/morning-brew/index.tsx"),
-
-    ...prefix("accounts", [
-      index("routes/accounts/index.tsx"),
-      route(":id", "routes/accounts/show.tsx"), // for actions/loaders only it does not contain a view
-    ]),
-
+    route("accounts", "routes/accounts/index.tsx"),
     route("categories", "routes/categories/index.tsx"),
 
     ...prefix("ledger", [
