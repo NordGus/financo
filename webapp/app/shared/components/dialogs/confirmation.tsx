@@ -18,7 +18,7 @@ interface Props {
   submitting: boolean
 }
 
-export function ConfirmAsyncActionDialog({
+export function ConfirmationDialog({
   open,
   onOpenChange,
   onConfirm,
