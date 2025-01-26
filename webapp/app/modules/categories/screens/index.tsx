@@ -3,9 +3,12 @@ import { Fragment, useReducer } from "react";
 import { InfoDialog } from "~/shared/components/dialogs/info";
 import { Button } from "~/shared/components/ui/button";
 import { Heading1 } from "~/shared/components/ui/headings";
+import { ArchiveDialog } from "../components/dialogs/archive";
+import { DeleteDialog } from "../components/dialogs/delete";
 import { SelectIndexScreenSubView } from "../components/dialogs/select-index-screen-sub-view";
 import { SelectIndexScreenView } from "../components/dialogs/select-index-screen-view";
 import { SelectKindToCreate } from "../components/dialogs/select-kind-to-create";
+import { UnarchiveDialog } from "../components/dialogs/unarchive";
 import { CreateCategory } from "../components/forms/create";
 import { UpdateCategory } from "../components/forms/update";
 import { ListForKind } from "../components/list-for-kind";
@@ -59,6 +62,7 @@ function withView(view?: string | null): View {
 }
 
 type Open = "kind" | "create" | "update" | null
+type OpenDialog = "delete" | "archive" | "unarchive" | null
 
 const _screenActions = {
   VIEW_CHANGED: "VIEW_CHANGED",
@@ -68,6 +72,9 @@ const _screenActions = {
   OPEN_SELECT_KIND_CHANGED: "OPEN_SELECT_KIND_CHANGED",
   OPEN_CREATE_CHANGED: "OPEN_CREATE_CHANGED",
   OPEN_EDIT_CHANGED: "OPEN_EDIT_CHANGED",
+  OPEN_DELETE_CHANGED: "OPEN_DELETE_CHANGED",
+  OPEN_ARCHIVE_CHANGED: "OPEN_ARCHIVE_CHANGED",
+  OPEN_UNARCHIVE_CHANGED: "OPEN_UNARCHIVE_CHANGED",
   ACTION_SUBMITTED: "ACTION_SUBMITTED",
   ACTION_SUCCEED: "ACTION_SUCCEED",
   ACTION_FAILED: "ACTION_FAILED",
@@ -83,6 +90,9 @@ type ScreenAction =
   { type: ScreenActions["OPEN_SELECT_KIND_CHANGED"], open: boolean } |
   { type: ScreenActions["OPEN_CREATE_CHANGED"], open: boolean } |
   { type: ScreenActions["OPEN_EDIT_CHANGED"], open: boolean } |
+  { type: ScreenActions["OPEN_DELETE_CHANGED"], open: boolean } |
+  { type: ScreenActions["OPEN_ARCHIVE_CHANGED"], open: boolean } |
+  { type: ScreenActions["OPEN_UNARCHIVE_CHANGED"], open: boolean } |
   { type: ScreenActions["ACTION_SUBMITTED"] } |
   { type: ScreenActions["ACTION_SUCCEED"] } |
   { type: ScreenActions["ACTION_FAILED"] }
@@ -93,6 +103,7 @@ type ScreenState = {
   kind: ModuleKind
   category: Category | null
   open: Open
+  dialog: OpenDialog
   submitting: boolean
 }
 
@@ -107,6 +118,7 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
         ...state,
         kind: action.kind,
         open: "create",
+        dialog: null,
       }
     case "CATEGORY_CHANGED":
       return {
@@ -116,21 +128,40 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
           children: [...action.category.children.map((c) => ({ ...c }))]
         },
         open: "update",
+        dialog: null,
       }
     case "OPEN_SELECT_KIND_CHANGED":
       return {
         ...state,
-        open: action.open ? "kind" : null
+        open: action.open ? "kind" : null,
+        dialog: null,
       }
     case "OPEN_CREATE_CHANGED":
       return {
         ...state,
         open: action.open ? "create" : null,
+        dialog: null,
       }
     case "OPEN_EDIT_CHANGED":
       return {
         ...state,
-        open: action.open ? "update" : null
+        open: action.open ? "update" : null,
+        dialog: null,
+      }
+    case "OPEN_DELETE_CHANGED":
+      return {
+        ...state,
+        dialog: action.open ? "delete" : null,
+      }
+    case "OPEN_ARCHIVE_CHANGED":
+      return {
+        ...state,
+        dialog: action.open ? "archive" : null,
+      }
+    case "OPEN_UNARCHIVE_CHANGED":
+      return {
+        ...state,
+        dialog: action.open ? "unarchive" : null,
       }
     case "ACTION_SUBMITTED":
       return { ...state, submitting: true }
@@ -138,7 +169,8 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
       return {
         ...state,
         submitting: false,
-        open: null
+        open: null,
+        dialog: null,
       }
     case "ACTION_FAILED":
       return { ...state, submitting: false }
@@ -152,6 +184,7 @@ function init({ view, subView }: { view: View, subView: SubView }): ScreenState 
     kind: "external_expense",
     category: null,
     open: null,
+    dialog: null,
     submitting: false,
   }
 }
@@ -218,9 +251,12 @@ export function Screen({
     return onUpdateAction(values, onActionSuccess, onActionFailure)
   }
 
-  const onDelete = () => { }
-  const onArchive = () => { }
-  const onUnarchive = () => { }
+  const onOpenDeleteChange = (open: boolean) =>
+    dispatch({ type: "OPEN_DELETE_CHANGED", open })
+  const onOpenArchiveChange = (open: boolean) =>
+    dispatch({ type: "OPEN_ARCHIVE_CHANGED", open })
+  const onOpenUnarchiveChange = (open: boolean) =>
+    dispatch({ type: "OPEN_UNARCHIVE_CHANGED", open })
 
   const onDeleteConfirm = (id: number) => {
     onActionSubmit()
@@ -293,26 +329,97 @@ export function Screen({
 
       {
         screen.category && (
-          <UpdateCategory
-            open={screen.open === "update"}
-            onOpenChange={onOpenEditChange}
+          <>
+            <UpdateCategory
+              open={screen.open === "update"}
+              onOpenChange={onOpenEditChange}
 
-            category={
-              categories.find((c) => c.id === screen.category?.id)
-              ?? screen.category
-            }
+              category={
+                categories.find((c) => c.id === screen.category?.id)
+                ?? screen.category
+              }
 
-            submitting={screen.submitting}
+              submitting={screen.submitting}
 
-            onSubmit={onUpdate}
-            onDelete={onDelete}
-            onArchive={onArchive}
-            onUnarchive={onUnarchive}
+              onSubmit={onUpdate}
+              onDelete={() => onOpenDeleteChange(true)}
+              onArchive={() => onOpenArchiveChange(true)}
+              onUnarchive={() => onOpenUnarchiveChange(true)}
 
-            onCreateChildAction={onCreateChildAction}
-            onUpdateChildAction={onUpdateChildAction}
-            onDeleteChildAction={onDeleteChildAction}
-          />
+              onCreateChildAction={onCreateChildAction}
+              onUpdateChildAction={onUpdateChildAction}
+              onDeleteChildAction={onDeleteChildAction}
+            />
+
+            <DeleteDialog
+              open={screen.dialog === "delete"}
+              onOpenChange={onOpenDeleteChange}
+              name={
+                (
+                  categories.find((c) => c.id === screen.category?.id)
+                  ?? screen.category
+                ).name
+              }
+              transactions={
+                (
+                  categories.find((c) => c.id === screen.category?.id)
+                  ?? screen.category
+                ).transactions
+              }
+              childrenCount={
+                (
+                  categories.find((c) => c.id === screen.category?.id)
+                  ?? screen.category
+                ).children.length
+              }
+              onConfirm={() => onDeleteConfirm(screen.category!.id)}
+              submitting={screen.submitting}
+            />
+
+            <ArchiveDialog
+              open={screen.dialog === "archive"}
+              onOpenChange={onOpenArchiveChange}
+              name={
+                (
+                  categories.find((c) => c.id === screen.category?.id)
+                  ?? screen.category
+                ).name
+              }
+              transactions={
+                (
+                  categories.find((c) => c.id === screen.category?.id)
+                  ?? screen.category
+                ).transactions
+              }
+              childrenCount={
+                (
+                  categories.find((c) => c.id === screen.category?.id)
+                  ?? screen.category
+                ).children.length
+              }
+              onConfirm={() => onArchiveConfirm(screen.category!.id)}
+              submitting={screen.submitting}
+            />
+
+            <UnarchiveDialog
+              open={screen.dialog === "unarchive"}
+              onOpenChange={onOpenUnarchiveChange}
+              name={
+                (
+                  categories.find((c) => c.id === screen.category?.id)
+                  ?? screen.category
+                ).name
+              }
+              childrenCount={
+                (
+                  categories.find((c) => c.id === screen.category?.id)
+                  ?? screen.category
+                ).children.length
+              }
+              onConfirm={() => onUnarchiveConfirm(screen.category!.id)}
+              submitting={screen.submitting}
+            />
+          </>
         )
       }
 
