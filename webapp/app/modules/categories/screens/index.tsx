@@ -13,7 +13,7 @@ import { CreateCategory } from "../components/forms/create";
 import { UpdateCategory } from "../components/forms/update";
 import { ListForKind } from "../components/list-for-kind";
 import { archivedCategoriesManual } from "../manual/archived-categories-manual";
-import { ArchiveAction } from "../types/archive";
+import { ArchiveAction, ArchiveChildAction } from "../types/archive";
 import { Category, ModuleKind } from "../types/category";
 import { Create, CreateAction, CreateChildAction } from "../types/create";
 import { DeleteAction, DeleteChildAction } from "../types/delete";
@@ -35,6 +35,7 @@ interface Props {
   onCreateChildAction: CreateChildAction
   onUpdateChildAction: UpdateChildAction
   onDeleteChildAction: DeleteChildAction
+  onArchiveChildAction: ArchiveChildAction
 }
 
 type SubView = "active" | "archived"
@@ -201,6 +202,7 @@ export function Screen({
   onCreateChildAction,
   onUpdateChildAction,
   onDeleteChildAction,
+  onArchiveChildAction,
 }: Props) {
   const [screen, dispatch] = useReducer(
     reducer,
@@ -349,6 +351,7 @@ export function Screen({
               onCreateChildAction={onCreateChildAction}
               onUpdateChildAction={onUpdateChildAction}
               onDeleteChildAction={onDeleteChildAction}
+              onArchiveChildAction={onArchiveChildAction}
             />
 
             <DeleteDialog

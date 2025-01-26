@@ -1,78 +1,52 @@
-import { useEffect, useState } from "react";
-import { useFetcher } from "react-router";
 import { Throbber } from "~/shared/components/throbber";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle
-} from "~/shared/components/ui/alert-dialog";
 import { Button } from "~/shared/components/ui/button";
-import { Archived } from "../../../types/archive";
-
-interface Account {
-  id: number
-  name: string
-  transactions: number
-}
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle
+} from "~/shared/components/ui/drawer";
 
 interface Props {
   open: boolean
-  account: Account
-  onOpenChanged: (open: boolean) => void
-  onSuccess: () => void
+  onOpenChange: (open: boolean) => void
+  name: string
+  transactions: number
+  onConfirm: () => void
+  submitting: boolean
 }
 
-export function ArchiveDialog({ open, onOpenChanged, onSuccess, account: { id, name, transactions } }: Props) {
-  const [loading, setLoading] = useState(false)
-  const fetcher = useFetcher<Archived | null>({ key: `archive.category.${id}` })
-
-  useEffect(() => {
-    setLoading(false)
-
-    if (loading && !!fetcher.data) onSuccess()
-  }, [fetcher.data])
-
+export function ArchiveDialog({
+  open,
+  onOpenChange,
+  name,
+  transactions,
+  onConfirm,
+  submitting
+}: Props) {
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChanged}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription className="space-y-2">
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Are you sure?</DrawerTitle>
+          <DrawerDescription className="space-y-2">
             You are about to archive <span className="font-bold">{name}</span>. This will remove it as an selectable option from the rest of <span className="font-bold text-foreground">financo</span> while preserving its <span className="font-bold">{transactions}</span> transaction(s) in your ledger. <span className="font-bold">This action can be reverted from the Categories archive</span>.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          {
-            loading
-              ? <Button variant={"ghost"} size={"icon"}>
-                <Throbber size={"sm"} />
-              </Button>
-              : <>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <Button
-                  onClick={() => {
-                    setLoading(true)
-
-                    fetcher.submit(
-                      { intent: "archive" },
-                      {
-                        action: `/categories/${id}`,
-                        method: "post",
-                        encType: "application/json"
-                      }
-                    )
-                  }}
-                >
-                  Confirm
-                </Button>
-              </>
-          }
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </DrawerDescription>
+        </DrawerHeader>
+        <DrawerFooter>
+          <Button onClick={onConfirm} disabled={submitting}>
+            {submitting ? <Throbber size={"sm"} /> : "Confirm"}
+          </Button>
+          <DrawerClose asChild>
+            <Button variant={"outline"} disabled={submitting}>
+              Cancel
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   )
 }
