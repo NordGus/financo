@@ -8,6 +8,7 @@ import (
 	"financo/cmd/api/json/handlers/categories/destroy_child_handler"
 	"financo/cmd/api/json/handlers/categories/destroy_handler"
 	"financo/cmd/api/json/handlers/categories/list_handler"
+	"financo/cmd/api/json/handlers/categories/unarchive_child_handler"
 	"financo/cmd/api/json/handlers/categories/unarchive_handler"
 	"financo/cmd/api/json/handlers/categories/update_child_handler"
 	"financo/cmd/api/json/handlers/categories/update_handler"
@@ -32,6 +33,7 @@ func Routes(r chi.Router) {
 				child.Delete("/", destroy_child_handler.HandlerFunc)
 				child.Put("/", update_child_handler.HandlerFunc)
 				child.Patch("/archive", archive_child_handler.HandlerFunc)
+				cat.Patch("/unarchive", unarchive_child_handler.HandlerFunc)
 			})
 		})
 	})
