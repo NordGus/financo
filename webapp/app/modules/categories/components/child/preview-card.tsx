@@ -23,7 +23,7 @@ export function PreviewCard({ name, description, icon, archived, onClick }: Prop
         </p>
       )}
       {archived && (
-        <div className="mt-4 flex items-center gap-2 text-muted-foreground">
+        <div className="mt-4 flex items-center gap-2 text-muted-foreground text-sm">
           <Archived /> Archived
         </div>
       )}
