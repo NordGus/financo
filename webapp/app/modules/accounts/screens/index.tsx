@@ -14,15 +14,11 @@ import { ListForKind } from "../components/list-for-kind";
 import { accountKindsManual } from "../manual/account-kinds-manual";
 import { archivedAccountsManual } from "../manual/archived-accounts-manual";
 import { Account, ModuleKind } from "../types/account";
-import {
-  ArchiveAccountAction,
-  CreateAccountAction,
-  DeleteAccountAction,
-  UnarchiveAccountAction,
-  UpdateAccountAction
-} from "../types/actions";
-import { Create } from "../types/create";
-import { Update } from "../types/update";
+import { ArchiveAccountAction } from "../types/archive";
+import { Create, CreateAccountAction } from "../types/create";
+import { DeleteAccountAction } from "../types/delete";
+import { UnarchiveAccountAction } from "../types/unarchive";
+import { Update, UpdateAccountAction } from "../types/update";
 
 interface Props {
   accounts: Account[]
@@ -98,7 +94,15 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
     case "ACCOUNT_CHANGED":
       return {
         ...state,
-        account: { ...action.account },
+        account: {
+          ...action.account,
+          additionalData: {
+            ...action.account.additionalData,
+            history: {
+              ...action.account.additionalData.history,
+            }
+          }
+        },
         openEdit: true
       }
     case "CREATE_KIND_CHANGED":
