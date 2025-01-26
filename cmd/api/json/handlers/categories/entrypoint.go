@@ -1,6 +1,7 @@
 package categories
 
 import (
+	"financo/cmd/api/json/handlers/categories/archive_child_handler"
 	"financo/cmd/api/json/handlers/categories/archive_handler"
 	"financo/cmd/api/json/handlers/categories/create_child_handler"
 	"financo/cmd/api/json/handlers/categories/create_handler"
@@ -30,6 +31,7 @@ func Routes(r chi.Router) {
 			children.Route("/{childId}", func(child chi.Router) {
 				child.Delete("/", destroy_child_handler.HandlerFunc)
 				child.Put("/", update_child_handler.HandlerFunc)
+				child.Patch("/archive", archive_child_handler.HandlerFunc)
 			})
 		})
 	})
