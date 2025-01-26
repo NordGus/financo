@@ -53,7 +53,7 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 		return res, fmt.Errorf("archive_command: category id=(%d) not found", c.req.ID)
 	}
 
-	record, err = c.archival.Unarchive(ctx, record, timestamp)
+	record, err = c.archival.Archive(ctx, record, timestamp)
 	if err != nil {
 		return res, err
 	}
