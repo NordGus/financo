@@ -13,23 +13,23 @@ import (
 )
 
 type command struct {
-	req          requests.Archive
-	repo         repositories.AccountRepository
-	archivalRepo repositories.ArchivalRepository
-	broker       brokers.Archived
+	req      requests.Archive
+	accounts repositories.AccountRepository
+	archival repositories.ArchivalRepository
+	broker   brokers.Archived
 }
 
 func New(
 	req requests.Archive,
-	repo repositories.AccountRepository,
-	archivalRepo repositories.ArchivalRepository,
+	accounts repositories.AccountRepository,
+	archival repositories.ArchivalRepository,
 	broker brokers.Archived,
 ) commands.Command[responses.Listed] {
 	return &command{
-		req:          req,
-		repo:         repo,
-		archivalRepo: archivalRepo,
-		broker:       broker,
+		req:      req,
+		accounts: accounts,
+		archival: archival,
+		broker:   broker,
 	}
 }
 
@@ -41,12 +41,12 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 		res responses.Listed
 	)
 
-	err := c.archivalRepo.Archive(ctx, c.req.ID, at, timestamp)
+	err := c.archival.Archive(ctx, c.req.ID, at, timestamp)
 	if err != nil {
 		return res, err
 	}
 
-	record, err := c.repo.Find(ctx, c.req.ID)
+	record, err := c.accounts.Find(ctx, c.req.ID)
 	if err != nil {
 		return res, err
 	}

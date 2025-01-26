@@ -16,16 +16,16 @@ import (
 
 type command struct {
 	req    requests.Create
-	repo   repositories.CreateAccountRepository
+	create repositories.CreateAccountRepository
 	broker brokers.Created
 }
 
 func New(
-	req requests.Create, repo repositories.CreateAccountRepository, broker brokers.Created,
+	req requests.Create, create repositories.CreateAccountRepository, broker brokers.Created,
 ) commands.Command[responses.Listed] {
 	return &command{
 		req:    req,
-		repo:   repo,
+		create: create,
 		broker: broker,
 	}
 }
@@ -75,7 +75,7 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 		args.HistoryTransaction.ExecutedAt = nullable.New(timestamp)
 	}
 
-	record, err := c.repo.Save(ctx, args)
+	record, err := c.create.Save(ctx, args)
 	if err != nil {
 		return res, err
 	}
