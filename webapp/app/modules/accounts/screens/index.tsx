@@ -43,6 +43,9 @@ function withView(view?: string | string[] | null): View {
   }
 }
 
+type Open = "kind" | "create" | "update" | null
+type Dialog = "delete" | "archive" | "unarchive" | null
+
 const _screenActions = {
   VIEW_CHANGED: "VIEW_CHANGED",
   ACCOUNT_CHANGED: "ACCOUNT_CHANGED",
@@ -76,14 +79,10 @@ type ScreenAction =
 
 type ScreenState = {
   view: View
-  openSelectKindForCreate: boolean
-  openCreate: boolean
   createKind: ModuleKind
   account: Account | null
-  openEdit: boolean
-  openArchive: boolean
-  openUnarchive: boolean
-  openDelete: boolean
+  open: Open
+  dialog: Dialog
   submitting: boolean
 }
 
@@ -103,69 +102,48 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
             }
           }
         },
-        openEdit: true
+        open: "update",
+        dialog: null,
       }
     case "CREATE_KIND_CHANGED":
       return {
         ...state,
         createKind: action.kind,
-        openCreate: true,
-        openSelectKindForCreate: false,
-        openEdit: false,
-        openArchive: false,
-        openUnarchive: false,
-        openDelete: false,
+        open: "create",
+        dialog: null,
       }
     case "OPEN_SELECT_KIND_CHANGED":
       return {
         ...state,
-        openSelectKindForCreate: action.open,
-        openCreate: false,
-        openEdit: false,
-        openArchive: false,
-        openUnarchive: false,
-        openDelete: false,
+        open: action.open ? "kind" : null,
+        dialog: null
       }
     case "OPEN_ARCHIVE_CHANGED":
       return {
         ...state,
-        openArchive: action.open,
-        openUnarchive: false,
-        openDelete: false,
+        dialog: action.open ? "archive" : null
       }
     case "OPEN_UNARCHIVE_CHANGED":
       return {
         ...state,
-        openArchive: false,
-        openUnarchive: action.open,
-        openDelete: false,
+        dialog: action.open ? "unarchive" : null
       }
     case "OPEN_DELETE_CHANGED":
       return {
         ...state,
-        openArchive: false,
-        openUnarchive: false,
-        openDelete: action.open,
+        dialog: action.open ? "delete" : null
       }
     case "OPEN_CREATE_CHANGED":
       return {
         ...state,
-        openCreate: action.open,
-        openSelectKindForCreate: false,
-        openEdit: false,
-        openArchive: false,
-        openUnarchive: false,
-        openDelete: false,
+        open: action.open ? "create" : null,
+        dialog: null
       }
     case "OPEN_EDIT_CHANGED":
       return {
         ...state,
-        openEdit: action.open,
-        openCreate: false,
-        openSelectKindForCreate: false,
-        openArchive: false,
-        openUnarchive: false,
-        openDelete: false,
+        open: action.open ? "update" : null,
+        dialog: null
       }
     case "ACTION_SUBMITTED":
       return { ...state, submitting: true }
@@ -173,31 +151,21 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
       return {
         ...state,
         submitting: false,
-        openCreate: false,
-        openEdit: false,
-        openSelectKindForCreate: false,
-        openArchive: false,
-        openUnarchive: false,
-        openDelete: false,
+        open: null,
+        dialog: null
       }
     case "ACTION_FAILED":
       return { ...state, submitting: false }
-    default:
-      return { ...state }
   }
 }
 
 function init({ view }: { view: View }): ScreenState {
   return {
     view,
-    openSelectKindForCreate: false,
-    openCreate: false,
     createKind: "capital_normal",
     account: null,
-    openEdit: false,
-    openArchive: false,
-    openUnarchive: false,
-    openDelete: false,
+    open: null,
+    dialog: null,
     submitting: false,
   }
 }
@@ -354,13 +322,13 @@ export function Screen({
       </div>
 
       <SelectAccountKindToCreate
-        open={screen.openSelectKindForCreate}
+        open={screen.open === "kind"}
         onOpenChange={onOpenSelectKindForCreateChange}
         onSelect={onCreateKindChange}
       />
 
       <CreateAccount
-        open={screen.openCreate}
+        open={screen.open === "create"}
         onOpenChange={onOpenCreateChange}
         kind={screen.createKind}
         defaultCurrency="EUR"
@@ -371,7 +339,7 @@ export function Screen({
       {
         screen.account && (
           <UpdateAccount
-            open={screen.openEdit}
+            open={screen.open === "update"}
             onOpenChange={onOpenEditChange}
             account={screen.account}
             onSubmitAction={onUpdate}
@@ -386,7 +354,7 @@ export function Screen({
       {
         screen.account && (
           <ArchiveAccount
-            open={screen.openArchive}
+            open={screen.dialog === "archive"}
             onOpenChange={onOpenArchiveChange}
             account={screen.account}
             onConfirm={onArchive}
@@ -398,7 +366,7 @@ export function Screen({
       {
         screen.account && (
           <UnarchiveAccount
-            open={screen.openUnarchive}
+            open={screen.dialog === "unarchive"}
             onOpenChange={onOpenUnarchiveChange}
             account={screen.account}
             onConfirm={onUnarchive}
@@ -410,7 +378,7 @@ export function Screen({
       {
         screen.account && (
           <DeleteAccount
-            open={screen.openDelete}
+            open={screen.dialog === "delete"}
             onOpenChange={onOpenDeleteChange}
             account={screen.account}
             onConfirm={onDelete}
