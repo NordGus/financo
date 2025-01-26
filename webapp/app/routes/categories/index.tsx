@@ -33,6 +33,7 @@ export default function CategoriesRoute() {
   const updateChildAction = useCategoriesStore((state) => state.updateChild)
   const destroyChildAction = useCategoriesStore((state) => state.destroyChild)
   const archiveChildAction = useCategoriesStore((state) => state.archiveChild)
+  const unarchiveChildAction = useCategoriesStore((state) => state.unarchiveChild)
 
   const [searchParams, setSearchParams] = useSearchParams()
   const onSearchParamsChange = (params: URLSearchParamsInit) => setSearchParams(params)
@@ -247,6 +248,31 @@ export default function CategoriesRoute() {
     [archiveChildAction]
   )
 
+  const unarchiveChild = useCallback(
+    async (parentId: number, id: number, success: () => void, failure: () => void) => {
+      try {
+        const res = unarchiveChildAction(parentId, id)
+
+        toast.promise(res, {
+          loading: "Archiving...",
+          success: (data) => {
+            return `${data.name} archived`
+          },
+          error: "Oops!. Something went wrong"
+        })
+
+        await res
+
+        success()
+      } catch (error) {
+        failure()
+
+        throw error
+      }
+    },
+    [unarchiveChildAction]
+  )
+
   useEffect(() => {
     listQuery()
   }, [])
@@ -267,5 +293,6 @@ export default function CategoriesRoute() {
     onUpdateChildAction={updateChild}
     onDeleteChildAction={destroyChild}
     onArchiveChildAction={archiveChild}
+    onUnarchiveChildAction={unarchiveChild}
   />
 }

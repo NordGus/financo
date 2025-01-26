@@ -45,8 +45,8 @@ interface Props {
   submitting: boolean
   onSubmit: OnSubmitUpdateChildAction
   onDelete: () => void
-  onArchive?: () => void
-  onUnarchive?: () => void
+  onArchive: () => void
+  onUnarchive: () => void
 }
 
 export function ChildForm({

@@ -35,10 +35,12 @@ import { Category } from "../../types/category";
 import { CreateChildAction } from "../../types/create";
 import { DeleteChildAction } from "../../types/delete";
 import { defaultIcons } from "../../types/icons";
+import { UnarchiveChildAction } from "../../types/unarchive";
 import { OnSubmitUpdateAction, UpdateChild, UpdateChildAction } from "../../types/update";
 import { PreviewCard } from "../child/preview-card";
 import { ArchiveDialog as ArchiveChildDialog } from "../dialogs/child/archive";
 import { DeleteDialog as DeleteChildDialog } from "../dialogs/child/delete";
+import { UnarchiveDialog as UnarchiveChildDialog } from "../dialogs/child/unarchive";
 import { ChildForm as CreateChildForm } from "./child/create";
 import { ChildForm as UpdateChildForm } from "./child/update";
 
@@ -55,6 +57,7 @@ type Props = {
   onUpdateChildAction: UpdateChildAction
   onDeleteChildAction: DeleteChildAction
   onArchiveChildAction: ArchiveChildAction
+  onUnarchiveChildAction: UnarchiveChildAction
 
   submitting: boolean
 }
@@ -207,6 +210,7 @@ export function UpdateCategory({
   onUpdateChildAction,
   onDeleteChildAction,
   onArchiveChildAction,
+  onUnarchiveChildAction,
   submitting
 }: Props) {
   const [state, dispatch] = useReducer(reducer, { category, icon: defaultIcons[category.kind] }, init)
@@ -260,6 +264,17 @@ export function UpdateCategory({
     onChildActionSubmit()
 
     return onArchiveChildAction(
+      state.child.parentId,
+      state.child.id,
+      onChildActionSuccess,
+      onChildActionFailure
+    )
+  }
+
+  const onUnarchiveChild = () => {
+    onChildActionSubmit()
+
+    return onUnarchiveChildAction(
       state.child.parentId,
       state.child.id,
       onChildActionSuccess,
@@ -328,6 +343,14 @@ export function UpdateCategory({
               name={childName(category, state.child)}
               transactions={state.child.transactions}
               onConfirm={onArchiveChild}
+              submitting={state.submitting}
+            />
+
+            <UnarchiveChildDialog
+              open={state.dialog === "unarchive"}
+              onOpenChange={onOpenArchiveChange}
+              name={childName(category, state.child)}
+              onConfirm={onUnarchiveChild}
               submitting={state.submitting}
             />
           </>
