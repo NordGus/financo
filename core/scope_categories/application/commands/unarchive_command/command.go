@@ -15,14 +15,14 @@ import (
 type command struct {
 	req        requests.Unarchive
 	categories repositories.CategoryRepository
-	archival   repositories.ArchivalRepository
+	archival   repositories.UnarchiveRepository
 	broker     brokers.Unarchived
 }
 
 func New(
 	req requests.Unarchive,
 	categories repositories.CategoryRepository,
-	archival repositories.ArchivalRepository,
+	archival repositories.UnarchiveRepository,
 	broker brokers.Unarchived,
 ) commands.Command[responses.Listed] {
 	return &command{

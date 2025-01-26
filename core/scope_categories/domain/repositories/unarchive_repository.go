@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-type ArchivalRepository interface {
-	Archive(ctx context.Context, record category.Record, timestamp time.Time) (category.Record, error)
+type UnarchiveRepository interface {
 	Unarchive(ctx context.Context, record category.Record, timestamp time.Time) (category.Record, error)
 }

@@ -17,7 +17,7 @@ import { ArchiveAction, ArchiveChildAction } from "../types/archive";
 import { Category, ModuleKind } from "../types/category";
 import { Create, CreateAction, CreateChildAction } from "../types/create";
 import { DeleteAction, DeleteChildAction } from "../types/delete";
-import { UnarchiveAction } from "../types/unarchive";
+import { UnarchiveAction, UnarchiveChildAction } from "../types/unarchive";
 import { Update, UpdateAction, UpdateChildAction } from "../types/update";
 
 interface Props {
@@ -36,6 +36,7 @@ interface Props {
   onUpdateChildAction: UpdateChildAction
   onDeleteChildAction: DeleteChildAction
   onArchiveChildAction: ArchiveChildAction
+  onUnarchiveChildAction: UnarchiveChildAction
 }
 
 type SubView = "active" | "archived"
@@ -203,6 +204,7 @@ export function Screen({
   onUpdateChildAction,
   onDeleteChildAction,
   onArchiveChildAction,
+  onUnarchiveChildAction,
 }: Props) {
   const [screen, dispatch] = useReducer(
     reducer,
@@ -352,6 +354,7 @@ export function Screen({
               onUpdateChildAction={onUpdateChildAction}
               onDeleteChildAction={onDeleteChildAction}
               onArchiveChildAction={onArchiveChildAction}
+              onUnarchiveChildAction={onUnarchiveChildAction}
             />
 
             <DeleteDialog
