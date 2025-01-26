@@ -15,7 +15,7 @@ interface Props {
   onOpenChange: (open: boolean) => void
   name: string
   transactions: number
-  children: number
+  childrenCount: number
   onConfirm: () => void
   submitting: boolean
 }
@@ -25,7 +25,7 @@ export function DeleteDialog({
   onOpenChange,
   name,
   transactions,
-  children,
+  childrenCount,
   onConfirm,
   submitting
 }: Props) {
@@ -35,7 +35,7 @@ export function DeleteDialog({
         <DrawerHeader>
           <DrawerTitle>Are you absolutely sure?</DrawerTitle>
           <DrawerDescription className="space-y-2">
-            You are about to permanently delete <span className="font-bold">{name}</span> from your Categories and its related <span className="font-bold">{transactions}</span> transaction(s) from your ledger and its <span className="font-bold">{children}</span> child(ren). <span className="font-bold">This action cannot be undone</span>.
+            You are about to permanently delete <span className="font-bold">{name}</span> from your Categories and its related <span className="font-bold">{transactions}</span> transaction(s) from your ledger and its <span className="font-bold">{childrenCount}</span> child(ren). <span className="font-bold">This action cannot be undone</span>.
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter>
