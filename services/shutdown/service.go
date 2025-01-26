@@ -3,6 +3,8 @@
 //
 // It works as a Last-In-First-Out queue, where the last [Closure] registered is
 // the first to be executed.
+//
+// This is a dumb idea. It would help me to implement a panic like behavior.
 package shutdown
 
 import (
