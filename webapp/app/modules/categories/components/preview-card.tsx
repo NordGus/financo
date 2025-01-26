@@ -13,10 +13,10 @@ interface Props {
 export function PreviewCard({ category, onClick }: Props) {
   const color = useMemo(() => category.color, [category.color])
   const contrast = useMemo(() => colorContrast(category.color), [category.color])
-  const { active, archived } = useMemo(() => ({
+  const { active, archived } = {
     active: category.children.filter((c) => !c.archivedAt).length,
     archived: category.children.filter((c) => !!c.archivedAt).length
-  }), [category.updatedAt, category.children.length])
+  }
 
   return (
     <Card
