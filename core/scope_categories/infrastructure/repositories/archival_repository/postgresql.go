@@ -10,11 +10,16 @@ import (
 	"time"
 )
 
+type Repository interface {
+	repositories.ArchiveRepository
+	repositories.UnarchiveRepository
+}
+
 type postgresql struct {
 	db databases.SQLAdapter
 }
 
-func NewPostgreSQL(db databases.SQLAdapter) repositories.ArchivalRepository {
+func NewPostgreSQL(db databases.SQLAdapter) Repository {
 	return &postgresql{
 		db: db,
 	}
