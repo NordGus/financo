@@ -1,8 +1,8 @@
 import { isEmpty, isNil } from "lodash-es";
 import { useEffect } from "react";
 import { useFetcher } from "react-router";
+import { Currency } from "~/modules/shared/types/currency";
 import { clientLoader } from "~/routes/currencies/for-select";
-import { Currency } from "~/shared/types/currency";
 import { Throbber } from "../throbber";
 import { FormControl } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";

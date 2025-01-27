@@ -1,4 +1,4 @@
-import { Button } from "~/shared/components/ui/button"
+import { Button } from "~/modules/shared/components/ui/button"
 import {
   Drawer,
   DrawerClose,
@@ -7,9 +7,9 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle
-} from "~/shared/components/ui/drawer"
-import { icons } from "~/shared/components/ui/icon"
-import { accountKindToHuman } from "~/shared/helpers/account-kind-to-human"
+} from "~/modules/shared/components/ui/drawer"
+import { icons } from "~/modules/shared/components/ui/icon"
+import { accountKindToHuman } from "~/modules/shared/helpers/account-kind-to-human"
 import { ModuleKind } from "../../types/account"
 import { defaultIcons } from "../../types/icons"
 

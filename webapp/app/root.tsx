@@ -12,10 +12,10 @@ import {
 } from "react-router";
 import { z } from "zod";
 import { zodErrorMap } from "~/config/zod-custom-error-map";
-import { Button } from "~/shared/components/ui/button";
-import { Heading1 } from "~/shared/components/ui/headings";
-import { TooltipProvider } from "~/shared/components/ui/tooltip";
-import useDetectColorScheme from "~/shared/hooks/use-detect-color-scheme";
+import { Button } from "~/modules/shared/components/ui/button";
+import { Heading1 } from "~/modules/shared/components/ui/headings";
+import { TooltipProvider } from "~/modules/shared/components/ui/tooltip";
+import useDetectColorScheme from "~/modules/shared/hooks/use-detect-color-scheme";
 import type { Route } from "./+types/root";
 import "./app.css";
 

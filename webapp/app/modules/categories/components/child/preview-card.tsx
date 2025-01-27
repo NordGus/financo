@@ -1,6 +1,6 @@
-import { Card } from "~/shared/components/ui/card"
-import { icons } from "~/shared/components/ui/icon"
-import { Icon } from "~/shared/types/icon"
+import { Card } from "~/modules/shared/components/ui/card"
+import { icons } from "~/modules/shared/components/ui/icon"
+import { Icon } from "~/modules/shared/types/icon"
 import { Archived } from "../badges/archived"
 
 type Props = {

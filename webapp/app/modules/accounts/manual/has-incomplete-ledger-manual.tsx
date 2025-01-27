@@ -1,6 +1,6 @@
 import { BookMarkedIcon } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "~/shared/components/ui/alert";
-import { Copy } from "~/shared/types/copy";
+import { Alert, AlertDescription, AlertTitle } from "~/modules/shared/components/ui/alert";
+import { Copy } from "~/modules/shared/types/copy";
 
 export const hasIncompleteLedgerManual: Copy = {
   title: "What means that an Account has an incomplete ledger?",

@@ -1,5 +1,5 @@
 import { InfoIcon } from "lucide-react";
-import { Copy } from "~/shared/types/copy";
+import { Copy } from "~/modules/shared/types/copy";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 interface Props {

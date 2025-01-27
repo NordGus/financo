@@ -1,4 +1,4 @@
-import { Currency } from "~/shared/types/currency";
+import { Currency } from "~/modules/shared/types/currency";
 
 type Entry = {
   code: Currency

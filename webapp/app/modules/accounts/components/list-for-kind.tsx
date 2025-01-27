@@ -1,5 +1,5 @@
-import { Card } from "~/shared/components/ui/card";
-import { accountKindToHuman } from "~/shared/helpers/account-kind-to-human";
+import { Card } from "~/modules/shared/components/ui/card";
+import { accountKindToHuman } from "~/modules/shared/helpers/account-kind-to-human";
 import { Account, ModuleKind } from "../types/account";
 import { PreviewCard } from "./preview-card";
 

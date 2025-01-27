@@ -1,5 +1,5 @@
-import { Currency } from "~/shared/types/currency";
-import { Icon } from "~/shared/types/icon";
+import { Currency } from "~/modules/shared/types/currency";
+import { Icon } from "~/modules/shared/types/icon";
 import { ModuleKind } from "./account";
 
 export type Create = {

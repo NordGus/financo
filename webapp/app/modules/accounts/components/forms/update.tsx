@@ -4,14 +4,14 @@ import moment from "moment";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { InfoDialog } from "~/shared/components/dialogs/info";
-import { CurrencyAmountInput } from "~/shared/components/inputs/currency-amount-input";
-import { CurrencyInput } from "~/shared/components/inputs/currency-input";
-import { DateInput } from "~/shared/components/inputs/date-input";
-import { IconInput } from "~/shared/components/inputs/icon-input";
-import { Throbber } from "~/shared/components/throbber";
-import { Accordion, AccordionContent, AccordionItem } from "~/shared/components/ui/accordion";
-import { Button } from "~/shared/components/ui/button";
+import { InfoDialog } from "~/modules/shared/components/dialogs/info";
+import { CurrencyAmountInput } from "~/modules/shared/components/inputs/currency-amount-input";
+import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input";
+import { DateInput } from "~/modules/shared/components/inputs/date-input";
+import { IconInput } from "~/modules/shared/components/inputs/icon-input";
+import { Throbber } from "~/modules/shared/components/throbber";
+import { Accordion, AccordionContent, AccordionItem } from "~/modules/shared/components/ui/accordion";
+import { Button } from "~/modules/shared/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -19,7 +19,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle
-} from "~/shared/components/ui/drawer";
+} from "~/modules/shared/components/ui/drawer";
 import {
   Form,
   FormControl,
@@ -28,13 +28,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "~/shared/components/ui/form";
-import { Input } from "~/shared/components/ui/input";
-import { Label } from "~/shared/components/ui/label";
-import { Switch } from "~/shared/components/ui/switch";
-import { Textarea } from "~/shared/components/ui/textarea";
-import { accountKindToHuman } from "~/shared/helpers/account-kind-to-human";
-import { isCapital, isCredit, isDebt, isLoan } from "~/shared/types/account";
+} from "~/modules/shared/components/ui/form";
+import { Input } from "~/modules/shared/components/ui/input";
+import { Label } from "~/modules/shared/components/ui/label";
+import { Switch } from "~/modules/shared/components/ui/switch";
+import { Textarea } from "~/modules/shared/components/ui/textarea";
+import { accountKindToHuman } from "~/modules/shared/helpers/account-kind-to-human";
+import { isCapital, isCredit, isDebt, isLoan } from "~/modules/shared/types/account";
 import { accountKindsManual } from "../../manual/account-kinds-manual";
 import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";

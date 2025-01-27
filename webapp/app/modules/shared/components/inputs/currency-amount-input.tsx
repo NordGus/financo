@@ -1,8 +1,8 @@
 import { BanknoteIcon, XIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
-import { currencyAmountColor } from "~/shared/helpers/currency-amount-color";
-import { currencyAmountToHuman } from "~/shared/helpers/currency-amount-to-human";
-import { Currency } from "~/shared/types/currency";
+import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
+import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
+import { Currency } from "~/modules/shared/types/currency";
 import { Calculator } from "../calculator";
 import { Button } from "../ui/button";
 import {

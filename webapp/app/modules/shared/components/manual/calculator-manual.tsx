@@ -1,5 +1,5 @@
 import { ChevronRightIcon } from "lucide-react";
-import { Copy } from "~/shared/types/copy";
+import { Copy } from "~/modules/shared/types/copy";
 import { Heading6 } from "../ui/headings";
 
 export const calculatorManual: Copy = {

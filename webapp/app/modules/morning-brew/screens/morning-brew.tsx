@@ -1,4 +1,4 @@
-import { Heading1 } from "~/shared/components/ui/headings";
+import { Heading1 } from "~/modules/shared/components/ui/headings";
 
 export function Screen() {
   return (

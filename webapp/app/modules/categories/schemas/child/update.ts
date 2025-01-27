@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ICONS } from "~/shared/types/icon";
+import { ICONS } from "~/modules/shared/types/icon";
 
 export const schema = z.object({
   id: z.number(),

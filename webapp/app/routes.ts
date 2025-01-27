@@ -7,7 +7,7 @@ import {
 } from "@react-router/dev/routes";
 
 export default [
-  layout("shared/layout.tsx", [
+  layout("modules/shared/layout.tsx", [
     index("routes/home.tsx"),
 
     route("morning-brew", "routes/morning-brew/index.tsx"),

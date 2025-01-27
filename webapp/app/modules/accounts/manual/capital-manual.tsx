@@ -1,4 +1,4 @@
-import { Copy } from "~/shared/types/copy";
+import { Copy } from "~/modules/shared/types/copy";
 
 export const capitalManual: Copy = {
   title: "What capital means for an Account?",

@@ -3,9 +3,9 @@ import { TrashIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { IconInput } from "~/shared/components/inputs/icon-input";
-import { Throbber } from "~/shared/components/throbber";
-import { Button } from "~/shared/components/ui/button";
+import { IconInput } from "~/modules/shared/components/inputs/icon-input";
+import { Throbber } from "~/modules/shared/components/throbber";
+import { Button } from "~/modules/shared/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -13,7 +13,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle
-} from "~/shared/components/ui/drawer";
+} from "~/modules/shared/components/ui/drawer";
 import {
   Form,
   FormControl,
@@ -22,10 +22,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "~/shared/components/ui/form";
-import { Input } from "~/shared/components/ui/input";
-import { Textarea } from "~/shared/components/ui/textarea";
-import { Icon } from "~/shared/types/icon";
+} from "~/modules/shared/components/ui/form";
+import { Input } from "~/modules/shared/components/ui/input";
+import { Textarea } from "~/modules/shared/components/ui/textarea";
+import { Icon } from "~/modules/shared/types/icon";
 import { schema } from "../../../schemas/child/create";
 
 interface Child {

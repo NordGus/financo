@@ -1,8 +1,8 @@
 import { PlusIcon } from "lucide-react";
 import { Fragment, useMemo, useReducer } from "react";
-import { InfoDialog } from "~/shared/components/dialogs/info";
-import { Button } from "~/shared/components/ui/button";
-import { Heading1, Heading2 } from "~/shared/components/ui/headings";
+import { InfoDialog } from "~/modules/shared/components/dialogs/info";
+import { Button } from "~/modules/shared/components/ui/button";
+import { Heading1, Heading2 } from "~/modules/shared/components/ui/headings";
 import { ArchiveAccount } from "../components/dialogs/archive";
 import { DeleteAccount } from "../components/dialogs/delete";
 import { SelectAccountKindToCreate } from "../components/dialogs/select-account-kind-to-create";

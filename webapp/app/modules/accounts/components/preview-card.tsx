@@ -4,9 +4,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle
-} from "~/shared/components/ui/card";
-import { icons } from "~/shared/components/ui/icon";
-import { colorContrast } from "~/shared/helpers/color-contrast";
+} from "~/modules/shared/components/ui/card";
+import { icons } from "~/modules/shared/components/ui/icon";
+import { colorContrast } from "~/modules/shared/helpers/color-contrast";
 import { Account } from "../types/account";
 import { ArchivedAccount } from "./badges/archived-account";
 import { Balance } from "./badges/balance";

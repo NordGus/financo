@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
-import { Throbber } from "~/shared/components/throbber";
-import { Button } from "~/shared/components/ui/button";
+import { Throbber } from "~/modules/shared/components/throbber";
+import { Button } from "~/modules/shared/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -9,7 +9,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle
-} from "~/shared/components/ui/drawer";
+} from "~/modules/shared/components/ui/drawer";
 
 interface Props {
   open: boolean

@@ -1,9 +1,9 @@
 import { PropsWithChildren } from "react";
 import { cn } from "~/lib/utils";
-import { currencyAmountColor as color } from "~/shared/helpers/currency-amount-color";
-import { currencyAmountToHuman as amount } from "~/shared/helpers/currency-amount-to-human";
-import { isCredit, isDebt } from "~/shared/types/account";
-import { Currency } from "~/shared/types/currency";
+import { currencyAmountColor as color } from "~/modules/shared/helpers/currency-amount-color";
+import { currencyAmountToHuman as amount } from "~/modules/shared/helpers/currency-amount-to-human";
+import { isCredit, isDebt } from "~/modules/shared/types/account";
+import { Currency } from "~/modules/shared/types/currency";
 import { ModuleKind } from "../../types/account";
 
 interface Props {

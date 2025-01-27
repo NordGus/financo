@@ -1,6 +1,6 @@
-import { Kinds } from "~/shared/types/account";
-import { Currency } from "~/shared/types/currency";
-import { Icon } from "~/shared/types/icon";
+import { Kinds } from "~/modules/shared/types/account";
+import { Currency } from "~/modules/shared/types/currency";
+import { Icon } from "~/modules/shared/types/icon";
 
 type ModuleKind = Kinds["external_expense"] | Kinds["external_income"]
 

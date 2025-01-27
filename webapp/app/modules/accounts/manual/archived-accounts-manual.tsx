@@ -1,4 +1,4 @@
-import { Copy } from "~/shared/types/copy";
+import { Copy } from "~/modules/shared/types/copy";
 
 export const archivedAccountsManual: Copy = {
   title: "What means that an Account is archived?",

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Icon, ICONS } from "~/shared/types/icon";
+import { Icon, ICONS } from "~/modules/shared/types/icon";
 import { Button } from "../ui/button";
 import {
   Drawer,

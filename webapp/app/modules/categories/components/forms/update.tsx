@@ -3,10 +3,10 @@ import { PackageIcon, PackageOpenIcon, PlusIcon, TrashIcon } from "lucide-react"
 import { useEffect, useReducer } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CurrencyInput } from "~/shared/components/inputs/currency-input";
-import { IconInput } from "~/shared/components/inputs/icon-input";
-import { Throbber } from "~/shared/components/throbber";
-import { Button } from "~/shared/components/ui/button";
+import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input";
+import { IconInput } from "~/modules/shared/components/inputs/icon-input";
+import { Throbber } from "~/modules/shared/components/throbber";
+import { Button } from "~/modules/shared/components/ui/button";
 import {
   Drawer,
   DrawerClose,
@@ -14,7 +14,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle
-} from "~/shared/components/ui/drawer";
+} from "~/modules/shared/components/ui/drawer";
 import {
   Form,
   FormControl,
@@ -23,12 +23,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "~/shared/components/ui/form";
-import { Input } from "~/shared/components/ui/input";
-import { Textarea } from "~/shared/components/ui/textarea";
-import { accountKindToHuman as kindToHuman } from "~/shared/helpers/account-kind-to-human";
-import { childName } from "~/shared/helpers/child-name";
-import { Icon } from "~/shared/types/icon";
+} from "~/modules/shared/components/ui/form";
+import { Input } from "~/modules/shared/components/ui/input";
+import { Textarea } from "~/modules/shared/components/ui/textarea";
+import { accountKindToHuman as kindToHuman } from "~/modules/shared/helpers/account-kind-to-human";
+import { childName } from "~/modules/shared/helpers/child-name";
+import { Icon } from "~/modules/shared/types/icon";
 import { schema } from "../../schemas/update";
 import { ArchiveChildAction } from "../../types/archive";
 import { Category } from "../../types/category";

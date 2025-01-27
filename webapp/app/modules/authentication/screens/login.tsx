@@ -1,15 +1,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "~/shared/components/ui/button";
+import { Button } from "~/modules/shared/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel
-} from "~/shared/components/ui/form";
-import { Input } from "~/shared/components/ui/input";
+} from "~/modules/shared/components/ui/form";
+import { Input } from "~/modules/shared/components/ui/input";
 import { login } from "../schemas/login";
 
 export function Screen() {

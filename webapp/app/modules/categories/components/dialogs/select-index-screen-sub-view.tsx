@@ -1,7 +1,7 @@
 import { CheckIcon, ChevronsUpDownIcon, View as SubView } from "lucide-react"
 import { useState } from "react"
-import { Button } from "~/shared/components/ui/button"
-import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "~/shared/components/ui/drawer"
+import { Button } from "~/modules/shared/components/ui/button"
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "~/modules/shared/components/ui/drawer"
 
 type SubView = "active" | "archived"
 

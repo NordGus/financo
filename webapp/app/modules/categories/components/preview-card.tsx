@@ -1,7 +1,7 @@
 import { useMemo } from "react"
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "~/shared/components/ui/card"
-import { icons } from "~/shared/components/ui/icon"
-import { colorContrast } from "~/shared/helpers/color-contrast"
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "~/modules/shared/components/ui/card"
+import { icons } from "~/modules/shared/components/ui/icon"
+import { colorContrast } from "~/modules/shared/helpers/color-contrast"
 import { Category } from "../types/category"
 import { Archived } from "./badges/archived"
 

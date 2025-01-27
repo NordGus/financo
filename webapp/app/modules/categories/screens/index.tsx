@@ -1,8 +1,8 @@
 import { PlusIcon } from "lucide-react";
 import { Fragment, useReducer } from "react";
-import { InfoDialog } from "~/shared/components/dialogs/info";
-import { Button } from "~/shared/components/ui/button";
-import { Heading1 } from "~/shared/components/ui/headings";
+import { InfoDialog } from "~/modules/shared/components/dialogs/info";
+import { Button } from "~/modules/shared/components/ui/button";
+import { Heading1 } from "~/modules/shared/components/ui/headings";
 import { ArchiveDialog } from "../components/dialogs/archive";
 import { DeleteDialog } from "../components/dialogs/delete";
 import { SelectIndexScreenSubView } from "../components/dialogs/select-index-screen-sub-view";

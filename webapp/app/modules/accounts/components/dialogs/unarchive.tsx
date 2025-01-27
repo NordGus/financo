@@ -1,4 +1,4 @@
-import { ConfirmationDialog } from "~/shared/components/dialogs/confirmation";
+import { ConfirmationDialog } from "~/modules/shared/components/dialogs/confirmation";
 import { Account } from "../../types/account";
 import { OnSubmitUnarchiveAccountAction } from "../../types/unarchive";
 

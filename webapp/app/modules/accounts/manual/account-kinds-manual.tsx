@@ -1,4 +1,4 @@
-import { Copy } from "~/shared/types/copy";
+import { Copy } from "~/modules/shared/types/copy";
 import { ModuleKind } from "../types/account";
 
 export const accountKindsManual: Record<ModuleKind, Copy> = {

@@ -1,6 +1,6 @@
 import { InfoIcon } from "lucide-react";
 import { useState } from "react";
-import { Copy } from "~/shared/types/copy";
+import { Copy } from "~/modules/shared/types/copy";
 import { Button } from "../ui/button";
 import {
   Drawer,

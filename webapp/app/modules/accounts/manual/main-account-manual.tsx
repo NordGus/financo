@@ -1,4 +1,4 @@
-import { Copy } from "~/shared/types/copy";
+import { Copy } from "~/modules/shared/types/copy";
 
 export const mainAccountManual: Copy = {
   title: "What happens when I mark an Account as my main Account?",

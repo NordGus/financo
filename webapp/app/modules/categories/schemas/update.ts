@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { CURRENCIES } from "~/shared/types/currency";
-import { ICONS } from "~/shared/types/icon";
+import { CURRENCIES } from "~/modules/shared/types/currency";
+import { ICONS } from "~/modules/shared/types/icon";
 
 export const schema = z.object({
   id: z.number(),

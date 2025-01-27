@@ -1,5 +1,5 @@
 import { StarIcon } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "~/shared/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
 
 export function MainAccount() {
   return (

@@ -145,7 +145,7 @@ import {
   WineIcon,
   ZapIcon
 } from "lucide-react";
-import { ICONS } from "~/shared/types/icon";
+import { ICONS } from "~/modules/shared/types/icon";
 
 export const icons = {
   [ICONS.credit_card]: <CreditCardIcon />,
