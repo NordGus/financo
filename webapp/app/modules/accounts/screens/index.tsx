@@ -80,7 +80,7 @@ type ScreenAction =
 type ScreenState = {
   view: View
   createKind: ModuleKind
-  account: Account | null
+  id: number
   open: Open
   dialog: Dialog
   submitting: boolean
@@ -93,15 +93,7 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
     case "ACCOUNT_CHANGED":
       return {
         ...state,
-        account: {
-          ...action.account,
-          additionalData: {
-            ...action.account.additionalData,
-            history: {
-              ...action.account.additionalData.history,
-            }
-          }
-        },
+        id: action.account.id,
         open: "update",
         dialog: null,
       }
@@ -169,7 +161,7 @@ function init({ view }: { view: View }): ScreenState {
   return {
     view,
     createKind: "capital_normal",
-    account: null,
+    id: -1,
     open: null,
     dialog: null,
     submitting: false,
@@ -246,6 +238,8 @@ export function Screen({
 
     return onDeleteAccountAction(id, onActionSuccess, onActionFailure)
   }
+
+  const selected = accounts.find(({ id }) => id === screen.id)
 
   return (
     <Fragment>
@@ -343,53 +337,43 @@ export function Screen({
       />
 
       {
-        screen.account && (
-          <UpdateAccount
-            open={screen.open === "update"}
-            onOpenChange={onOpenEditChange}
-            account={screen.account}
-            onSubmitAction={onUpdate}
-            submitting={screen.submitting}
-            onOpenArchiveChange={onOpenArchiveChange}
-            onOpenUnarchiveChange={onOpenUnarchiveChange}
-            onOpenDeleteChange={onOpenDeleteChange}
-          />
-        )
-      }
+        selected && (
+          <>
+            <UpdateAccount
+              open={screen.open === "update"}
+              onOpenChange={onOpenEditChange}
+              account={selected}
+              onSubmitAction={onUpdate}
+              submitting={screen.submitting}
+              onOpenArchiveChange={onOpenArchiveChange}
+              onOpenUnarchiveChange={onOpenUnarchiveChange}
+              onOpenDeleteChange={onOpenDeleteChange}
+            />
 
-      {
-        screen.account && (
-          <ArchiveAccount
-            open={screen.dialog === "archive"}
-            onOpenChange={onOpenArchiveChange}
-            account={screen.account}
-            onConfirm={onArchive}
-            submitting={screen.submitting}
-          />
-        )
-      }
+            <ArchiveAccount
+              open={screen.dialog === "archive"}
+              onOpenChange={onOpenArchiveChange}
+              account={selected}
+              onConfirm={onArchive}
+              submitting={screen.submitting}
+            />
 
-      {
-        screen.account && (
-          <UnarchiveAccount
-            open={screen.dialog === "unarchive"}
-            onOpenChange={onOpenUnarchiveChange}
-            account={screen.account}
-            onConfirm={onUnarchive}
-            submitting={screen.submitting}
-          />
-        )
-      }
+            <UnarchiveAccount
+              open={screen.dialog === "unarchive"}
+              onOpenChange={onOpenUnarchiveChange}
+              account={selected}
+              onConfirm={onUnarchive}
+              submitting={screen.submitting}
+            />
 
-      {
-        screen.account && (
-          <DeleteAccount
-            open={screen.dialog === "delete"}
-            onOpenChange={onOpenDeleteChange}
-            account={screen.account}
-            onConfirm={onDelete}
-            submitting={screen.submitting}
-          />
+            <DeleteAccount
+              open={screen.dialog === "delete"}
+              onOpenChange={onOpenDeleteChange}
+              account={selected}
+              onConfirm={onDelete}
+              submitting={screen.submitting}
+            />
+          </>
         )
       }
     </Fragment>

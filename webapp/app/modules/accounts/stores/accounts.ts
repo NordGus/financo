@@ -73,7 +73,7 @@ const useAccountsStore = createStore<AccountsState>((set) => ({
 
     set((state) => ({
       ...state,
-      accounts: [...state.accounts.filter((account) => account.id !== deleted.id)]
+      accounts: [...state.accounts.map((account) => account.id === deleted.id ? deleted : account)]
     }))
 
     return deleted
