@@ -18,6 +18,7 @@ import { TooltipProvider } from "~/modules/shared/components/ui/tooltip";
 import useDetectColorScheme from "~/modules/shared/hooks/use-detect-color-scheme";
 import type { Route } from "./+types/root";
 import "./app.css";
+import { useCurrenciesStore } from "./modules/currencies/stores/currencies";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -59,7 +60,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  useEffect(() => z.setErrorMap(zodErrorMap), [])
+  const listCurrenciesQuery = useCurrenciesStore((state) => state.list)
+
+  useEffect(() => {
+    z.setErrorMap(zodErrorMap)
+
+    listCurrenciesQuery()
+  }, [])
 
   return (
     <TooltipProvider>
