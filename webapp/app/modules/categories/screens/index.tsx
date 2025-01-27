@@ -103,7 +103,7 @@ type ScreenState = {
   view: View
   subView: SubView
   kind: ModuleKind
-  category: Category | null
+  id: number
   open: Open
   dialog: OpenDialog
   submitting: boolean
@@ -125,10 +125,7 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
     case "CATEGORY_CHANGED":
       return {
         ...state,
-        category: {
-          ...action.category,
-          children: [...action.category.children.map((c) => ({ ...c }))]
-        },
+        id: action.category.id,
         open: "update",
         dialog: null,
       }
@@ -190,7 +187,7 @@ function init({ view, subView }: { view: View, subView: SubView }): ScreenState 
     view,
     subView,
     kind: "external_expense",
-    category: null,
+    id: -1,
     open: null,
     dialog: null,
     submitting: false,
@@ -286,6 +283,8 @@ export function Screen({
     return onUnarchiveAction(id, onActionSuccess, onActionFailure)
   }
 
+  const selected = categories.find(({ id }) => id === screen.id)
+
   return (
     <Fragment>
       <div className="relative overflow-hidden h-full">
@@ -338,16 +337,13 @@ export function Screen({
       />
 
       {
-        screen.category && (
+        selected && (
           <>
             <UpdateCategory
               open={screen.open === "update"}
               onOpenChange={onOpenEditChange}
 
-              category={
-                categories.find((c) => c.id === screen.category?.id)
-                ?? screen.category
-              }
+              category={selected}
 
               submitting={screen.submitting}
 
@@ -366,69 +362,29 @@ export function Screen({
             <DeleteDialog
               open={screen.dialog === "delete"}
               onOpenChange={onOpenDeleteChange}
-              name={
-                (
-                  categories.find((c) => c.id === screen.category?.id)
-                  ?? screen.category
-                ).name
-              }
-              transactions={
-                (
-                  categories.find((c) => c.id === screen.category?.id)
-                  ?? screen.category
-                ).transactions
-              }
-              childrenCount={
-                (
-                  categories.find((c) => c.id === screen.category?.id)
-                  ?? screen.category
-                ).children.length
-              }
-              onConfirm={() => onDeleteConfirm(screen.category!.id)}
+              name={selected.name}
+              transactions={selected.transactions}
+              childrenCount={selected.children.length}
+              onConfirm={() => onDeleteConfirm(screen.id)}
               submitting={screen.submitting}
             />
 
             <ArchiveDialog
               open={screen.dialog === "archive"}
               onOpenChange={onOpenArchiveChange}
-              name={
-                (
-                  categories.find((c) => c.id === screen.category?.id)
-                  ?? screen.category
-                ).name
-              }
-              transactions={
-                (
-                  categories.find((c) => c.id === screen.category?.id)
-                  ?? screen.category
-                ).transactions
-              }
-              childrenCount={
-                (
-                  categories.find((c) => c.id === screen.category?.id)
-                  ?? screen.category
-                ).children.length
-              }
-              onConfirm={() => onArchiveConfirm(screen.category!.id)}
+              name={selected.name}
+              transactions={selected.transactions}
+              childrenCount={selected.children.length}
+              onConfirm={() => onArchiveConfirm(screen.id)}
               submitting={screen.submitting}
             />
 
             <UnarchiveDialog
               open={screen.dialog === "unarchive"}
               onOpenChange={onOpenUnarchiveChange}
-              name={
-                (
-                  categories.find((c) => c.id === screen.category?.id)
-                  ?? screen.category
-                ).name
-              }
-              childrenCount={
-                (
-                  categories.find((c) => c.id === screen.category?.id)
-                  ?? screen.category
-                ).children.length
-              }
-              onConfirm={() => onUnarchiveConfirm(screen.category!.id)}
+              name={selected.name}
+              childrenCount={selected.children.length}
+              onConfirm={() => onUnarchiveConfirm(screen.id)}
               submitting={screen.submitting}
             />
           </>

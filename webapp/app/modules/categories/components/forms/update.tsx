@@ -82,16 +82,13 @@ type Open = "update" | "create" | null
 type Dialog = "delete" | "archive" | "unarchive" | null
 
 type State = {
-  child: Child
+  id: number
   open: Open
   dialog: Dialog
   submitting: boolean
 }
 
-type InitialState = {
-  category: Category
-  icon: Icon
-}
+type InitialState = object
 
 type OnChildClick = (child: Child) => void
 type OnAddChildClick = () => void
@@ -132,7 +129,7 @@ function reducer(state: State, action: Action): State {
     case "UPDATE":
       return {
         ...state,
-        child: { ...action.child },
+        id: action.child.id,
         open: "update"
       }
     case "OPEN_CHANGED":
@@ -176,16 +173,9 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-function init({ category, icon }: InitialState): State {
+function init({ }: InitialState): State {
   return {
-    child: {
-      id: -1,
-      parentId: category.id,
-      name: "",
-      description: "",
-      icon,
-      transactions: 0
-    },
+    id: 0,
     open: null,
     dialog: null,
     submitting: false,
@@ -207,7 +197,7 @@ export function UpdateCategory({
   onUnarchiveChildAction,
   submitting
 }: Props) {
-  const [state, dispatch] = useReducer(reducer, { category, icon: defaultIcons[category.kind] }, init)
+  const [state, dispatch] = useReducer(reducer, {}, init)
 
   const onOpenCreateChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "create" : null })
@@ -247,8 +237,8 @@ export function UpdateCategory({
     onChildActionSubmit()
 
     return onDeleteChildAction(
-      state.child.parentId,
-      state.child.id,
+      category.id,
+      state.id,
       onChildActionSuccess,
       onChildActionFailure
     )
@@ -258,8 +248,8 @@ export function UpdateCategory({
     onChildActionSubmit()
 
     return onArchiveChildAction(
-      state.child.parentId,
-      state.child.id,
+      category.id,
+      state.id,
       onChildActionSuccess,
       onChildActionFailure
     )
@@ -269,12 +259,14 @@ export function UpdateCategory({
     onChildActionSubmit()
 
     return onUnarchiveChildAction(
-      state.child.parentId,
-      state.child.id,
+      category.id,
+      state.id,
       onChildActionSuccess,
       onChildActionFailure
     )
   }
+
+  const selected = category.children.find(({ id }) => id === state.id)
 
   return (
     <>
@@ -298,20 +290,9 @@ export function UpdateCategory({
         </DrawerContent>
       </Drawer>
 
-      <UpdateChildForm
-        child={state.child}
-        open={state.open === "update"}
-        onSubmit={onUpdateChild}
-        onOpenChange={onOpenCreateChange}
-        onDelete={() => onOpenDeleteChange(true)}
-        onArchive={() => onOpenArchiveChange(true)}
-        onUnarchive={() => onOpenUnarchiveChange(true)}
-        submitting={state.submitting}
-      />
-
       <CreateChildForm
         action="add"
-        child={state.child}
+        child={{ name: "", description: "", icon: category.icon }}
         open={state.open === "create"}
         onSubmit={onCreateChild}
         onOpenChange={onOpenUpdateChange}
@@ -320,13 +301,28 @@ export function UpdateCategory({
       />
 
       {
-        state.child.id > 0 && (
+        selected && (
           <>
+            <UpdateChildForm
+              child={{
+                ...selected,
+                description: selected.description ?? undefined,
+                parentId: category.id
+              }}
+              open={state.open === "update"}
+              onSubmit={onUpdateChild}
+              onOpenChange={onOpenCreateChange}
+              onDelete={() => onOpenDeleteChange(true)}
+              onArchive={() => onOpenArchiveChange(true)}
+              onUnarchive={() => onOpenUnarchiveChange(true)}
+              submitting={state.submitting}
+            />
+
             <DeleteChildDialog
               open={state.dialog === "delete"}
               onOpenChange={onOpenDeleteChange}
-              name={childName(category, state.child)}
-              transactions={state.child.transactions}
+              name={childName(category, selected)}
+              transactions={selected.transactions}
               onConfirm={onDeleteChild}
               submitting={state.submitting}
             />
@@ -334,8 +330,8 @@ export function UpdateCategory({
             <ArchiveChildDialog
               open={state.dialog === "archive"}
               onOpenChange={onOpenArchiveChange}
-              name={childName(category, state.child)}
-              transactions={state.child.transactions}
+              name={childName(category, selected)}
+              transactions={selected.transactions}
               onConfirm={onArchiveChild}
               submitting={state.submitting}
             />
@@ -343,7 +339,7 @@ export function UpdateCategory({
             <UnarchiveChildDialog
               open={state.dialog === "unarchive"}
               onOpenChange={onOpenArchiveChange}
-              name={childName(category, state.child)}
+              name={childName(category, selected)}
               onConfirm={onUnarchiveChild}
               submitting={state.submitting}
             />
@@ -487,25 +483,28 @@ function UpdateForm({
             >
               <PlusIcon /> Add Child
             </Button>
-            {category.children.map(({ id, name, description, icon, archivedAt, transactions }) => (
-              <PreviewCard
-                key={`child.${id}`}
-                name={name}
-                description={description}
-                icon={icon}
-                archived={!!archivedAt}
-                onClick={() => onChildClick({
-                  id,
-                  parentId: category.id,
-                  name,
-                  description: description ?? undefined,
-                  icon,
-                  archivedAt,
-                  transactions
-                })
-                }
-              />
-            ))}
+            {category.children
+              .filter(({ deletedAt }) => !deletedAt)
+              .map(({ id, name, description, icon, archivedAt, transactions }) => (
+                <PreviewCard
+                  key={`child.${id}`}
+                  name={name}
+                  description={description}
+                  icon={icon}
+                  archived={!!archivedAt}
+                  onClick={() => onChildClick({
+                    id,
+                    parentId: category.id,
+                    name,
+                    description: description ?? undefined,
+                    icon,
+                    archivedAt,
+                    transactions
+                  })
+                  }
+                />
+              ))
+            }
           </div>
           <DrawerFooter>
             <Button type="submit" className="min-w-24" disabled={submitting}>

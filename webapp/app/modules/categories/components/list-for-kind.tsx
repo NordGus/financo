@@ -12,7 +12,7 @@ interface Props {
 
 export function ListForKind({ categories, forArchived, kind, onClick }: Props) {
   const filtered = categories
-    .filter((account) => account.kind === kind)
+    .filter((account) => account.kind === kind && !account.deletedAt)
     .filter(({ archivedAt }) => !!archivedAt === forArchived)
 
   return (

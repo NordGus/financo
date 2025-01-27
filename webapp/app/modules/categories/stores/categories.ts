@@ -87,7 +87,7 @@ const useCategoriesStore = createStore<CategoriesState>((set) => ({
 
     set((state) => ({
       ...state,
-      categories: [...state.categories.filter((category) => category.id !== destroyed.id)]
+      categories: [...state.categories.map((category) => category.id === id ? destroyed : category)]
     }))
 
     return destroyed
@@ -175,7 +175,7 @@ const useCategoriesStore = createStore<CategoriesState>((set) => ({
 
           return {
             ...category,
-            children: [...category.children.filter((child) => child.id !== id)]
+            children: [...category.children.map((child) => child.id === deleted.id ? deleted : child)]
           }
         })]
     }))
