@@ -363,7 +363,10 @@ export function Screen({
               open={screen.dialog === "delete"}
               onOpenChange={onOpenDeleteChange}
               name={selected.name}
-              transactions={selected.transactions}
+              transactions={selected.children.reduce(
+                (acc, { transactions }) => acc + transactions,
+                selected.transactions
+              )}
               childrenCount={selected.children.length}
               onConfirm={() => onDeleteConfirm(screen.id)}
               submitting={screen.submitting}
@@ -373,7 +376,10 @@ export function Screen({
               open={screen.dialog === "archive"}
               onOpenChange={onOpenArchiveChange}
               name={selected.name}
-              transactions={selected.transactions}
+              transactions={selected.children.reduce(
+                (acc, { transactions }) => acc + transactions,
+                selected.transactions
+              )}
               childrenCount={selected.children.length}
               onConfirm={() => onArchiveConfirm(screen.id)}
               submitting={screen.submitting}

@@ -28,7 +28,7 @@ func (p *postgresql) CountFor(ctx context.Context, ids []int64) (map[int64]int64
 	rows, err := conn.QueryContext(
 		ctx,
 		`
-		SELECT acc.id, SUM(tr.id) as trs
+		SELECT acc.id, COUNT(tr.id) as trs
 		FROM
 				transactions tr
 				INNER JOIN accounts acc ON (tr.source_id = acc.id OR tr.target_id = acc.id)
