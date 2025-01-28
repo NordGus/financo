@@ -2,7 +2,7 @@ import { PlusIcon } from "lucide-react";
 import { Fragment, useMemo, useReducer } from "react";
 import { InfoDialog } from "~/modules/shared/components/dialogs/info";
 import { Button } from "~/modules/shared/components/ui/button";
-import { Heading1, Heading2 } from "~/modules/shared/components/ui/headings";
+import { Heading2 } from "~/modules/shared/components/ui/headings";
 import { ArchiveAccount } from "../components/dialogs/archive";
 import { DeleteAccount } from "../components/dialogs/delete";
 import { SelectAccountKindToCreate } from "../components/dialogs/select-account-kind-to-create";
@@ -253,7 +253,6 @@ export function Screen({
         </Button>
         <div className="overflow-x-hidden overflow-y-auto h-full p-4">
           <div className="flex flex-col gap-4">
-            <Heading1>Accounts</Heading1>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               <SelectIndexScreenView
                 value={screen.view}

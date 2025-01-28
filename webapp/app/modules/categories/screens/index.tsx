@@ -2,7 +2,6 @@ import { PlusIcon } from "lucide-react";
 import { Fragment, useReducer } from "react";
 import { InfoDialog } from "~/modules/shared/components/dialogs/info";
 import { Button } from "~/modules/shared/components/ui/button";
-import { Heading1 } from "~/modules/shared/components/ui/headings";
 import { ArchiveDialog } from "../components/dialogs/archive";
 import { DeleteDialog } from "../components/dialogs/delete";
 import { SelectIndexScreenSubView } from "../components/dialogs/select-index-screen-sub-view";
@@ -296,7 +295,6 @@ export function Screen({
           <PlusIcon />
         </Button>
         <div className="overflow-x-hidden overflow-y-auto h-full p-4 flex flex-col gap-4">
-          <Heading1>Categories</Heading1>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <SelectIndexScreenView value={screen.view} onValueChange={onViewChange} />
             <SelectIndexScreenSubView value={screen.subView} onValueChange={onSubViewChange} />
