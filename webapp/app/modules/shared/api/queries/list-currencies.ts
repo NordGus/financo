@@ -1,4 +1,4 @@
-import { Entry } from "../../type/entry";
+import { Entry } from "../../types/currency";
 
 export async function list(): Promise<Entry[]> {
   const response = await fetch("/api/currencies", { headers: { "Content-Type": "application/json; charset=UTF-8" } });

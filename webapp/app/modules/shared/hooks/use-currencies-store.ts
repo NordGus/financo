@@ -1,6 +1,6 @@
 import { create as createStore } from "zustand";
-import { Entry } from "~/modules/currencies/type/entry";
-import { list } from "../api/queries/list";
+import { list } from "../api/queries/list-currencies";
+import { Entry } from "../types/currency";
 
 interface CurrenciesState {
   currencies: Entry[]

@@ -15,10 +15,10 @@ import { zodErrorMap } from "~/config/zod-custom-error-map";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Heading1 } from "~/modules/shared/components/ui/headings";
 import { TooltipProvider } from "~/modules/shared/components/ui/tooltip";
+import { useCurrenciesStore } from "~/modules/shared/hooks/use-currencies-store";
 import useDetectColorScheme from "~/modules/shared/hooks/use-detect-color-scheme";
 import type { Route } from "./+types/root";
 import "./app.css";
-import { useCurrenciesStore } from "./modules/currencies/stores/currencies";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },

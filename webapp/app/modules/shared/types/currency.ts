@@ -15,7 +15,14 @@ type Currency =
   Currencies["CHF"] |
   Currencies["GBP"];
 
+type Entry = {
+  code: Currency
+  name: string
+};
+
 export type {
   Currencies,
-  Currency
+  Currency,
+  Entry
 };
+

@@ -1,4 +1,4 @@
-import { useCurrenciesStore } from "~/modules/currencies/stores/currencies";
+import { useCurrenciesStore } from "~/modules/shared/hooks/use-currencies-store";
 import { Currency } from "~/modules/shared/types/currency";
 import { Throbber } from "../throbber";
 import { FormControl } from "../ui/form";
