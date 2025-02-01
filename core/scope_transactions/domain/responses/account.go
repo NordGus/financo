@@ -11,7 +11,7 @@ import (
 
 type Account struct {
 	ID          int64                    `json:"id"`
-	ParentID    nullable.Type[int64]     `json:"parent_id"`
+	ParentID    nullable.Type[int64]     `json:"parentId"`
 	Kind        account.Kind             `json:"kind"`
 	Currency    currency.Type            `json:"currency"`
 	Name        string                   `json:"name"`
@@ -20,10 +20,10 @@ type Account struct {
 	Icon        icon.Type                `json:"icon"`
 	Balance     int64                    `json:"balance"`
 	Main        bool                     `json:"main"`
-	ArchivedAt  nullable.Type[time.Time] `json:"archived_at"`
-	DeletedAt   nullable.Type[time.Time] `json:"deleted_at"`
-	CreatedAt   time.Time                `json:"created_at"`
-	UpdatedAt   time.Time                `json:"updated_at"`
+	ArchivedAt  nullable.Type[time.Time] `json:"archivedAt"`
+	DeletedAt   nullable.Type[time.Time] `json:"deletedAt"`
+	CreatedAt   time.Time                `json:"createdAt"`
+	UpdatedAt   time.Time                `json:"updatedAt"`
 }
 
 func RecordToAccount(r account.Record) Account {

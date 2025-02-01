@@ -64,9 +64,9 @@ export function Screen({
                 <DateGroup key={date} date={date}>
                   {entries.map((transaction) => {
                     const source = accounts.get(transaction.sourceId)!
-                    const sourceParent = source.parentId ? accounts.get(source.parentId)! : null
+                    const sourceParent = source.parentId === null ? null : accounts.get(source.parentId)!
                     const target = accounts.get(transaction.targetId)!
-                    const targetParent = target.parentId ? accounts.get(target.parentId)! : null
+                    const targetParent = target.parentId === null ? null : accounts.get(target.parentId)!
 
                     return (
                       <Entry

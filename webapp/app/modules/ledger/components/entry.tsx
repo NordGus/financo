@@ -11,9 +11,9 @@ import { Transaction } from "../types/transactions";
 interface Props {
   transaction: Transaction
   source: Account
-  sourceParent: Account | null
+  sourceParent?: Account | null
   target: Account
-  targetParent: Account | null
+  targetParent?: Account | null
 }
 
 function accountName(account: Account, parent: Account | null): string {
@@ -57,7 +57,13 @@ function amountColorCode(source: Account, target: Account): number {
   }
 }
 
-export const Entry = memo(function Entry({ transaction, source, sourceParent, target, targetParent }: Props) {
+export const Entry = memo(function Entry({
+  transaction,
+  source,
+  sourceParent = null,
+  target,
+  targetParent = null
+}: Props) {
   const start = account(source, target)
   const dest = start.id === source.id ? target : source
   const startParent = start.parentId === sourceParent?.id
