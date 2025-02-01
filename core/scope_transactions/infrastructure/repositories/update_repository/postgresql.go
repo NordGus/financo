@@ -1,4 +1,4 @@
-package update_transaction_repository
+package update_repository
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type repository struct {
 	db databases.SQLAdapter
 }
 
-func NewPostgreSQL(db databases.SQLAdapter) repositories.UpdateTransactionRepository {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.UpdateRepository {
 	return &repository{
 		db: db,
 	}

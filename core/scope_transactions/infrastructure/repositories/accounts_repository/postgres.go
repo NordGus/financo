@@ -20,7 +20,6 @@ func NewPostgreSQL(db databases.SQLAdapter) Repository {
 	}
 }
 
-// Get implements Repository.
 func (r *repository) Get(ctx context.Context) ([]account.Record, error) {
 	out := make([]account.Record, 0, 30)
 

@@ -5,6 +5,6 @@ import (
 	"financo/models/transaction"
 )
 
-type DeleteTransactionRepository interface {
+type DeleteRepository interface {
 	SoftDelete(ctx context.Context, record transaction.Record) error
 }

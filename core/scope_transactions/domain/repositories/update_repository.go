@@ -5,6 +5,6 @@ import (
 	"financo/models/transaction"
 )
 
-type UpdateTransactionRepository interface {
+type UpdateRepository interface {
 	Save(ctx context.Context, record transaction.Record) error
 }

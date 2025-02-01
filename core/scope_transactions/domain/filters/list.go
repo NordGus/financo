@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type TransactionsFilter struct {
+type List struct {
 	From nullable.Type[time.Time]
 	To   nullable.Type[time.Time]
 

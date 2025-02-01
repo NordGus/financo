@@ -1,4 +1,4 @@
-package delete_transaction_repository
+package delete_repository
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type repository struct {
 	db databases.SQLAdapter
 }
 
-func NewPostgreSQL(db databases.SQLAdapter) repositories.DeleteTransactionRepository {
+func NewPostgreSQL(db databases.SQLAdapter) repositories.DeleteRepository {
 	return &repository{
 		db: db,
 	}
