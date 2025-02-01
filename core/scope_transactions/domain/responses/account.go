@@ -1,0 +1,46 @@
+package responses
+
+import (
+	"financo/lib/color"
+	"financo/lib/currency"
+	"financo/lib/icon"
+	"financo/lib/nullable"
+	"financo/models/account"
+	"time"
+)
+
+type Account struct {
+	ID          int64                    `json:"id"`
+	ParentID    nullable.Type[int64]     `json:"parent_id"`
+	Kind        account.Kind             `json:"kind"`
+	Currency    currency.Type            `json:"currency"`
+	Name        string                   `json:"name"`
+	Description nullable.Type[string]    `json:"description"`
+	Color       color.Type               `json:"color"`
+	Icon        icon.Type                `json:"icon"`
+	Balance     int64                    `json:"balance"`
+	Main        bool                     `json:"main"`
+	ArchivedAt  nullable.Type[time.Time] `json:"archived_at"`
+	DeletedAt   nullable.Type[time.Time] `json:"deleted_at"`
+	CreatedAt   time.Time                `json:"created_at"`
+	UpdatedAt   time.Time                `json:"updated_at"`
+}
+
+func RecordToAccount(r account.Record) Account {
+	return Account{
+		ID:          r.ID,
+		ParentID:    r.ParentID,
+		Kind:        r.Kind,
+		Currency:    r.Currency,
+		Name:        r.Name,
+		Description: r.Description,
+		Color:       r.Color,
+		Icon:        r.Icon,
+		Balance:     r.DynamicData.Balance,
+		Main:        r.DynamicData.Main,
+		ArchivedAt:  r.ArchivedAt,
+		DeletedAt:   r.DeletedAt,
+		CreatedAt:   r.CreatedAt,
+		UpdatedAt:   r.UpdatedAt,
+	}
+}
