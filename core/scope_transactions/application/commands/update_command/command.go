@@ -16,29 +16,26 @@ import (
 )
 
 type command struct {
-	req             requests.Update
-	accountRepo     core_repos.Account
-	transactionRepo repositories.TransactionRepository
-	updateRepo      repositories.UpdateTransactionRepository
-	detailedRepo    repositories.DetailedTransactionRepository
-	broker          brokers.Updated
+	req          requests.Update
+	accounts     core_repos.Account
+	transactions repositories.TransactionRepository
+	update       repositories.UpdateRepository
+	broker       brokers.Updated
 }
 
 func New(
 	req requests.Update,
-	accountRepo core_repos.Account,
-	transactionRepo repositories.TransactionRepository,
-	updateRepo repositories.UpdateTransactionRepository,
-	detailedRepo repositories.DetailedTransactionRepository,
+	accounts core_repos.Account,
+	transactions repositories.TransactionRepository,
+	update repositories.UpdateRepository,
 	broker brokers.Updated,
 ) commands.Command[responses.Detailed] {
 	return &command{
-		req:             req,
-		accountRepo:     accountRepo,
-		transactionRepo: transactionRepo,
-		updateRepo:      updateRepo,
-		detailedRepo:    detailedRepo,
-		broker:          broker,
+		req:          req,
+		accounts:     accounts,
+		transactions: transactions,
+		update:       update,
+		broker:       broker,
 	}
 }
 
@@ -57,19 +54,19 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		return res, errors.ErrCircularTransaction
 	}
 
-	previous, err := c.transactionRepo.Find(ctx, record.ID)
+	previous, err := c.transactions.Find(ctx, record.ID)
 	if err != nil {
 		return res, err
 	}
 
 	record.CreatedAt = previous.CreatedAt
 
-	source, err = c.accountRepo.Find(ctx, record.SourceID)
+	source, err = c.accounts.Find(ctx, record.SourceID)
 	if err != nil {
 		return res, err
 	}
 
-	target, err = c.accountRepo.Find(ctx, record.TargetID)
+	target, err = c.accounts.Find(ctx, record.TargetID)
 	if err != nil {
 		return res, err
 	}
@@ -78,7 +75,7 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		record.TargetAmount = record.SourceAmount
 	}
 
-	err = c.updateRepo.Save(ctx, record)
+	err = c.update.Save(ctx, record)
 	if err != nil {
 		return res, err
 	}
@@ -91,10 +88,5 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		return res, err
 	}
 
-	res, err = c.detailedRepo.Find(ctx, record.ID)
-	if err != nil {
-		return res, err
-	}
-
-	return res, nil
+	return responses.RecordToDetailed(record), nil
 }

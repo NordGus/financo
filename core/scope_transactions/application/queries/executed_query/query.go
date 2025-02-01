@@ -10,26 +10,36 @@ import (
 )
 
 type query struct {
-	req  requests.Executed
-	repo repositories.ExecutedTransactionsRepository
+	req          requests.Executed
+	transactions repositories.TransactionsRepository
 }
 
 func New(
-	req requests.Executed, repo repositories.ExecutedTransactionsRepository,
+	req requests.Executed,
+	transactions repositories.TransactionsRepository,
 ) queries.Query[[]responses.Detailed] {
 	return &query{
-		req:  req,
-		repo: repo,
+		req:          req,
+		transactions: transactions,
 	}
 }
 
 func (q *query) Find(ctx context.Context) ([]responses.Detailed, error) {
-	res, err := q.repo.Find(ctx, filters.TransactionsFilter{
+	res := make([]responses.Detailed, 0, 50)
+
+	records, err := q.transactions.Where(ctx, filters.List{
 		From:        q.req.From,
 		To:          q.req.To,
 		AccountIDs:  q.req.AccountIDs,
 		CategoryIDs: q.req.CategoryIDs,
 	})
+	if err != nil {
+		return res, err
+	}
+
+	for i := 0; i < len(records); i++ {
+		res = append(res, responses.RecordToDetailed(records[i]))
+	}
 
 	return res, err
 }
