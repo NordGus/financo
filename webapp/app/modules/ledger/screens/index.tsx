@@ -2,8 +2,24 @@ import { format } from "date-fns";
 import { CalendarIcon, ListFilterIcon, MoveHorizontalIcon, PlusIcon } from "lucide-react";
 import { Fragment } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
+import { DateGroup } from "../components/date-group";
+import { Entry } from "../components/entry";
+import { Account } from "../types/accounts";
+import { SearchAction, Transactions } from "../types/transactions";
 
-export function Screen() {
+interface Props {
+  transactions: Transactions
+  accounts: Map<number, Account>
+  searchParams: URLSearchParams
+  onSearchParamsChange: (nextInit: Record<string, string | string[]>) => void
+  onSearchActions: SearchAction
+}
+
+export function Screen({
+  transactions,
+  accounts,
+}: Props) {
+
   return (
     <Fragment>
       <div className="relative overflow-hidden h-full">
@@ -42,7 +58,30 @@ export function Screen() {
         </div>
         <div className="overflow-x-hidden overflow-y-auto h-full p-4">
           <span className="content-[''] h-9 block my-2" />
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            {
+              transactions.map(([date, entries]) => (
+                <DateGroup key={date} date={date}>
+                  {entries.map((transaction) => {
+                    const source = accounts.get(transaction.sourceId)!
+                    const sourceParent = source.parentId ? accounts.get(source.parentId)! : null
+                    const target = accounts.get(transaction.targetId)!
+                    const targetParent = target.parentId ? accounts.get(target.parentId)! : null
+
+                    return (
+                      <Entry
+                        key={`${date}.${transaction.id}`}
+                        transaction={transaction}
+                        source={source}
+                        sourceParent={sourceParent}
+                        target={target}
+                        targetParent={targetParent}
+                      />
+                    )
+                  })}
+                </DateGroup>
+              ))
+            }
           </div>
           <span className="content-[''] h-9 block my-2" />
         </div>
