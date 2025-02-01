@@ -1,0 +1,17 @@
+on: [push]
+
+jobs:
+  webapp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Typecheck
+        run: npm run -w webapp typecheck
+
+      - name: Lint
+        run: npm run -w webapp lint
