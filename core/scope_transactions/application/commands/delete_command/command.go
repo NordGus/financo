@@ -14,24 +14,21 @@ import (
 
 type command struct {
 	req          requests.Delete
-	trRepo       repositories.TransactionRepository
-	deleteRepo   repositories.DeleteTransactionRepository
-	detailedRepo repositories.DetailedTransactionRepository
+	transactions repositories.TransactionRepository
+	delete       repositories.DeleteRepository
 	broker       brokers.Deleted
 }
 
 func New(
 	req requests.Delete,
-	trRepo repositories.TransactionRepository,
-	deleteRepo repositories.DeleteTransactionRepository,
-	detailedRepo repositories.DetailedTransactionRepository,
+	transactions repositories.TransactionRepository,
+	delete repositories.DeleteRepository,
 	broker brokers.Deleted,
 ) commands.Command[responses.Detailed] {
 	return &command{
 		req:          req,
-		trRepo:       trRepo,
-		deleteRepo:   deleteRepo,
-		detailedRepo: detailedRepo,
+		transactions: transactions,
+		delete:       delete,
 		broker:       broker,
 	}
 }
@@ -43,7 +40,7 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		res responses.Detailed
 	)
 
-	record, err := c.trRepo.Find(ctx, c.req.ID)
+	record, err := c.transactions.Find(ctx, c.req.ID)
 	if err != nil {
 		return res, err
 	}
@@ -51,7 +48,7 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	record.DeletedAt = nullable.New(timestamp)
 	record.UpdatedAt = timestamp
 
-	err = c.deleteRepo.SoftDelete(ctx, record)
+	err = c.delete.SoftDelete(ctx, record)
 	if err != nil {
 		return res, err
 	}
@@ -61,10 +58,5 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		return res, err
 	}
 
-	res, err = c.detailedRepo.FindSoftDeleted(ctx, record.ID)
-	if err != nil {
-		return res, err
-	}
-
-	return res, nil
+	return responses.RecordToDetailed(record), nil
 }

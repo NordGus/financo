@@ -15,26 +15,23 @@ import (
 )
 
 type command struct {
-	req          requests.Create
-	accountRepo  core_repos.Account
-	createRepo   repositories.CreateTransactionRepository
-	detailedRepo repositories.DetailedTransactionRepository
-	broker       brokers.Created
+	req      requests.Create
+	accounts core_repos.Account
+	create   repositories.CreateTransactionRepository
+	broker   brokers.Created
 }
 
 func New(
 	req requests.Create,
-	accountRepo core_repos.Account,
-	createRepo repositories.CreateTransactionRepository,
-	detailedRepo repositories.DetailedTransactionRepository,
+	accounts core_repos.Account,
+	create repositories.CreateTransactionRepository,
 	broker brokers.Created,
 ) commands.Command[responses.Detailed] {
 	return &command{
-		req:          req,
-		accountRepo:  accountRepo,
-		createRepo:   createRepo,
-		detailedRepo: detailedRepo,
-		broker:       broker,
+		req:      req,
+		accounts: accounts,
+		create:   create,
+		broker:   broker,
 	}
 }
 
@@ -52,12 +49,12 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		return res, errors.ErrCircularTransaction
 	}
 
-	source, err := c.accountRepo.Find(ctx, record.SourceID)
+	source, err := c.accounts.Find(ctx, record.SourceID)
 	if err != nil {
 		return res, err
 	}
 
-	target, err = c.accountRepo.Find(ctx, record.TargetID)
+	target, err = c.accounts.Find(ctx, record.TargetID)
 	if err != nil {
 		return res, err
 	}
@@ -66,7 +63,7 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		record.TargetAmount = record.SourceAmount
 	}
 
-	record, err = c.createRepo.Save(ctx, record)
+	record, err = c.create.Save(ctx, record)
 	if err != nil {
 		return res, err
 	}
@@ -76,10 +73,5 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		return res, err
 	}
 
-	res, err = c.detailedRepo.Find(ctx, record.ID)
-	if err != nil {
-		return res, err
-	}
-
-	return res, nil
+	return responses.RecordToDetailed(record), nil
 }

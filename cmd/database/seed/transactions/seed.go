@@ -7,9 +7,8 @@ import (
 	"financo/core/scope_transactions/application/commands/create_command"
 	"financo/core/scope_transactions/application/commands/delete_command"
 	"financo/core/scope_transactions/domain/requests"
-	"financo/core/scope_transactions/infrastructure/repositories/create_transaction_repository"
-	"financo/core/scope_transactions/infrastructure/repositories/delete_transaction_repository"
-	"financo/core/scope_transactions/infrastructure/repositories/detailed_transaction_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/create_repository"
+	"financo/core/scope_transactions/infrastructure/repositories/delete_repository"
 	"financo/core/scope_transactions/infrastructure/repositories/transaction_repository"
 	"financo/core/scope_transactions/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
@@ -22,10 +21,9 @@ func SeedTransactions(ctx context.Context, seeds map[string]int64, timestamp tim
 	var (
 		db       = postgresql_database.New()
 		accounts = account_repository.NewPostgreSQL(db)
-		create   = create_transaction_repository.NewPostgreSQL(db)
-		detailed = detailed_transaction_repository.NewPostgreSQL(db)
+		create   = create_repository.NewPostgreSQL(db)
 		transact = transaction_repository.NewPostgreSQL(db)
-		delete   = delete_transaction_repository.NewPostgreSQL(db)
+		delete   = delete_repository.NewPostgreSQL(db)
 
 		summary uint = 0
 		ts           = timestamp.UTC()
@@ -55,7 +53,7 @@ func SeedTransactions(ctx context.Context, seeds map[string]int64, timestamp tim
 			TargetAmount: data.TargetAmount,
 		}
 
-		res, err := create_command.New(req, accounts, create, detailed, broker.Created()).Run(ctx)
+		res, err := create_command.New(req, accounts, create, broker.Created()).Run(ctx)
 		if err != nil {
 			return errors.Join(
 				fmt.Errorf(
@@ -72,7 +70,7 @@ func SeedTransactions(ctx context.Context, seeds map[string]int64, timestamp tim
 		if data.DeletedAt(ts).Valid {
 			r := requests.Delete{ID: res.ID}
 
-			_, err = delete_command.New(r, transact, delete, detailed, broker.Deleted()).Run(ctx)
+			_, err = delete_command.New(r, transact, delete, broker.Deleted()).Run(ctx)
 			if err != nil {
 				return errors.Join(
 					fmt.Errorf("transactions: failed to delete transaction between %s and %s", data.Source, data.Target),
