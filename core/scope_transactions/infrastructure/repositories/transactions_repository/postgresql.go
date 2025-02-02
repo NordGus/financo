@@ -7,6 +7,8 @@ import (
 	"financo/core/scope_transactions/domain/repositories"
 	"financo/models/transaction"
 	"fmt"
+	"log"
+	"time"
 )
 
 type Repository interface {
@@ -36,7 +38,13 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 	}
 	defer conn.Close()
 
-	args = append(args, f.From.OrElse(filters.FromDefault()), f.To.OrElse(filters.ToDefault()))
+	args = append(
+		args,
+		filters.DateToLimit(f.From.OrElse(filters.FromDefault()), true),
+		filters.DateToLimit(f.To.OrElse(filters.ToDefault()), false),
+	)
+
+	log.Println(args[0].(time.Time).String(), args[1].(time.Time).String())
 
 	query := `
 	SELECT
