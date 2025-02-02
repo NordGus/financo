@@ -36,7 +36,11 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 	}
 	defer conn.Close()
 
-	args = append(args, f.From.OrElse(filters.FromDefault()), f.To.OrElse(filters.ToDefault()))
+	args = append(
+		args,
+		filters.DateToLimit(f.From.OrElse(filters.FromDefault()), true),
+		filters.DateToLimit(f.To.OrElse(filters.ToDefault()), false),
+	)
 
 	query := `
 	SELECT

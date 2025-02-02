@@ -3,7 +3,9 @@ import { CalendarIcon, ListFilterIcon, MoveHorizontalIcon, PlusIcon } from "luci
 import { Fragment, useCallback, useReducer, useRef } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
 import { DateGroup } from "../components/date-group";
-import { DateFilter } from "../components/dialogs/date-filter";
+import { DateDayPicker } from "../components/dialogs/date-day-picker";
+import { DateRangePicker } from "../components/dialogs/date-range-picker";
+import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
 import { Entry } from "../components/entry";
 import { NoResults } from "../components/no-results";
 import { filterFrom, filterTo } from "../defaults/filters";
@@ -21,7 +23,7 @@ type InitialState = {
   filters: Filters
 }
 
-type Open = "calendar" | null
+type Open = "period" | "day-picker" | "range-picker" | null
 
 type ScreenState = {
   from?: Date
@@ -78,8 +80,8 @@ function reducer(state: ScreenState, action: Action): ScreenState {
 function init({ filters }: InitialState): ScreenState {
   return {
     ...filters,
-    from: filters.to ?? filterFrom(),
-    to: filters.from ?? filterTo(),
+    from: filters.from ?? filterFrom(),
+    to: filters.to ?? filterTo(),
     open: null,
     submitting: false,
   }
@@ -100,8 +102,12 @@ export function Screen({
   const onActionSuccess = useCallback(() => dispatch({ type: "ACTION_SUCCEED" }), [dispatch])
   const onActionFailed = useCallback(() => dispatch({ type: "ACTION_FAILED" }), [dispatch])
 
-  const onOpenDateFilterChange = (open: boolean) =>
-    dispatch({ type: "OPEN_CHANGED", open: open ? "calendar" : null })
+  const onOpenPeriodFilterChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "period" : null })
+  const onOpenRangePickerChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "range-picker" : null })
+  const onOpenDayPickerChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "day-picker" : null })
 
   const onDateFilterChange = useCallback((from: Date | undefined, to: Date | undefined) => {
     abort.current.abort()
@@ -139,7 +145,7 @@ export function Screen({
             size={"icon"}
             variant={"secondary"}
             className="shadow-lg"
-            onClick={() => onOpenDateFilterChange(true)}
+            onClick={() => onOpenPeriodFilterChange(true)}
           >
             <CalendarIcon />
           </Button>
@@ -198,11 +204,28 @@ export function Screen({
         </div>
       </div>
 
-      <DateFilter
-        open={screen.open === "calendar"}
-        onOpenChange={onOpenDateFilterChange}
+      <PeriodShortcuts
+        open={screen.open === "period"}
+        onOpenChange={onOpenPeriodFilterChange}
+        onOpenRangePicker={onOpenRangePickerChange}
+        onOpenDayPicker={onOpenDayPickerChange}
+        onFilterChange={onDateFilterChange}
+        submitting={screen.submitting}
+      />
+
+      <DateRangePicker
+        open={screen.open === "range-picker"}
+        onOpenChange={onOpenRangePickerChange}
         range={{ from: screen.from, to: screen.to }}
         onConfirm={(range) => onDateFilterChange(range?.from, range?.to)}
+        submitting={screen.submitting}
+      />
+
+      <DateDayPicker
+        open={screen.open === "day-picker"}
+        onOpenChange={onOpenDayPickerChange}
+        date={screen.to}
+        onConfirm={(date) => onDateFilterChange(date, date)}
         submitting={screen.submitting}
       />
     </Fragment >
