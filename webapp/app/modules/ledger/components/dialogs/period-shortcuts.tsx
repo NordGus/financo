@@ -1,4 +1,7 @@
-import { CalendarIcon, CircleEllipsisIcon, InfinityIcon } from "lucide-react"
+import { endOfISOWeek, endOfMonth, endOfYear, getDaysInMonth, getDaysInYear, startOfISOWeek, startOfMonth, startOfYear } from "date-fns"
+import { CalendarIcon, EllipsisIcon, InfinityIcon } from "lucide-react"
+import { PropsWithChildren, useMemo } from "react"
+import { cn } from "~/lib/utils"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Drawer,
@@ -19,6 +22,14 @@ interface Props {
   submitting: boolean
 }
 
+function Wrapper({ className, children }: PropsWithChildren<{ className?: string }>) {
+  return (
+    <span className={cn("border-2 rounded-lg border-foreground p-0.5", className)}>
+      {children}
+    </span>
+  )
+}
+
 export function PeriodShortcuts({
   open,
   onOpenChange,
@@ -27,6 +38,8 @@ export function PeriodShortcuts({
   onFilterChange,
   submitting
 }: Props) {
+  const today = useMemo(() => new Date(), [open])
+
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
@@ -44,7 +57,10 @@ export function PeriodShortcuts({
             onClick={() => onOpenRangePicker(true)}
             disabled={submitting}
           >
-            <CircleEllipsisIcon /> Select Range
+            <Wrapper>
+              <EllipsisIcon />
+            </Wrapper>
+            Select Range
           </Button>
           <Button
             variant={"secondary"}
@@ -61,6 +77,50 @@ export function PeriodShortcuts({
             disabled={submitting}
           >
             <CalendarIcon /> Select Day
+          </Button>
+          <Button
+            variant={"secondary"}
+            size={"xl"}
+            onClick={() => onFilterChange(startOfISOWeek(today), endOfISOWeek(today))}
+            disabled={submitting}
+          >
+            <Wrapper className="px-2">
+              7
+            </Wrapper>
+            Week
+          </Button>
+          <Button
+            variant={"secondary"}
+            size={"xl"}
+            onClick={() => onFilterChange(today, today)}
+            disabled={submitting}
+          >
+            <Wrapper className="px-2">
+              1
+            </Wrapper>
+            Today
+          </Button>
+          <Button
+            variant={"secondary"}
+            size={"xl"}
+            onClick={() => onFilterChange(startOfYear(today), endOfYear(today))}
+            disabled={submitting}
+          >
+            <Wrapper className="px-1">
+              {getDaysInYear(today)}
+            </Wrapper>
+            Year
+          </Button>
+          <Button
+            variant={"secondary"}
+            size={"xl"}
+            onClick={() => onFilterChange(startOfMonth(today), endOfMonth(today))}
+            disabled={submitting}
+          >
+            <Wrapper className="px-1.5">
+              {getDaysInMonth(today)}
+            </Wrapper>
+            Month
           </Button>
         </div>
         <DrawerFooter>
