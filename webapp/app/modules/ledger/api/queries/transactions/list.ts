@@ -6,7 +6,7 @@ export async function list(filters: Filters, signal: AbortSignal): Promise<Trans
     Object.entries(filters)
       .filter(([__key, value]) => !!value)
       .map(([key, value]) => {
-        if (value instanceof Date) return [key, moment(value).toISOString(false)]
+        if (value instanceof Date) return [key, moment(value).utc().toISOString()]
         return [key, value.join(",")]
       })
   )
