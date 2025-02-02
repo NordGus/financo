@@ -1,7 +1,8 @@
+name: Web Application
 on: [push]
 
 jobs:
-  webapp:
+  code-health:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
