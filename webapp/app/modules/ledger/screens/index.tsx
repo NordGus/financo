@@ -3,7 +3,8 @@ import { CalendarIcon, ListFilterIcon, MoveHorizontalIcon, PlusIcon } from "luci
 import { Fragment, useCallback, useReducer, useRef } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
 import { DateGroup } from "../components/date-group";
-import { DateFilter } from "../components/dialogs/date-filter";
+import { DateRangePicker } from "../components/dialogs/date-range-picker";
+import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
 import { Entry } from "../components/entry";
 import { NoResults } from "../components/no-results";
 import { filterFrom, filterTo } from "../defaults/filters";
@@ -21,7 +22,7 @@ type InitialState = {
   filters: Filters
 }
 
-type Open = "calendar" | null
+type Open = "period" | "range-picker" | null
 
 type ScreenState = {
   from?: Date
@@ -100,8 +101,11 @@ export function Screen({
   const onActionSuccess = useCallback(() => dispatch({ type: "ACTION_SUCCEED" }), [dispatch])
   const onActionFailed = useCallback(() => dispatch({ type: "ACTION_FAILED" }), [dispatch])
 
-  const onOpenDateFilterChange = (open: boolean) =>
-    dispatch({ type: "OPEN_CHANGED", open: open ? "calendar" : null })
+  const onOpenPeriodFilterChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "period" : null })
+
+  const onOpenCalendarFilterChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "range-picker" : null })
 
   const onDateFilterChange = useCallback((from: Date | undefined, to: Date | undefined) => {
     abort.current.abort()
@@ -139,7 +143,7 @@ export function Screen({
             size={"icon"}
             variant={"secondary"}
             className="shadow-lg"
-            onClick={() => onOpenDateFilterChange(true)}
+            onClick={() => onOpenPeriodFilterChange(true)}
           >
             <CalendarIcon />
           </Button>
@@ -198,9 +202,16 @@ export function Screen({
         </div>
       </div>
 
-      <DateFilter
-        open={screen.open === "calendar"}
-        onOpenChange={onOpenDateFilterChange}
+      <PeriodShortcuts
+        open={screen.open === "period"}
+        onOpenChange={onOpenPeriodFilterChange}
+        onOpenCustomPicker={onOpenCalendarFilterChange}
+        submitting={screen.submitting}
+      />
+
+      <DateRangePicker
+        open={screen.open === "range-picker"}
+        onOpenChange={onOpenCalendarFilterChange}
         range={{ from: screen.from, to: screen.to }}
         onConfirm={(range) => onDateFilterChange(range?.from, range?.to)}
         submitting={screen.submitting}
