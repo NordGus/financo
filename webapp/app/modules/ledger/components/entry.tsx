@@ -4,7 +4,6 @@ import { icons } from "~/modules/shared/components/ui/icon";
 import { colorContrast } from "~/modules/shared/helpers/color-contrast";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
-import { isDebt } from "~/modules/shared/types/account";
 import { Account } from "../types/accounts";
 import { Transaction } from "../types/transactions";
 
@@ -84,8 +83,8 @@ export const Entry = memo(function Entry({
     <span className="flex gap-2 items-stretch py-2">
       <span
         className={cn(
-          "row-span-2 [&_svg]:size-7 flex items-center justify-center aspect-square rounded-full h-12",
-          isDebt(start.kind) && "rounded-md"
+          "row-span-2 [&_svg]:size-7 flex items-center justify-center aspect-square rounded-lg h-12",
+          (start.kind === "external_expense" || start.kind === "external_income") && "rounded-full"
         )}
         style={{
           backgroundColor: start.color,
@@ -94,7 +93,7 @@ export const Entry = memo(function Entry({
       >
         {icons[start.icon]}
       </span>
-      <span className="grow flex flex-col justify-between">
+      <span className="grow space-y-1">
         <span>{accountName(start, startParent)}</span>
         <div className="flex gap-1 col-span-2 items-center text-xs [&_svg]:size-4 text-muted-foreground">
           <span>{icons[dest.icon]}</span>
