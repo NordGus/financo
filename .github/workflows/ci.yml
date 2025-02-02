@@ -1,9 +1,9 @@
-name: Web Application Development
+name: CI/CD
 on: [push]
 
 jobs:
-  code-health:
-    name: Code Health
+  webapp-code-health:
+    name: Code Health (Webapp)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
