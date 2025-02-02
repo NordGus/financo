@@ -3,6 +3,7 @@ on: [push]
 
 jobs:
   code-health:
+    name: Code Health
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
