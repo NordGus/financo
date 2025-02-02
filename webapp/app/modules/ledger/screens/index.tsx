@@ -78,8 +78,8 @@ function reducer(state: ScreenState, action: Action): ScreenState {
 function init({ filters }: InitialState): ScreenState {
   return {
     ...filters,
-    from: filters.to ?? filterFrom(),
-    to: filters.from ?? filterTo(),
+    from: filters.from ?? filterFrom(),
+    to: filters.to ?? filterTo(),
     open: null,
     submitting: false,
   }
