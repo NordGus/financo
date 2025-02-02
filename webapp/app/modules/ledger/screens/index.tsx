@@ -1,8 +1,8 @@
-import { format } from "date-fns";
-import { CalendarIcon, ListFilterIcon, MoveHorizontalIcon, PlusIcon } from "lucide-react";
+import { CalendarIcon, ListFilterIcon, PlusIcon } from "lucide-react";
 import { Fragment, useCallback, useReducer, useRef } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
 import { DateGroup } from "../components/date-group";
+import { DatePosting } from "../components/date-posting";
 import { DateDayPicker } from "../components/dialogs/date-day-picker";
 import { DateRangePicker } from "../components/dialogs/date-range-picker";
 import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
@@ -123,23 +123,7 @@ export function Screen({
   return (
     <Fragment>
       <div className="relative overflow-hidden h-full">
-        <div className="absolute top-0 left-0 right-0 p-4 flex gap-4 justify-stretch w-full">
-          <Button
-            variant={"secondary"}
-            className="shadow-lg w-full"
-          >
-            {
-              screen.from
-                ? screen.to ? (
-                  <>
-                    {format(screen.from, "LLL dd, y")} <MoveHorizontalIcon /> {format(screen.to, "LLL dd, y")}
-                  </>
-                )
-                  : format(screen.from, "LLL dd, y")
-                : "Entire History"
-            }
-          </Button>
-        </div>
+        <DatePosting range={{ from: screen.from, to: screen.to }} />
         <div className="absolute bottom-0 right-0 p-4 inline-flex gap-4 flex-wrap justify-end">
           <Button
             size={"icon"}
