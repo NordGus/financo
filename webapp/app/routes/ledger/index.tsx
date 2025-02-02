@@ -43,7 +43,7 @@ export default function Index() {
     setSearchParams(
       Object.fromEntries(
         [
-          ["from", !filters.from ? undefined : format(filters.from, "yyy-MM-dd")],
+          ["from", !filters.from ? undefined : format(filters.from, "yyyy-MM-dd")],
           ["to", !filters.to ? undefined : format(filters.to, "yyyy-MM-dd")],
           ["accounts", filters.accounts?.map((id) => id.toString())],
           ["categories", filters.categories?.map((id) => id.toString())]
