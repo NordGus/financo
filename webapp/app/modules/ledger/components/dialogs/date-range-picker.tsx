@@ -20,7 +20,7 @@ interface Props {
   submitting: boolean
 }
 
-export function DateFilter({ open, onOpenChange, range, onConfirm, submitting }: Props) {
+export function DateRangePicker({ open, onOpenChange, range, onConfirm, submitting }: Props) {
   const [date, setDate] = useState<DateRange | undefined>(range)
 
   return (
@@ -42,7 +42,7 @@ export function DateFilter({ open, onOpenChange, range, onConfirm, submitting }:
           />
         </div>
         <DrawerFooter>
-          <Button onClick={() => onConfirm(date)} disabled={submitting}>
+          <Button onClick={() => onConfirm(date)} disabled={submitting || !date?.from || !date.to}>
             Apply
           </Button>
           <DrawerClose asChild>
