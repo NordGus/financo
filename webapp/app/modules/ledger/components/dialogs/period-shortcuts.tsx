@@ -1,4 +1,4 @@
-import { CalendarIcon } from "lucide-react"
+import { CalendarIcon, CircleEllipsisIcon, InfinityIcon } from "lucide-react"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Drawer,
@@ -13,11 +13,20 @@ import {
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onOpenCustomPicker: (open: boolean) => void
+  onOpenRangePicker: (open: boolean) => void
+  onOpenDayPicker: (open: boolean) => void
+  onFilterChange: (from?: Date, to?: Date) => void
   submitting: boolean
 }
 
-export function PeriodShortcuts({ open, onOpenChange, onOpenCustomPicker, submitting }: Props) {
+export function PeriodShortcuts({
+  open,
+  onOpenChange,
+  onOpenRangePicker,
+  onOpenDayPicker,
+  onFilterChange,
+  submitting
+}: Props) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
@@ -27,16 +36,31 @@ export function PeriodShortcuts({ open, onOpenChange, onOpenCustomPicker, submit
             Select which period you want preview
           </DrawerDescription>
         </DrawerHeader>
-        <div className="grid grid-cols-2 rounded-lg overflow-clip gap-2 px-4">
+        <div className="grid grid-cols-2 rounded-lg overflow-clip gap-1 px-4">
           <Button
             variant={"secondary"}
             size={"xl"}
             className="col-span-2"
-            onClick={() => onOpenCustomPicker(true)}
+            onClick={() => onOpenRangePicker(true)}
             disabled={submitting}
           >
-            <CalendarIcon />
-            Select a custom period
+            <CircleEllipsisIcon /> Select Range
+          </Button>
+          <Button
+            variant={"secondary"}
+            size={"xl"}
+            onClick={() => onFilterChange()}
+            disabled={submitting}
+          >
+            <InfinityIcon /> Always
+          </Button>
+          <Button
+            variant={"secondary"}
+            size={"xl"}
+            onClick={() => onOpenDayPicker(true)}
+            disabled={submitting}
+          >
+            <CalendarIcon /> Select Day
           </Button>
         </div>
         <DrawerFooter>

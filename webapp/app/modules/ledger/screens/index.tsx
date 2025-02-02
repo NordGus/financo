@@ -3,6 +3,7 @@ import { CalendarIcon, ListFilterIcon, MoveHorizontalIcon, PlusIcon } from "luci
 import { Fragment, useCallback, useReducer, useRef } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
 import { DateGroup } from "../components/date-group";
+import { DateDayPicker } from "../components/dialogs/date-day-picker";
 import { DateRangePicker } from "../components/dialogs/date-range-picker";
 import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
 import { Entry } from "../components/entry";
@@ -22,7 +23,7 @@ type InitialState = {
   filters: Filters
 }
 
-type Open = "period" | "range-picker" | null
+type Open = "period" | "day-picker" | "range-picker" | null
 
 type ScreenState = {
   from?: Date
@@ -103,9 +104,10 @@ export function Screen({
 
   const onOpenPeriodFilterChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "period" : null })
-
-  const onOpenCalendarFilterChange = (open: boolean) =>
+  const onOpenRangePickerChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "range-picker" : null })
+  const onOpenDayPickerChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "day-picker" : null })
 
   const onDateFilterChange = useCallback((from: Date | undefined, to: Date | undefined) => {
     abort.current.abort()
@@ -205,15 +207,25 @@ export function Screen({
       <PeriodShortcuts
         open={screen.open === "period"}
         onOpenChange={onOpenPeriodFilterChange}
-        onOpenCustomPicker={onOpenCalendarFilterChange}
+        onOpenRangePicker={onOpenRangePickerChange}
+        onOpenDayPicker={onOpenDayPickerChange}
+        onFilterChange={onDateFilterChange}
         submitting={screen.submitting}
       />
 
       <DateRangePicker
         open={screen.open === "range-picker"}
-        onOpenChange={onOpenCalendarFilterChange}
+        onOpenChange={onOpenRangePickerChange}
         range={{ from: screen.from, to: screen.to }}
         onConfirm={(range) => onDateFilterChange(range?.from, range?.to)}
+        submitting={screen.submitting}
+      />
+
+      <DateDayPicker
+        open={screen.open === "day-picker"}
+        onOpenChange={onOpenDayPickerChange}
+        date={screen.to}
+        onConfirm={(date) => onDateFilterChange(date, date)}
         submitting={screen.submitting}
       />
     </Fragment >
