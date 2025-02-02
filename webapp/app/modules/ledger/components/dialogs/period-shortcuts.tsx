@@ -1,4 +1,4 @@
-import { endOfISOWeek, endOfMonth, endOfYear, getDaysInMonth, getDaysInYear, startOfISOWeek, startOfMonth, startOfYear } from "date-fns"
+import { endOfMonth, endOfWeek, endOfYear, format, getDaysInMonth, getDaysInYear, startOfMonth, startOfWeek, startOfYear } from "date-fns"
 import { CalendarIcon, EllipsisIcon, InfinityIcon } from "lucide-react"
 import { PropsWithChildren, useMemo } from "react"
 import { cn } from "~/lib/utils"
@@ -20,6 +20,14 @@ interface Props {
   onOpenDayPicker: (open: boolean) => void
   onFilterChange: (from?: Date, to?: Date) => void
   submitting: boolean
+}
+
+function DatePreview({ children }: PropsWithChildren) {
+  return (
+    <span className="block text-muted-foreground text-xs">
+      {children}
+    </span>
+  )
 }
 
 function Wrapper({ className, children }: PropsWithChildren<{ className?: string }>) {
@@ -81,13 +89,18 @@ export function PeriodShortcuts({
           <Button
             variant={"secondary"}
             size={"xl"}
-            onClick={() => onFilterChange(startOfISOWeek(today), endOfISOWeek(today))}
+            onClick={() => onFilterChange(startOfWeek(today), endOfWeek(today))}
             disabled={submitting}
           >
             <Wrapper className="px-2">
               7
             </Wrapper>
-            Week
+            <span>
+              Week
+              <DatePreview>
+                {format(startOfWeek(today), "MMM do")} - {format(endOfWeek(today), "MMM do")}
+              </DatePreview>
+            </span>
           </Button>
           <Button
             variant={"secondary"}
@@ -98,7 +111,12 @@ export function PeriodShortcuts({
             <Wrapper className="px-2">
               1
             </Wrapper>
-            Today
+            <span>
+              Today
+              <DatePreview>
+                {format(today, "MMM do")}
+              </DatePreview>
+            </span>
           </Button>
           <Button
             variant={"secondary"}
@@ -109,7 +127,12 @@ export function PeriodShortcuts({
             <Wrapper className="px-1">
               {getDaysInYear(today)}
             </Wrapper>
-            Year
+            <span>
+              Year
+              <DatePreview>
+                {format(today, "yyyy")}
+              </DatePreview>
+            </span>
           </Button>
           <Button
             variant={"secondary"}
@@ -120,7 +143,12 @@ export function PeriodShortcuts({
             <Wrapper className="px-1.5">
               {getDaysInMonth(today)}
             </Wrapper>
-            Month
+            <span>
+              Month
+              <DatePreview>
+                {format(today, "MMMM yyyy")}
+              </DatePreview>
+            </span>
           </Button>
         </div>
         <DrawerFooter>
