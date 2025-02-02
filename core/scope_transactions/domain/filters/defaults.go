@@ -14,8 +14,8 @@ func ToDefault() time.Time {
 
 func DateToLimit(date time.Time, from bool) time.Time {
 	if from {
-		return time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.Location())
+		return time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, date.UTC().Location())
 	}
 
-	return time.Date(date.Year(), date.Month(), date.Day(), 24, 0, 0, 0, date.Location()).Add(time.Millisecond * -1)
+	return time.Date(date.Year(), date.Month(), date.Day(), 24, 0, 0, 0, date.UTC().Location()).Add(time.Millisecond * -1)
 }
