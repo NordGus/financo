@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "~/modules/shared/components/ui/button"
 import { Calendar } from "~/modules/shared/components/ui/calendar"
 import {
@@ -21,6 +21,8 @@ interface Props {
 
 export function DateDayPicker({ open, onOpenChange, date, onConfirm, submitting }: Props) {
   const [selected, setSelected] = useState<Date | undefined>(date)
+
+  useEffect(() => setSelected(date), [open])
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
