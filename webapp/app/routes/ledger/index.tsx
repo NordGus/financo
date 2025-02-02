@@ -1,6 +1,8 @@
-import { add } from "date-fns";
-import { useCallback, useEffect } from "react";
+import { format } from "date-fns";
+import { useCallback, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
+import { toast } from "sonner";
+import { filterFrom, filterTo } from "~/modules/ledger/defaults/filters";
 import { Screen } from "~/modules/ledger/screens";
 import { useTransactionsStore } from "~/modules/ledger/stores/transactions";
 import { Filters } from "~/modules/ledger/types/transactions";
@@ -23,15 +25,48 @@ export default function Index() {
   const transactions = useTransactionsStore((state) => state.transactions)
   const accounts = useTransactionsStore((state) => state.accounts)
 
+  const initStore = useTransactionsStore((state) => state.init)
   const listTransactionsQuery = useTransactionsStore((state) => state.list)
-  const listAccountsQuery = useTransactionsStore((state) => state.listAccounts)
 
   const [searchParams, setSearchParams] = useSearchParams()
 
+  const filters: Filters = useMemo(() => {
+    const from = searchParams.get("from") ? new Date(searchParams.get("from")!) : filterFrom()
+    const to = searchParams.get("to") ? new Date(searchParams.get("to")!) : filterTo()
+    const accounts = searchParams.getAll("accounts").map((id) => Number(id))
+    const categories = searchParams.getAll("categories").map((id) => Number(id))
+
+    return { from, to, accounts, categories }
+  }, [searchParams])
+
+  const onSearchParamsChange = useCallback((filters: Filters) => {
+    setSearchParams(
+      Object.fromEntries(
+        [
+          ["from", !filters.from ? undefined : format(filters.from, "yyy-MM-dd")],
+          ["to", !filters.to ? undefined : format(filters.to, "yyyy-MM-dd")],
+          ["accounts", filters.accounts?.map((id) => id.toString())],
+          ["categories", filters.categories?.map((id) => id.toString())]
+        ].filter(([__key, value]) => !!value)
+      )
+    )
+  }, [setSearchParams])
+
   const search = useCallback(
     async (filters: Filters, signal: AbortSignal, success: () => void, failure: () => void) => {
+      onSearchParamsChange(filters)
+
       try {
-        await listTransactionsQuery(filters, signal)
+        const res = listTransactionsQuery(filters, signal)
+
+        toast.promise(res, {
+          loading: "Searching...",
+          success: () => "Done",
+          error: "Oops!. Something went wrong",
+          duration: 1000
+        })
+
+        await res
 
         success()
       } catch (error) {
@@ -40,23 +75,14 @@ export default function Index() {
         throw error
       }
     },
-    [listTransactionsQuery]
+    [listTransactionsQuery, onSearchParamsChange]
   )
 
   useEffect(() => {
     const abort = new AbortController()
 
-    const load = async () => {
-      await Promise.allSettled([
-        listTransactionsQuery({
-          from: add(new Date(), { months: -1 }),
-          to: new Date()
-        }, abort.signal),
-        listAccountsQuery(),
-      ])
-    }
-
-    load()
+    onSearchParamsChange({ ...filters })
+    initStore({ ...filters }, abort.signal)
     return () => { abort.abort() }
   }, [])
 
@@ -64,9 +90,8 @@ export default function Index() {
     transactions={transactions}
     accounts={accounts}
 
-    searchParams={searchParams}
-    onSearchParamsChange={setSearchParams}
+    filters={filters}
 
-    onSearchActions={search}
+    onSearchAction={search}
   />
 }
