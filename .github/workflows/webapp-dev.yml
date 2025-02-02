@@ -1,4 +1,4 @@
-name: Web Application
+name: Web Application Development
 on: [push]
 
 jobs:
