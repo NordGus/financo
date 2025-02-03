@@ -1,3 +1,4 @@
+import { add, differenceInSeconds, endOfMonth, endOfWeek, endOfYear, getDayOfYear, isFirstDayOfMonth, isLastDayOfMonth, isSameDay, isSameWeek, isSaturday, isSunday, lastDayOfYear, startOfMonth, startOfWeek, startOfYear, sub } from "date-fns";
 import { CalendarIcon, ListFilterIcon, PlusIcon } from "lucide-react";
 import { Fragment, useCallback, useReducer, useRef } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
@@ -10,7 +11,7 @@ import { Entry } from "../components/entry";
 import { NoResults } from "../components/no-results";
 import { filterFrom, filterTo } from "../defaults/filters";
 import { Account } from "../types/accounts";
-import { Filters, SearchAction, Transactions } from "../types/transactions";
+import { Filters, Period, SearchAction, Transactions } from "../types/transactions";
 
 interface Props {
   transactions: Transactions
@@ -31,6 +32,7 @@ type ScreenState = {
   accounts?: number[]
   categories?: number[]
   open: Open
+  period: Period
   submitting: boolean
 }
 
@@ -44,7 +46,7 @@ const _actions = {
 type Actions = typeof _actions
 
 type Action =
-  { type: Actions["DATE_FILTER_CHANGED"], filters: { from?: Date, to?: Date } } |
+  { type: Actions["DATE_FILTER_CHANGED"], filters: { from?: Date, to?: Date }, period: Period } |
   { type: Actions["OPEN_CHANGED"], open: Open } |
   { type: Actions["ACTION_SUCCEED"] } |
   { type: Actions["ACTION_FAILED"] }
@@ -56,6 +58,7 @@ function reducer(state: ScreenState, action: Action): ScreenState {
         ...state,
         from: action.filters.from,
         to: action.filters.to,
+        period: action.period,
         submitting: true
       }
     case "OPEN_CHANGED":
@@ -77,12 +80,22 @@ function reducer(state: ScreenState, action: Action): ScreenState {
   }
 }
 
+function estimatePeriod(from: Date, to: Date): Period {
+  if (getDayOfYear(from) === 1 && isSameDay(lastDayOfYear(from), to)) return "yearly"
+  if (isFirstDayOfMonth(from) && isLastDayOfMonth(to)) return "monthly"
+  if (isSameWeek(from, to) && isSunday(from) && isSaturday(to)) return "weekly"
+  if (isSameDay(from, to)) return "daily"
+
+  return "custom"
+}
+
 function init({ filters }: InitialState): ScreenState {
   return {
     ...filters,
     from: filters.from ?? filterFrom(),
     to: filters.to ?? filterTo(),
     open: null,
+    period: estimatePeriod(filters.from ?? filterFrom(), filters.to ?? filterTo()),
     submitting: false,
   }
 }
@@ -109,21 +122,135 @@ export function Screen({
   const onOpenDayPickerChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "day-picker" : null })
 
-  const onDateFilterChange = useCallback((from: Date | undefined, to: Date | undefined) => {
+  const onDateFilterChange = useCallback((from: Date | undefined, to: Date | undefined, period: Period) => {
     abort.current.abort()
 
     abort.current = new AbortController()
     const selected = { from, to, accounts: screen.accounts, categories: screen.categories }
 
-    dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to } })
+    dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period })
 
     onSearchAction(selected, abort.current.signal, onActionSuccess, onActionFailed)
   }, [abort.current, dispatch, onSearchAction, onActionSuccess, onActionFailed])
 
+  const onDateFilterMoveForward = useCallback(() => {
+    if (!screen.from || !screen.to) return
+
+    abort.current.abort()
+    abort.current = new AbortController()
+
+    const selected = {
+      from: screen.from,
+      to: screen.to,
+      accounts: screen.accounts,
+      categories: screen.categories
+    }
+
+    if (screen.period === "yearly") {
+      const point = add(screen.to, { months: 1 })
+
+      selected.from = startOfYear(point)
+      selected.to = endOfYear(point)
+    } else if (screen.period === "monthly") {
+      const point = add(screen.to, { weeks: 1 })
+
+      selected.from = startOfMonth(point)
+      selected.to = endOfMonth(point)
+    } else if (screen.period === "weekly") {
+      const point = add(screen.to, { days: 1 })
+
+      selected.from = startOfWeek(point)
+      selected.to = endOfWeek(point)
+    } else if (screen.period === "daily") {
+      selected.from = add(screen.from, { days: 1 })
+      selected.to = add(screen.to, { days: 1 })
+    } else {
+      const point = add(screen.to, { days: 1 })
+      const diff = differenceInSeconds(screen.to, screen.from)
+
+      selected.from = point
+      selected.to = add(point, { seconds: diff })
+    }
+
+    dispatch({ type: "DATE_FILTER_CHANGED", filters: { from: selected.from, to: selected.to }, period: screen.period })
+
+    onSearchAction(selected, abort.current.signal, onActionSuccess, onActionFailed)
+  }, [
+    abort.current,
+    dispatch,
+    screen.from,
+    screen.to,
+    screen.accounts,
+    screen.categories,
+    screen.period,
+    onSearchAction,
+    onActionSuccess,
+    onActionFailed,
+  ])
+
+  const onDateFilterMoveBackwards = useCallback(() => {
+    if (!screen.from || !screen.to) return
+
+    abort.current.abort()
+    abort.current = new AbortController()
+
+    const selected = {
+      from: screen.from,
+      to: screen.to,
+      accounts: screen.accounts,
+      categories: screen.categories
+    }
+
+    if (screen.period === "yearly") {
+      const point = sub(screen.from, { months: 1 })
+
+      selected.from = startOfYear(point)
+      selected.to = endOfYear(point)
+    } else if (screen.period === "monthly") {
+      const point = sub(screen.from, { weeks: 1 })
+
+      selected.from = startOfMonth(point)
+      selected.to = endOfMonth(point)
+    } else if (screen.period === "weekly") {
+      const point = sub(screen.from, { days: 1 })
+
+      selected.from = startOfWeek(point)
+      selected.to = endOfWeek(point)
+    } else if (screen.period === "daily") {
+      selected.from = sub(screen.from, { days: 1 })
+      selected.to = sub(screen.to, { days: 1 })
+    } else {
+      const point = sub(screen.from, { days: 1 })
+      const diff = differenceInSeconds(screen.to, screen.from)
+
+      selected.from = sub(point, { seconds: diff })
+      selected.to = point
+    }
+
+    dispatch({ type: "DATE_FILTER_CHANGED", filters: { from: selected.from, to: selected.to }, period: screen.period })
+
+    onSearchAction(selected, abort.current.signal, onActionSuccess, onActionFailed)
+  }, [
+    abort.current,
+    dispatch,
+    screen.from,
+    screen.to,
+    screen.accounts,
+    screen.categories,
+    screen.period,
+    onSearchAction,
+    onActionSuccess,
+    onActionFailed,
+  ])
+
   return (
     <Fragment>
       <div className="relative overflow-hidden h-full">
-        <DatePosting range={{ from: screen.from, to: screen.to }} />
+        <DatePosting
+          range={{ from: screen.from, to: screen.to }}
+          onForwards={onDateFilterMoveForward}
+          onBackwards={onDateFilterMoveBackwards}
+        />
         <div className="absolute bottom-0 right-0 p-4 inline-flex gap-4 flex-wrap justify-end">
           <Button
             size={"icon"}
@@ -201,7 +328,7 @@ export function Screen({
         open={screen.open === "range-picker"}
         onOpenChange={onOpenRangePickerChange}
         range={{ from: screen.from, to: screen.to }}
-        onConfirm={(range) => onDateFilterChange(range?.from, range?.to)}
+        onConfirm={(range) => onDateFilterChange(range?.from, range?.to, "custom")}
         submitting={screen.submitting}
       />
 
@@ -209,7 +336,7 @@ export function Screen({
         open={screen.open === "day-picker"}
         onOpenChange={onOpenDayPickerChange}
         date={screen.to}
-        onConfirm={(date) => onDateFilterChange(date, date)}
+        onConfirm={(date) => onDateFilterChange(date, date, "daily")}
         submitting={screen.submitting}
       />
     </Fragment >

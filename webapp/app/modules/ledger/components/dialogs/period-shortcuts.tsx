@@ -12,13 +12,14 @@ import {
   DrawerHeader,
   DrawerTitle
 } from "~/modules/shared/components/ui/drawer"
+import { Period } from "../../types/transactions"
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   onOpenRangePicker: (open: boolean) => void
   onOpenDayPicker: (open: boolean) => void
-  onFilterChange: (from?: Date, to?: Date) => void
+  onFilterChange: (from: Date | undefined, to: Date | undefined, period: Period) => void
   submitting: boolean
 }
 
@@ -73,7 +74,7 @@ export function PeriodShortcuts({
           <Button
             variant={"secondary"}
             size={"xl"}
-            onClick={() => onFilterChange()}
+            onClick={() => onFilterChange(undefined, undefined, "unlimited")}
             disabled={submitting}
           >
             <InfinityIcon /> Always
@@ -89,7 +90,7 @@ export function PeriodShortcuts({
           <Button
             variant={"secondary"}
             size={"xl"}
-            onClick={() => onFilterChange(startOfWeek(today), endOfWeek(today))}
+            onClick={() => onFilterChange(startOfWeek(today), endOfWeek(today), "weekly")}
             disabled={submitting}
           >
             <Wrapper className="px-2">
@@ -105,7 +106,7 @@ export function PeriodShortcuts({
           <Button
             variant={"secondary"}
             size={"xl"}
-            onClick={() => onFilterChange(today, today)}
+            onClick={() => onFilterChange(today, today, "daily")}
             disabled={submitting}
           >
             <Wrapper className="px-2">
@@ -121,7 +122,7 @@ export function PeriodShortcuts({
           <Button
             variant={"secondary"}
             size={"xl"}
-            onClick={() => onFilterChange(startOfYear(today), endOfYear(today))}
+            onClick={() => onFilterChange(startOfYear(today), endOfYear(today), "yearly")}
             disabled={submitting}
           >
             <Wrapper className="px-1">
@@ -137,7 +138,7 @@ export function PeriodShortcuts({
           <Button
             variant={"secondary"}
             size={"xl"}
-            onClick={() => onFilterChange(startOfMonth(today), endOfMonth(today))}
+            onClick={() => onFilterChange(startOfMonth(today), endOfMonth(today), "monthly")}
             disabled={submitting}
           >
             <Wrapper className="px-1.5">
