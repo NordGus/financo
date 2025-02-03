@@ -19,6 +19,8 @@ export type Filters = {
   categories?: number[]
 }
 
+export type Period = "unlimited" | "daily" | "weekly" | "monthly" | "yearly" | "custom"
+
 export type Transactions = [string, Transaction[]][]
 
 export type SearchAction = (

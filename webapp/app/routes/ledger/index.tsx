@@ -57,20 +57,13 @@ export default function Index() {
       onSearchParamsChange(filters)
 
       try {
-        const res = listTransactionsQuery(filters, signal)
-
-        toast.promise(res, {
-          loading: "Searching...",
-          success: () => "Done",
-          error: "Oops!. Something went wrong",
-          duration: 1000
-        })
-
-        await res
+        await listTransactionsQuery(filters, signal)
 
         success()
       } catch (error) {
         failure()
+
+        toast.error("Oops!. Something went wrong")
 
         throw error
       }
