@@ -10,7 +10,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -109,7 +108,7 @@ func parseDate(r *http.Request, param string) (nullable.Type[time.Time], error) 
 		return out, nil
 	}
 
-	raw, err := time.Parse(time.RFC3339, r.URL.Query().Get(param))
+	raw, err := time.Parse(time.DateOnly, r.URL.Query().Get(param))
 
 	return nullable.New(raw), err
 }
@@ -121,7 +120,7 @@ func parseIds(r *http.Request, param string) ([]int64, error) {
 		return out, nil
 	}
 
-	raw := strings.Split(r.URL.Query().Get(param), ",")
+	raw := r.URL.Query()[param]
 
 	for i := 0; i < len(raw); i++ {
 		if raw[i] == "" {
