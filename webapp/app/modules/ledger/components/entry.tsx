@@ -1,3 +1,4 @@
+import { isFuture } from "date-fns";
 import { memo } from "react";
 import { cn } from "~/lib/utils";
 import { icons } from "~/modules/shared/components/ui/icon";
@@ -80,7 +81,11 @@ export const Entry = memo(function Entry({
       : null
 
   return (
-    <span className="flex gap-2 items-stretch py-2">
+    <span className={cn(
+      "flex gap-2 items-stretch py-2",
+      (!transaction.executedAt || isFuture(transaction.executedAt)) &&
+      "relative before:absolute before:inset-0 before:bg-background/50"
+    )}>
       <span
         className={cn(
           "row-span-2 [&_svg]:size-7 flex items-center justify-center aspect-square rounded-lg h-12",
