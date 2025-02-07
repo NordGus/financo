@@ -1,9 +1,10 @@
 import { add, differenceInSeconds, endOfMonth, endOfWeek, endOfYear, getDayOfYear, isFirstDayOfMonth, isLastDayOfMonth, isSameDay, isSameWeek, isSaturday, isSunday, lastDayOfYear, startOfMonth, startOfWeek, startOfYear, sub } from "date-fns";
-import { CalendarIcon, ListFilterIcon, PlusIcon } from "lucide-react";
+import { BookmarkIcon, CalendarIcon, ListFilterIcon, PlusIcon } from "lucide-react";
 import { Fragment, useCallback, useReducer, useRef } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
 import { DateGroup } from "../components/date-group";
 import { DatePosting } from "../components/date-posting";
+import { AccountPicker } from "../components/dialogs/account-picker";
 import { DateDayPicker } from "../components/dialogs/date-day-picker";
 import { DateRangePicker } from "../components/dialogs/date-range-picker";
 import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
@@ -24,13 +25,13 @@ type InitialState = {
   filters: Filters
 }
 
-type Open = "period" | "day-picker" | "range-picker" | null
+type Open = "period" | "day-picker" | "range-picker" | "accounts" | null
 
 type ScreenState = {
   from?: Date
   to?: Date
-  accounts?: number[]
-  categories?: number[]
+  accounts: number[]
+  categories: number[]
   open: Open
   period: Period
   submitting: boolean
@@ -39,7 +40,10 @@ type ScreenState = {
 const _actions = {
   DATE_FILTER_CHANGED: "DATE_FILTER_CHANGED",
   OPEN_CHANGED: "OPEN_CHANGED",
+  ACCOUNT_FILTER_ADDED: "ACCOUNT_FILTER_ADDED",
+  ACCOUNT_FILTER_REMOVED: "ACCOUNT_FILTER_REMOVED",
   ACTION_SUCCEED: "ACTION_SUCCEED",
+  ACTION_SUCCEED_WITHOUT_CLOSING: "ACTION_SUCCEED_WITHOUT_CLOSING",
   ACTION_FAILED: "ACTION_FAILED",
 } as const
 
@@ -47,8 +51,11 @@ type Actions = typeof _actions
 
 type Action =
   { type: Actions["DATE_FILTER_CHANGED"], filters: { from?: Date, to?: Date }, period: Period } |
+  { type: Actions["ACCOUNT_FILTER_ADDED"], id: number } |
+  { type: Actions["ACCOUNT_FILTER_REMOVED"], id: number } |
   { type: Actions["OPEN_CHANGED"], open: Open } |
   { type: Actions["ACTION_SUCCEED"] } |
+  { type: Actions["ACTION_SUCCEED_WITHOUT_CLOSING"] } |
   { type: Actions["ACTION_FAILED"] }
 
 function reducer(state: ScreenState, action: Action): ScreenState {
@@ -61,12 +68,29 @@ function reducer(state: ScreenState, action: Action): ScreenState {
         period: action.period,
         submitting: true
       }
+    case "ACCOUNT_FILTER_ADDED":
+      return {
+        ...state,
+        accounts: [...state.accounts, action.id],
+        submitting: true
+      }
+    case "ACCOUNT_FILTER_REMOVED":
+      return {
+        ...state,
+        accounts: [...state.accounts.filter(id => id !== action.id)],
+        submitting: true
+      }
     case "OPEN_CHANGED":
       return { ...state, open: action.open }
     case "ACTION_SUCCEED":
       return {
         ...state,
         open: null,
+        submitting: false
+      }
+    case "ACTION_SUCCEED_WITHOUT_CLOSING":
+      return {
+        ...state,
         submitting: false
       }
     case "ACTION_FAILED":
@@ -94,6 +118,8 @@ function init({ filters }: InitialState): ScreenState {
     ...filters,
     from: filters.from ?? filterFrom(),
     to: filters.to ?? filterTo(),
+    accounts: filters.accounts ?? [],
+    categories: filters.categories ?? [],
     open: null,
     period: estimatePeriod(filters.from ?? filterFrom(), filters.to ?? filterTo()),
     submitting: false,
@@ -113,6 +139,9 @@ export function Screen({
   const abort = useRef(new AbortController())
 
   const onActionSuccess = useCallback(() => dispatch({ type: "ACTION_SUCCEED" }), [dispatch])
+  const onActionSuccessWithoutClose = useCallback(() => {
+    dispatch({ type: "ACTION_SUCCEED_WITHOUT_CLOSING" })
+  }, [dispatch])
   const onActionFailed = useCallback(() => dispatch({ type: "ACTION_FAILED" }), [dispatch])
 
   const onOpenPeriodFilterChange = (open: boolean) =>
@@ -121,6 +150,8 @@ export function Screen({
     dispatch({ type: "OPEN_CHANGED", open: open ? "range-picker" : null })
   const onOpenDayPickerChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "day-picker" : null })
+  const onOpenAccountsFilterChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "accounts" : null })
 
   const onDateFilterChange = useCallback((from: Date | undefined, to: Date | undefined, period: Period) => {
     abort.current.abort()
@@ -243,6 +274,39 @@ export function Screen({
     onActionFailed,
   ])
 
+  const onAccountFilterAdd = useCallback((id: number) => {
+    abort.current.abort()
+
+    abort.current = new AbortController()
+    const selected = {
+      from: screen.from,
+      to: screen.to,
+      accounts: [...screen.accounts, id],
+      categories: screen.categories
+    }
+
+    dispatch({ type: "ACCOUNT_FILTER_ADDED", id })
+
+    onSearchAction(selected, abort.current.signal, onActionSuccessWithoutClose, onActionFailed)
+  }, [abort.current, dispatch, onSearchAction, onActionSuccessWithoutClose, onActionFailed])
+
+  const onAccountFilterRemove = useCallback((id: number) => {
+    abort.current.abort()
+
+    abort.current = new AbortController()
+    const selected = {
+      from: screen.from,
+      to: screen.to,
+      accounts: screen.accounts.filter(el => el !== id),
+      categories: screen.categories
+    }
+
+    dispatch({ type: "ACCOUNT_FILTER_REMOVED", id })
+
+    onSearchAction(selected, abort.current.signal, onActionSuccessWithoutClose, onActionFailed)
+  }, [abort.current, dispatch, onSearchAction, onActionSuccessWithoutClose, onActionFailed])
+
+
   return (
     <Fragment>
       <div className="relative overflow-hidden h-full">
@@ -264,9 +328,17 @@ export function Screen({
             size={"icon"}
             variant={"secondary"}
             className="shadow-lg"
-            onClick={() => { }}
+            onClick={() => onOpenAccountsFilterChange(true)}
           >
             <ListFilterIcon />
+          </Button>
+          <Button
+            size={"icon"}
+            variant={"secondary"}
+            className="shadow-lg"
+            onClick={() => { }}
+          >
+            <BookmarkIcon />
           </Button>
           <Button
             size={"icon"}
@@ -337,6 +409,16 @@ export function Screen({
         onOpenChange={onOpenDayPickerChange}
         date={screen.to}
         onConfirm={(date) => onDateFilterChange(date, date, "daily")}
+        submitting={screen.submitting}
+      />
+
+      <AccountPicker
+        open={screen.open === "accounts"}
+        onOpenChange={onOpenAccountsFilterChange}
+        accounts={Array.from(accounts.values())}
+        selected={screen.accounts}
+        onAdd={onAccountFilterAdd}
+        onRemove={onAccountFilterRemove}
         submitting={screen.submitting}
       />
     </Fragment >
