@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -120,7 +121,7 @@ func parseIds(r *http.Request, param string) ([]int64, error) {
 		return out, nil
 	}
 
-	raw := r.URL.Query()[param]
+	raw := strings.Split(r.URL.Query().Get(param), ",")
 
 	for i := 0; i < len(raw); i++ {
 		if raw[i] == "" {
