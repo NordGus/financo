@@ -6,6 +6,7 @@ import { filterFrom, filterTo } from "~/modules/ledger/defaults/filters";
 import { Screen } from "~/modules/ledger/screens";
 import { useTransactionsStore } from "~/modules/ledger/stores/transactions";
 import { Filters } from "~/modules/ledger/types/transactions";
+import { SearchAbortedError } from "~/modules/shared/types/errors";
 import { Route } from "./+types/index";
 
 export function meta({ }: Route.MetaArgs) {
@@ -63,9 +64,11 @@ export default function Index() {
       } catch (error) {
         failure()
 
+        if (error instanceof SearchAbortedError) return; // this is an expected error
+
         toast.error("Oops!. Something went wrong")
 
-        throw error
+        console.error({ action: "ledger: search transactions", error })
       }
     },
     [listTransactionsQuery, onSearchParamsChange]

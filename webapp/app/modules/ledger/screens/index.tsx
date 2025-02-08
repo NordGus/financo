@@ -2,6 +2,7 @@ import { add, differenceInSeconds, endOfMonth, endOfWeek, endOfYear, getDayOfYea
 import { BookmarkIcon, CalendarIcon, ListFilterIcon, PlusIcon } from "lucide-react";
 import { Fragment, useCallback, useReducer, useRef } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
+import { SearchAbortedError } from "~/modules/shared/types/errors";
 import { DateGroup } from "../components/date-group";
 import { DatePosting } from "../components/date-posting";
 import { AccountPicker } from "../components/dialogs/account-picker";
@@ -46,7 +47,6 @@ const _actions = {
   CATEGORY_FILTER_ADDED: "CATEGORY_FILTER_ADDED",
   CATEGORY_FILTER_REMOVED: "CATEGORY_FILTER_REMOVED",
   ACTION_SUCCEED: "ACTION_SUCCEED",
-  ACTION_SUCCEED_WITHOUT_CLOSING: "ACTION_SUCCEED_WITHOUT_CLOSING",
   ACTION_FAILED: "ACTION_FAILED",
 } as const
 
@@ -60,7 +60,6 @@ type Action =
   { type: Actions["CATEGORY_FILTER_REMOVED"], id: number } |
   { type: Actions["OPEN_CHANGED"], open: Open } |
   { type: Actions["ACTION_SUCCEED"] } |
-  { type: Actions["ACTION_SUCCEED_WITHOUT_CLOSING"] } |
   { type: Actions["ACTION_FAILED"] }
 
 function reducer(state: ScreenState, action: Action): ScreenState {
@@ -71,6 +70,7 @@ function reducer(state: ScreenState, action: Action): ScreenState {
         from: action.filters.from,
         to: action.filters.to,
         period: action.period,
+        open: null,
         submitting: true
       }
     case "ACCOUNT_FILTER_ADDED":
@@ -102,18 +102,11 @@ function reducer(state: ScreenState, action: Action): ScreenState {
     case "ACTION_SUCCEED":
       return {
         ...state,
-        open: null,
-        submitting: false
-      }
-    case "ACTION_SUCCEED_WITHOUT_CLOSING":
-      return {
-        ...state,
         submitting: false
       }
     case "ACTION_FAILED":
       return {
         ...state,
-        open: null,
         submitting: false
       }
     default:
@@ -156,9 +149,6 @@ export function Screen({
   const abort = useRef(new AbortController())
 
   const onActionSuccess = useCallback(() => dispatch({ type: "ACTION_SUCCEED" }), [dispatch])
-  const onActionSuccessWithoutClose = useCallback(() => {
-    dispatch({ type: "ACTION_SUCCEED_WITHOUT_CLOSING" })
-  }, [dispatch])
   const onActionFailed = useCallback(() => dispatch({ type: "ACTION_FAILED" }), [dispatch])
 
   const onOpenPeriodFilterChange = (open: boolean) =>
@@ -172,191 +162,181 @@ export function Screen({
   const onOpenCategoriesFilterChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "categories" : null })
 
-  const onDateFilterChange = useCallback((from: Date | undefined, to: Date | undefined, period: Period) => {
-    abort.current.abort()
+  const onSearch = useCallback(async (nextFilters: Filters, signal: AbortSignal) => {
+    onSearchAction({ ...nextFilters }, signal, onActionSuccess, onActionFailed)
+  }, [onSearchAction, onActionSuccess, onActionFailed])
 
+  const onDateFilterChange = useCallback((from: Date | undefined, to: Date | undefined, period: Period) => {
+    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
-    const selected = { from, to, accounts: screen.accounts, categories: screen.categories }
 
     dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period })
-
-    onSearchAction(selected, abort.current.signal, onActionSuccess, onActionFailed)
-  }, [abort.current, dispatch, onSearchAction, onActionSuccess, onActionFailed])
+    onSearch(
+      {
+        from,
+        to,
+        accounts: [...screen.accounts],
+        categories: [...screen.categories]
+      },
+      abort.current.signal
+    )
+  }, [dispatch, onSearch, abort.current, screen.accounts, screen.categories])
 
   const onDateFilterMoveForward = useCallback(() => {
     if (!screen.from || !screen.to) return
 
-    abort.current.abort()
+    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
 
-    const selected = {
-      from: screen.from,
-      to: screen.to,
-      accounts: screen.accounts,
-      categories: screen.categories
-    }
+    let from = screen.from
+    let to = screen.to
 
     if (screen.period === "yearly") {
-      const point = add(screen.to, { months: 1 })
+      const point = add(to, { months: 1 })
 
-      selected.from = startOfYear(point)
-      selected.to = endOfYear(point)
+      from = startOfYear(point)
+      to = endOfYear(point)
     } else if (screen.period === "monthly") {
-      const point = add(screen.to, { weeks: 1 })
+      const point = add(to, { weeks: 1 })
 
-      selected.from = startOfMonth(point)
-      selected.to = endOfMonth(point)
+      from = startOfMonth(point)
+      to = endOfMonth(point)
     } else if (screen.period === "weekly") {
-      const point = add(screen.to, { days: 1 })
+      const point = add(to, { days: 1 })
 
-      selected.from = startOfWeek(point)
-      selected.to = endOfWeek(point)
+      from = startOfWeek(point)
+      to = endOfWeek(point)
     } else if (screen.period === "daily") {
-      selected.from = add(screen.from, { days: 1 })
-      selected.to = add(screen.to, { days: 1 })
+      from = add(from, { days: 1 })
+      to = add(to, { days: 1 })
     } else {
-      const point = add(screen.to, { days: 1 })
-      const diff = differenceInSeconds(screen.to, screen.from)
+      const point = add(to, { days: 1 })
 
-      selected.from = point
-      selected.to = add(point, { seconds: diff })
+      from = point
+      to = add(point, { seconds: differenceInSeconds(to, from) })
     }
 
-    dispatch({ type: "DATE_FILTER_CHANGED", filters: { from: selected.from, to: selected.to }, period: screen.period })
-
-    onSearchAction(selected, abort.current.signal, onActionSuccess, onActionFailed)
-  }, [
-    abort.current,
-    dispatch,
-    screen.from,
-    screen.to,
-    screen.accounts,
-    screen.categories,
-    screen.period,
-    onSearchAction,
-    onActionSuccess,
-    onActionFailed,
-  ])
+    dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period: screen.period })
+    onSearch(
+      {
+        from,
+        to,
+        accounts: [...screen.accounts],
+        categories: [...screen.categories]
+      },
+      abort.current.signal
+    )
+  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
 
   const onDateFilterMoveBackwards = useCallback(() => {
     if (!screen.from || !screen.to) return
 
-    abort.current.abort()
+    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
 
-    const selected = {
-      from: screen.from,
-      to: screen.to,
-      accounts: screen.accounts,
-      categories: screen.categories
-    }
+    let from = screen.from
+    let to = screen.to
 
     if (screen.period === "yearly") {
-      const point = sub(screen.from, { months: 1 })
+      const point = sub(from, { months: 1 })
 
-      selected.from = startOfYear(point)
-      selected.to = endOfYear(point)
+      from = startOfYear(point)
+      to = endOfYear(point)
     } else if (screen.period === "monthly") {
-      const point = sub(screen.from, { weeks: 1 })
+      const point = sub(from, { weeks: 1 })
 
-      selected.from = startOfMonth(point)
-      selected.to = endOfMonth(point)
+      from = startOfMonth(point)
+      to = endOfMonth(point)
     } else if (screen.period === "weekly") {
-      const point = sub(screen.from, { days: 1 })
+      const point = sub(from, { days: 1 })
 
-      selected.from = startOfWeek(point)
-      selected.to = endOfWeek(point)
+      from = startOfWeek(point)
+      to = endOfWeek(point)
     } else if (screen.period === "daily") {
-      selected.from = sub(screen.from, { days: 1 })
-      selected.to = sub(screen.to, { days: 1 })
+      from = sub(from, { days: 1 })
+      to = sub(to, { days: 1 })
     } else {
-      const point = sub(screen.from, { days: 1 })
-      const diff = differenceInSeconds(screen.to, screen.from)
+      const point = sub(from, { days: 1 })
 
-      selected.from = sub(point, { seconds: diff })
-      selected.to = point
+      from = sub(point, { seconds: differenceInSeconds(to, from) })
+      to = point
     }
 
-    dispatch({ type: "DATE_FILTER_CHANGED", filters: { from: selected.from, to: selected.to }, period: screen.period })
-
-    onSearchAction(selected, abort.current.signal, onActionSuccess, onActionFailed)
-  }, [
-    abort.current,
-    dispatch,
-    screen.from,
-    screen.to,
-    screen.accounts,
-    screen.categories,
-    screen.period,
-    onSearchAction,
-    onActionSuccess,
-    onActionFailed,
-  ])
+    dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period: screen.period })
+    onSearch(
+      {
+        from,
+        to,
+        accounts: [...screen.accounts],
+        categories: [...screen.categories]
+      },
+      abort.current.signal
+    )
+  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
 
   const onAccountFilterAdd = useCallback((id: number) => {
-    abort.current.abort()
-
+    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
-    const selected = {
-      from: screen.from,
-      to: screen.to,
-      accounts: [...screen.accounts, id],
-      categories: screen.categories
-    }
 
     dispatch({ type: "ACCOUNT_FILTER_ADDED", id })
-
-    onSearchAction(selected, abort.current.signal, onActionSuccessWithoutClose, onActionFailed)
-  }, [abort.current, dispatch, onSearchAction, onActionSuccessWithoutClose, onActionFailed])
+    onSearch(
+      {
+        from: screen.from,
+        to: screen.to,
+        accounts: [...screen.accounts, id],
+        categories: screen.categories
+      },
+      abort.current.signal
+    )
+  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
 
   const onAccountFilterRemove = useCallback((id: number) => {
-    abort.current.abort()
-
+    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
-    const selected = {
-      from: screen.from,
-      to: screen.to,
-      accounts: screen.accounts.filter(el => el !== id),
-      categories: screen.categories
-    }
 
     dispatch({ type: "ACCOUNT_FILTER_REMOVED", id })
-
-    onSearchAction(selected, abort.current.signal, onActionSuccessWithoutClose, onActionFailed)
-  }, [abort.current, dispatch, onSearchAction, onActionSuccessWithoutClose, onActionFailed])
+    onSearch(
+      {
+        from: screen.from,
+        to: screen.to,
+        accounts: screen.accounts.filter(el => el !== id),
+        categories: screen.categories
+      },
+      abort.current.signal
+    )
+  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
 
   const onCategoryFilterAdd = useCallback((id: number) => {
-    abort.current.abort()
-
+    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
-    const selected = {
-      from: screen.from,
-      to: screen.to,
-      accounts: screen.accounts,
-      categories: [...screen.categories, id]
-    }
 
     dispatch({ type: "CATEGORY_FILTER_ADDED", id })
-
-    onSearchAction(selected, abort.current.signal, onActionSuccessWithoutClose, onActionFailed)
-  }, [abort.current, dispatch, onSearchAction, onActionSuccessWithoutClose, onActionFailed])
+    onSearch(
+      {
+        from: screen.from,
+        to: screen.to,
+        accounts: screen.accounts,
+        categories: [...screen.categories, id]
+      },
+      abort.current.signal
+    )
+  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
 
   const onCategoryFilterRemove = useCallback((id: number) => {
-    abort.current.abort()
-
+    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
-    const selected = {
-      from: screen.from,
-      to: screen.to,
-      accounts: screen.accounts,
-      categories: screen.categories.filter(el => el !== id)
-    }
 
     dispatch({ type: "CATEGORY_FILTER_REMOVED", id })
-
-    onSearchAction(selected, abort.current.signal, onActionSuccessWithoutClose, onActionFailed)
-  }, [abort.current, dispatch, onSearchAction, onActionSuccessWithoutClose, onActionFailed])
-
+    onSearch(
+      {
+        from: screen.from,
+        to: screen.to,
+        accounts: screen.accounts,
+        categories: screen.categories.filter(el => el !== id)
+      },
+      abort.current.signal
+    )
+  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
 
   return (
     <Fragment>
