@@ -72,7 +72,12 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 	}
 
 	if len(f.CategoryIDs) > 0 {
-		query += fmt.Sprintf(" AND (src.id = ANY ($%d) OR trg.id = ANY ($%d))", count, count)
+		query += fmt.Sprintf(
+			" AND (src.id = ANY ($%d) OR src.parent_id = ANY ($%d) OR trg.id = ANY ($%d)) OR trg.parent_id = ANY ($%d)", count,
+			count,
+			count,
+			count,
+		)
 		args = append(args, f.CategoryIDs)
 		count++
 	}
