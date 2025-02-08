@@ -67,9 +67,9 @@ export function CategoryPicker({ open, onOpenChange, accounts, submitting, ...pr
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Accounts</DrawerTitle>
+          <DrawerTitle>Categories</DrawerTitle>
           <DrawerDescription className="hidden" data-hidden>
-            {"Select which Accounts you to filter the ledger's transaction"}
+            {"Select which Categories you to filter the ledger's transaction"}
           </DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 px-4 max-h-[80dvh] overflow-y-auto">
