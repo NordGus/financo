@@ -24,26 +24,26 @@ interface Props {
   submitting: boolean
 }
 
-function isAccount(kind: Kind): boolean {
+function isCategory(kind: Kind): boolean {
   switch (kind) {
-    case "capital_normal":
-    case "capital_savings":
+    case "external_income":
+    case "external_expense":
+    case "debt_credit":
     case "debt_loan":
     case "debt_personal":
-    case "debt_credit":
       return true
     default:
       return false
   }
 }
 
-export function AccountPicker({ open, onOpenChange, accounts, submitting, ...props }: Props) {
-  const capital = useMemo(
-    () => accounts.filter(({ kind, archivedAt }) => kind === "capital_normal" && !archivedAt),
+export function CategoryPicker({ open, onOpenChange, accounts, submitting, ...props }: Props) {
+  const expenses = useMemo(
+    () => accounts.filter(({ kind, parentId, archivedAt }) => kind === "external_expense" && !archivedAt && !parentId),
     [accounts]
   )
-  const savings = useMemo(
-    () => accounts.filter(({ kind, archivedAt }) => kind === "capital_savings" && !archivedAt),
+  const income = useMemo(
+    () => accounts.filter(({ kind, parentId, archivedAt }) => kind === "external_income" && !archivedAt && !parentId),
     [accounts]
   )
   const loans = useMemo(
@@ -59,7 +59,7 @@ export function AccountPicker({ open, onOpenChange, accounts, submitting, ...pro
     [accounts]
   )
   const archived = useMemo(
-    () => accounts.filter(({ kind, archivedAt }) => isAccount(kind) && !!archivedAt),
+    () => accounts.filter(({ kind, parentId, archivedAt }) => isCategory(kind) && !!archivedAt && !parentId),
     [accounts]
   )
 
@@ -67,14 +67,14 @@ export function AccountPicker({ open, onOpenChange, accounts, submitting, ...pro
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle>Accounts</DrawerTitle>
+          <DrawerTitle>Categories</DrawerTitle>
           <DrawerDescription className="hidden" data-hidden>
-            {"Select which Accounts you to filter the ledger's transaction"}
+            {"Select which Categories you to filter the ledger's transaction"}
           </DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 px-4 max-h-[80dvh] overflow-y-auto">
-          <Section accounts={capital} title="Capital" {...props} />
-          <Section accounts={savings} title="Savings" {...props} />
+          <Section accounts={expenses} title="Expenses" {...props} />
+          <Section accounts={income} title="Income" {...props} />
           <Section accounts={loans} title="Loans" {...props} />
           <Section accounts={personal} title="Personal debt" {...props} />
           <Section accounts={credit} title="Credit" {...props} />

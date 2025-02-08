@@ -5,6 +5,7 @@ import { Button } from "~/modules/shared/components/ui/button";
 import { DateGroup } from "../components/date-group";
 import { DatePosting } from "../components/date-posting";
 import { AccountPicker } from "../components/dialogs/account-picker";
+import { CategoryPicker } from "../components/dialogs/category-picker";
 import { DateDayPicker } from "../components/dialogs/date-day-picker";
 import { DateRangePicker } from "../components/dialogs/date-range-picker";
 import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
@@ -25,7 +26,7 @@ type InitialState = {
   filters: Filters
 }
 
-type Open = "period" | "day-picker" | "range-picker" | "accounts" | null
+type Open = "period" | "day-picker" | "range-picker" | "accounts" | "categories" | null
 
 type ScreenState = {
   from?: Date
@@ -42,6 +43,8 @@ const _actions = {
   OPEN_CHANGED: "OPEN_CHANGED",
   ACCOUNT_FILTER_ADDED: "ACCOUNT_FILTER_ADDED",
   ACCOUNT_FILTER_REMOVED: "ACCOUNT_FILTER_REMOVED",
+  CATEGORY_FILTER_ADDED: "CATEGORY_FILTER_ADDED",
+  CATEGORY_FILTER_REMOVED: "CATEGORY_FILTER_REMOVED",
   ACTION_SUCCEED: "ACTION_SUCCEED",
   ACTION_SUCCEED_WITHOUT_CLOSING: "ACTION_SUCCEED_WITHOUT_CLOSING",
   ACTION_FAILED: "ACTION_FAILED",
@@ -53,6 +56,8 @@ type Action =
   { type: Actions["DATE_FILTER_CHANGED"], filters: { from?: Date, to?: Date }, period: Period } |
   { type: Actions["ACCOUNT_FILTER_ADDED"], id: number } |
   { type: Actions["ACCOUNT_FILTER_REMOVED"], id: number } |
+  { type: Actions["CATEGORY_FILTER_ADDED"], id: number } |
+  { type: Actions["CATEGORY_FILTER_REMOVED"], id: number } |
   { type: Actions["OPEN_CHANGED"], open: Open } |
   { type: Actions["ACTION_SUCCEED"] } |
   { type: Actions["ACTION_SUCCEED_WITHOUT_CLOSING"] } |
@@ -78,6 +83,18 @@ function reducer(state: ScreenState, action: Action): ScreenState {
       return {
         ...state,
         accounts: [...state.accounts.filter(id => id !== action.id)],
+        submitting: true
+      }
+    case "CATEGORY_FILTER_ADDED":
+      return {
+        ...state,
+        categories: [...state.categories, action.id],
+        submitting: true
+      }
+    case "CATEGORY_FILTER_REMOVED":
+      return {
+        ...state,
+        categories: [...state.categories.filter(id => id !== action.id)],
         submitting: true
       }
     case "OPEN_CHANGED":
@@ -152,6 +169,8 @@ export function Screen({
     dispatch({ type: "OPEN_CHANGED", open: open ? "day-picker" : null })
   const onOpenAccountsFilterChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "accounts" : null })
+  const onOpenCategoriesFilterChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "categories" : null })
 
   const onDateFilterChange = useCallback((from: Date | undefined, to: Date | undefined, period: Period) => {
     abort.current.abort()
@@ -306,6 +325,38 @@ export function Screen({
     onSearchAction(selected, abort.current.signal, onActionSuccessWithoutClose, onActionFailed)
   }, [abort.current, dispatch, onSearchAction, onActionSuccessWithoutClose, onActionFailed])
 
+  const onCategoryFilterAdd = useCallback((id: number) => {
+    abort.current.abort()
+
+    abort.current = new AbortController()
+    const selected = {
+      from: screen.from,
+      to: screen.to,
+      accounts: screen.accounts,
+      categories: [...screen.categories, id]
+    }
+
+    dispatch({ type: "CATEGORY_FILTER_ADDED", id })
+
+    onSearchAction(selected, abort.current.signal, onActionSuccessWithoutClose, onActionFailed)
+  }, [abort.current, dispatch, onSearchAction, onActionSuccessWithoutClose, onActionFailed])
+
+  const onCategoryFilterRemove = useCallback((id: number) => {
+    abort.current.abort()
+
+    abort.current = new AbortController()
+    const selected = {
+      from: screen.from,
+      to: screen.to,
+      accounts: screen.accounts,
+      categories: screen.categories.filter(el => el !== id)
+    }
+
+    dispatch({ type: "CATEGORY_FILTER_REMOVED", id })
+
+    onSearchAction(selected, abort.current.signal, onActionSuccessWithoutClose, onActionFailed)
+  }, [abort.current, dispatch, onSearchAction, onActionSuccessWithoutClose, onActionFailed])
+
 
   return (
     <Fragment>
@@ -336,7 +387,7 @@ export function Screen({
             size={"icon"}
             variant={"secondary"}
             className="shadow-lg"
-            onClick={() => { }}
+            onClick={() => onOpenCategoriesFilterChange(true)}
           >
             <BookmarkIcon />
           </Button>
@@ -419,6 +470,16 @@ export function Screen({
         selected={screen.accounts}
         onAdd={onAccountFilterAdd}
         onRemove={onAccountFilterRemove}
+        submitting={screen.submitting}
+      />
+
+      <CategoryPicker
+        open={screen.open === "categories"}
+        onOpenChange={onOpenCategoriesFilterChange}
+        accounts={Array.from(accounts.values())}
+        selected={screen.categories}
+        onAdd={onCategoryFilterAdd}
+        onRemove={onCategoryFilterRemove}
         submitting={screen.submitting}
       />
     </Fragment >
