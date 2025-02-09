@@ -77,7 +77,7 @@ export function PeriodShortcuts({
             onClick={() => onFilterChange(undefined, undefined, "unlimited")}
             disabled={submitting}
           >
-            <InfinityIcon /> Always
+            <InfinityIcon /> Entire Ledger
           </Button>
           <Button
             variant={"secondary"}
