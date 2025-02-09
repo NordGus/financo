@@ -14,7 +14,7 @@ export function DateGroup({ date, children }: PropsWithChildren<Props>) {
           {format(date, "PPP")}
         </Heading5>
       </div>
-      <div className="flex flex-col divide-y-2">
+      <div className="flex flex-col">
         {children}
       </div>
     </div>
