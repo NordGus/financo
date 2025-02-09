@@ -1,7 +1,8 @@
-import { BookmarkIcon, ListFilterIcon, PlusIcon } from "lucide-react";
+import { ListFilterIcon, PlusIcon } from "lucide-react";
 import { Fragment, useCallback, useReducer, useRef } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
 import { SearchAbortedError } from "~/modules/shared/types/errors";
+import { AccountsFilter } from "../components/accounts-filter";
 import { DateFilter } from "../components/date-filter";
 import { DateGroup } from "../components/date-group";
 import { AccountPicker } from "../components/dialogs/account-picker";
@@ -284,26 +285,26 @@ export function Screen({
         <div className="absolute bottom-0 right-0 p-4 inline-flex gap-4 flex-wrap justify-end">
           <Button
             size={"icon"}
-            variant={"secondary"}
-            className="shadow-lg"
-            onClick={() => onOpenAccountsFilterChange(true)}
-          >
-            <ListFilterIcon />
-          </Button>
-          <Button
-            size={"icon"}
-            variant={"secondary"}
-            className="shadow-lg"
-            onClick={() => onOpenCategoriesFilterChange(true)}
-          >
-            <BookmarkIcon />
-          </Button>
-          <Button
-            size={"icon"}
             className="shadow-lg"
             onClick={() => { }}
           >
             <PlusIcon />
+          </Button>
+        </div>
+        <div className="flex items-start gap-2 p-2">
+          <span className="h-9 w-9" />
+          <AccountsFilter
+            className="flex-grow"
+            accounts={accounts}
+            selected={screen.accounts}
+            onClick={() => onOpenAccountsFilterChange(true)}
+          />
+          <Button
+            size={"icon"}
+            variant={"link"}
+            onClick={() => onOpenCategoriesFilterChange(true)}
+          >
+            <ListFilterIcon />
           </Button>
         </div>
         <DateFilter
