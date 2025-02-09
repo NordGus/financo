@@ -23,14 +23,20 @@ interface PeriodDisplayProps {
 
 function PeriodDisplay({ range, period }: PeriodDisplayProps) {
   if (period === "unlimited")
-    return <><PeriodIcon period={period} size={"sm"} /> Entire Ledger</>
+    return (
+      <>
+        <PeriodIcon period={period} size={"sm"} /> {"Entire Ledger"}
+      </>
+    )
 
   const from = useMemo(() => format(range.from!, FORMAT_DATE_STRING), [range.from])
   const to = useMemo(() => format(range.to!, FORMAT_DATE_STRING), [range.to])
 
-  return <>
-    <PeriodIcon period={period} size={"sm"} from={range.from} /> {from} <MoveHorizontalIcon /> {to}
-  </>
+  return (
+    <>
+      <PeriodIcon period={period} size={"sm"} from={range.from} /> {from} <MoveHorizontalIcon /> {to}
+    </>
+  )
 }
 
 export function DateFilter({ range, period, onClick, onForwards, onBackwards }: Props) {
