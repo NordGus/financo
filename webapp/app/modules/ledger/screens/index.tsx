@@ -1,9 +1,9 @@
-import { BookmarkIcon, CalendarIcon, ListFilterIcon, PlusIcon } from "lucide-react";
+import { BookmarkIcon, ListFilterIcon, PlusIcon } from "lucide-react";
 import { Fragment, useCallback, useReducer, useRef } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
 import { SearchAbortedError } from "~/modules/shared/types/errors";
+import { DateFilter } from "../components/date-filter";
 import { DateGroup } from "../components/date-group";
-import { DatePosting } from "../components/date-posting";
 import { AccountPicker } from "../components/dialogs/account-picker";
 import { CategoryPicker } from "../components/dialogs/category-picker";
 import { DateDayPicker } from "../components/dialogs/date-day-picker";
@@ -280,21 +280,8 @@ export function Screen({
 
   return (
     <Fragment>
-      <div className="relative overflow-hidden h-full">
-        <DatePosting
-          range={{ from: screen.from, to: screen.to }}
-          onForwards={onDateFilterMoveForward}
-          onBackwards={onDateFilterMoveBackwards}
-        />
+      <div className="relative overflow-hidden h-full flex flex-col">
         <div className="absolute bottom-0 right-0 p-4 inline-flex gap-4 flex-wrap justify-end">
-          <Button
-            size={"icon"}
-            variant={"secondary"}
-            className="shadow-lg"
-            onClick={() => onOpenPeriodFilterChange(true)}
-          >
-            <CalendarIcon />
-          </Button>
           <Button
             size={"icon"}
             variant={"secondary"}
@@ -319,13 +306,19 @@ export function Screen({
             <PlusIcon />
           </Button>
         </div>
+        <DateFilter
+          range={{ from: screen.from, to: screen.to }}
+          period={screen.period}
+          onClick={() => onOpenPeriodFilterChange(true)}
+          onForwards={onDateFilterMoveForward}
+          onBackwards={onDateFilterMoveBackwards}
+        />
         <div className="overflow-x-hidden overflow-y-auto h-full p-4">
           {
             transactions.length === 0
               ? <NoResults />
               : (
                 <>
-                  <span className="content-[''] h-9 block my-2" />
                   <div className="flex flex-col gap-2">
                     {
                       transactions.map(([date, entries]) => (
