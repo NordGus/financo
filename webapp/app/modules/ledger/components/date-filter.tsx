@@ -1,9 +1,10 @@
 import { format } from "date-fns";
-import { ChevronLeftIcon, ChevronRightIcon, InfinityIcon, MoveHorizontalIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon, MoveHorizontalIcon } from "lucide-react";
 import { useMemo } from "react";
 import { DateRange } from "react-day-picker";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Period } from "../types/transactions";
+import { PeriodIcon } from "./period-icon";
 
 const FORMAT_DATE_STRING = "LLL dd, y"
 
@@ -21,32 +22,26 @@ interface PeriodDisplayProps {
 }
 
 function PeriodDisplay({ range, period }: PeriodDisplayProps) {
-  if (period !== "unlimited" && (!range.from || !range.to))
-    throw new Error(
-      "invalid PeriodDisplay state",
-      { cause: `${!range.from ? "from" : "to"} is undefined for period "${period}"` }
-    )
-
   if (period === "unlimited")
-    return <> <InfinityIcon /> Entire Ledger</>
+    return <><PeriodIcon period={period} size={"sm"} /> Entire Ledger</>
 
   const from = useMemo(() => format(range.from!, FORMAT_DATE_STRING), [range.from])
   const to = useMemo(() => format(range.to!, FORMAT_DATE_STRING), [range.to])
 
   return <>
-    {from} <MoveHorizontalIcon /> {to}
+    <PeriodIcon period={period} size={"sm"} from={range.from} /> {from} <MoveHorizontalIcon /> {to}
   </>
 }
 
 export function DateFilter({ range, period, onClick, onForwards, onBackwards }: Props) {
   return (
-    <div className="p-4 gap-2 flex">
+    <div className="p-2 gap-2 flex border-b">
       {
         range.from && (
           <Button
             variant={"secondary"}
             onClick={onBackwards}
-            className="shadow-lg aspect-square"
+            size={"icon"}
           >
             <ChevronLeftIcon />
           </Button>
@@ -54,7 +49,7 @@ export function DateFilter({ range, period, onClick, onForwards, onBackwards }: 
       }
       <Button
         variant={"secondary"}
-        className="shadow-lg w-full gap-1"
+        className="flex-grow"
         type="button"
         onClick={onClick}
       >
@@ -65,7 +60,7 @@ export function DateFilter({ range, period, onClick, onForwards, onBackwards }: 
           <Button
             variant={"secondary"}
             onClick={onForwards}
-            className="shadow-lg aspect-square"
+            size={"icon"}
           >
             <ChevronRightIcon />
           </Button>
