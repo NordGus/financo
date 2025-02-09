@@ -1,4 +1,3 @@
-import { add, differenceInSeconds, endOfMonth, endOfWeek, endOfYear, getDayOfYear, isFirstDayOfMonth, isLastDayOfMonth, isSameDay, isSameWeek, isSaturday, isSunday, lastDayOfYear, startOfMonth, startOfWeek, startOfYear, sub } from "date-fns";
 import { BookmarkIcon, CalendarIcon, ListFilterIcon, PlusIcon } from "lucide-react";
 import { Fragment, useCallback, useReducer, useRef } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
@@ -13,6 +12,8 @@ import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
 import { Entry } from "../components/entry";
 import { NoResults } from "../components/no-results";
 import { filterFrom, filterTo } from "../defaults/filters";
+import { calculateDateRangeMovement, Movement } from "../helpers/calculate-date-range-movement";
+import { estimatePeriod } from "../helpers/estimate-period";
 import { Account } from "../types/accounts";
 import { Filters, Period, SearchAction, Transactions } from "../types/transactions";
 
@@ -114,15 +115,6 @@ function reducer(state: ScreenState, action: Action): ScreenState {
   }
 }
 
-function estimatePeriod(from: Date, to: Date): Period {
-  if (getDayOfYear(from) === 1 && isSameDay(lastDayOfYear(from), to)) return "yearly"
-  if (isFirstDayOfMonth(from) && isLastDayOfMonth(to)) return "monthly"
-  if (isSameWeek(from, to) && isSunday(from) && isSaturday(to)) return "weekly"
-  if (isSameDay(from, to)) return "daily"
-
-  return "custom"
-}
-
 function init({ filters }: InitialState): ScreenState {
   return {
     ...filters,
@@ -188,33 +180,7 @@ export function Screen({
     if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
 
-    let from = screen.from
-    let to = screen.to
-
-    if (screen.period === "yearly") {
-      const point = add(to, { months: 1 })
-
-      from = startOfYear(point)
-      to = endOfYear(point)
-    } else if (screen.period === "monthly") {
-      const point = add(to, { weeks: 1 })
-
-      from = startOfMonth(point)
-      to = endOfMonth(point)
-    } else if (screen.period === "weekly") {
-      const point = add(to, { days: 1 })
-
-      from = startOfWeek(point)
-      to = endOfWeek(point)
-    } else if (screen.period === "daily") {
-      from = add(from, { days: 1 })
-      to = add(to, { days: 1 })
-    } else {
-      const point = add(to, { days: 1 })
-
-      from = point
-      to = add(point, { seconds: differenceInSeconds(to, from) })
-    }
+    const { from, to } = calculateDateRangeMovement(Movement.Forwards, screen.from, screen.to, screen.period)
 
     dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period: screen.period })
     onSearch(
@@ -234,33 +200,7 @@ export function Screen({
     if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
 
-    let from = screen.from
-    let to = screen.to
-
-    if (screen.period === "yearly") {
-      const point = sub(from, { months: 1 })
-
-      from = startOfYear(point)
-      to = endOfYear(point)
-    } else if (screen.period === "monthly") {
-      const point = sub(from, { weeks: 1 })
-
-      from = startOfMonth(point)
-      to = endOfMonth(point)
-    } else if (screen.period === "weekly") {
-      const point = sub(from, { days: 1 })
-
-      from = startOfWeek(point)
-      to = endOfWeek(point)
-    } else if (screen.period === "daily") {
-      from = sub(from, { days: 1 })
-      to = sub(to, { days: 1 })
-    } else {
-      const point = sub(from, { days: 1 })
-
-      from = sub(point, { seconds: differenceInSeconds(to, from) })
-      to = point
-    }
+    const { from, to } = calculateDateRangeMovement(Movement.Backwards, screen.to, screen.from, screen.period)
 
     dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period: screen.period })
     onSearch(
