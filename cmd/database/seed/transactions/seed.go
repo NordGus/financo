@@ -23,16 +23,12 @@ func SeedTransactions(ctx context.Context, seeds map[string]int64, timestamp tim
 		accounts = account_repository.NewPostgreSQL(db)
 		create   = create_repository.NewPostgreSQL(db)
 		transact = transaction_repository.NewPostgreSQL(db)
-		delete   = delete_repository.NewPostgreSQL(db)
+		destroy  = delete_repository.NewPostgreSQL(db)
+		broker   = message_broker.New()
 
 		summary uint = 0
 		ts           = timestamp.UTC()
 	)
-
-	broker, err := message_broker.Instance()
-	if err != nil {
-		return errors.Join(errors.New("transactions: failed to retrieve message_broker instance"), err)
-	}
 
 	log.Println("\tseeding transactions")
 
@@ -70,10 +66,10 @@ func SeedTransactions(ctx context.Context, seeds map[string]int64, timestamp tim
 		if data.DeletedAt(ts).Valid {
 			r := requests.Delete{ID: res.ID}
 
-			_, err = delete_command.New(r, transact, delete, broker.Deleted()).Run(ctx)
+			_, err = delete_command.New(r, transact, destroy, broker.Deleted()).Run(ctx)
 			if err != nil {
 				return errors.Join(
-					fmt.Errorf("transactions: failed to delete transaction between %s and %s", data.Source, data.Target),
+					fmt.Errorf("transactions: failed to destroy transaction between %s and %s", data.Source, data.Target),
 					err,
 				)
 			}
