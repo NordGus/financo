@@ -15,6 +15,8 @@ import (
 )
 
 func main() {
+	shutdown.Arm()
+
 	var (
 		ctx   = context.Background()
 		start = time.Now()

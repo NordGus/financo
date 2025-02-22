@@ -4,7 +4,9 @@ package umbilical
 import (
 	"encoding/json"
 	"errors"
+	"financo/services/shutdown"
 	"fmt"
+	"log"
 	"net"
 	"sync"
 )
@@ -37,6 +39,15 @@ func New() Service {
 	instance = &service{
 		channels: make(map[string]*channel, 10),
 	}
+
+	shutdown.Defer(shutdown.Closure{
+		Name: "umbilical service",
+		Func: func() {
+			if err := instance.Close(); err != nil {
+				log.Printf("failed to close umbilical connection: %s\n", err)
+			}
+		},
+	})
 
 	return instance
 }

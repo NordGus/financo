@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"financo/cmd/api/json/handlers/accounts"
 	"financo/cmd/api/json/handlers/categories"
 	"financo/cmd/api/json/handlers/currencies"
@@ -14,7 +15,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 	"time"
 
@@ -25,7 +25,7 @@ import (
 	"financo/services/umbilical"
 
 	"github.com/go-chi/chi/v5"
-	chi_middleware "github.com/go-chi/chi/v5/middleware"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 )
 
 const (
@@ -33,54 +33,19 @@ const (
 )
 
 func main() {
+	shutdown.Arm()
+
 	var (
-		wg          = new(sync.WaitGroup)
 		ctx, cancel = context.WithCancel(context.Background())
 
-		pgDBService         = postgresql_database.New()
-		sessionStore        = in_memory_session_store.New()
-		umbilicalService    = umbilical.New()
-		messageBusesService = message_buses.Initialize(wg)
+		_ = postgresql_database.New()
+		_ = in_memory_session_store.New()
+		_ = umbilical.New()
+		_ = message_buses.New()
 	)
 
-	shutdown.Defer(shutdown.Closure{
-		Name: "postgresql_database",
-		Func: func() {
-			if err := pgDBService.Close(); err != nil {
-				log.Printf("failed to close database connections: %s\n", err)
-			}
-		},
-	})
-
-	shutdown.Defer(shutdown.Closure{
-		Name: "umbilical",
-		Func: func() {
-			if err := umbilicalService.Close(); err != nil {
-				log.Printf("failed to close umbilical connection: %s\n", err)
-			}
-		},
-	})
-
-	shutdown.Defer(shutdown.Closure{
-		Name: "in_memory_session_store",
-		Func: func() {
-			if err := sessionStore.Close(); err != nil {
-				log.Printf("failed to close session store connection: %s\n", err)
-			}
-		},
-	})
-
-	shutdown.Defer(shutdown.Closure{
-		Name: "message_buses",
-		Func: func() {
-			if err := messageBusesService.Close(); err != nil {
-				log.Printf("failed to close message busses connection: %s\n", err)
-			}
-		},
-	})
-
-	wg.Add(1)
-	go startHTTPServer(ctx, wg)
+	shutdown.AddTask(1)
+	go startHTTPServer(ctx)
 
 	// Listen for termination signals
 	signalCh := make(chan os.Signal, 1)
@@ -92,28 +57,25 @@ func main() {
 
 	cancel()
 
-	wg.Wait()
-
-	log.Println("Shutdown complete.")
-	shutdown.Exit(0)
+	shutdown.WaitForTasksAndExit()
 }
 
-func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
-	defer wg.Done()
+func startHTTPServer(ctx context.Context) {
+	defer shutdown.TaskDone()
 
 	router := chi.NewRouter()
 
 	router.Use(
-		chi_middleware.RequestID,
-		chi_middleware.RealIP,
-		chi_middleware.Logger,
-		chi_middleware.Recoverer,
-		chi_middleware.ContentCharset("UTF-8"),
-		chi_middleware.Timeout(time.Second*30),
+		chimiddleware.RequestID,
+		chimiddleware.RealIP,
+		chimiddleware.Logger,
+		chimiddleware.Recoverer,
+		chimiddleware.ContentCharset("UTF-8"),
+		chimiddleware.Timeout(time.Second*30),
 	)
 
 	router.Route("/api", func(r chi.Router) {
-		r.Use(chi_middleware.AllowContentType("application/json"))
+		r.Use(chimiddleware.AllowContentType("application/json"))
 
 		r.Group(func(public chi.Router) {
 			//
@@ -145,7 +107,7 @@ func startHTTPServer(ctx context.Context, wg *sync.WaitGroup) {
 	go func() {
 		log.Println("Starting HTTP server...")
 		err := server.ListenAndServe()
-		if err != nil && err != http.ErrServerClosed {
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Printf("HTTP server error: %s\n", err)
 		}
 	}()

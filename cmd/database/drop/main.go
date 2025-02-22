@@ -22,6 +22,8 @@ var (
 )
 
 func main() {
+	shutdown.Arm()
+
 	var (
 		ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
 		connStr     = fmt.Sprintf("postgres://%s:%s@%s:%s/postgres?sslmode=disable", username, password, host, port)

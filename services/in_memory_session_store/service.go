@@ -5,6 +5,7 @@ import (
 	"errors"
 	"financo/core/domain/services"
 	"financo/models/session"
+	"financo/services/shutdown"
 	"fmt"
 	"log"
 	"sync"
@@ -33,6 +34,15 @@ func New() services.SessionStoreService {
 		up:       true,
 		sessions: make(map[string]session.Record, 10),
 	}
+
+	shutdown.Defer(shutdown.Closure{
+		Name: "in_memory_session_store",
+		Func: func() {
+			if err := instance.Close(); err != nil {
+				log.Printf("failed to close session store connection: %s\n", err)
+			}
+		},
+	})
 
 	return instance
 }
