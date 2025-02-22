@@ -15,6 +15,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
 		db     = postgresql_database.New()
 		create = create_repository.NewPostgreSQL(db)
+		broker = message_broker.New()
 
 		req requests.Create
 	)
@@ -30,13 +31,6 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(body).Decode(&req)
 	if err != nil {
 		log.Println("failed to decode body", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	broker, err := message_broker.Instance()
-	if err != nil {
-		log.Println("broker uninitialized", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
