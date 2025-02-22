@@ -18,6 +18,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
 		db      = postgresql_database.New()
 		destroy = delete_repository.NewPostgreSQL(db)
+		broker  = message_broker.New()
 
 		req requests.DeleteChild
 	)
@@ -46,13 +47,6 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 
 	req.ID = id
 	req.ParentID = parentId
-
-	broker, err := message_broker.Instance()
-	if err != nil {
-		log.Println("broker uninitialized", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
 
 	res, err := delete_child_command.New(req, destroy, broker.Deleted()).Run(r.Context())
 	if err != nil {

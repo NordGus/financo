@@ -31,15 +31,11 @@ func SeedCategories(ctx context.Context, timestamp time.Time) (map[string]int64,
 		repo       = create_repository.NewPostgreSQL(db)
 		categories = categories_repository.NewPostgreSQL(db)
 		archival   = archival_repository.NewPostgreSQL(db)
+		broker     = message_broker.New()
 
 		out     = make(map[string]int64, 10)
 		summary = make(map[account.Kind]uint, 8)
 	)
-
-	broker, err := message_broker.Instance()
-	if err != nil {
-		return out, err
-	}
 
 	log.Println("\tseeding categories")
 

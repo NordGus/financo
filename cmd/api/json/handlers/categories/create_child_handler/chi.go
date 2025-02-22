@@ -20,6 +20,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 		db         = postgresql_database.New()
 		categories = categories_repository.NewPostgreSQL(db)
 		create     = create_repository.NewPostgreSQL(db)
+		broker     = message_broker.New()
 
 		req requests.CreateChildForParent
 	)
@@ -61,13 +62,6 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 			http.StatusText(http.StatusNotAcceptable),
 			http.StatusNotAcceptable,
 		)
-		return
-	}
-
-	broker, err := message_broker.Instance()
-	if err != nil {
-		log.Println("broker uninitialized", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 

@@ -18,6 +18,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
 		db     = postgresql_database.New()
 		update = update_repository.NewPostgreSQL(db)
+		broker = message_broker.New()
 
 		req requests.Update
 	)
@@ -59,13 +60,6 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 			http.StatusText(http.StatusNotAcceptable),
 			http.StatusNotAcceptable,
 		)
-		return
-	}
-
-	broker, err := message_broker.Instance()
-	if err != nil {
-		log.Println("broker uninitialized", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
