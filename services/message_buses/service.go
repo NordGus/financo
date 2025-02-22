@@ -63,9 +63,7 @@ func New() services.MessageBuses {
 	shutdown.Defer(shutdown.Closure{
 		Name: "message_buses service",
 		Func: func() {
-			err := instance.Close()
-
-			if err != nil {
+			if err := instance.Close(); err != nil {
 				log.Printf("message_buses: something went wrong while closing, reason: %s\n", err.Error())
 			}
 		},

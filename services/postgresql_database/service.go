@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"financo/core/domain/services"
+	"financo/services/shutdown"
 	"fmt"
 	"log"
 	"os"
@@ -59,6 +60,15 @@ func New() services.SQLDatabaseService {
 	instance = &service{
 		db: db,
 	}
+
+	shutdown.Defer(shutdown.Closure{
+		Name: "postgresql_database service",
+		Func: func() {
+			if err := instance.Close(); err != nil {
+				log.Printf("failed to close postgresql database connection: %s\n", err)
+			}
+		},
+	})
 
 	return instance
 }

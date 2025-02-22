@@ -55,19 +55,13 @@ func AchieveSavingsGoals(ctx context.Context, created []responses.Created) ([]re
 		db     = postgresql_database.New()
 		goals  = savings_goals_repository.NewPostgreSQL(db)
 		update = update_repository.NewPostgreSQL(db)
+		broker = message_broker.New()
 
 		summary = make(map[currency.Type]uint, 10)
 
 		out  = make([]responses.MarkedAsAchieved, 0, len(created))
 		mark = make([]responses.Created, 0, len(created))
 	)
-
-	broker, err := message_broker.Instance()
-	if err != nil {
-		return nil, errors.Join(errors.New("savings_goals: failed to retrieve message_broker instance"), err)
-	}
-
-	log.Println("\tmarking savings goals achievements as achieved")
 
 	for i := 0; i < len(created); i++ {
 		if _, ok := achieved[helpers.SavingsGoalMapKey(created[i].Name, created[i].Currency)]; ok {
