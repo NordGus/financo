@@ -24,23 +24,31 @@ services:
     security_opt:
       - seccomp:unconfined
     command: /bin/sh -c "while sleep 1000; do :; done"
+    network_mode: host
 
-  redis:
-    image: redis:7.2
+  valkey:
+    image: valkey/valkey:8
     restart: always
+    command: valkey-server --port 6379 --requirepass ${VALKEY_PASSWORD} --threads ${IO_THREADS}
     volumes:
-      - redis-data:/data
+      - valkey-data:/data
+    ports:
+      - 6379:6379
+    network_mode: host
 
   postgres:
     image: postgres:16.1
     restart: always
+    ports:
+      - 5432:5432
     environment:
       POSTGRES_USER: "financo"
       POSTGRES_PASSWORD: "local_dev"
       POSTGRES_DB: "financo_dev"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    network_mode: host
 
 volumes:
   postgres-data:
-  redis-data:
+  valkey-data:
