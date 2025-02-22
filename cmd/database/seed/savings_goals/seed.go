@@ -20,19 +20,15 @@ import (
 
 func CreateSavingsGoals(ctx context.Context) ([]responses.Created, error) {
 	var (
-		db    = postgresql_database.New()
-		goals = savings_goals_repository.NewPostgreSQL(db)
-		repo  = create_repository.NewPostgreSQL(db)
+		db     = postgresql_database.New()
+		goals  = savings_goals_repository.NewPostgreSQL(db)
+		repo   = create_repository.NewPostgreSQL(db)
+		broker = message_broker.New()
 
 		summary = make(map[currency.Type]uint, 10)
 
 		out = make([]responses.Created, 0, len(create))
 	)
-
-	broker, err := message_broker.Instance()
-	if err != nil {
-		return nil, errors.Join(errors.New("savings_goals: failed to retrieve message_broker instance"), err)
-	}
 
 	log.Println("\tseeding savings goals achievements")
 

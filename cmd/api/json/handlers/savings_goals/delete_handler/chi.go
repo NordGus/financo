@@ -17,9 +17,10 @@ import (
 
 func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
-		db     = postgresql_database.New()
-		goals  = savings_goals_repository.NewPostgreSQL(db)
-		delete = update_repository.NewPostgreSQL(db)
+		db      = postgresql_database.New()
+		goals   = savings_goals_repository.NewPostgreSQL(db)
+		destroy = update_repository.NewPostgreSQL(db)
+		broker  = message_broker.New()
 
 		req requests.Delete
 	)
@@ -33,14 +34,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 
 	req.ID = id
 
-	broker, err := message_broker.Instance()
-	if err != nil {
-		log.Println("savings_goals: delete_handler: failed to retrieve message broker, reason:", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	res, err := delete_command.New(req, goals, delete, broker.Deleted()).Run(r.Context())
+	res, err := delete_command.New(req, goals, destroy, broker.Deleted()).Run(r.Context())
 	if err != nil {
 		log.Println("savings_goals: delete_handler: command failed, reason:", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

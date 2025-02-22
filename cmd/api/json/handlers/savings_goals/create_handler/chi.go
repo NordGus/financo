@@ -17,6 +17,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 		db     = postgresql_database.New()
 		goals  = savings_goals_repository.NewPostgreSQL(db)
 		create = create_repository.NewPostgreSQL(db)
+		broker = message_broker.New()
 		body   = r.Body
 
 		req requests.Create
@@ -27,13 +28,6 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("savings_goals: create_handler: unable to decode body, reason:", err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-
-	broker, err := message_broker.Instance()
-	if err != nil {
-		log.Println("savings_goals: create_handler: failed to retrieve message broker, reason:", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 

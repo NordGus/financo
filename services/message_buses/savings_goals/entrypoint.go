@@ -27,13 +27,9 @@ func Subscribe() error {
 	accounts := accountsbroker.New()
 	categories := categoriesbroker.New()
 	transactions := transactionsbroker.New()
+	goals := goalsbroker.New()
 
-	goals, err := goalsbroker.Instance()
-	if err != nil {
-		return err
-	}
-
-	err = accounts.Created().Subscribe(bus.ConsumerFunc[accmsg.Created](on_account_created.NewInMemory))
+	err := accounts.Created().Subscribe(bus.ConsumerFunc[accmsg.Created](on_account_created.NewInMemory))
 	if err != nil {
 		return err
 	}
