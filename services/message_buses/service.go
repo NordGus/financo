@@ -57,7 +57,7 @@ func New() services.MessageBuses {
 		accounts:     accountsbroker.New(),
 		categories:   categoriesbroker.New(),
 		transactions: transactionsbroker.New(),
-		savingsGoals: savingsgoalsbroker.Initialize(),
+		savingsGoals: savingsgoalsbroker.New(),
 	}
 
 	shutdown.Defer(shutdown.Closure{
@@ -126,7 +126,7 @@ func (s *service) Health() map[string]string {
 
 	if s.shutdown {
 		stats["status"] = "down"
-		stats["message"] = "message buses down: service shutdown"
+		stats["message"] = "Service is down"
 
 		return stats
 	}
@@ -134,31 +134,31 @@ func (s *service) Health() map[string]string {
 	stats["status"] = "up"
 	stats["message"] = "It's healthy"
 
-	_, err := accountsbroker.Instance()
-	if err != nil {
-		log.Println("accounts broker is down")
-		stats["accounts_broker"] = "It's down"
+	health := s.accounts.Health()
+	stats["accounts_broker"] = health["status"]
+
+	if health["status"] != "up" {
 		stats["message"] = "One or more broker is down"
 	}
 
-	_, err = categoriesbroker.Instance()
-	if err != nil {
-		log.Println("categories broker is down")
-		stats["categories_broker"] = "It's down"
+	health = s.categories.Health()
+	stats["categories_broker"] = health["status"]
+
+	if health["status"] != "up" {
 		stats["message"] = "One or more broker is down"
 	}
 
-	_, err = transactionsbroker.Instance()
-	if err != nil {
-		log.Println("transactions broker is down")
-		stats["transactions_broker"] = "It's down"
+	health = s.transactions.Health()
+	stats["transactions_broker"] = health["status"]
+
+	if health["status"] != "up" {
 		stats["message"] = "One or more broker is down"
 	}
 
-	_, err = savingsgoalsbroker.Instance()
-	if err != nil {
-		log.Println("savings goals broker is down")
-		stats["savings_goals_broker"] = "It's down"
+	health = s.savingsGoals.Health()
+	stats["savings_goals_broker"] = health["status"]
+
+	if health["status"] != "up" {
 		stats["message"] = "One or more broker is down"
 	}
 

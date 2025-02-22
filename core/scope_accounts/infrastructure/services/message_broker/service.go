@@ -85,7 +85,7 @@ func (s *service) Health() map[string]string {
 
 	if s.ctx.Err() != nil {
 		stats["status"] = "down"
-		stats["message"] = "service stopped"
+		stats["message"] = "Service is down"
 
 		return stats
 	}
