@@ -119,9 +119,6 @@ func (s *service) Close() error {
 // Health checks the health of all connections by pinging the message_buses.
 // It returns a map with keys indicating various health statistics.
 func (s *service) Health() map[string]string {
-	// ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
-	// defer cancel()
-
 	stats := make(map[string]string)
 
 	if s.shutdown {
