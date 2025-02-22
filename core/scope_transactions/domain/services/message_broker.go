@@ -1,8 +1,13 @@
 package services
 
-import "financo/core/scope_transactions/domain/brokers"
+import (
+	core "financo/core/domain/services"
+	"financo/core/scope_transactions/domain/brokers"
+)
 
 type MessageBroker interface {
+	core.MessageBuses
+
 	// Created returns the corresponding message broker.
 	Created() brokers.Created
 
@@ -11,9 +16,4 @@ type MessageBroker interface {
 
 	// Updated returns the corresponding message broker.
 	Updated() brokers.Updated
-
-	// Close closes all message brokers connections.
-	//
-	// It returns an error if something goes wrong.
-	Close() error
 }

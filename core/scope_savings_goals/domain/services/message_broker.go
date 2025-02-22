@@ -1,8 +1,13 @@
 package services
 
-import "financo/core/scope_savings_goals/domain/brokers"
+import (
+	core "financo/core/domain/services"
+	"financo/core/scope_savings_goals/domain/brokers"
+)
 
 type MessageBroker interface {
+	core.MessageBuses
+
 	// Created returns the corresponding message broker.
 	Created() brokers.Created
 
@@ -17,9 +22,4 @@ type MessageBroker interface {
 
 	// Reordered returns the corresponding message broker.
 	Reordered() brokers.Reordered
-
-	// Close closes all message brokers connections.
-	//
-	// It returns an error if something goes wrong.
-	Close() error
 }

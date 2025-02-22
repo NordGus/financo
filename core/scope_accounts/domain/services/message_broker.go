@@ -1,8 +1,13 @@
 package services
 
-import "financo/core/scope_accounts/domain/brokers"
+import (
+	core "financo/core/domain/services"
+	"financo/core/scope_accounts/domain/brokers"
+)
 
 type MessageBroker interface {
+	core.MessageBuses
+
 	// Created returns the corresponding message broker.
 	Created() brokers.Created
 
@@ -17,9 +22,4 @@ type MessageBroker interface {
 
 	// Unarchived returns the corresponding message broker.
 	Unarchived() brokers.Unarchived
-
-	// Close closes all message brokers connections.
-	//
-	// It returns an error if something goes wrong.
-	Close() error
 }

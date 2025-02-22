@@ -63,6 +63,22 @@ func (s *service) Updated() brokers.Updated {
 	return s.updated
 }
 
+func (s *service) Health() map[string]string {
+	stats := make(map[string]string)
+
+	if s.ctx.Err() != nil {
+		stats["status"] = "down"
+		stats["message"] = "service stopped"
+
+		return stats
+	}
+
+	stats["status"] = "up"
+	stats["message"] = "It's healthy"
+
+	return stats
+}
+
 func (s *service) Close() error {
 	select {
 	case <-s.ctx.Done():
