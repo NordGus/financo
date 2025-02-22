@@ -17,10 +17,7 @@ import (
 )
 
 func Subscribe() error {
-	accounts, err := accounts_broker.Instance()
-	if err != nil {
-		return err
-	}
+	accounts := accounts_broker.New()
 
 	categories, err := categories_broker.Instance()
 	if err != nil {

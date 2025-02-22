@@ -3,21 +3,22 @@ package message_broker
 import (
 	"context"
 	"financo/core/scope_accounts/domain/brokers"
-	"financo/core/scope_accounts/domain/errors"
 	"financo/core/scope_accounts/domain/services"
 	"financo/core/scope_accounts/infrastructure/brokers/archived_broker"
 	"financo/core/scope_accounts/infrastructure/brokers/created_broker"
 	"financo/core/scope_accounts/infrastructure/brokers/deleted_broker"
 	"financo/core/scope_accounts/infrastructure/brokers/unarchived_broker"
 	"financo/core/scope_accounts/infrastructure/brokers/updated_broker"
+	"financo/services/shutdown"
 	"fmt"
 	"sync"
 )
 
 type service struct {
-	ctx        context.Context
-	wg         *sync.WaitGroup
-	cancel     context.CancelFunc
+	wg     *sync.WaitGroup
+	ctx    context.Context
+	cancel context.CancelFunc
+
 	created    brokers.Created
 	deleted    brokers.Deleted
 	updated    brokers.Updated
@@ -27,16 +28,21 @@ type service struct {
 
 var instance *service
 
-// Initialize returns the context [services.MessageBroker]. Please do this on
-// program startup at least once for the application to work properly.
-// If it wasn't initialized before, it can panic.
-func Initialize(wg *sync.WaitGroup) services.MessageBroker {
+// New returns an instance of [services.MessageBroker] for the accounts scope.
+//
+// - It will either return the exiting instance or initialize a new one.
+//
+// - It will panic if it fails to initialize a new instance.
+func New() services.MessageBroker {
 	if instance != nil {
 		return instance
 	}
 
-	// [ ] TODO rethink the whole cancellation mechanism.
-	ctx, cancel := context.WithCancel(context.Background())
+	shutdown.AddTask(1)
+	defer shutdown.TaskDone()
+
+	wg := new(sync.WaitGroup)
+	ctx, cancel := context.WithCancel(context.TODO())
 
 	instance = &service{
 		ctx:        ctx,
@@ -49,44 +55,41 @@ func Initialize(wg *sync.WaitGroup) services.MessageBroker {
 		unarchived: unarchived_broker.NewInMemory(ctx, wg),
 	}
 
+	shutdown.Defer(shutdown.Closure{
+		Name: "accounts message_broker",
+		Func: func() { _ = instance.Close() },
+	})
+
 	return instance
 }
 
-func Instance() (services.MessageBroker, error) {
-	if instance == nil {
-		return nil, errors.ErrMessageBrokerUninitialized
-	}
-
-	return instance, nil
+func (s *service) Created() brokers.Created {
+	return s.created
 }
 
-func (b *service) Created() brokers.Created {
-	return b.created
+func (s *service) Deleted() brokers.Deleted {
+	return s.deleted
 }
 
-func (b *service) Deleted() brokers.Deleted {
-	return b.deleted
+func (s *service) Updated() brokers.Updated {
+	return s.updated
 }
 
-func (b *service) Updated() brokers.Updated {
-	return b.updated
+func (s *service) Archived() brokers.Archived {
+	return s.archived
 }
 
-func (b *service) Archived() brokers.Archived {
-	return b.archived
+func (s *service) Unarchived() brokers.Unarchived {
+	return s.unarchived
 }
 
-func (b *service) Unarchived() brokers.Unarchived {
-	return b.unarchived
-}
-
-// [ ] TODO rethink the whole shutdown mechanism.
-func (b *service) Close() error {
+func (s *service) Close() error {
 	select {
-	case <-b.ctx.Done():
-		return fmt.Errorf("accounts: broker: %s", b.ctx.Err())
+	case <-s.ctx.Done():
+		return fmt.Errorf("accounts: broker: %s", s.ctx.Err())
 	default:
-		b.cancel()
+		s.wg.Wait()
+		s.cancel()
 
 		return nil
 	}
