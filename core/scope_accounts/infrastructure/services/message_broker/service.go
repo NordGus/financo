@@ -33,6 +33,8 @@ var instance *service
 // - It will either return the exiting instance or initialize a new one.
 //
 // - It will panic if it fails to initialize a new instance.
+//
+// Must be close on program termination by calling Close to free resources.
 func New() services.MessageBroker {
 	if instance != nil {
 		return instance
@@ -54,11 +56,6 @@ func New() services.MessageBroker {
 		archived:   archived_broker.NewInMemory(ctx, wg),
 		unarchived: unarchived_broker.NewInMemory(ctx, wg),
 	}
-
-	shutdown.Defer(shutdown.Closure{
-		Name: "accounts message_broker",
-		Func: func() { _ = instance.Close() },
-	})
 
 	return instance
 }
