@@ -1,7 +1,6 @@
-import { endOfMonth, endOfWeek, endOfYear, format, getDaysInMonth, getDaysInYear, startOfMonth, startOfWeek, startOfYear } from "date-fns"
-import { CalendarIcon, EllipsisIcon, InfinityIcon } from "lucide-react"
+import { endOfMonth, endOfWeek, endOfYear, format, startOfMonth, startOfWeek, startOfYear } from "date-fns"
+import { CalendarIcon } from "lucide-react"
 import { PropsWithChildren, useMemo } from "react"
-import { cn } from "~/lib/utils"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Drawer,
@@ -13,6 +12,7 @@ import {
   DrawerTitle
 } from "~/modules/shared/components/ui/drawer"
 import { Period } from "../../types/transactions"
+import { PeriodIcon } from "../period-icon"
 
 interface Props {
   open: boolean
@@ -26,14 +26,6 @@ interface Props {
 function DatePreview({ children }: PropsWithChildren) {
   return (
     <span className="block text-muted-foreground text-xs">
-      {children}
-    </span>
-  )
-}
-
-function Wrapper({ className, children }: PropsWithChildren<{ className?: string }>) {
-  return (
-    <span className={cn("border-2 rounded-lg border-foreground p-0.5", className)}>
       {children}
     </span>
   )
@@ -66,9 +58,7 @@ export function PeriodShortcuts({
             onClick={() => onOpenRangePicker(true)}
             disabled={submitting}
           >
-            <Wrapper>
-              <EllipsisIcon />
-            </Wrapper>
+            <PeriodIcon period="custom" />
             Select Range
           </Button>
           <Button
@@ -77,7 +67,7 @@ export function PeriodShortcuts({
             onClick={() => onFilterChange(undefined, undefined, "unlimited")}
             disabled={submitting}
           >
-            <InfinityIcon /> Always
+            <PeriodIcon period="unlimited" /> Entire Ledger
           </Button>
           <Button
             variant={"secondary"}
@@ -93,9 +83,7 @@ export function PeriodShortcuts({
             onClick={() => onFilterChange(startOfWeek(today), endOfWeek(today), "weekly")}
             disabled={submitting}
           >
-            <Wrapper className="px-2">
-              7
-            </Wrapper>
+            <PeriodIcon period="weekly" />
             <span>
               Week
               <DatePreview>
@@ -109,9 +97,7 @@ export function PeriodShortcuts({
             onClick={() => onFilterChange(today, today, "daily")}
             disabled={submitting}
           >
-            <Wrapper className="px-2">
-              1
-            </Wrapper>
+            <PeriodIcon period="daily" />
             <span>
               Today
               <DatePreview>
@@ -125,9 +111,7 @@ export function PeriodShortcuts({
             onClick={() => onFilterChange(startOfYear(today), endOfYear(today), "yearly")}
             disabled={submitting}
           >
-            <Wrapper className="px-1">
-              {getDaysInYear(today)}
-            </Wrapper>
+            <PeriodIcon period="yearly" from={today} />
             <span>
               Year
               <DatePreview>
@@ -141,9 +125,7 @@ export function PeriodShortcuts({
             onClick={() => onFilterChange(startOfMonth(today), endOfMonth(today), "monthly")}
             disabled={submitting}
           >
-            <Wrapper className="px-1.5">
-              {getDaysInMonth(today)}
-            </Wrapper>
+            <PeriodIcon period="monthly" from={today} />
             <span>
               Month
               <DatePreview>
