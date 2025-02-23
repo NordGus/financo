@@ -10,6 +10,7 @@ import (
 	"financo/cmd/web/api/json/handlers/my_journey"
 	"financo/cmd/web/api/json/handlers/savings_goals"
 	"financo/cmd/web/api/json/handlers/transactions"
+	"financo/cmd/web/files"
 	"fmt"
 	"log"
 	"net/http"
@@ -76,12 +77,14 @@ func startHTTPServer(ctx context.Context) {
 		chimiddleware.RealIP,
 		chimiddleware.Logger,
 		chimiddleware.Recoverer,
-		chimiddleware.ContentCharset("UTF-8"),
-		chimiddleware.Timeout(time.Second*30),
 	)
 
 	router.Route("/api", func(r chi.Router) {
-		r.Use(chimiddleware.AllowContentType("application/json"))
+		r.Use(
+			chimiddleware.ContentCharset("UTF-8"),
+			chimiddleware.AllowContentType("application/json"),
+			chimiddleware.Timeout(time.Second*30),
+		)
 
 		r.Group(func(public chi.Router) {
 			//
@@ -100,13 +103,16 @@ func startHTTPServer(ctx context.Context) {
 		})
 	})
 
+	router.Route("/", func(r chi.Router) {
+		r.Group(func(webapp chi.Router) {
+			webapp.Route("/", files.Routes)
+		})
+	})
+
 	// HTTP Server configuration
 	server := &http.Server{
-		Addr:              ":3000",
-		Handler:           router,
-		ReadHeaderTimeout: 1 * time.Second,
-		ReadTimeout:       1 * time.Second,
-		WriteTimeout:      1 * time.Second,
+		Addr:    ":3000",
+		Handler: router,
 	}
 
 	// Start the HTTP server in a different goroutine
