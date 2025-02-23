@@ -1,12 +1,12 @@
 package accounts
 
 import (
-	"financo/cmd/api/json/handlers/accounts/archive_handler"
-	"financo/cmd/api/json/handlers/accounts/create_handler"
-	"financo/cmd/api/json/handlers/accounts/destroy_handler"
-	"financo/cmd/api/json/handlers/accounts/list_handler"
-	"financo/cmd/api/json/handlers/accounts/unarchive_handler"
-	"financo/cmd/api/json/handlers/accounts/update_handler"
+	"financo/cmd/web/api/json/handlers/accounts/archive_handler"
+	"financo/cmd/web/api/json/handlers/accounts/create_handler"
+	"financo/cmd/web/api/json/handlers/accounts/destroy_handler"
+	"financo/cmd/web/api/json/handlers/accounts/list_handler"
+	"financo/cmd/web/api/json/handlers/accounts/unarchive_handler"
+	"financo/cmd/web/api/json/handlers/accounts/update_handler"
 
 	"github.com/go-chi/chi/v5"
 )

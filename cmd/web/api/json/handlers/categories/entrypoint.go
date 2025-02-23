@@ -1,17 +1,17 @@
 package categories
 
 import (
-	"financo/cmd/api/json/handlers/categories/archive_child_handler"
-	"financo/cmd/api/json/handlers/categories/archive_handler"
-	"financo/cmd/api/json/handlers/categories/create_child_handler"
-	"financo/cmd/api/json/handlers/categories/create_handler"
-	"financo/cmd/api/json/handlers/categories/destroy_child_handler"
-	"financo/cmd/api/json/handlers/categories/destroy_handler"
-	"financo/cmd/api/json/handlers/categories/list_handler"
-	"financo/cmd/api/json/handlers/categories/unarchive_child_handler"
-	"financo/cmd/api/json/handlers/categories/unarchive_handler"
-	"financo/cmd/api/json/handlers/categories/update_child_handler"
-	"financo/cmd/api/json/handlers/categories/update_handler"
+	"financo/cmd/web/api/json/handlers/categories/archive_child_handler"
+	"financo/cmd/web/api/json/handlers/categories/archive_handler"
+	"financo/cmd/web/api/json/handlers/categories/create_child_handler"
+	"financo/cmd/web/api/json/handlers/categories/create_handler"
+	"financo/cmd/web/api/json/handlers/categories/destroy_child_handler"
+	"financo/cmd/web/api/json/handlers/categories/destroy_handler"
+	"financo/cmd/web/api/json/handlers/categories/list_handler"
+	"financo/cmd/web/api/json/handlers/categories/unarchive_child_handler"
+	"financo/cmd/web/api/json/handlers/categories/unarchive_handler"
+	"financo/cmd/web/api/json/handlers/categories/update_child_handler"
+	"financo/cmd/web/api/json/handlers/categories/update_handler"
 
 	"github.com/go-chi/chi/v5"
 )

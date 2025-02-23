@@ -1,12 +1,12 @@
 package savings_goals
 
 import (
-	"financo/cmd/api/json/handlers/savings_goals/active_goals_for_handler"
-	"financo/cmd/api/json/handlers/savings_goals/create_handler"
-	"financo/cmd/api/json/handlers/savings_goals/delete_handler"
-	"financo/cmd/api/json/handlers/savings_goals/mark_as_achieved_handler"
-	"financo/cmd/api/json/handlers/savings_goals/reorder_handler"
-	"financo/cmd/api/json/handlers/savings_goals/update_handler"
+	"financo/cmd/web/api/json/handlers/savings_goals/active_goals_for_handler"
+	"financo/cmd/web/api/json/handlers/savings_goals/create_handler"
+	"financo/cmd/web/api/json/handlers/savings_goals/delete_handler"
+	"financo/cmd/web/api/json/handlers/savings_goals/mark_as_achieved_handler"
+	"financo/cmd/web/api/json/handlers/savings_goals/reorder_handler"
+	"financo/cmd/web/api/json/handlers/savings_goals/update_handler"
 
 	"github.com/go-chi/chi/v5"
 )

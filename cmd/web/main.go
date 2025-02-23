@@ -1,15 +1,15 @@
-package main
+package web
 
 import (
 	"context"
 	"errors"
-	"financo/cmd/api/json/handlers/accounts"
-	"financo/cmd/api/json/handlers/categories"
-	"financo/cmd/api/json/handlers/currencies"
-	"financo/cmd/api/json/handlers/health"
-	"financo/cmd/api/json/handlers/my_journey"
-	"financo/cmd/api/json/handlers/savings_goals"
-	"financo/cmd/api/json/handlers/transactions"
+	"financo/cmd/web/api/json/handlers/accounts"
+	"financo/cmd/web/api/json/handlers/categories"
+	"financo/cmd/web/api/json/handlers/currencies"
+	"financo/cmd/web/api/json/handlers/health"
+	"financo/cmd/web/api/json/handlers/my_journey"
+	"financo/cmd/web/api/json/handlers/savings_goals"
+	"financo/cmd/web/api/json/handlers/transactions"
 	"fmt"
 	"log"
 	"net/http"
@@ -34,6 +34,12 @@ const (
 
 func main() {
 	shutdown.Arm()
+
+	defer func() {
+		if err := recover(); err != nil {
+			shutdown.ExitWithErr(69, shutdown.NewPanic(err))
+		}
+	}()
 
 	var (
 		ctx, cancel = context.WithCancel(context.Background())
