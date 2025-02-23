@@ -15,6 +15,7 @@ func HandlerFunc() http.HandlerFunc {
 		shutdown.ExitWithErr(3, err)
 	}
 
+	// TODO: Fix Unsupported Media Type for the favicon
 	proxy := httputil.NewSingleHostReverseProxy(webapp)
 
 	return func(w http.ResponseWriter, r *http.Request) {
