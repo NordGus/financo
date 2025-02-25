@@ -16,8 +16,8 @@ export function AccountSelectOption({ name, icon, color, selected, onClick, asCa
   return (
     <div
       className={cn(
-        "border-2 rounded-lg transition-all duration-500 flex text-sm gap-2 py-1 px-2 min-h-12 cursor-pointer",
-        asCategory && "rounded-full"
+        "border rounded-lg transition-all duration-500 text-xs gap-2 p-2 cursor-pointer flex items-center",
+        asCategory && "rounded-full px-3"
       )}
 
       style={{
@@ -28,7 +28,7 @@ export function AccountSelectOption({ name, icon, color, selected, onClick, asCa
 
       onClick={onClick}
     >
-      <span className="[&_svg]:size-6 my-auto">{icons[icon]}</span> {name}
+      <span className="[&_svg]:size-6">{icons[icon]}</span> {name}
     </div>
   )
 }
