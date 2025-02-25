@@ -3,7 +3,7 @@
   "dockerComposeFile": "../docker-compose.yml",
   "service": "devcontainer",
   "runServices": [
-    "redis",
+    "valkey",
     "postgres"
   ],
   "workspaceFolder": "/workspace",
