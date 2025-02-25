@@ -44,8 +44,7 @@ type ScreenState = {
 const _actions = {
   DATE_FILTER_CHANGED: "DATE_FILTER_CHANGED",
   OPEN_CHANGED: "OPEN_CHANGED",
-  ACCOUNT_FILTER_ADDED: "ACCOUNT_FILTER_ADDED",
-  ACCOUNT_FILTER_REMOVED: "ACCOUNT_FILTER_REMOVED",
+  ACCOUNTS_FILTER_CHANGED: "ACCOUNTS_FILTER_CHANGED",
   CATEGORY_FILTER_ADDED: "CATEGORY_FILTER_ADDED",
   CATEGORY_FILTER_REMOVED: "CATEGORY_FILTER_REMOVED",
   ACTION_SUCCEED: "ACTION_SUCCEED",
@@ -56,8 +55,7 @@ type Actions = typeof _actions
 
 type Action =
   { type: Actions["DATE_FILTER_CHANGED"], filters: { from?: Date, to?: Date }, period: Period } |
-  { type: Actions["ACCOUNT_FILTER_ADDED"], id: number } |
-  { type: Actions["ACCOUNT_FILTER_REMOVED"], id: number } |
+  { type: Actions["ACCOUNTS_FILTER_CHANGED"], ids: number[] } |
   { type: Actions["CATEGORY_FILTER_ADDED"], id: number } |
   { type: Actions["CATEGORY_FILTER_REMOVED"], id: number } |
   { type: Actions["OPEN_CHANGED"], open: Open } |
@@ -75,16 +73,10 @@ function reducer(state: ScreenState, action: Action): ScreenState {
         open: null,
         submitting: true
       }
-    case "ACCOUNT_FILTER_ADDED":
+    case "ACCOUNTS_FILTER_CHANGED":
       return {
         ...state,
-        accounts: [...state.accounts, action.id],
-        submitting: true
-      }
-    case "ACCOUNT_FILTER_REMOVED":
-      return {
-        ...state,
-        accounts: [...state.accounts.filter(id => id !== action.id)],
+        accounts: [...action.ids],
         submitting: true
       }
     case "CATEGORY_FILTER_ADDED":
@@ -156,7 +148,7 @@ export function Screen({
     dispatch({ type: "OPEN_CHANGED", open: open ? "categories" : null })
 
   const onSearch = useCallback(async (nextFilters: Filters, signal: AbortSignal) => {
-    onSearchAction({ ...nextFilters }, signal, onActionSuccess, onActionFailed)
+    await onSearchAction({ ...nextFilters }, signal, onActionSuccess, onActionFailed)
   }, [onSearchAction, onActionSuccess, onActionFailed])
 
   const onDateFilterChange = useCallback((from: Date | undefined, to: Date | undefined, period: Period) => {
@@ -215,37 +207,21 @@ export function Screen({
     )
   }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
 
-  const onAccountFilterAdd = useCallback((id: number) => {
+  const onAccountFilterChange = useCallback((ids: number[]) => {
     if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
 
-    dispatch({ type: "ACCOUNT_FILTER_ADDED", id })
+    dispatch({ type: "ACCOUNTS_FILTER_CHANGED", ids })
     onSearch(
       {
         from: screen.from,
         to: screen.to,
-        accounts: [...screen.accounts, id],
+        accounts: [...ids],
         categories: screen.categories
       },
       abort.current.signal
     )
-  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
-
-  const onAccountFilterRemove = useCallback((id: number) => {
-    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
-    abort.current = new AbortController()
-
-    dispatch({ type: "ACCOUNT_FILTER_REMOVED", id })
-    onSearch(
-      {
-        from: screen.from,
-        to: screen.to,
-        accounts: screen.accounts.filter(el => el !== id),
-        categories: screen.categories
-      },
-      abort.current.signal
-    )
-  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
+  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.categories])
 
   const onCategoryFilterAdd = useCallback((id: number) => {
     if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
@@ -382,8 +358,7 @@ export function Screen({
         onOpenChange={onOpenAccountsFilterChange}
         accounts={Array.from(accounts.values())}
         selected={screen.accounts}
-        onAdd={onAccountFilterAdd}
-        onRemove={onAccountFilterRemove}
+        onChangePick={onAccountFilterChange}
         submitting={screen.submitting}
       />
 
