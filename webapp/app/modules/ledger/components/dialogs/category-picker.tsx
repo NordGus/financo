@@ -1,4 +1,5 @@
-import { useMemo } from "react"
+import { ListFilterIcon } from "lucide-react"
+import { useMemo, useState } from "react"
 import { Throbber } from "~/modules/shared/components/throbber"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
@@ -19,8 +20,7 @@ interface Props {
   onOpenChange: (open: boolean) => void
   accounts: Account[]
   selected: number[]
-  onAdd: (id: number) => void
-  onRemove: (id: number) => void
+  onChangePick: (ids: number[]) => void
   submitting: boolean
 }
 
@@ -37,7 +37,11 @@ function isCategory(kind: Kind): boolean {
   }
 }
 
-export function CategoryPicker({ open, onOpenChange, accounts, submitting, ...props }: Props) {
+export function CategoryPicker({ open, onOpenChange, onChangePick, accounts, selected, submitting }: Props) {
+  const [ids, setIds] = useState(selected)
+  const onAdd = (id: number) => !ids.includes(id) && setIds([...ids, id])
+  const onRemove = (id: number) => setIds(ids.filter((prev) => prev !== id))
+
   const expenses = useMemo(
     () => accounts.filter(({ kind, parentId, archivedAt }) => kind === "external_expense" && !archivedAt && !parentId),
     [accounts]
@@ -73,17 +77,32 @@ export function CategoryPicker({ open, onOpenChange, accounts, submitting, ...pr
           </DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-4 px-4 max-h-[80dvh] overflow-y-auto">
-          <Section accounts={expenses} title="Expenses" {...props} />
-          <Section accounts={income} title="Income" {...props} />
-          <Section accounts={loans} title="Loans" {...props} />
-          <Section accounts={personal} title="Personal debt" {...props} />
-          <Section accounts={credit} title="Credit" {...props} />
-          <AccordionSection accounts={archived} title="Archived" {...props} />
+          <Section accounts={expenses} title="Expenses" selected={ids} onAdd={onAdd} onRemove={onRemove} />
+          <Section accounts={income} title="Income" selected={ids} onAdd={onAdd} onRemove={onRemove} />
+          <Section accounts={loans} title="Loans" selected={ids} onAdd={onAdd} onRemove={onRemove} />
+          <Section accounts={personal} title="Personal debt" selected={ids} onAdd={onAdd} onRemove={onRemove} />
+          <Section accounts={credit} title="Credit" selected={ids} onAdd={onAdd} onRemove={onRemove} />
+          <AccordionSection accounts={archived} title="Archived" selected={ids} onAdd={onAdd} onRemove={onRemove} />
         </div>
-        <DrawerFooter>
+        <DrawerFooter className="grid grid-cols-2">
           <DrawerClose asChild>
-            <Button variant={"outline"} disabled={submitting}>
-              {submitting ? <Throbber size={"sm"} /> : "Cancel"}
+            <Button
+              variant={"outline"}
+              disabled={submitting}
+              onClick={() => {
+                setIds([])
+                onChangePick([])
+              }}
+            >
+              {submitting ? <Throbber size={"sm"} /> : "Reset"}
+            </Button>
+          </DrawerClose>
+          <DrawerClose asChild>
+            <Button
+              disabled={submitting}
+              onClick={() => onChangePick(ids)}
+            >
+              {submitting ? <Throbber size={"sm"} /> : <><ListFilterIcon /> Apply</>}
             </Button>
           </DrawerClose>
         </DrawerFooter>

@@ -45,8 +45,7 @@ const _actions = {
   DATE_FILTER_CHANGED: "DATE_FILTER_CHANGED",
   OPEN_CHANGED: "OPEN_CHANGED",
   ACCOUNTS_FILTER_CHANGED: "ACCOUNTS_FILTER_CHANGED",
-  CATEGORY_FILTER_ADDED: "CATEGORY_FILTER_ADDED",
-  CATEGORY_FILTER_REMOVED: "CATEGORY_FILTER_REMOVED",
+  CATEGORIES_FILTER_CHANGED: "CATEGORIES_FILTER_CHANGED",
   ACTION_SUCCEED: "ACTION_SUCCEED",
   ACTION_FAILED: "ACTION_FAILED",
 } as const
@@ -56,8 +55,7 @@ type Actions = typeof _actions
 type Action =
   { type: Actions["DATE_FILTER_CHANGED"], filters: { from?: Date, to?: Date }, period: Period } |
   { type: Actions["ACCOUNTS_FILTER_CHANGED"], ids: number[] } |
-  { type: Actions["CATEGORY_FILTER_ADDED"], id: number } |
-  { type: Actions["CATEGORY_FILTER_REMOVED"], id: number } |
+  { type: Actions["CATEGORIES_FILTER_CHANGED"], ids: number[] } |
   { type: Actions["OPEN_CHANGED"], open: Open } |
   { type: Actions["ACTION_SUCCEED"] } |
   { type: Actions["ACTION_FAILED"] }
@@ -79,16 +77,10 @@ function reducer(state: ScreenState, action: Action): ScreenState {
         accounts: [...action.ids],
         submitting: true
       }
-    case "CATEGORY_FILTER_ADDED":
+    case "CATEGORIES_FILTER_CHANGED":
       return {
         ...state,
-        categories: [...state.categories, action.id],
-        submitting: true
-      }
-    case "CATEGORY_FILTER_REMOVED":
-      return {
-        ...state,
-        categories: [...state.categories.filter(id => id !== action.id)],
+        categories: [...action.ids],
         submitting: true
       }
     case "OPEN_CHANGED":
@@ -223,37 +215,21 @@ export function Screen({
     )
   }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.categories])
 
-  const onCategoryFilterAdd = useCallback((id: number) => {
+  const onCategoryFilterChange = useCallback((ids: number[]) => {
     if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
 
-    dispatch({ type: "CATEGORY_FILTER_ADDED", id })
+    dispatch({ type: "CATEGORIES_FILTER_CHANGED", ids })
     onSearch(
       {
         from: screen.from,
         to: screen.to,
         accounts: screen.accounts,
-        categories: [...screen.categories, id]
+        categories: [...ids]
       },
       abort.current.signal
     )
-  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
-
-  const onCategoryFilterRemove = useCallback((id: number) => {
-    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
-    abort.current = new AbortController()
-
-    dispatch({ type: "CATEGORY_FILTER_REMOVED", id })
-    onSearch(
-      {
-        from: screen.from,
-        to: screen.to,
-        accounts: screen.accounts,
-        categories: screen.categories.filter(el => el !== id)
-      },
-      abort.current.signal
-    )
-  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
+  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts])
 
   return (
     <Fragment>
@@ -367,8 +343,7 @@ export function Screen({
         onOpenChange={onOpenCategoriesFilterChange}
         accounts={Array.from(accounts.values())}
         selected={screen.categories}
-        onAdd={onCategoryFilterAdd}
-        onRemove={onCategoryFilterRemove}
+        onChangePick={onCategoryFilterChange}
         submitting={screen.submitting}
       />
     </Fragment >
