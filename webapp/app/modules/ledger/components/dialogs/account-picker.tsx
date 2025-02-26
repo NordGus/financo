@@ -1,6 +1,5 @@
 import { ListFilterIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Throbber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
 import {
   Drawer,
@@ -94,7 +93,7 @@ export function AccountPicker({ open, onOpenChange, onChangePick, accounts, sele
                 onChangePick([])
               }}
             >
-              {submitting ? <Throbber size={"sm"} /> : "Reset"}
+              Reset
             </Button>
           </DrawerClose>
           <DrawerClose asChild>
@@ -102,7 +101,7 @@ export function AccountPicker({ open, onOpenChange, onChangePick, accounts, sele
               disabled={submitting}
               onClick={() => onChangePick(ids)}
             >
-              {submitting ? <Throbber size={"sm"} /> : <><ListFilterIcon /> Apply</>}
+              <ListFilterIcon /> Apply
             </Button>
           </DrawerClose>
         </DrawerFooter>

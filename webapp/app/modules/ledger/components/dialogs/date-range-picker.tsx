@@ -1,3 +1,4 @@
+import { ListFilterIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { DateRange } from "react-day-picker"
 import { Button } from "~/modules/shared/components/ui/button"
@@ -43,15 +44,15 @@ export function DateRangePicker({ open, onOpenChange, range, onConfirm, submitti
             onSelect={setDate}
           />
         </div>
-        <DrawerFooter>
-          <Button onClick={() => onConfirm(date)} disabled={submitting || !date?.from || !date.to}>
-            Apply
-          </Button>
+        <DrawerFooter className="grid grid-cols-2">
           <DrawerClose asChild>
             <Button variant={"outline"} disabled={submitting}>
               Cancel
             </Button>
           </DrawerClose>
+          <Button onClick={() => onConfirm(date)} disabled={submitting || !date?.from || !date.to}>
+            <ListFilterIcon /> Apply
+          </Button>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
