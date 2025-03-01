@@ -37,7 +37,6 @@
     "seccomp=unconfined"
   ],
   "containerEnv": {
-    "ZSH_THEME": "amuse",
     "DB_DATABASE": "financo_dev",
     "DB_PASSWORD": "local_dev",
     "DB_USERNAME": "financo",
@@ -63,7 +62,6 @@
       "target": "/home/vscode/.ssh:ro"
     }
   ],
-  "postCreateCommand": "git config devcontainers-theme.hide-status 0 && git config devcontainers-theme.show-dirty 1",
   "postStartCommand": {
     "go:install:air": "go install github.com/air-verse/air@latest",
     "go:install:goose": "go install github.com/pressly/goose/v3/cmd/goose@latest",
