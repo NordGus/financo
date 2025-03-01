@@ -2,6 +2,12 @@
 
 A simple personal finances application to bring order to the chaos of your personal finances.
 
+## Setup application
+
+```shell
+bin/setup
+```
+
 ## To start the application inside the dev container
 
 - To start the api's server
