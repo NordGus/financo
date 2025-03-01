@@ -11,8 +11,6 @@
       "installZsh": "true",
       "configureZshAsDefaultShell": "true",
       "username": "programisto",
-      "userUid": "1000",
-      "userGid": "1000",
       "upgradePackages": "true"
     },
     "ghcr.io/devcontainers/features/git:1": {
@@ -60,13 +58,13 @@
     }
   ],
   "postCreateCommand": {
-    "disabling:dirty:indicator": "git config devcontainers-theme.show-dirty 1",
     "go:install:air": "go install github.com/air-verse/air@latest",
     "go:install:goose": "go install github.com/pressly/goose/v3/cmd/goose@latest",
-    "go:install:dlv": "go install github.com/pressly/goose/v3/cmd/goose@latest",
-    "node:updating:npm": "npm install -g npm@latest"
+    "node:updating:npm": "npm install -g npm@latest",
+    "os:install:dependencies": "sudo apt-get install -y postgresql-client fonts-powerline nano"
   },
   "postAttachCommand": {
+    "disabling:dirty:indicator": "git config devcontainers-theme.show-dirty 1",
     "go:install:dependencies": "source ${containerWorkspaceFolder}/.env && go mod download",
     "npm:install:dependencies": "source ${containerWorkspaceFolder}/.env && npm install",
     "db:setup": "source ${containerWorkspaceFolder}/.env && docker compose up -d && make db-setup"
