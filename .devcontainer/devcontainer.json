@@ -14,6 +14,8 @@
       "installZsh": "true",
       "configureZshAsDefaultShell": "true",
       "username": "programisto",
+      "userUid": "1001",
+      "userGid": "1001",
       "upgradePackages": "true"
     },
     "ghcr.io/devcontainers/features/git:1": {
@@ -37,8 +39,9 @@
   "shutdownAction": "stopContainer",
   "workspaceFolder": "/financo",
   "remoteUser": "programisto",
+  "containerUser": "programisto",
   "capAdd": ["SYS_PTRACE"],
-  "securityOpt": [ "seccomp=unconfined" ],
+  "securityOpt": ["seccomp=unconfined"],
   "containerEnv": {
     "ZSH_THEME": "amuse",
     "DB_DATABASE": "financo_dev",
@@ -48,7 +51,7 @@
     "DB_HOST": "localhost",
     "DB_SCHEMA": "public",
     "GOOSE_DRIVER": "postgres",
-    "GOOSE_DBSTRING": "host=${containerEnv:DB_HOST} user=${containerEnv:DB_USERNAME} password=${containerEnv:DB_PASSWORD} database=${containerEnv:DB_DATABASE} sslmode=disable",
+    "GOOSE_DBSTRING": "host=${DB_HOST} user=${DB_USERNAME} password=${DB_PASSWORD} database=${DB_DATABASE} sslmode=disable",
     "GOOSE_MIGRATION_DIR": "database/migrations"
   },
   "forwardPorts": [3000],
@@ -64,20 +67,15 @@
       "target": "/home/programisto/.ssh:ro"
     }
   ],
-  "postCreateCommand": {
-    "docker:compose:up": "docker compose up -d && echo \"waiting 5 seconds for service initialization\" && sleep 5",
+  "postAttachCommand": {
     "go:install:air": "go install github.com/air-verse/air@latest",
     "go:install:goose": "go install github.com/pressly/goose/v3/cmd/goose@latest",
-    "node:updating:npm": "npm install -g npm@latest"
-  },
-  "postAttachCommand": {
+    "node:install:dependencies": "npm install -g npm@latest && npm install",
     "disabling:dirty:indicator": "git config devcontainers-theme.hide-status 1",
     "git:config:safe.directory": "git config --global --add safe.directory /financo",
     "go:install:dependencies": "go mod download",
-    "npm:install:dependencies": "npm install",
-    "db:setup": "make db-setup"
+    "npm:install:dependencies": "npm install"
   },
-  "waitFor": "postCreateCommand",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -98,10 +96,8 @@
         "bierner.github-markdown-preview",
         "bierner.markdown-mermaid",
         "mhutchie.git-graph",
-        "firefox-devtools.vscode-firefox-debug",
         "cweijan.vscode-database-client2",
         "streetsidesoftware.code-spell-checker-spanish",
-        "enkia.tokyo-night",
         "dbaeumer.vscode-eslint"
       ],
       "settings": {
