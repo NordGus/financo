@@ -2,6 +2,9 @@
   "name": "webapp",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "^22.14.0"
+  },
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
@@ -52,7 +55,7 @@
     "@stylistic/eslint-plugin-ts": "^4.1.0",
     "@tailwindcss/vite": "^4.0.9",
     "@types/dinero.js": "^1.9.4",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "eslint": "^9.21.0",
