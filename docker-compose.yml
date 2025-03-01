@@ -1,31 +1,6 @@
 name: "financo"
 
 services:
-  devcontainer:
-    build:
-      dockerfile: .devcontainer/devcontainer.Dockerfile
-      context: .
-      args:
-        GO_VERSION: "1.23"
-        ALPINE_VERSION: "3.20"
-        NODE_VERSION: "20"
-        NPM_VERSION: "latest"
-        GO_AIR_VERSION: "latest"
-        GO_GOOSE_VERSION: "latest"
-        GO_DELVE_VERSION: "latest"
-    user: vscode
-    env_file: .env
-    volumes:
-      - .:/workspace:cached
-      - ${HOME}/.ssh:/home/vscode/.ssh:ro
-      - ${HOME}/.gitconfig:/home/vscode/.gitconfig:ro
-    cap_add:
-      - SYS_PTRACE
-    security_opt:
-      - seccomp:unconfined
-    command: /bin/sh -c "while sleep 1000; do :; done"
-    network_mode: host
-
   valkey:
     image: valkey/valkey:8
     restart: always
@@ -34,7 +9,6 @@ services:
       - valkey-data:/data
     ports:
       - 6379:6379
-    network_mode: host
 
   postgres:
     image: postgres:16.1
@@ -47,7 +21,6 @@ services:
       POSTGRES_DB: "financo_dev"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    network_mode: host
 
 volumes:
   postgres-data:
