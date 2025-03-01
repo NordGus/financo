@@ -61,7 +61,6 @@
     "go:install:air": "go install github.com/air-verse/air@latest",
     "go:install:goose": "go install github.com/pressly/goose/v3/cmd/goose@latest",
     "node:updating:npm": "npm install -g npm@latest",
-    "os:install:dependencies": "sudo apt-get install -y postgresql-client fonts-powerline nano"
   },
   "postAttachCommand": {
     "disabling:dirty:indicator": "git config devcontainers-theme.show-dirty 1",
