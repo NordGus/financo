@@ -48,7 +48,7 @@
     "DB_HOST": "localhost",
     "DB_SCHEMA": "public",
     "GOOSE_DRIVER": "postgres",
-    "GOOSE_DBSTRING": "host=$DB_HOST user=$DB_USERNAME password=$DB_PASSWORD database=$DB_DATABASE sslmode=disable",
+    "GOOSE_DBSTRING": "host=${containerEnv:DB_HOST} user=${containerEnv:DB_USERNAME} password=${containerEnv:DB_PASSWORD} database=${containerEnv:DB_DATABASE} sslmode=disable",
     "GOOSE_MIGRATION_DIR": "database/migrations"
   },
   "forwardPorts": [3000],
@@ -70,14 +70,14 @@
     "go:install:goose": "go install github.com/pressly/goose/v3/cmd/goose@latest",
     "node:updating:npm": "npm install -g npm@latest"
   },
-  "postStartCommand": {
+  "postAttachCommand": {
     "disabling:dirty:indicator": "git config devcontainers-theme.hide-status 1",
     "git:config:safe.directory": "git config --global --add safe.directory /financo",
     "go:install:dependencies": "go mod download",
     "npm:install:dependencies": "npm install",
     "db:setup": "make db-setup"
   },
-  "waitFor": "postStartCommand",
+  "waitFor": "postCreateCommand",
   "customizations": {
     "vscode": {
       "extensions": [
