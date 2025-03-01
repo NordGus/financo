@@ -60,7 +60,7 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
       <CardContent className="flex justify-between gap-2 p-4 items-end">
         {main && <MainAccount />}
         {archivedAt && <ArchivedAccount />}
-        <Balance kind={kind} capital={capital} balance={balance} currency={currency} className="flex-grow" />
+        <Balance kind={kind} capital={capital} balance={balance} currency={currency} className="grow" />
       </CardContent>
     </Card>
   )

@@ -35,7 +35,7 @@ export function PreviewCard({ category, onClick }: Props) {
       <CardFooter className="flex justify-end gap-2 px-4 pt-2 pb-4 text-sm">
         {
           category.archivedAt && (
-            <span className="flex-grow">
+            <span className="grow">
               <Archived />
             </span>
           )

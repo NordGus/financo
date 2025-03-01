@@ -392,7 +392,7 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
         <div className="grid grid-cols-5 grid-rows-4 gap-2 w-fit m-auto">
           {buttons.map((button, idx) => {
             const key = `${button.type}.${idx}`
-            const baseClassNames = "!h-16 w-16 [&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0"
+            const baseClassNames = "h-16! w-16 [&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0"
 
             switch (button.type) {
               case "dummy":
@@ -426,7 +426,7 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
                       key={key}
                       className={cn(
                         buttonVariants({ className: baseClassNames }),
-                        "row-span-2 !h-full"
+                        "row-span-2 h-full!"
                       )}
                       onClick={() => onChange(state.value)}
                     >
@@ -434,7 +434,7 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
                     </DialogClose>
                     : <Button
                       key={key}
-                      className={cn(baseClassNames, "row-span-2 !h-full")}
+                      className={cn(baseClassNames, "row-span-2 h-full!")}
                       onClick={() => onExecuteCalc()}
                     >
                       <EqualIcon />
