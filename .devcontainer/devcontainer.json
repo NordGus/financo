@@ -37,7 +37,16 @@
   "capAdd": ["SYS_PTRACE"],
   "securityOpt": [ "seccomp=unconfined" ],
   "containerEnv": {
-    "ZSH_THEME": "amuse"
+    "ZSH_THEME": "amuse",
+    "DB_DATABASE": "financo_dev",
+    "DB_PASSWORD": "local_dev",
+    "DB_USERNAME": "financo",
+    "DB_PORT": "5432",
+    "DB_HOST": "0.0.0.0",
+    "DB_SCHEMA": "public",
+    "GOOSE_DRIVER": "postgres",
+    "GOOSE_DBSTRING": "host=$DB_HOST user=$DB_USERNAME password=$DB_PASSWORD database=$DB_DATABASE sslmode=disable",
+    "GOOSE_MIGRATION_DIR": "database/migrations"
   },
   "forwardPorts": [3000],
   "mounts": [
@@ -54,19 +63,20 @@
     {
       "type": "bind",
       "source": "${localEnv:HOME}/.gitconfig",
-      "target": "/home/programisto/.gitconfig:ro"
+      "target": "/home/programisto/.gitconfig"
     }
   ],
   "postCreateCommand": {
+    "git:config:safe.directory": "git config --global --add safe.directory /financo",
     "go:install:air": "go install github.com/air-verse/air@latest",
     "go:install:goose": "go install github.com/pressly/goose/v3/cmd/goose@latest",
     "node:updating:npm": "npm install -g npm@latest",
   },
   "postAttachCommand": {
     "disabling:dirty:indicator": "git config devcontainers-theme.show-dirty 1",
-    "go:install:dependencies": "source ${containerWorkspaceFolder}/.env && go mod download",
-    "npm:install:dependencies": "source ${containerWorkspaceFolder}/.env && npm install",
-    "db:setup": "source ${containerWorkspaceFolder}/.env && docker compose up -d && make db-setup"
+    "go:install:dependencies": "go mod download",
+    "npm:install:dependencies": "npm install",
+    "db:setup": "docker compose up -d && make db-setup"
   },
   "customizations": {
     "vscode": {
