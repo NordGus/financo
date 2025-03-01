@@ -27,11 +27,11 @@
       "ppa": "false"
     },
     "ghcr.io/devcontainers-extra/features/fzf:1": {
-      "version": "latest",
+      "version": "latest"
     },
     "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
-      plugins: "git copyfile extract colorize dotenv encode64 golang npm node fzf zsh-autosuggestions",
-      omzPlugins: "https://github.com/zsh-users/zsh-autosuggestions"
+      "plugins": "git copyfile extract colorize dotenv encode64 golang npm node fzf zsh-autosuggestions",
+      "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions"
     }
   },
   "workspaceFolder": "/financo",
@@ -51,7 +51,7 @@
     {
       "type": "bind",
       "source": "${localEnv:HOME}/.ssh",
-      "target": "${containerEnv:HOME}/.ssh:ro",
+      "target": "${containerEnv:HOME}/.ssh:ro"
     },
     {
       "type": "bind",
