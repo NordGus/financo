@@ -1,5 +1,3 @@
-// IMPORTANT: This devcontainer expects to be running in a host machine that has docker install on it.
-
 {
   "name": "financo",
   "build": {
@@ -13,14 +11,7 @@
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installZsh": "true",
       "configureZshAsDefaultShell": "true",
-      "username": "programisto",
-      "userUid": "1001",
-      "userGid": "1001",
       "upgradePackages": "true"
-    },
-    "ghcr.io/devcontainers/features/git:1": {
-      "version": "latest",
-      "ppa": "false"
     },
     "ghcr.io/devcontainers-extra/features/fzf:1": {
       "version": "latest"
@@ -38,10 +29,13 @@
   },
   "shutdownAction": "stopContainer",
   "workspaceFolder": "/financo",
-  "remoteUser": "programisto",
-  "containerUser": "programisto",
-  "capAdd": ["SYS_PTRACE"],
-  "securityOpt": ["seccomp=unconfined"],
+  "remoteUser": "vscode",
+  "capAdd": [
+    "SYS_PTRACE"
+  ],
+  "securityOpt": [
+    "seccomp=unconfined"
+  ],
   "containerEnv": {
     "ZSH_THEME": "amuse",
     "DB_DATABASE": "financo_dev",
@@ -51,10 +45,12 @@
     "DB_HOST": "localhost",
     "DB_SCHEMA": "public",
     "GOOSE_DRIVER": "postgres",
-    "GOOSE_DBSTRING": "host=${DB_HOST} user=${DB_USERNAME} password=${DB_PASSWORD} database=${DB_DATABASE} sslmode=disable",
+    "GOOSE_DBSTRING": "host=localhost user=financo password=local_dev database=financo_dev sslmode=disable",
     "GOOSE_MIGRATION_DIR": "database/migrations"
   },
-  "forwardPorts": [3000],
+  "forwardPorts": [
+    3000
+  ],
   "mounts": [
     {
       "type": "bind",
@@ -64,18 +60,17 @@
     {
       "type": "bind",
       "source": "${localEnv:HOME}/.ssh",
-      "target": "/home/programisto/.ssh:ro"
+      "target": "/home/vscode/.ssh:ro"
     }
   ],
-  "postAttachCommand": {
+  "postCreateCommand": "git config devcontainers-theme.hide-status 0 && git config devcontainers-theme.show-dirty 1",
+  "postStartCommand": {
     "go:install:air": "go install github.com/air-verse/air@latest",
     "go:install:goose": "go install github.com/pressly/goose/v3/cmd/goose@latest",
     "node:install:dependencies": "npm install -g npm@latest && npm install",
-    "disabling:dirty:indicator": "git config devcontainers-theme.hide-status 1",
-    "git:config:safe.directory": "git config --global --add safe.directory /financo",
-    "go:install:dependencies": "go mod download",
-    "npm:install:dependencies": "npm install"
+    "go:install:dependencies": "go mod download"
   },
+  "waitFor": "postCreateCommand",
   "customizations": {
     "vscode": {
       "extensions": [
