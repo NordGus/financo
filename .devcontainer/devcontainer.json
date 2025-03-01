@@ -32,7 +32,7 @@
     },
     "ghcr.io/devcontainers/features/node:1": {
       "version": "20"
-    },
+    }
   },
   "workspaceFolder": "/financo",
   "remoteUser": "programisto",
@@ -51,12 +51,12 @@
     {
       "type": "bind",
       "source": "${localEnv:HOME}/.ssh",
-      "target": "${containerEnv:HOME}/.ssh:ro"
+      "target": "/home/programisto/.ssh:ro"
     },
     {
       "type": "bind",
       "source": "${localEnv:HOME}/.gitconfig",
-      "target": "${containerEnv:HOME}/.gitconfig:ro"
+      "target": "/home/programisto/.gitconfig:ro"
     }
   ],
   "postCreateCommand": {
