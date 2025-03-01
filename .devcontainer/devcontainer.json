@@ -73,7 +73,7 @@
     "go:install:goose": "go install github.com/pressly/goose/v3/cmd/goose@latest",
     "node:updating:npm": "npm install -g npm@latest"
   },
-  "postAttachCommand": {
+  "postStartCommand": {
     "disabling:dirty:indicator": "git config devcontainers-theme.hide-status 1",
     "git:config:safe.directory": "git config --global --add safe.directory /financo",
     "go:install:dependencies": "go mod download",
