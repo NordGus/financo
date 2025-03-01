@@ -32,6 +32,7 @@
       "version": "20"
     }
   },
+  "shutdownAction": "stopContainer",
   "workspaceFolder": "/financo",
   "remoteUser": "programisto",
   "capAdd": ["SYS_PTRACE"],
@@ -42,7 +43,7 @@
     "DB_PASSWORD": "local_dev",
     "DB_USERNAME": "financo",
     "DB_PORT": "5432",
-    "DB_HOST": "0.0.0.0",
+    "DB_HOST": "127.0.0.1",
     "DB_SCHEMA": "public",
     "GOOSE_DRIVER": "postgres",
     "GOOSE_DBSTRING": "host=$DB_HOST user=$DB_USERNAME password=$DB_PASSWORD database=$DB_DATABASE sslmode=disable",
@@ -67,16 +68,17 @@
     }
   ],
   "postCreateCommand": {
-    "git:config:safe.directory": "git config --global --add safe.directory /financo",
+    "docker:compose:up": "docker compose up -d && echo \"waiting 5 seconds for service initialization\" && sleep 5",
     "go:install:air": "go install github.com/air-verse/air@latest",
     "go:install:goose": "go install github.com/pressly/goose/v3/cmd/goose@latest",
-    "node:updating:npm": "npm install -g npm@latest",
+    "node:updating:npm": "npm install -g npm@latest"
   },
   "postAttachCommand": {
-    "disabling:dirty:indicator": "git config devcontainers-theme.show-dirty 1",
+    "disabling:dirty:indicator": "git config devcontainers-theme.hide-status 1",
+    "git:config:safe.directory": "git config --global --add safe.directory /financo",
     "go:install:dependencies": "go mod download",
     "npm:install:dependencies": "npm install",
-    "db:setup": "docker compose up -d && make db-setup"
+    "db:setup": "make db-setup"
   },
   "customizations": {
     "vscode": {
