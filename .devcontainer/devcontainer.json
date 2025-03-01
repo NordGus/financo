@@ -1,14 +1,76 @@
+// IMPORTANT: This devcontainer expects to be running in a host machine that has docker install on it.
+
 {
   "name": "financo",
-  "dockerComposeFile": "../docker-compose.yml",
-  "service": "devcontainer",
-  "runServices": [
-    "valkey",
-    "postgres"
+  "build": {
+    "dockerfile": "devcontainer-v2.Dockerfile",
+    "context": ".."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": "true",
+      "configureZshAsDefaultShell": "true",
+      "username": "vscode",
+      "userUid": "1000",
+      "userGid": "1000",
+      "upgradePackages": "true"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/go:1": {
+      "version": "1.23.6"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": "false"
+    },
+    "ghcr.io/devcontainers-extra/features/fzf:1": {
+      "version": "latest",
+    },
+    "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
+      plugins: "git copyfile extract colorize dotenv encode64 golang npm node fzf zsh-autosuggestions",
+      omzPlugins: "https://github.com/zsh-users/zsh-autosuggestions"
+    }
+  },
+  "workspaceFolder": "/financo",
+  "remoteUser": "programisto",
+  "capAdd": ["SYS_PTRACE"],
+  "securityOpt": [ "seccomp=unconfined" ],
+  "containerEnv": {
+    "ZSH_THEME": "amuse"
+  },
+  "forwardPorts": [3000],
+  "mounts": [
+    {
+      "type": "bind",
+      "source": ".",
+      "target": "/financo"
+    },
+    {
+      "type": "bind",
+      "source": "${localEnv:HOME}/.ssh",
+      "target": "${containerEnv:HOME}/.ssh:ro",
+    },
+    {
+      "type": "bind",
+      "source": "${localEnv:HOME}/.gitconfig",
+      "target": "${containerEnv:HOME}/.gitconfig:ro"
+    }
   ],
-  "workspaceFolder": "/workspace",
-  "shutdownAction": "stopCompose",
-  "remoteUser": "vscode",
+  "postCreateCommand": {
+    "disabling:dirty:indicator": "git config devcontainers-theme.show-dirty 1",
+    "go:install:air": "go install github.com/air-verse/air@latest",
+    "go:install:goose": "go install github.com/pressly/goose/v3/cmd/goose@latest",
+    "go:install:dlv": "go install github.com/pressly/goose/v3/cmd/goose@latest",
+    "node:updating:npm": "npm install -g npm@latest"
+  },
+  "postAttachCommand": {
+    "go:install:dependencies": "source ${containerWorkspaceFolder}/.env && go mod download",
+    "npm:install:dependencies": "source ${containerWorkspaceFolder}/.env && npm install",
+    "db:setup": "source ${containerWorkspaceFolder}/.env && docker compose up -d && make db-setup"
+  },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -54,7 +116,6 @@
         "editor.wordWrapColumn": 120,
         "editor.formatOnSave": true,
         "editor.fontSize": 16,
-        "editor.fontFamily": "'Geist Mono Medium'",
         "editor.fontLigatures": true,
         "editor.quickSuggestions": {
           "other": "on",
@@ -66,7 +127,6 @@
         },
         "terminal.integrated.fontSize": 16,
         "chat.editor.fontSize": 16,
-        "markdown.preview.fontFamily": "'Geist Mono Medium'",
         "markdown.preview.fontSize": 16,
         "markdown.preview.lineHeight": 1.1,
         "gopls": {
@@ -98,10 +158,5 @@
         }
       }
     }
-  },
-  "postStartCommand": {
-    "go:install:dependencies": "go mod download",
-    "npm:install:dependencies": "npm install",
-    "db:setup": "make db-setup"
   }
 }
