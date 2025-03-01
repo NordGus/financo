@@ -246,7 +246,7 @@ export function Screen({
         <div className="flex items-start gap-2 p-2">
           <span className="h-9 w-9" />
           <AccountsFilter
-            className="flex-grow"
+            className="grow"
             accounts={accounts}
             selected={screen.accounts}
             onClick={() => onOpenAccountsFilterChange(true)}

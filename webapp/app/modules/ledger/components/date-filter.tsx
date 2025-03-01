@@ -55,7 +55,7 @@ export function DateFilter({ range, period, onClick, onForwards, onBackwards }: 
       }
       <Button
         variant={"secondary"}
-        className="flex-grow"
+        className="grow"
         type="button"
         onClick={onClick}
       >

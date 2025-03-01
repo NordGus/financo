@@ -39,7 +39,7 @@ export default function Layout() {
           <Toaster position="top-center" closeButton richColors />
         </main>
         <div className="flex justify-between items-center bg-transparent border-t">
-          <div className="px-4 flex-grow">
+          <div className="px-4 grow">
             <Breadcrumbs />
           </div>
           <Button onClick={() => setOpenNav(true)} variant={"link"} className="p-4 h-auto">
