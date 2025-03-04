@@ -12,6 +12,7 @@ interface Props {
   onSelect: (day: Date | undefined, selectedDay: Date, activeModifiers: ActiveModifiers, e: React.MouseEvent) => void
 }
 
+// TODO: Refactor to use drawer instead of popover
 export function DateInput({ value, onSelect }: Props) {
   const disabledFrom = startOfDay(add(new Date(), { days: 1 }))
 
