@@ -20,7 +20,7 @@ export function PreviewCard({ category, onClick }: Props) {
 
   return (
     <Card
-      className={"flex flex-col cursor-pointer min-h-28"}
+      className={"flex flex-col cursor-pointer min-h-28 p-0 gap-0"}
       style={{ backgroundColor: color, color: contrast }}
       onClick={onClick}
     >

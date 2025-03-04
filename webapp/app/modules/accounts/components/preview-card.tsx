@@ -37,7 +37,7 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
   if (deletedAt) return null
 
   return (
-    <Card onClick={() => onSelectAccount(account)} className="cursor-pointer">
+    <Card onClick={() => onSelectAccount(account)} className="cursor-pointer p-0 gap-0">
       <CardHeader
         className="min-h-20 p-4"
         style={{
