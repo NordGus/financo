@@ -14,6 +14,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # TODO: fix typechecking and reactivate
       # - name: Typecheck # deactivating for the moment because typecheck is failing and the ide is not communicating
       #   run: npm run -w webapp typecheck
 
