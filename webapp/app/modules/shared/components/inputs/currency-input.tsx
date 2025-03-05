@@ -9,13 +9,14 @@ interface Props {
   onValueChange: (value: Currency) => void
 }
 
+// TODO: refactor to use drawer instead of select
 export function CurrencyInput({ onValueChange, defaultValue }: Props) {
   const currencies = useCurrenciesStore((state) => state.currencies)
 
   return (
     <Select onValueChange={onValueChange} defaultValue={defaultValue}>
       <FormControl>
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue placeholder={"Select a currency"} />
         </SelectTrigger>
       </FormControl>

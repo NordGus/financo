@@ -13,7 +13,7 @@ type Props = {
 
 export function PreviewCard({ name, description, icon, archived, onClick }: Props) {
   return (
-    <Card className="px-4 py-3 cursor-pointer" onClick={onClick}>
+    <Card className="px-4 py-3 cursor-pointer gap-0" onClick={onClick}>
       <div className="flex gap-2">
         {icons[icon]} <span className="font-semibold">{name}</span>
       </div>

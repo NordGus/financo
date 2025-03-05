@@ -9,7 +9,7 @@ export const hasIncompleteLedgerManual: Copy = {
       For starters, according to <span className="text-foreground">dictionary.com</span>:
     </p>
     <Alert>
-      <BookMarkedIcon className="w-4 h-4" />
+      <BookMarkedIcon className="size-4" />
       <AlertTitle className="mb-2">
         <a
           href="https://www.dictionary.com/browse/ledger"
@@ -21,7 +21,9 @@ export const hasIncompleteLedgerManual: Copy = {
         </a>
       </AlertTitle>
       <AlertDescription>
-        <span className="italic">Bookkeeping</span>. an account book or digital file of final entry, in which business transactions are recorded.
+        <p>
+          <span className="italic inline-block">Bookkeeping</span>. an account book or digital file of final entry, in which business transactions are recorded.
+        </p>
       </AlertDescription>
     </Alert>
     <p>
