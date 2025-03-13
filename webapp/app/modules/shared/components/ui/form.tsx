@@ -1,5 +1,4 @@
-import * as LabelPrimitive from "@radix-ui/react-label"
-import { Slot } from "radix-ui"
+import { Label as LabelPrimitive, Slot } from "radix-ui"
 import * as React from "react"
 import {
   Controller,
