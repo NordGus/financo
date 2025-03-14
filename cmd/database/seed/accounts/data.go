@@ -52,7 +52,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.CapitalSavings,
+				Kind:        account.Savings,
 				Currency:    currency.EUR,
 				Name:        "My Savings Account",
 				Description: nullable.New("The account where I store my savings"),
@@ -70,7 +70,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:     account.CapitalSavings,
+				Kind:     account.Savings,
 				Currency: currency.USD,
 				Name:     "My US Savings Account",
 				Capital:  0,

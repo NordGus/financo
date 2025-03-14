@@ -7,7 +7,7 @@ func FilterKinds(kinds []account.Kind) []account.Kind {
 		out      = make([]account.Kind, 0, 7)
 		accepted = map[account.Kind]bool{
 			account.Capital:         true,
-			account.CapitalSavings:  true,
+			account.Savings:         true,
 			account.DebtLoan:        true,
 			account.DebtCredit:      true,
 			account.ExternalIncome:  true,
@@ -25,7 +25,7 @@ func FilterKinds(kinds []account.Kind) []account.Kind {
 		out = append(
 			out,
 			account.Capital,
-			account.CapitalSavings,
+			account.Savings,
 			account.DebtCredit,
 			account.DebtLoan,
 			account.ExternalExpense,

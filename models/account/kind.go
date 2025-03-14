@@ -14,7 +14,7 @@ type Kind string
 const (
 	History         Kind = "history"
 	Capital         Kind = "capital"
-	CapitalSavings  Kind = "capital_savings"
+	Savings         Kind = "savings"
 	DebtLoan        Kind = "debt_loan"
 	DebtCredit      Kind = "debt_credit"
 	ExternalIncome  Kind = "external_income"
@@ -38,7 +38,7 @@ func IsLoan(kind Kind) bool {
 }
 
 func IsSavings(kind Kind) bool {
-	return kind == CapitalSavings
+	return kind == Savings
 }
 
 func IsCapital(kind Kind) bool {
@@ -64,8 +64,8 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 		*k = History
 	case "capital":
 		*k = Capital
-	case "capital_savings":
-		*k = CapitalSavings
+	case "savings":
+		*k = Savings
 	case "debt_loan":
 		*k = DebtLoan
 	case "debt_credit":
@@ -94,8 +94,8 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 		s = "history"
 	case Capital:
 		s = "capital"
-	case CapitalSavings:
-		s = "capital_savings"
+	case Savings:
+		s = "savings"
 	case DebtLoan:
 		s = "debt_loan"
 	case DebtCredit:
@@ -126,8 +126,8 @@ func (k *Kind) Scan(value any) error {
 		*k = History
 	case "capital":
 		*k = Capital
-	case "capital_savings":
-		*k = CapitalSavings
+	case "savings":
+		*k = Savings
 	case "debt_loan":
 		*k = DebtLoan
 	case "debt_credit":
@@ -155,8 +155,8 @@ func (k Kind) Value() (driver.Value, error) {
 		s = "history"
 	case Capital:
 		s = "capital"
-	case CapitalSavings:
-		s = "capital_savings"
+	case Savings:
+		s = "savings"
 	case DebtLoan:
 		s = "debt_loan"
 	case DebtCredit:
