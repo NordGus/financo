@@ -39,7 +39,7 @@ func (h *handler) Handle(event messages.Deleted) error {
 			account.Capital,
 			account.Savings,
 			account.DebtCredit,
-			account.DebtLoan,
+			account.Debt,
 		},
 	})
 	if err != nil {

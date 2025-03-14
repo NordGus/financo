@@ -87,7 +87,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.DebtLoan,
+				Kind:        account.Debt,
 				Currency:    currency.EUR,
 				Name:        "Car loan",
 				Description: nullable.New("My japanese shit-box"),
@@ -105,7 +105,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.DebtPersonal,
+				Kind:        account.Debt,
 				Currency:    currency.EUR,
 				Name:        "Morgan's Loan",
 				Description: nullable.New("I helped Morgan with their rent"),
@@ -123,7 +123,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.DebtPersonal,
+				Kind:        account.Debt,
 				Currency:    currency.EUR,
 				Name:        "Carlos' Lunch",
 				Description: nullable.New("Carlos' catch up lunch"),
