@@ -167,7 +167,7 @@ func (p *postgresql) findHistoryRecord(ctx context.Context, conn *sql.Conn, id i
 			AND parent_id = $1
 		`,
 		id,
-		account.SystemHistoric,
+		account.History,
 	).Scan(
 		&r.ID,
 		&r.ParentID,

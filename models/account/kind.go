@@ -12,7 +12,7 @@ import (
 type Kind string
 
 const (
-	SystemHistoric  Kind = "system_historic"
+	History         Kind = "history"
 	CapitalNormal   Kind = "capital_normal"
 	CapitalSavings  Kind = "capital_savings"
 	DebtLoan        Kind = "debt_loan"
@@ -60,8 +60,8 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 	switch strings.ToLower(s) {
 	default:
 		return fmt.Errorf("account: invalid account kind \"%s\"", s)
-	case "system_historic":
-		*k = SystemHistoric
+	case "history":
+		*k = History
 	case "capital_normal":
 		*k = CapitalNormal
 	case "capital_savings":
@@ -90,8 +90,8 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 	switch k {
 	default:
 		return []byte{}, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
-	case SystemHistoric:
-		s = "system_historic"
+	case History:
+		s = "history"
 	case CapitalNormal:
 		s = "capital_normal"
 	case CapitalSavings:
@@ -122,8 +122,8 @@ func (k *Kind) Scan(value any) error {
 	switch strings.ToLower(s) {
 	default:
 		return fmt.Errorf("account: invalid account kind \"%s\"", value)
-	case "system_historic":
-		*k = SystemHistoric
+	case "history":
+		*k = History
 	case "capital_normal":
 		*k = CapitalNormal
 	case "capital_savings":
@@ -151,8 +151,8 @@ func (k Kind) Value() (driver.Value, error) {
 	switch k {
 	default:
 		return s, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
-	case SystemHistoric:
-		s = "system_historic"
+	case History:
+		s = "history"
 	case CapitalNormal:
 		s = "capital_normal"
 	case CapitalSavings:

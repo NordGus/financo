@@ -71,7 +71,7 @@ func (req *Update) Record(r account.Record, timestamp time.Time) account.Record 
 }
 
 // Record maps [Update] into the given [account.Record] with [account.Kind] set
-// to [account.SystemHistoric] use by financo to update it.
+// to [account.History] use by financo to update it.
 func (req *Update) HistoryRecord(r account.Record, timestamp time.Time) account.Record {
 	// Builds the basic record data
 	r.Currency = req.Currency
