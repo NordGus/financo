@@ -266,7 +266,7 @@ export function Screen({
           onForwards={onDateFilterMoveForward}
           onBackwards={onDateFilterMoveBackwards}
         />
-        <div className="overflow-x-hidden overflow-y-auto h-full p-4">
+        <div className="overflow-x-hidden overflow-y-auto h-full">
           {
             transactions.length === 0
               ? <NoResults />
@@ -274,8 +274,8 @@ export function Screen({
                 <>
                   <div className="flex flex-col gap-2">
                     {
-                      transactions.map(([date, entries]) => (
-                        <DateGroup key={date} date={date}>
+                      transactions.map(([date, entries], idx) => (
+                        <DateGroup key={date} date={date} isFirst={idx === 0}>
                           {entries.map((transaction) => {
                             const source = accounts.get(transaction.sourceId)!
                             const sourceParent = source.parentId === null ? null : accounts.get(source.parentId)!

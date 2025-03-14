@@ -1,20 +1,21 @@
 import { format } from "date-fns";
 import { PropsWithChildren } from "react";
-import { Heading5 } from "~/modules/shared/components/ui/headings";
+import { cn } from "~/lib/utils";
 
 interface Props {
   date: string
+  isFirst: boolean
 }
 
-export function DateGroup({ date, children }: PropsWithChildren<Props>) {
+export function DateGroup({ date, isFirst, children }: PropsWithChildren<Props>) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between border-b pb-2">
-        <Heading5 className="text-muted-foreground">
+      <div className={cn("flex items-center justify-between border-b py-2 px-4", !isFirst && "border-t")}>
+        <p className="text-muted-foreground">
           {format(date, "PPP")}
-        </Heading5>
+        </p>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col px-4">
         {children}
       </div>
     </div>
