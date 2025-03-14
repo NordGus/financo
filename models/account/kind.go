@@ -17,12 +17,12 @@ const (
 	Savings         Kind = "savings"
 	Debt            Kind = "debt"
 	Credit          Kind = "credit"
-	ExternalIncome  Kind = "external_income"
+	Income          Kind = "income"
 	ExternalExpense Kind = "external_expense"
 )
 
 func IsExternal(kind Kind) bool {
-	return kind == ExternalIncome || kind == ExternalExpense
+	return kind == Income || kind == ExternalExpense
 }
 
 func IsDebt(kind Kind) bool {
@@ -70,8 +70,8 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 		*k = Debt
 	case "credit":
 		*k = Credit
-	case "external_income":
-		*k = ExternalIncome
+	case "income":
+		*k = Income
 	case "external_expense":
 		*k = ExternalExpense
 	}
@@ -100,8 +100,8 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 		s = "debt"
 	case Credit:
 		s = "credit"
-	case ExternalIncome:
-		s = "external_income"
+	case Income:
+		s = "income"
 	case ExternalExpense:
 		s = "external_expense"
 	}
@@ -132,8 +132,8 @@ func (k *Kind) Scan(value any) error {
 		*k = Debt
 	case "credit":
 		*k = Credit
-	case "external_income":
-		*k = ExternalIncome
+	case "income":
+		*k = Income
 	case "external_expense":
 		*k = ExternalExpense
 	}
@@ -161,8 +161,8 @@ func (k Kind) Value() (driver.Value, error) {
 		s = "debt"
 	case Credit:
 		s = "credit"
-	case ExternalIncome:
-		s = "external_income"
+	case Income:
+		s = "income"
 	case ExternalExpense:
 		s = "external_expense"
 	}

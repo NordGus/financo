@@ -134,7 +134,7 @@ func (p *postgresql) BalanceFor(ctx context.Context, ids []int64) (map[int64]int
 		GROUP BY acc.id
 		`,
 		ids,
-		[]account.Kind{account.ExternalExpense, account.ExternalIncome},
+		[]account.Kind{account.ExternalExpense, account.Income},
 	)
 	if err != nil {
 		return balances, err

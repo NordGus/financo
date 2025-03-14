@@ -53,7 +53,7 @@ func (p *postgresql) Archive(ctx context.Context, r category.Record, timestamp t
 		r.Parent.ID,
 		[]account.Kind{
 			account.ExternalExpense,
-			account.ExternalIncome,
+			account.Income,
 		},
 		archive,
 		timestamp,
@@ -107,7 +107,7 @@ func (p *postgresql) Unarchive(ctx context.Context, r category.Record, timestamp
 		r.Parent.ID,
 		[]account.Kind{
 			account.ExternalExpense,
-			account.ExternalIncome,
+			account.Income,
 		},
 		archive,
 		timestamp,

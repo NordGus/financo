@@ -25,7 +25,7 @@ var (
 	create = []createReq{
 		{
 			req: requests.Create{
-				Kind:        account.ExternalIncome,
+				Kind:        account.Income,
 				Name:        "Paycheck",
 				Description: nullable.New("Where the bread comes from"),
 				Currency:    currency.EUR,
@@ -67,7 +67,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:     account.ExternalIncome,
+				Kind:     account.Income,
 				Name:     "Allowance",
 				Currency: currency.EUR,
 				Color:    "#eb8934",
