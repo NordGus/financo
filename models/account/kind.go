@@ -12,17 +12,17 @@ import (
 type Kind string
 
 const (
-	History         Kind = "history"
-	Capital         Kind = "capital"
-	Savings         Kind = "savings"
-	Debt            Kind = "debt"
-	Credit          Kind = "credit"
-	Income          Kind = "income"
-	ExternalExpense Kind = "external_expense"
+	History Kind = "history"
+	Capital Kind = "capital"
+	Savings Kind = "savings"
+	Debt    Kind = "debt"
+	Credit  Kind = "credit"
+	Income  Kind = "income"
+	Expense Kind = "expense"
 )
 
 func IsExternal(kind Kind) bool {
-	return kind == Income || kind == ExternalExpense
+	return kind == Income || kind == Expense
 }
 
 func IsDebt(kind Kind) bool {
@@ -72,8 +72,8 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 		*k = Credit
 	case "income":
 		*k = Income
-	case "external_expense":
-		*k = ExternalExpense
+	case "expense":
+		*k = Expense
 	}
 
 	return nil
@@ -102,8 +102,8 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 		s = "credit"
 	case Income:
 		s = "income"
-	case ExternalExpense:
-		s = "external_expense"
+	case Expense:
+		s = "expense"
 	}
 
 	return json.Marshal(s)
@@ -134,8 +134,8 @@ func (k *Kind) Scan(value any) error {
 		*k = Credit
 	case "income":
 		*k = Income
-	case "external_expense":
-		*k = ExternalExpense
+	case "expense":
+		*k = Expense
 	}
 
 	return nil
@@ -163,8 +163,8 @@ func (k Kind) Value() (driver.Value, error) {
 		s = "credit"
 	case Income:
 		s = "income"
-	case ExternalExpense:
-		s = "external_expense"
+	case Expense:
+		s = "expense"
 	}
 
 	return s, nil

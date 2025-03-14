@@ -71,7 +71,7 @@ func (p *postgresql) Find(ctx context.Context, id int64) (category.Record, error
 		`,
 		id,
 		[]account.Kind{
-			account.ExternalExpense,
+			account.Expense,
 			account.Income,
 		},
 	)

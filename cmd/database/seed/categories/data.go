@@ -80,7 +80,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.ExternalExpense,
+				Kind:        account.Expense,
 				Name:        "Market",
 				Description: nullable.New("I need to survive"),
 				Currency:    currency.EUR,
@@ -121,7 +121,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:     account.ExternalExpense,
+				Kind:     account.Expense,
 				Name:     "Transport",
 				Currency: currency.EUR,
 				Color:    "#e5eb34",
