@@ -50,11 +50,11 @@ export function PeriodShortcuts({
             Select which period you want preview
           </DrawerDescription>
         </DrawerHeader>
-        <div className="grid grid-cols-2 rounded-lg overflow-clip gap-1 px-4">
+        <div className="grid grid-cols-2 gap-1 px-4">
           <Button
             variant={"secondary"}
             size={"xl"}
-            className="col-span-2"
+            className="col-span-2 rounded-t-2xl"
             onClick={() => onOpenRangePicker(true)}
             disabled={submitting}
           >
@@ -108,6 +108,7 @@ export function PeriodShortcuts({
           <Button
             variant={"secondary"}
             size={"xl"}
+            className="rounded-bl-2xl"
             onClick={() => onFilterChange(startOfYear(today), endOfYear(today), "yearly")}
             disabled={submitting}
           >
@@ -122,6 +123,7 @@ export function PeriodShortcuts({
           <Button
             variant={"secondary"}
             size={"xl"}
+            className="rounded-br-2xl"
             onClick={() => onFilterChange(startOfMonth(today), endOfMonth(today), "monthly")}
             disabled={submitting}
           >
