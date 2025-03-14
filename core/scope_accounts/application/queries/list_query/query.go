@@ -31,7 +31,6 @@ func (q *query) Find(ctx context.Context) ([]responses.Listed, error) {
 			account.CapitalSavings,
 			account.DebtCredit,
 			account.DebtLoan,
-			account.DebtPersonal,
 		},
 	})
 	if err != nil {

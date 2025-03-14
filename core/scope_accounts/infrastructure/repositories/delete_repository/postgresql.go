@@ -57,7 +57,6 @@ func (p *postgresql) Find(ctx context.Context, id int64) (account.Record, error)
 			account.CapitalSavings,
 			account.DebtCredit,
 			account.DebtLoan,
-			account.DebtPersonal,
 		},
 	).Scan(
 		&r.ID,

@@ -43,8 +43,7 @@ func (req *Update) Record(r account.Record, timestamp time.Time) account.Record 
 	r.UpdatedAt = timestamp
 
 	// Sets the capital to the one send by the request only if the account been
-	// updated is [account.DebtLoan], [account.DebtPersonal] or
-	// [account.DebtCredit]
+	// updated is [account.DebtLoan] or [account.DebtCredit]
 	if account.IsDebt(r.Kind) {
 		r.Capital = req.Capital
 	}
