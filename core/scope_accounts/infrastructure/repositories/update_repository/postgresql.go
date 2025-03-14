@@ -114,7 +114,7 @@ func (p *postgresql) findRecord(ctx context.Context, conn *sql.Conn, id int64) (
 		`,
 		id,
 		[]account.Kind{
-			account.CapitalNormal,
+			account.Capital,
 			account.CapitalSavings,
 			account.DebtCredit,
 			account.DebtLoan,

@@ -27,7 +27,7 @@ func (q *query) Find(ctx context.Context) ([]responses.Listed, error) {
 
 	accounts, err := q.repo.Where(ctx, filters.Accounts{
 		Kinds: []account.Kind{
-			account.CapitalNormal,
+			account.Capital,
 			account.CapitalSavings,
 			account.DebtCredit,
 			account.DebtLoan,

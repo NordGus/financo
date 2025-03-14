@@ -13,7 +13,7 @@ type Kind string
 
 const (
 	History         Kind = "history"
-	CapitalNormal   Kind = "capital_normal"
+	Capital         Kind = "capital"
 	CapitalSavings  Kind = "capital_savings"
 	DebtLoan        Kind = "debt_loan"
 	DebtCredit      Kind = "debt_credit"
@@ -42,7 +42,7 @@ func IsSavings(kind Kind) bool {
 }
 
 func IsCapital(kind Kind) bool {
-	return kind == CapitalNormal
+	return kind == Capital
 }
 
 // UnmarshalJSON receives a buffer b, and ensures that the provided value is a
@@ -62,8 +62,8 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 		return fmt.Errorf("account: invalid account kind \"%s\"", s)
 	case "history":
 		*k = History
-	case "capital_normal":
-		*k = CapitalNormal
+	case "capital":
+		*k = Capital
 	case "capital_savings":
 		*k = CapitalSavings
 	case "debt_loan":
@@ -92,8 +92,8 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 		return []byte{}, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
 	case History:
 		s = "history"
-	case CapitalNormal:
-		s = "capital_normal"
+	case Capital:
+		s = "capital"
 	case CapitalSavings:
 		s = "capital_savings"
 	case DebtLoan:
@@ -124,8 +124,8 @@ func (k *Kind) Scan(value any) error {
 		return fmt.Errorf("account: invalid account kind \"%s\"", value)
 	case "history":
 		*k = History
-	case "capital_normal":
-		*k = CapitalNormal
+	case "capital":
+		*k = Capital
 	case "capital_savings":
 		*k = CapitalSavings
 	case "debt_loan":
@@ -153,8 +153,8 @@ func (k Kind) Value() (driver.Value, error) {
 		return s, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
 	case History:
 		s = "history"
-	case CapitalNormal:
-		s = "capital_normal"
+	case Capital:
+		s = "capital"
 	case CapitalSavings:
 		s = "capital_savings"
 	case DebtLoan:

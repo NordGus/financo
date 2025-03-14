@@ -19,7 +19,7 @@ var (
 	create = []createReq{
 		{
 			req: requests.Create{
-				Kind:        account.CapitalNormal,
+				Kind:        account.Capital,
 				Currency:    currency.EUR,
 				Name:        "My Personal Bank Account",
 				Description: nullable.New("The account where I get my paycheck"),
@@ -37,7 +37,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.CapitalNormal,
+				Kind:        account.Capital,
 				Currency:    currency.EUR,
 				Name:        "Freelance bank account",
 				Description: nullable.New("Where I get paid for my freelance job"),

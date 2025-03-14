@@ -36,7 +36,7 @@ func (h *handler) Handle(event messages.Deleted) error {
 
 	records, err := h.accountsRepo.Where(ctx, filters.Accounts{
 		Kinds: []account.Kind{
-			account.CapitalNormal,
+			account.Capital,
 			account.CapitalSavings,
 			account.DebtCredit,
 			account.DebtLoan,
