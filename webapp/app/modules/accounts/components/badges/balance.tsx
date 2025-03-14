@@ -2,7 +2,7 @@ import { PropsWithChildren } from "react";
 import { cn } from "~/lib/utils";
 import { currencyAmountColor as color } from "~/modules/shared/helpers/currency-amount-color";
 import { currencyAmountToHuman as amount } from "~/modules/shared/helpers/currency-amount-to-human";
-import { isCredit, isDebt } from "~/modules/shared/types/account";
+import { isCredit, isPassive } from "~/modules/shared/types/account";
 import { Currency } from "~/modules/shared/types/currency";
 import { ModuleKind } from "../../types/account";
 
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export function Balance({ kind, capital, balance, currency, className }: Props) {
-  if (!isDebt(kind)) return (
+  if (!isPassive(kind)) return (
     <Wrapper className={className}>
       <span className={cn("font-semibold", color(balance))}>
         {amount(balance, currency)}

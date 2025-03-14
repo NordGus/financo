@@ -2,21 +2,19 @@ import { Kind, KINDS } from "../types/account";
 
 export function accountKindToHuman(kind: Kind): string {
   switch (kind) {
-    case KINDS["capital_normal"]:
+    case KINDS["capital"]:
       return "Capital"
-    case KINDS["capital_savings"]:
+    case KINDS["savings"]:
       return "Savings"
-    case KINDS["debt_loan"]:
-      return "Loan"
-    case KINDS["debt_personal"]:
-      return "Personal debt"
-    case KINDS["debt_credit"]:
+    case KINDS["debt"]:
+      return "Debt"
+    case KINDS["credit"]:
       return "Credit"
-    case KINDS["external_expense"]:
+    case KINDS["expense"]:
       return "Expense"
-    case KINDS["external_income"]:
+    case KINDS["income"]:
       return "Income"
-    case KINDS["system_historic"]:
+    case KINDS["history"]:
       return "History"
     default:
       throw new Error(`invalid kind ${kind}`)

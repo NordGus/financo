@@ -20,7 +20,7 @@ interface Props {
 }
 
 export function SelectAccountKindToCreate({ open, onOpenChange, onSelect }: Props) {
-  const kinds: ModuleKind[] = ["capital_normal", "capital_savings", "debt_credit", "debt_loan", "debt_personal"]
+  const kinds: ModuleKind[] = ["capital", "savings", "debt", "credit"]
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>

@@ -2,7 +2,7 @@ import { Copy } from "~/modules/shared/types/copy";
 import { ModuleKind } from "../types/account";
 
 export const accountKindsManual: Record<ModuleKind, Copy> = {
-  capital_normal: {
+  capital: {
     title: "What is a Capital Account?",
     message: <>
       <p>
@@ -13,7 +13,7 @@ export const accountKindsManual: Record<ModuleKind, Copy> = {
       </p>
     </>
   },
-  capital_savings: {
+  savings: {
     title: "What is a Savings Account",
     message: <>
       <p>
@@ -24,8 +24,8 @@ export const accountKindsManual: Record<ModuleKind, Copy> = {
       </p>
     </>
   },
-  debt_loan: {
-    title: "What is a Loan Account?",
+  debt: {
+    title: "What is a Debt Account?",
     message: <>
       <p>
         A Loan Account represents your student loan, car loan, smartphone loan, etc.
@@ -35,18 +35,7 @@ export const accountKindsManual: Record<ModuleKind, Copy> = {
       </p>
     </>
   },
-  debt_personal: {
-    title: "What is a Personal debt Account?",
-    message: <>
-      <p>
-        A Loan Account represents that lunch your friend payed or you paid for them, that little help you give out to your sibling, etc.
-      </p>
-      <p>
-        Basically any kind of simple debt you owe or are owed that <span className="font-bold">does not</span> generate interests for or against you.
-      </p>
-    </>
-  },
-  debt_credit: {
+  credit: {
     title: "What is a Credit Account?",
     message: <>
       <p>
