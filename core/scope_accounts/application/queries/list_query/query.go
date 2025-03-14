@@ -29,7 +29,7 @@ func (q *query) Find(ctx context.Context) ([]responses.Listed, error) {
 		Kinds: []account.Kind{
 			account.Capital,
 			account.Savings,
-			account.DebtCredit,
+			account.Credit,
 			account.Debt,
 		},
 	})

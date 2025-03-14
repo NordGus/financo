@@ -38,7 +38,7 @@ func (h *handler) Handle(event messages.Updated) error {
 		Kinds: []account.Kind{
 			account.Capital,
 			account.Savings,
-			account.DebtCredit,
+			account.Credit,
 			account.Debt,
 		},
 	})

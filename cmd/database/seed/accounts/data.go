@@ -138,7 +138,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.DebtCredit,
+				Kind:        account.Credit,
 				Currency:    currency.EUR,
 				Name:        "Credit Card",
 				Description: nullable.New("My bank's credit card"),
@@ -156,7 +156,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:     account.DebtCredit,
+				Kind:     account.Credit,
 				Currency: currency.EUR,
 				Name:     "Laptop financing Credit Line",
 				Capital:  -2_500_00,

@@ -9,7 +9,7 @@ func FilterKinds(kinds []account.Kind) []account.Kind {
 			account.Capital:         true,
 			account.Savings:         true,
 			account.Debt:            true,
-			account.DebtCredit:      true,
+			account.Credit:          true,
 			account.ExternalIncome:  true,
 			account.ExternalExpense: true,
 		}
@@ -26,7 +26,7 @@ func FilterKinds(kinds []account.Kind) []account.Kind {
 			out,
 			account.Capital,
 			account.Savings,
-			account.DebtCredit,
+			account.Credit,
 			account.Debt,
 			account.ExternalExpense,
 			account.ExternalIncome,
