@@ -47,7 +47,7 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	)
 
 	// Prevents the creation of a zero capital debt in the system.
-	if account.IsDebt(args.Record.Kind) && args.Record.Capital == 0 {
+	if account.IsPassive(args.Record.Kind) && args.Record.Capital == 0 {
 		return res, fmt.Errorf(
 			"create_command: invalid capital %d for kind %s, reason: can't be zero",
 			c.req.Capital,
@@ -58,7 +58,7 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	// Fill the account balance for loans and credit full in case the account does
 	// not have an incomplete ledger. By doing this the debt is filled with
 	// capital for the user to transfer to the expected account.
-	if (account.IsCredit(args.Record.Kind) || account.IsLoan(args.Record.Kind)) && !c.req.History.At.Valid {
+	if (account.IsCredit(args.Record.Kind) || account.IsDebt(args.Record.Kind)) && !c.req.History.At.Valid {
 		args.Record.DynamicData.Balance = args.Record.Capital * -1
 		args.Record.DynamicData.History = account.HistoryDynamicData{
 			At:      nullable.New(timestamp),

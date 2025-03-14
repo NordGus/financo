@@ -25,7 +25,7 @@ func IsExternal(kind Kind) bool {
 	return kind == Income || kind == Expense
 }
 
-func IsDebt(kind Kind) bool {
+func IsPassive(kind Kind) bool {
 	return kind == Debt || kind == Credit
 }
 
@@ -33,7 +33,7 @@ func IsCredit(kind Kind) bool {
 	return kind == Credit
 }
 
-func IsLoan(kind Kind) bool {
+func IsDebt(kind Kind) bool {
 	return kind == Debt
 }
 

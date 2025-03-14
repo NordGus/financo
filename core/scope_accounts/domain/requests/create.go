@@ -56,7 +56,7 @@ func (req *Create) Record(timestamp time.Time) account.Record {
 
 	// Sets the capital to the one send by the request only if the account been
 	// created is [account.DebtLoan] or [account.DebtCredit]
-	if account.IsDebt(req.Kind) {
+	if account.IsPassive(req.Kind) {
 		record.Capital = req.Capital
 	}
 
