@@ -43,13 +43,13 @@ func (req *Update) Record(r account.Record, timestamp time.Time) account.Record 
 	r.UpdatedAt = timestamp
 
 	// Sets the capital to the one send by the request only if the account been
-	// updated is [account.DebtLoan] or [account.DebtCredit]
+	// updated is [account.Debt] or [account.Credit]
 	if account.IsPassive(r.Kind) {
 		r.Capital = req.Capital
 	}
 
 	// Sets the DynamicData Main attribute to the one set by the request only if
-	// the account been updated is [account.CapitalNormal]
+	// the account been updated is [account.Capital]
 	if account.IsCapital(r.Kind) {
 		r.DynamicData.Main = req.Main
 	}

@@ -55,13 +55,13 @@ func (req *Create) Record(timestamp time.Time) account.Record {
 	}
 
 	// Sets the capital to the one send by the request only if the account been
-	// created is [account.DebtLoan] or [account.DebtCredit]
+	// created is [account.Debt] or [account.Credit]
 	if account.IsPassive(req.Kind) {
 		record.Capital = req.Capital
 	}
 
 	// Sets the DynamicData Main attribute to the one set by the request only if
-	// the account been created is [account.CapitalNormal]
+	// the account been created is [account.Capital]
 	if account.IsCapital(record.Kind) {
 		record.DynamicData.Main = req.Main
 	}
