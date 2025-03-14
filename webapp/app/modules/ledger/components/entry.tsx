@@ -82,32 +82,29 @@ export const Entry = memo(function Entry({
 
   return (
     <span className={cn(
-      "flex gap-2 items-stretch py-2",
+      "grid grid-cols-[min-content_2fr_1fr] items-top gap-2 py-1",
       (!transaction.executedAt || isFuture(transaction.executedAt)) &&
       "relative before:absolute before:inset-0 before:bg-background/50"
     )}>
       <span
         className={cn(
-          "row-span-2 [&_svg]:size-7 flex items-center justify-center aspect-square rounded-lg h-12",
+          "row-span-2 [&_svg]:size-6 flex items-center justify-center rounded-md size-8",
           (start.kind === "external_expense" || start.kind === "external_income") && "rounded-full"
         )}
-        style={{
-          backgroundColor: start.color,
-          color: colorContrast(start.color)
-        }}
+        style={{ backgroundColor: start.color, color: colorContrast(start.color) }}
       >
         {icons[start.icon]}
       </span>
-      <span className="grow space-y-1">
-        <span>{accountName(start, startParent)}</span>
-        <div className="flex gap-1 col-span-2 items-center text-xs [&_svg]:size-4 text-muted-foreground">
-          <span>{icons[dest.icon]}</span>
+      <div>
+        <p className="mb-1.5 leading-none">{accountName(start, startParent)}</p>
+        <div className="flex gap-1 items-center text-xs [&_svg]:size-4 text-muted-foreground">
+          <span className="leading-none">{icons[dest.icon]}</span>
           <span>{accountName(dest, destParent)}</span>
         </div>
-      </span>
-      <span className={cn("text-right", currencyAmountColor(amountColorCode(source, target)))}>
+      </div>
+      <span className={cn("text-right leading-none", currencyAmountColor(amountColorCode(source, target)))}>
         {currencyAmountToHuman(amount, dest.currency)}
       </span>
-    </span>
+    </span >
   )
 })

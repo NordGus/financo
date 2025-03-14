@@ -272,7 +272,7 @@ export function Screen({
               ? <NoResults />
               : (
                 <>
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col">
                     {
                       transactions.map(([date, entries], idx) => (
                         <DateGroup key={date} date={date} isFirst={idx === 0}>
