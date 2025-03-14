@@ -10,8 +10,10 @@ import (
 	"net/http"
 )
 
+type SessionKey string
+
 const (
-	Key = "web_session"
+	Key SessionKey = "web_session"
 )
 
 func Session(next http.Handler) http.Handler {

@@ -128,7 +128,8 @@
         "markdown.preview.fontSize": 16,
         "markdown.preview.lineHeight": 1.1,
         "gopls": {
-          "ui.semanticTokens": true
+          "ui.semanticTokens": true,
+          "ui.diagnostic.staticcheck": true
         },
         "editor.codeActionsOnSave": {
           "source.fixAll": "explicit",
