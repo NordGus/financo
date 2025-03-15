@@ -55,14 +55,13 @@ func (req *Create) Record(timestamp time.Time) account.Record {
 	}
 
 	// Sets the capital to the one send by the request only if the account been
-	// created is [account.DebtLoan], [account.DebtPersonal] or
-	// [account.DebtCredit]
-	if account.IsDebt(req.Kind) {
+	// created is [account.Debt] or [account.Credit]
+	if account.IsPassive(req.Kind) {
 		record.Capital = req.Capital
 	}
 
 	// Sets the DynamicData Main attribute to the one set by the request only if
-	// the account been created is [account.CapitalNormal]
+	// the account been created is [account.Capital]
 	if account.IsCapital(record.Kind) {
 		record.DynamicData.Main = req.Main
 	}
@@ -88,7 +87,7 @@ func (req *Create) HistoryRecord(timestamp time.Time) account.Record {
 	// Builds the basic record data
 	record := account.Record{
 		ID:          -1,
-		Kind:        account.SystemHistoric,
+		Kind:        account.History,
 		Currency:    req.Currency,
 		Name:        "History",
 		Description: nullable.New("This Account was created by the system to represent the starting point for the incomplete ledger for its parent Account. DO NOT MODIFY NOR DELETE"),

@@ -26,7 +26,7 @@ func (q *query) Find(ctx context.Context) ([]responses.Listed, error) {
 	res := make([]responses.Listed, 0, 15)
 
 	records, err := q.repo.Where(ctx, filters.Categories{
-		Kinds: []account.Kind{account.ExternalExpense, account.ExternalIncome},
+		Kinds: []account.Kind{account.Expense, account.Income},
 	})
 	if err != nil {
 		return res, err

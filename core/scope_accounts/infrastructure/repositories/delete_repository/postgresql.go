@@ -53,11 +53,10 @@ func (p *postgresql) Find(ctx context.Context, id int64) (account.Record, error)
 		`,
 		id,
 		[]account.Kind{
-			account.CapitalNormal,
-			account.CapitalSavings,
-			account.DebtCredit,
-			account.DebtLoan,
-			account.DebtPersonal,
+			account.Capital,
+			account.Savings,
+			account.Credit,
+			account.Debt,
 		},
 	).Scan(
 		&r.ID,

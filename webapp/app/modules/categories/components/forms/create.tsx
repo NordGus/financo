@@ -164,8 +164,8 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
     defaultValues: {
       kind: kind,
       color: {
-        external_expense: "#db002b",
-        external_income: "#0ef23f"
+        expense: "#db002b",
+        income: "#0ef23f"
       }[kind],
       currency: defaultCurrency,
       icon: defaultIcons[kind],

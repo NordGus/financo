@@ -51,7 +51,7 @@ func (p *postgresql) Where(ctx context.Context, f filters.Savings) (map[currency
 			acc.currency
 		`,
 		f.Currencies,
-		account.CapitalSavings,
+		account.Savings,
 		time.Now().UTC(),
 	)
 	if err != nil {

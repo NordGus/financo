@@ -27,11 +27,10 @@ func (q *query) Find(ctx context.Context) ([]responses.Listed, error) {
 
 	accounts, err := q.repo.Where(ctx, filters.Accounts{
 		Kinds: []account.Kind{
-			account.CapitalNormal,
-			account.CapitalSavings,
-			account.DebtCredit,
-			account.DebtLoan,
-			account.DebtPersonal,
+			account.Capital,
+			account.Savings,
+			account.Credit,
+			account.Debt,
 		},
 	})
 	if err != nil {

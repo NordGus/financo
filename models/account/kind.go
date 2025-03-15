@@ -12,42 +12,37 @@ import (
 type Kind string
 
 const (
-	SystemHistoric  Kind = "system_historic"
-	CapitalNormal   Kind = "capital_normal"
-	CapitalSavings  Kind = "capital_savings"
-	DebtPersonal    Kind = "debt_personal"
-	DebtLoan        Kind = "debt_loan"
-	DebtCredit      Kind = "debt_credit"
-	ExternalIncome  Kind = "external_income"
-	ExternalExpense Kind = "external_expense"
+	History Kind = "history"
+	Capital Kind = "capital"
+	Savings Kind = "savings"
+	Debt    Kind = "debt"
+	Credit  Kind = "credit"
+	Income  Kind = "income"
+	Expense Kind = "expense"
 )
 
 func IsExternal(kind Kind) bool {
-	return kind == ExternalIncome || kind == ExternalExpense
+	return kind == Income || kind == Expense
 }
 
-func IsDebt(kind Kind) bool {
-	return kind == DebtLoan || kind == DebtPersonal || kind == DebtCredit
+func IsPassive(kind Kind) bool {
+	return kind == Debt || kind == Credit
 }
 
 func IsCredit(kind Kind) bool {
-	return kind == DebtCredit
+	return kind == Credit
 }
 
-func IsLoan(kind Kind) bool {
-	return kind == DebtLoan
-}
-
-func IsPersonalDebt(kind Kind) bool {
-	return kind == DebtPersonal
+func IsDebt(kind Kind) bool {
+	return kind == Debt
 }
 
 func IsSavings(kind Kind) bool {
-	return kind == CapitalSavings
+	return kind == Savings
 }
 
 func IsCapital(kind Kind) bool {
-	return kind == CapitalNormal
+	return kind == Capital
 }
 
 // UnmarshalJSON receives a buffer b, and ensures that the provided value is a
@@ -65,22 +60,20 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 	switch strings.ToLower(s) {
 	default:
 		return fmt.Errorf("account: invalid account kind \"%s\"", s)
-	case "system_historic":
-		*k = SystemHistoric
-	case "capital_normal":
-		*k = CapitalNormal
-	case "capital_savings":
-		*k = CapitalSavings
-	case "debt_personal":
-		*k = DebtPersonal
-	case "debt_loan":
-		*k = DebtLoan
-	case "debt_credit":
-		*k = DebtCredit
-	case "external_income":
-		*k = ExternalIncome
-	case "external_expense":
-		*k = ExternalExpense
+	case "history":
+		*k = History
+	case "capital":
+		*k = Capital
+	case "savings":
+		*k = Savings
+	case "debt":
+		*k = Debt
+	case "credit":
+		*k = Credit
+	case "income":
+		*k = Income
+	case "expense":
+		*k = Expense
 	}
 
 	return nil
@@ -97,22 +90,20 @@ func (k Kind) MarshalJSON() ([]byte, error) {
 	switch k {
 	default:
 		return []byte{}, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
-	case SystemHistoric:
-		s = "system_historic"
-	case CapitalNormal:
-		s = "capital_normal"
-	case CapitalSavings:
-		s = "capital_savings"
-	case DebtPersonal:
-		s = "debt_personal"
-	case DebtLoan:
-		s = "debt_loan"
-	case DebtCredit:
-		s = "debt_credit"
-	case ExternalIncome:
-		s = "external_income"
-	case ExternalExpense:
-		s = "external_expense"
+	case History:
+		s = "history"
+	case Capital:
+		s = "capital"
+	case Savings:
+		s = "savings"
+	case Debt:
+		s = "debt"
+	case Credit:
+		s = "credit"
+	case Income:
+		s = "income"
+	case Expense:
+		s = "expense"
 	}
 
 	return json.Marshal(s)
@@ -131,22 +122,20 @@ func (k *Kind) Scan(value any) error {
 	switch strings.ToLower(s) {
 	default:
 		return fmt.Errorf("account: invalid account kind \"%s\"", value)
-	case "system_historic":
-		*k = SystemHistoric
-	case "capital_normal":
-		*k = CapitalNormal
-	case "capital_savings":
-		*k = CapitalSavings
-	case "debt_personal":
-		*k = DebtPersonal
-	case "debt_loan":
-		*k = DebtLoan
-	case "debt_credit":
-		*k = DebtCredit
-	case "external_income":
-		*k = ExternalIncome
-	case "external_expense":
-		*k = ExternalExpense
+	case "history":
+		*k = History
+	case "capital":
+		*k = Capital
+	case "savings":
+		*k = Savings
+	case "debt":
+		*k = Debt
+	case "credit":
+		*k = Credit
+	case "income":
+		*k = Income
+	case "expense":
+		*k = Expense
 	}
 
 	return nil
@@ -162,22 +151,20 @@ func (k Kind) Value() (driver.Value, error) {
 	switch k {
 	default:
 		return s, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
-	case SystemHistoric:
-		s = "system_historic"
-	case CapitalNormal:
-		s = "capital_normal"
-	case CapitalSavings:
-		s = "capital_savings"
-	case DebtPersonal:
-		s = "debt_personal"
-	case DebtLoan:
-		s = "debt_loan"
-	case DebtCredit:
-		s = "debt_credit"
-	case ExternalIncome:
-		s = "external_income"
-	case ExternalExpense:
-		s = "external_expense"
+	case History:
+		s = "history"
+	case Capital:
+		s = "capital"
+	case Savings:
+		s = "savings"
+	case Debt:
+		s = "debt"
+	case Credit:
+		s = "credit"
+	case Income:
+		s = "income"
+	case Expense:
+		s = "expense"
 	}
 
 	return s, nil

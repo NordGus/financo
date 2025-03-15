@@ -118,7 +118,7 @@ func (r *postgresql) findSavings(ctx context.Context, conn *sql.Conn, cur curren
 			acc.currency
 		`,
 		cur,
-		account.CapitalSavings,
+		account.Savings,
 		time.Now().UTC(),
 	)
 	if err != nil {

@@ -71,8 +71,8 @@ func (p *postgresql) Find(ctx context.Context, id int64) (category.Record, error
 		`,
 		id,
 		[]account.Kind{
-			account.ExternalExpense,
-			account.ExternalIncome,
+			account.Expense,
+			account.Income,
 		},
 	)
 	if err != nil {
@@ -195,8 +195,8 @@ func (p *postgresql) softDeleteCategories(ctx context.Context, tx *sql.Tx, r acc
 		`,
 		r.ID,
 		[]account.Kind{
-			account.ExternalExpense,
-			account.ExternalIncome,
+			account.Expense,
+			account.Income,
 		},
 		r.DeletedAt,
 		r.UpdatedAt,

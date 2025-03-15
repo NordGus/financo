@@ -46,7 +46,7 @@ func (p *postgresql) BalanceWithoutHistoryFor(ctx context.Context, id int64) (in
 				AND (src.id = $1 OR trg.id = $1)
 		`,
 		id,
-		account.SystemHistoric,
+		account.History,
 	)
 	if err != nil {
 		return balance, err
@@ -95,7 +95,7 @@ func (p *postgresql) CountWithoutHistoryFor(ctx context.Context, id int64) (int6
 				AND (src.id = $1 OR trg.id = $1)
 		`,
 		id,
-		account.SystemHistoric,
+		account.History,
 	).Scan(&count)
 	if err != nil {
 		return count, err
@@ -134,7 +134,7 @@ func (p *postgresql) BalanceFor(ctx context.Context, ids []int64) (map[int64]int
 		GROUP BY acc.id
 		`,
 		ids,
-		[]account.Kind{account.ExternalExpense, account.ExternalIncome},
+		[]account.Kind{account.Expense, account.Income},
 	)
 	if err != nil {
 		return balances, err

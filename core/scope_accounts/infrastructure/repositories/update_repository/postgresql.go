@@ -114,11 +114,10 @@ func (p *postgresql) findRecord(ctx context.Context, conn *sql.Conn, id int64) (
 		`,
 		id,
 		[]account.Kind{
-			account.CapitalNormal,
-			account.CapitalSavings,
-			account.DebtCredit,
-			account.DebtLoan,
-			account.DebtPersonal,
+			account.Capital,
+			account.Savings,
+			account.Credit,
+			account.Debt,
 		},
 	).Scan(
 		&r.ID,
@@ -168,7 +167,7 @@ func (p *postgresql) findHistoryRecord(ctx context.Context, conn *sql.Conn, id i
 			AND parent_id = $1
 		`,
 		id,
-		account.SystemHistoric,
+		account.History,
 	).Scan(
 		&r.ID,
 		&r.ParentID,

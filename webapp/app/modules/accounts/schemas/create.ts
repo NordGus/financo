@@ -4,11 +4,10 @@ import { ICONS } from "~/modules/shared/types/icon";
 import { ModuleKind } from "../types/account";
 
 const KINDS: Record<ModuleKind, ModuleKind> = {
-  capital_normal: "capital_normal",
-  capital_savings: "capital_savings",
-  debt_credit: "debt_credit",
-  debt_loan: "debt_loan",
-  debt_personal: "debt_personal",
+  capital: "capital",
+  savings: "savings",
+  credit: "credit",
+  debt: "debt",
 } as const
 
 export const schema = z.object({

@@ -19,7 +19,7 @@ var (
 	create = []createReq{
 		{
 			req: requests.Create{
-				Kind:        account.CapitalNormal,
+				Kind:        account.Capital,
 				Currency:    currency.EUR,
 				Name:        "My Personal Bank Account",
 				Description: nullable.New("The account where I get my paycheck"),
@@ -37,7 +37,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.CapitalNormal,
+				Kind:        account.Capital,
 				Currency:    currency.EUR,
 				Name:        "Freelance bank account",
 				Description: nullable.New("Where I get paid for my freelance job"),
@@ -52,7 +52,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.CapitalSavings,
+				Kind:        account.Savings,
 				Currency:    currency.EUR,
 				Name:        "My Savings Account",
 				Description: nullable.New("The account where I store my savings"),
@@ -70,7 +70,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:     account.CapitalSavings,
+				Kind:     account.Savings,
 				Currency: currency.USD,
 				Name:     "My US Savings Account",
 				Capital:  0,
@@ -87,7 +87,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.DebtLoan,
+				Kind:        account.Debt,
 				Currency:    currency.EUR,
 				Name:        "Car loan",
 				Description: nullable.New("My japanese shit-box"),
@@ -105,7 +105,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.DebtPersonal,
+				Kind:        account.Debt,
 				Currency:    currency.EUR,
 				Name:        "Morgan's Loan",
 				Description: nullable.New("I helped Morgan with their rent"),
@@ -123,7 +123,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.DebtPersonal,
+				Kind:        account.Debt,
 				Currency:    currency.EUR,
 				Name:        "Carlos' Lunch",
 				Description: nullable.New("Carlos' catch up lunch"),
@@ -138,7 +138,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.DebtCredit,
+				Kind:        account.Credit,
 				Currency:    currency.EUR,
 				Name:        "Credit Card",
 				Description: nullable.New("My bank's credit card"),
@@ -156,7 +156,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:     account.DebtCredit,
+				Kind:     account.Credit,
 				Currency: currency.EUR,
 				Name:     "Laptop financing Credit Line",
 				Capital:  -2_500_00,

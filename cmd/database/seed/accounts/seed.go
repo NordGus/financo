@@ -97,7 +97,7 @@ func getChildrenCategories(ctx context.Context, db services.SQLDatabaseService, 
 			AND kind != $2
 		`,
 		parent,
-		account.SystemHistoric,
+		account.History,
 	)
 	if err != nil {
 		return ids, err

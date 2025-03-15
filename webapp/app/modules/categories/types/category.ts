@@ -2,7 +2,7 @@ import { Kinds } from "~/modules/shared/types/account";
 import { Currency } from "~/modules/shared/types/currency";
 import { Icon } from "~/modules/shared/types/icon";
 
-type ModuleKind = Kinds["external_expense"] | Kinds["external_income"]
+type ModuleKind = Kinds["expense"] | Kinds["income"]
 
 type Child = {
   id: number

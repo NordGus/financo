@@ -29,7 +29,7 @@ export function Section({ accounts, selected, title, onAdd, onRemove }: Props) {
             color={account.color}
             selected={isSelected}
             onClick={isSelected ? () => onRemove(account.id) : () => onAdd(account.id)}
-            asCategory={account.kind === "external_expense" || account.kind === "external_income"}
+            asCategory={account.kind === "expense" || account.kind === "income"}
           />
         )
       })}
@@ -60,7 +60,7 @@ export function AccordionSection({ accounts, selected, title, onAdd, onRemove }:
                 color={account.color}
                 selected={isSelected}
                 onClick={isSelected ? () => onRemove(account.id) : () => onAdd(account.id)}
-                asCategory={account.kind === "external_expense" || account.kind === "external_income"}
+                asCategory={account.kind === "expense" || account.kind === "income"}
               />
             )
           })}

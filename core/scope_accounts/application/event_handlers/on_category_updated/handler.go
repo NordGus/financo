@@ -36,11 +36,10 @@ func (h *handler) Handle(event messages.Updated) error {
 
 	records, err := h.accountsRepo.Where(ctx, filters.Accounts{
 		Kinds: []account.Kind{
-			account.CapitalNormal,
-			account.CapitalSavings,
-			account.DebtCredit,
-			account.DebtLoan,
-			account.DebtPersonal,
+			account.Capital,
+			account.Savings,
+			account.Credit,
+			account.Debt,
 		},
 	})
 	if err != nil {

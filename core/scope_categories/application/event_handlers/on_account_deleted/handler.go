@@ -36,8 +36,8 @@ func (h *handler) Handle(event messages.Deleted) error {
 
 	records, err := h.categoryRepo.Where(ctx, filters.Categories{
 		Kinds: []account.Kind{
-			account.ExternalIncome,
-			account.ExternalExpense,
+			account.Income,
+			account.Expense,
 		},
 	})
 	if err != nil {

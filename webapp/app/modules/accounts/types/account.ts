@@ -3,11 +3,10 @@ import { Currency } from "~/modules/shared/types/currency";
 import { Icon } from "~/modules/shared/types/icon";
 
 type ModuleKind =
-  Kinds["capital_normal"] |
-  Kinds["capital_savings"] |
-  Kinds["debt_credit"] |
-  Kinds["debt_loan"] |
-  Kinds["debt_personal"]
+  Kinds["capital"] |
+  Kinds["savings"] |
+  Kinds["credit"] |
+  Kinds["debt"]
 
 interface History {
   at?: string | null

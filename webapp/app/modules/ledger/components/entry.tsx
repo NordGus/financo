@@ -24,12 +24,11 @@ function accountName(account: Account, parent: Account | null): string {
 
 function account(source: Account, target: Account): Account {
   switch (true) {
-    case source.kind === "debt_credit":
-    case source.kind === "debt_loan":
-    case source.kind === "debt_personal":
-    case source.kind === "external_expense":
-    case source.kind === "external_income":
-    case source.kind === "system_historic":
+    case source.kind === "credit":
+    case source.kind === "debt":
+    case source.kind === "expense":
+    case source.kind === "income":
+    case source.kind === "history":
       return source
     default:
       return target
@@ -38,19 +37,17 @@ function account(source: Account, target: Account): Account {
 
 function amountColorCode(source: Account, target: Account): number {
   switch (true) {
-    case source.kind === "debt_credit":
-    case source.kind === "debt_loan":
-    case source.kind === "debt_personal":
-    case source.kind === "external_expense":
-    case source.kind === "external_income":
-    case source.kind === "system_historic":
+    case source.kind === "credit":
+    case source.kind === "debt":
+    case source.kind === "expense":
+    case source.kind === "income":
+    case source.kind === "history":
       return 1
-    case target.kind === "debt_credit":
-    case target.kind === "debt_loan":
-    case target.kind === "debt_personal":
-    case target.kind === "external_expense":
-    case target.kind === "external_income":
-    case target.kind === "system_historic":
+    case target.kind === "credit":
+    case target.kind === "debt":
+    case target.kind === "expense":
+    case target.kind === "income":
+    case target.kind === "history":
       return -1
     default:
       return 0
@@ -89,7 +86,7 @@ export const Entry = memo(function Entry({
       <span
         className={cn(
           "row-span-2 [&_svg]:size-6 flex items-center justify-center rounded-md size-8",
-          (start.kind === "external_expense" || start.kind === "external_income") && "rounded-full"
+          (start.kind === "expense" || start.kind === "income") && "rounded-full"
         )}
         style={{ backgroundColor: start.color, color: colorContrast(start.color) }}
       >

@@ -25,11 +25,10 @@ interface Props {
 
 function isCategory(kind: Kind): boolean {
   switch (kind) {
-    case "external_income":
-    case "external_expense":
-    case "debt_credit":
-    case "debt_loan":
-    case "debt_personal":
+    case "income":
+    case "expense":
+    case "credit":
+    case "debt":
       return true
     default:
       return false
@@ -42,23 +41,19 @@ export function CategoryPicker({ open, onOpenChange, onChangePick, accounts, sel
   const onRemove = (id: number) => setIds(ids.filter((prev) => prev !== id))
 
   const expenses = useMemo(
-    () => accounts.filter(({ kind, parentId, archivedAt }) => kind === "external_expense" && !archivedAt && !parentId),
+    () => accounts.filter(({ kind, parentId, archivedAt }) => kind === "expense" && !archivedAt && !parentId),
     [accounts]
   )
   const income = useMemo(
-    () => accounts.filter(({ kind, parentId, archivedAt }) => kind === "external_income" && !archivedAt && !parentId),
+    () => accounts.filter(({ kind, parentId, archivedAt }) => kind === "income" && !archivedAt && !parentId),
     [accounts]
   )
   const loans = useMemo(
-    () => accounts.filter(({ kind, archivedAt }) => kind === "debt_loan" && !archivedAt),
-    [accounts]
-  )
-  const personal = useMemo(
-    () => accounts.filter(({ kind, archivedAt }) => kind === "debt_personal" && !archivedAt),
+    () => accounts.filter(({ kind, archivedAt }) => kind === "debt" && !archivedAt),
     [accounts]
   )
   const credit = useMemo(
-    () => accounts.filter(({ kind, archivedAt }) => kind === "debt_credit" && !archivedAt),
+    () => accounts.filter(({ kind, archivedAt }) => kind === "credit" && !archivedAt),
     [accounts]
   )
   const archived = useMemo(
@@ -78,8 +73,7 @@ export function CategoryPicker({ open, onOpenChange, onChangePick, accounts, sel
         <div className="flex flex-col gap-4 px-4 max-h-[80dvh] overflow-y-auto">
           <Section accounts={expenses} title="Expenses" selected={ids} onAdd={onAdd} onRemove={onRemove} />
           <Section accounts={income} title="Income" selected={ids} onAdd={onAdd} onRemove={onRemove} />
-          <Section accounts={loans} title="Loans" selected={ids} onAdd={onAdd} onRemove={onRemove} />
-          <Section accounts={personal} title="Personal debt" selected={ids} onAdd={onAdd} onRemove={onRemove} />
+          <Section accounts={loans} title="Debts" selected={ids} onAdd={onAdd} onRemove={onRemove} />
           <Section accounts={credit} title="Credit" selected={ids} onAdd={onAdd} onRemove={onRemove} />
           <AccordionSection accounts={archived} title="Archived" selected={ids} onAdd={onAdd} onRemove={onRemove} />
         </div>

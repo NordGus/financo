@@ -160,7 +160,7 @@ function reducer(state: ScreenState, action: ScreenAction): ScreenState {
 function init({ view }: { view: View }): ScreenState {
   return {
     view,
-    createKind: "capital_normal",
+    createKind: "capital",
     id: -1,
     open: null,
     dialog: null,
@@ -271,47 +271,38 @@ export function Screen({
               </div>
             )}
             <Heading2 className="flex gap-4 items-center">
-              Capital <InfoDialog copy={accountKindsManual.capital_normal} />
+              Capital <InfoDialog copy={accountKindsManual.capital} />
             </Heading2>
             <ListForKind
               accounts={accounts}
-              kind="capital_normal"
+              kind="capital"
               forArchived={inArchivedView}
               onSelectAccount={onAccountChange}
             />
             <Heading2 className="flex gap-4 items-center">
-              Savings <InfoDialog copy={accountKindsManual.capital_savings} />
+              Savings <InfoDialog copy={accountKindsManual.savings} />
             </Heading2>
             <ListForKind
               accounts={accounts}
-              kind="capital_savings"
+              kind="savings"
               forArchived={inArchivedView}
               onSelectAccount={onAccountChange}
             />
             <Heading2 className="flex gap-4 items-center">
-              Loans <InfoDialog copy={accountKindsManual.debt_loan} />
+              Debts <InfoDialog copy={accountKindsManual.debt} />
             </Heading2>
             <ListForKind
               accounts={accounts}
-              kind="debt_loan"
+              kind="debt"
               forArchived={inArchivedView}
               onSelectAccount={onAccountChange}
             />
             <Heading2 className="flex gap-4 items-center">
-              Personal debts <InfoDialog copy={accountKindsManual.debt_personal} />
+              Credit <InfoDialog copy={accountKindsManual.credit} />
             </Heading2>
             <ListForKind
               accounts={accounts}
-              kind="debt_personal"
-              forArchived={inArchivedView}
-              onSelectAccount={onAccountChange}
-            />
-            <Heading2 className="flex gap-4 items-center">
-              Credit <InfoDialog copy={accountKindsManual.debt_credit} />
-            </Heading2>
-            <ListForKind
-              accounts={accounts}
-              kind="debt_credit"
+              kind="credit"
               forArchived={inArchivedView}
               onSelectAccount={onAccountChange}
             />

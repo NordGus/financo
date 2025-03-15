@@ -25,7 +25,7 @@ var (
 	create = []createReq{
 		{
 			req: requests.Create{
-				Kind:        account.ExternalIncome,
+				Kind:        account.Income,
 				Name:        "Paycheck",
 				Description: nullable.New("Where the bread comes from"),
 				Currency:    currency.EUR,
@@ -67,7 +67,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:     account.ExternalIncome,
+				Kind:     account.Income,
 				Name:     "Allowance",
 				Currency: currency.EUR,
 				Color:    "#eb8934",
@@ -80,7 +80,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:        account.ExternalExpense,
+				Kind:        account.Expense,
 				Name:        "Market",
 				Description: nullable.New("I need to survive"),
 				Currency:    currency.EUR,
@@ -121,7 +121,7 @@ var (
 		},
 		{
 			req: requests.Create{
-				Kind:     account.ExternalExpense,
+				Kind:     account.Expense,
 				Name:     "Transport",
 				Currency: currency.EUR,
 				Color:    "#e5eb34",

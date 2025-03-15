@@ -1,65 +1,57 @@
 
 export const KINDS = {
-  system_historic: "system_historic",
-  capital_normal: "capital_normal",
-  capital_savings: "capital_savings",
-  debt_personal: "debt_personal",
-  debt_loan: "debt_loan",
-  debt_credit: "debt_credit",
-  external_income: "external_income",
-  external_expense: "external_expense"
+  history: "history",
+  capital: "capital",
+  savings: "savings",
+  debt: "debt",
+  credit: "credit",
+  income: "income",
+  expense: "expense"
 } as const;
 
 type Kinds = typeof KINDS;
 
-type Kind = Kinds["system_historic"] |
-  Kinds["capital_normal"] |
-  Kinds["capital_savings"] |
-  Kinds["debt_personal"] |
-  Kinds["debt_loan"] |
-  Kinds["debt_credit"] |
-  Kinds["external_income"] |
-  Kinds["external_expense"];
+type Kind = Kinds["history"] |
+  Kinds["capital"] |
+  Kinds["savings"] |
+  Kinds["debt"] |
+  Kinds["credit"] |
+  Kinds["income"] |
+  Kinds["expense"];
 
 function isCapital(kind: Kind) {
-  return kind === KINDS.capital_normal
+  return kind === KINDS.capital
 }
 
 function isSavings(kind: Kind) {
-  return kind === KINDS.capital_savings
+  return kind === KINDS.savings
 }
 
-function isDebt(kind: Kind) {
-  return kind === KINDS.debt_loan ||
-    kind === KINDS.debt_personal ||
-    kind === KINDS.debt_credit
+function isPassive(kind: Kind) {
+  return kind === KINDS.debt || kind === KINDS.credit
 }
 
 function isLoan(kind: Kind) {
-  return kind === KINDS.debt_loan
-}
-
-function isPersonalDebt(kind: Kind) {
-  return kind === KINDS.debt_personal
+  return kind === KINDS.debt
 }
 
 function isCredit(kind: Kind) {
-  return kind === KINDS.debt_credit
+  return kind === KINDS.credit
 }
 
 function isIncome(kind: Kind) {
-  return kind === KINDS.external_income
+  return kind === KINDS.income
 }
 
 function isExpense(kind: Kind) {
-  return kind === KINDS.external_expense
+  return kind === KINDS.expense
 }
 
 function isCategory(kind: Kind) {
-  return kind === KINDS.external_expense || kind === KINDS.external_income
+  return kind === KINDS.expense || kind === KINDS.income
 }
 
-export { isCapital, isCategory, isCredit, isDebt, isExpense, isIncome, isLoan, isPersonalDebt, isSavings };
+export { isCapital, isCategory, isCredit, isExpense, isIncome, isLoan, isPassive, isSavings };
 
 export type { Kind, Kinds };
 
