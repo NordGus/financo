@@ -11,6 +11,7 @@ export type Account = {
   description?: string | null
   color: string
   icon: Icon
+  capital: number
   balance: number
   main: boolean
   archivedAt: string | null

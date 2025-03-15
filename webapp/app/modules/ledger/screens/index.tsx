@@ -10,6 +10,7 @@ import { CategoryPicker } from "../components/dialogs/category-picker";
 import { DateDayPicker } from "../components/dialogs/date-day-picker";
 import { DateRangePicker } from "../components/dialogs/date-range-picker";
 import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
+import { TransactionTargetPicker } from "../components/dialogs/transaction-target-picker";
 import { Entry } from "../components/entry";
 import { NoResults } from "../components/no-results";
 import { filterFrom, filterTo } from "../defaults/filters";
@@ -29,7 +30,13 @@ type InitialState = {
   filters: Filters
 }
 
-type Open = "period" | "day-picker" | "range-picker" | "accounts" | "categories" | null
+type Open = "period" |
+  "day-picker" |
+  "range-picker" |
+  "accounts" |
+  "categories" |
+  "target-picker" |
+  null
 
 type ScreenState = {
   from?: Date
@@ -138,6 +145,8 @@ export function Screen({
     dispatch({ type: "OPEN_CHANGED", open: open ? "accounts" : null })
   const onOpenCategoriesFilterChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "categories" : null })
+  const onTransactionTargetPicker = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "target-picker" : null })
 
   const onSearch = useCallback(async (nextFilters: Filters, signal: AbortSignal) => {
     await onSearchAction({ ...nextFilters }, signal, onActionSuccess, onActionFailed)
@@ -238,7 +247,7 @@ export function Screen({
           <Button
             size={"icon"}
             className="shadow-lg"
-            onClick={() => { }}
+            onClick={() => onTransactionTargetPicker(true)}
           >
             <PlusIcon />
           </Button>
@@ -345,6 +354,12 @@ export function Screen({
         selected={screen.categories}
         onChangePick={onCategoryFilterChange}
         submitting={screen.submitting}
+      />
+
+      <TransactionTargetPicker
+        open={screen.open === "target-picker"}
+        onOpenChange={onTransactionTargetPicker}
+        onSelect={() => { }}
       />
     </Fragment >
   )
