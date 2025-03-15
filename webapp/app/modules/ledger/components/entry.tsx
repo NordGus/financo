@@ -2,7 +2,7 @@ import { isFuture } from "date-fns";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { memo } from "react";
 import { cn } from "~/lib/utils";
-import { colorContrast } from "~/modules/shared/helpers/color-contrast";
+import { AccountListingIcon } from "~/modules/shared/components/icons/account-icon";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
 import { Account } from "../types/accounts";
@@ -78,20 +78,18 @@ export const Entry = memo(function Entry({
       : null
 
   return (
-    <span className={cn(
+    <div className={cn(
       "grid grid-cols-[min-content_2fr_1fr] items-top gap-2 py-1",
       (!transaction.executedAt || isFuture(transaction.executedAt)) &&
       "relative before:absolute before:inset-0 before:bg-background/50"
     )}>
-      <span
-        className={cn(
-          "row-span-2 [&_svg]:size-6 flex items-center justify-center rounded-md size-8",
-          (start.kind === "expense" || start.kind === "income") && "rounded-full"
-        )}
-        style={{ backgroundColor: start.color, color: colorContrast(start.color) }}
-      >
-        <DynamicIcon name={start.icon} />
-      </span>
+      <AccountListingIcon
+        kind={start.kind}
+        icon={start.icon}
+        color={start.color}
+        main={start.main}
+        className="size-8 [&_svg]:size-6"
+      />
       <div>
         <p className="mb-1.5 leading-none">{accountName(start, startParent)}</p>
         <div className="flex gap-1 items-center text-xs [&_svg]:size-4 text-muted-foreground">
@@ -106,6 +104,6 @@ export const Entry = memo(function Entry({
       <span className={cn("text-right leading-none", currencyAmountColor(amountColorCode(source, target)))}>
         {currencyAmountToHuman(amount, dest.currency)}
       </span>
-    </span >
+    </div>
   )
 })

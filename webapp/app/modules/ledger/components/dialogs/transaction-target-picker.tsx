@@ -1,7 +1,5 @@
-import { StarIcon } from "lucide-react"
-import { DynamicIcon } from "lucide-react/dynamic"
 import { ComponentProps, useCallback, useMemo, useState } from "react"
-import { cn } from "~/lib/utils"
+import { AccountListingIcon } from "~/modules/shared/components/icons/account-icon"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Drawer,
@@ -18,7 +16,6 @@ import {
   TabsList,
   TabsTrigger
 } from "~/modules/shared/components/ui/tabs"
-import { colorContrast } from "~/modules/shared/helpers/color-contrast"
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color"
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human"
 import { useTransactionsStore } from "../../stores/transactions"
@@ -215,17 +212,13 @@ interface IncomeOrExpenseProps {
 function IncomeOrExpense({ account, onClick }: ComponentProps<"div"> & IncomeOrExpenseProps) {
   return (
     <div onClick={onClick} className="flex flex-col justify-center items-center gap-2">
-      <span
-        className={
-          cn(
-            "size-10 [&_svg]:size-7 flex justify-center items-center rounded-lg",
-            (account.kind === "income" || account.kind === "expense") && "rounded-full"
-          )
-        }
-        style={{ backgroundColor: account.color }}
-      >
-        <DynamicIcon name={account.icon} color={colorContrast(account.color)} />
-      </span>
+      <AccountListingIcon
+        kind={account.kind}
+        icon={account.icon}
+        color={account.color}
+        main={account.main}
+        className="row-span-2"
+      />
       <p className="text-xs text-center">{account.name}</p>
     </div>
   )
@@ -243,22 +236,13 @@ function Transfer({ account, onClick }: ComponentProps<"div"> & TransferProps) {
       className="grid grid-cols-[min-content_1fr] gap-2 mb-1"
       onClick={onClick}
     >
-      <span
-        className={
-          cn(
-            "row-span-2 size-10 [&_svg]:size-7 flex justify-center items-center rounded-lg relative",
-            (account.kind === "income" || account.kind === "expense") && "rounded-full"
-          )
-        }
-        style={{ backgroundColor: account.color }}
-      >
-        <DynamicIcon name={account.icon} color={colorContrast(account.color)} />
-        {
-          account.main && <span className="absolute -top-1.5 -right-1.5 p-0.5 bg-primary rounded-full">
-            <StarIcon className="!size-4 text-primary-foreground" />
-          </span>
-        }
-      </span>
+      <AccountListingIcon
+        kind={account.kind}
+        icon={account.icon}
+        color={account.color}
+        main={account.main}
+        className="row-span-2"
+      />
       <div className="flex flex-col gap-1 [&_>*]:leading-none">
         <p>{account.name}</p>
         <p className="text-muted-foreground text-xs">{account.description}</p>
