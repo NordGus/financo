@@ -185,7 +185,7 @@ function init({ view, subView }: { view: View, subView: SubView }): ScreenState 
   return {
     view,
     subView,
-    kind: "external_expense",
+    kind: "expense",
     id: -1,
     open: null,
     dialog: null,
@@ -312,7 +312,7 @@ export function Screen({
           )}
           <ListForKind
             categories={categories}
-            kind={screen.view === "income" ? "external_income" : "external_expense"}
+            kind={screen.view}
             forArchived={screen.subView === "archived"}
             onClick={onCategoryChange}
           />

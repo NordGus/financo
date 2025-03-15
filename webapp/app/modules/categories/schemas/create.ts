@@ -4,8 +4,8 @@ import { ICONS } from "~/modules/shared/types/icon";
 import { ModuleKind } from "../types/category";
 
 const KINDS: Record<ModuleKind, ModuleKind> = {
-  external_expense: "external_expense",
-  external_income: "external_income",
+  expense: "expense",
+  income: "income",
 } as const
 
 export const schema = z.object({

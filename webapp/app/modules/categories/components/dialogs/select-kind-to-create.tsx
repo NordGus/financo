@@ -20,7 +20,7 @@ interface Props {
 }
 
 export function SelectKindToCreate({ open, onOpenChange, onSelect }: Props) {
-  const kinds: ModuleKind[] = ["external_income", "external_expense"]
+  const kinds: ModuleKind[] = ["income", "expense"]
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
