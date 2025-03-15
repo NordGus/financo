@@ -1,7 +1,7 @@
 import { isFuture } from "date-fns";
+import { DynamicIcon } from "lucide-react/dynamic";
 import { memo } from "react";
 import { cn } from "~/lib/utils";
-import { icons } from "~/modules/shared/components/ui/icon";
 import { colorContrast } from "~/modules/shared/helpers/color-contrast";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
@@ -90,13 +90,17 @@ export const Entry = memo(function Entry({
         )}
         style={{ backgroundColor: start.color, color: colorContrast(start.color) }}
       >
-        {icons[start.icon]}
+        <DynamicIcon name={start.icon} />
       </span>
       <div>
         <p className="mb-1.5 leading-none">{accountName(start, startParent)}</p>
         <div className="flex gap-1 items-center text-xs [&_svg]:size-4 text-muted-foreground">
-          <span className="leading-none">{icons[dest.icon]}</span>
-          <span>{accountName(dest, destParent)}</span>
+          <span className="leading-none">
+            <DynamicIcon name={dest.icon} />
+          </span>
+          <span>
+            {accountName(dest, destParent)}
+          </span>
         </div>
       </div>
       <span className={cn("text-right leading-none", currencyAmountColor(amountColorCode(source, target)))}>

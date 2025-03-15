@@ -1,5 +1,5 @@
+import { DynamicIcon } from "lucide-react/dynamic"
 import { Card } from "~/modules/shared/components/ui/card"
-import { icons } from "~/modules/shared/components/ui/icon"
 import { Icon } from "~/modules/shared/types/icon"
 import { Archived } from "../badges/archived"
 
@@ -15,7 +15,7 @@ export function PreviewCard({ name, description, icon, archived, onClick }: Prop
   return (
     <Card className="px-4 py-3 cursor-pointer gap-0" onClick={onClick}>
       <div className="flex gap-2">
-        {icons[icon]} <span className="font-semibold">{name}</span>
+        <DynamicIcon name={icon} /> <span className="font-semibold">{name}</span>
       </div>
       {description && (
         <p className="text-muted-foreground text-sm">

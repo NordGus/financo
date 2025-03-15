@@ -1,7 +1,7 @@
+import { DynamicIcon } from "lucide-react/dynamic";
 import { PropsWithChildren } from "react";
 import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
-import { icons } from "~/modules/shared/components/ui/icon";
 import { colorContrast } from "~/modules/shared/helpers/color-contrast";
 import { Account } from "../types/accounts";
 
@@ -40,7 +40,7 @@ export function AccountsFilter({ accounts, selected, onClick, className }: Props
     return (
       <Btn className={className} onClick={onClick}>
         <span className="rounded-md p-1" style={{ backgroundColor: account.color, color: colorContrast(account.color) }}>
-          {icons[account.icon]}
+          <DynamicIcon name={account.icon} />
         </span>
         <span>{account.name}</span>
       </Btn>

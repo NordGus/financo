@@ -1,3 +1,4 @@
+import { DynamicIcon } from "lucide-react/dynamic";
 import {
   Card,
   CardContent,
@@ -5,7 +6,6 @@ import {
   CardHeader,
   CardTitle
 } from "~/modules/shared/components/ui/card";
-import { icons } from "~/modules/shared/components/ui/icon";
 import { colorContrast } from "~/modules/shared/helpers/color-contrast";
 import { Account } from "../types/account";
 import { ArchivedAccount } from "./badges/archived-account";
@@ -46,7 +46,7 @@ export function PreviewCard({ account, onSelectAccount }: Props) {
         }}
       >
         <CardTitle className="flex flex-row gap-1 items-center [&_svg]:size-5">
-          {icons[icon]} {name}
+          <DynamicIcon name={icon} /> {name}
         </CardTitle>
         <CardDescription
           style={{
