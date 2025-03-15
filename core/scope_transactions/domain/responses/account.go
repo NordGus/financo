@@ -18,6 +18,7 @@ type Account struct {
 	Description nullable.Type[string]    `json:"description"`
 	Color       color.Type               `json:"color"`
 	Icon        icon.Type                `json:"icon"`
+	Capital     int64                    `json:"capital"`
 	Balance     int64                    `json:"balance"`
 	Main        bool                     `json:"main"`
 	ArchivedAt  nullable.Type[time.Time] `json:"archivedAt"`
@@ -36,6 +37,7 @@ func RecordToAccount(r account.Record) Account {
 		Description: r.Description,
 		Color:       r.Color,
 		Icon:        r.Icon,
+		Capital:     r.Capital,
 		Balance:     r.DynamicData.Balance,
 		Main:        r.DynamicData.Main,
 		ArchivedAt:  r.ArchivedAt,
