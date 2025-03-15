@@ -13,7 +13,14 @@ interface ListingProps {
   main?: boolean
 }
 
-export function AccountListingIcon({ kind, icon, color, main = false, className, ...props }: ComponentProps<"span"> & ListingProps) {
+export function AccountListingIcon({
+  kind,
+  icon,
+  color,
+  main = false,
+  className,
+  ...props
+}: ComponentProps<"span"> & ListingProps) {
   return (
     <span
       className={
