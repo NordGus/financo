@@ -1,4 +1,3 @@
-import { Currency } from "~/modules/shared/types/currency";
 import { Icon } from "~/modules/shared/types/icon";
 
 export type UpdateChild = {
@@ -13,7 +12,6 @@ export type Update = {
   id: number
   name: string
   description?: string | null
-  currency: Currency
   color: string,
   icon: Icon,
 }

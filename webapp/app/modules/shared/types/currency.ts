@@ -4,6 +4,7 @@ export const CURRENCIES = {
   EUR: "EUR",
   CHF: "CHF",
   GBP: "GBP",
+  MULTI: "MULTI",
 } as const;
 
 type Currencies = typeof CURRENCIES;
@@ -13,7 +14,8 @@ type Currency =
   Currencies["USD"] |
   Currencies["EUR"] |
   Currencies["CHF"] |
-  Currencies["GBP"];
+  Currencies["GBP"] |
+  Currencies["MULTI"];
 
 type Entry = {
   code: Currency

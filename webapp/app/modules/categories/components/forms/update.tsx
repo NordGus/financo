@@ -3,7 +3,6 @@ import { PackageIcon, PackageOpenIcon, PlusIcon, TrashIcon } from "lucide-react"
 import { useEffect, useReducer } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input";
 import { IconInput } from "~/modules/shared/components/inputs/icon-input";
 import { Throbber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
@@ -375,7 +374,6 @@ function UpdateForm({
     resolver: zodResolver(schema),
     defaultValues: {
       id: category.id,
-      currency: category.currency,
       name: category.name,
       description: category.description ?? undefined,
       color: category.color,
@@ -457,20 +455,6 @@ function UpdateForm({
                   </FormControl>
                   <FormDescription>
                     You can leave this empty
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="currency"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Currency</FormLabel>
-                  <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} />
-                  <FormDescription>
-                    The currency this account will operate in with
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

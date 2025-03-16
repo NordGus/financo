@@ -329,7 +329,6 @@ export function Screen({
         open={screen.open === "create"}
         onOpenChange={onOpenCreateChange}
         kind={screen.kind}
-        defaultCurrency="EUR"
         submitting={screen.submitting}
         onSubmitAction={onCreate}
       />

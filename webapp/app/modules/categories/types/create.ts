@@ -1,4 +1,3 @@
-import { Currency } from "~/modules/shared/types/currency";
 import { Icon } from "~/modules/shared/types/icon";
 import { ModuleKind } from "./category";
 
@@ -12,7 +11,6 @@ export type Create = {
   kind: ModuleKind
   name: string
   description?: string | null
-  currency: Currency
   color: string,
   icon: Icon,
   children: CreateChild[]
