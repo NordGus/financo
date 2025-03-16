@@ -125,6 +125,7 @@ func (req *Create) HistoryTransaction(timestamp time.Time) transaction.Record {
 		SourceAmount: req.History.Balance.OrElse(0),
 		TargetAmount: req.History.Balance.OrElse(0),
 		Notes:        nullable.New("This Transaction was created by the system to represent the starting point for the incomplete ledger for the Account. DO NOT MODIFY NOR DELETE"),
+		Currency:     req.Currency,
 		IssuedAt:     req.History.At.OrElse(timestamp).UTC(),
 		ExecutedAt:   req.History.At,
 		UpdatedAt:    timestamp,
@@ -143,6 +144,12 @@ func (req *Create) HistoryTransaction(timestamp time.Time) transaction.Record {
 	// is created for the case the user changes this later.
 	if !req.History.At.Valid {
 		record.DeletedAt = nullable.New(timestamp)
+	}
+
+	if req.History.Balance.OrElse(0) < 0 {
+		record.Metadata.Kind = transaction.Expense
+	} else {
+		record.Metadata.Kind = transaction.Income
 	}
 
 	return record
