@@ -55,10 +55,10 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 		)
 	}
 
-	// Fill the account balance for loans and credit full in case the account does
+	// Fill the account balance credit full in case the account does
 	// not have an incomplete ledger. By doing this the debt is filled with
 	// capital for the user to transfer to the expected account.
-	if (account.IsCredit(args.Record.Kind) || account.IsDebt(args.Record.Kind)) && !c.req.History.At.Valid {
+	if account.IsCredit(args.Record.Kind) && !c.req.History.At.Valid {
 		args.Record.DynamicData.Balance = args.Record.Capital * -1
 		args.Record.DynamicData.History = account.HistoryDynamicData{
 			At:      nullable.New(timestamp),
