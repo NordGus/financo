@@ -52,9 +52,11 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 		tr.source_amount,
 		tr.target_amount,
 		tr.notes,
+		tr.currency,
+		tr.deleted_at,
 		tr.created_at,
 		tr.updated_at,
-		tr.deleted_at
+		tr.metadata
 	FROM
 		transactions tr
 		INNER JOIN accounts src ON src.id = tr.source_id
@@ -102,9 +104,12 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 			&r.SourceAmount,
 			&r.TargetAmount,
 			&r.Notes,
+			&r.Currency,
+			&r.DeletedAt,
 			&r.CreatedAt,
 			&r.UpdatedAt,
 			&r.DeletedAt,
+			&r.Metadata,
 		)
 		if err != nil {
 			return out, err
