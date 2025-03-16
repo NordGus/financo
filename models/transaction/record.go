@@ -6,10 +6,6 @@ import (
 	"time"
 )
 
-type Metadata struct {
-	Kind Kind
-}
-
 type Record struct {
 	ID           int64
 	SourceID     int64

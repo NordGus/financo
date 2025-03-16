@@ -1,6 +1,7 @@
 package responses
 
 import (
+	"financo/lib/currency"
 	"financo/lib/nullable"
 	"financo/models/transaction"
 	"time"
@@ -15,8 +16,10 @@ type Detailed struct {
 	TargetID     int64                    `json:"targetId"`
 	TargetAmount int64                    `json:"targetAmount"`
 	Notes        nullable.Type[string]    `json:"notes"`
+	Currency     currency.Type            `json:"currency"`
 	CreatedAt    time.Time                `json:"createdAt"`
 	UpdatedAt    time.Time                `json:"updatedAt"`
+	Metadata     transaction.Metadata     `json:"metadata"`
 }
 
 func RecordToDetailed(r transaction.Record) Detailed {
@@ -29,7 +32,9 @@ func RecordToDetailed(r transaction.Record) Detailed {
 		TargetID:     r.TargetID,
 		TargetAmount: r.TargetAmount,
 		Notes:        r.Notes,
+		Currency:     r.Currency,
 		CreatedAt:    r.CreatedAt,
 		UpdatedAt:    r.UpdatedAt,
+		Metadata:     r.Metadata,
 	}
 }
