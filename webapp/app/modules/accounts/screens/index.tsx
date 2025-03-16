@@ -1,24 +1,20 @@
-import { PlusIcon } from "lucide-react";
-import { Fragment, useMemo, useReducer } from "react";
-import { InfoDialog } from "~/modules/shared/components/dialogs/info";
+import { ArrowDownUpIcon, BanknoteIcon, BookTextIcon, PlusIcon } from "lucide-react";
+import { useReducer } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
-import { Heading2 } from "~/modules/shared/components/ui/headings";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/modules/shared/components/ui/tabs";
 import { ArchiveAccount } from "../components/dialogs/archive";
 import { DeleteAccount } from "../components/dialogs/delete";
 import { SelectAccountKindToCreate } from "../components/dialogs/select-account-kind-to-create";
-import { SelectIndexScreenView } from "../components/dialogs/select-index-screen-view";
 import { UnarchiveAccount } from "../components/dialogs/unarchive";
 import { CreateAccount } from "../components/forms/create";
 import { UpdateAccount } from "../components/forms/update";
-import { ListForKind } from "../components/list-for-kind";
-import { accountKindsManual } from "../manual/account-kinds-manual";
-import { archivedAccountsManual } from "../manual/archived-accounts-manual";
 import { Account, ModuleKind } from "../types/account";
 import { ArchiveAccountAction } from "../types/archive";
 import { Create, CreateAccountAction } from "../types/create";
 import { DeleteAccountAction } from "../types/delete";
 import { UnarchiveAccountAction } from "../types/unarchive";
 import { Update, UpdateAccountAction } from "../types/update";
+import { Screen as ActivesScreen } from "./root/actives";
 
 interface Props {
   accounts: Account[]
@@ -31,15 +27,17 @@ interface Props {
   onDeleteAccountAction: DeleteAccountAction
 }
 
-type View = "active" | "archived"
+type View = "actives" | "passives" | "finances"
 
 function withView(view?: string | string[] | null): View {
   switch (view) {
-    case "archived":
-      return "archived"
-    case "active":
+    case "passives":
+      return "passives"
+    case "finances":
+      return "finances"
+    case "actives":
     default:
-      return "active"
+      return "actives"
   }
 }
 
@@ -180,8 +178,6 @@ export function Screen({
 }: Props) {
   const [screen, dispatch] = useReducer(reducer, { view: withView(searchParams.get("view")) }, init)
 
-  const inArchivedView = useMemo(() => screen.view === "archived", [screen.view])
-
   const onOpenSelectKindForCreateChange = (open: boolean) =>
     dispatch({ type: "OPEN_SELECT_KIND_CHANGED", open })
   const onSubmitAction = () =>
@@ -242,7 +238,7 @@ export function Screen({
   const selected = accounts.find(({ id }) => id === screen.id)
 
   return (
-    <Fragment>
+    <>
       <div className="relative overflow-hidden h-full">
         <Button
           size={"icon"}
@@ -253,24 +249,26 @@ export function Screen({
         </Button>
         <div className="overflow-x-hidden overflow-y-auto h-full p-4">
           <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <SelectIndexScreenView
-                value={screen.view}
-                onValueChange={(value) => onScreenViewChange(withView(value))}
-              />
-            </div>
-            {inArchivedView && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                <InfoDialog
-                  copy={archivedAccountsManual}
-                  withTitleInButton
-                  variant={"outline"}
-                  size={"default"}
-                  className="flex items-center justify-start"
-                />
-              </div>
-            )}
-            <Heading2 className="flex gap-4 items-center">
+            <Tabs value={screen.view} onValueChange={(value) => onScreenViewChange(withView(value))}>
+              <TabsList className="w-full">
+                <TabsTrigger value="actives">
+                  <BanknoteIcon className="size-4" /> Actives
+                </TabsTrigger>
+                <TabsTrigger value="passives">
+                  <ArrowDownUpIcon className="size-4" /> Passives
+                </TabsTrigger>
+                <TabsTrigger value="finances">
+                  <BookTextIcon className="size-4" /> My Finances
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="actives">
+                <ActivesScreen onAccountClick={onAccountChange} />
+              </TabsContent>
+              <TabsContent value="passives">
+                <ActivesScreen onAccountClick={onAccountChange} />
+              </TabsContent>
+            </Tabs>
+            {/* <Heading2 className="flex gap-4 items-center">
               Capital <InfoDialog copy={accountKindsManual.capital} />
             </Heading2>
             <ListForKind
@@ -305,7 +303,7 @@ export function Screen({
               kind="credit"
               forArchived={inArchivedView}
               onSelectAccount={onAccountChange}
-            />
+            /> */}
             <span className="content-[''] h-9" />
           </div>
         </div>
@@ -366,6 +364,6 @@ export function Screen({
           </>
         )
       }
-    </Fragment>
+    </>
   )
 }
