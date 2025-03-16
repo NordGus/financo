@@ -269,42 +269,6 @@ export function Screen({
                 <PassivesScreen onAccountClick={onAccountChange} />
               </TabsContent>
             </Tabs>
-            {/* <Heading2 className="flex gap-4 items-center">
-              Capital <InfoDialog copy={accountKindsManual.capital} />
-            </Heading2>
-            <ListForKind
-              accounts={accounts}
-              kind="capital"
-              forArchived={inArchivedView}
-              onSelectAccount={onAccountChange}
-            />
-            <Heading2 className="flex gap-4 items-center">
-              Savings <InfoDialog copy={accountKindsManual.savings} />
-            </Heading2>
-            <ListForKind
-              accounts={accounts}
-              kind="savings"
-              forArchived={inArchivedView}
-              onSelectAccount={onAccountChange}
-            />
-            <Heading2 className="flex gap-4 items-center">
-              Debts <InfoDialog copy={accountKindsManual.debt} />
-            </Heading2>
-            <ListForKind
-              accounts={accounts}
-              kind="debt"
-              forArchived={inArchivedView}
-              onSelectAccount={onAccountChange}
-            />
-            <Heading2 className="flex gap-4 items-center">
-              Credit <InfoDialog copy={accountKindsManual.credit} />
-            </Heading2>
-            <ListForKind
-              accounts={accounts}
-              kind="credit"
-              forArchived={inArchivedView}
-              onSelectAccount={onAccountChange}
-            /> */}
             <span className="content-[''] h-9" />
           </div>
         </div>

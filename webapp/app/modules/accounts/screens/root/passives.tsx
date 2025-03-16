@@ -31,38 +31,34 @@ export function Screen({ onAccountClick }: Props) {
   }, [accounts])
 
   return (
-    <>
+    <div className="flex flex-col gap-2">
       <div className="flex gap-2 items-center mb-2">
         <p className="text-2xl">Debts</p>
         <InfoDialog copy={accountKindsManual.capital} />
       </div>
-      <div className="flex flex-col gap-2">
-        {
-          sections.debts.map((account) => (
-            <Preview
-              key={`account.${account.kind}.${account.id}`}
-              account={account}
-              onClick={() => onAccountClick(account)}
-            />
-          ))
-        }
-      </div>
+      {
+        sections.debts.map((account) => (
+          <Preview
+            key={`account.${account.kind}.${account.id}`}
+            account={account}
+            onClick={() => onAccountClick(account)}
+          />
+        ))
+      }
 
       <div className="flex gap-2 items-center mb-2">
         <p className="text-2xl">Credit</p>
         <InfoDialog copy={accountKindsManual.savings} />
       </div>
-      <div className="flex flex-col gap-2">
-        {
-          sections.credit.map((account) => (
-            <Preview
-              key={`account.${account.kind}.${account.id}`}
-              account={account}
-              onClick={() => onAccountClick(account)}
-            />
-          ))
-        }
-      </div>
+      {
+        sections.credit.map((account) => (
+          <Preview
+            key={`account.${account.kind}.${account.id}`}
+            account={account}
+            onClick={() => onAccountClick(account)}
+          />
+        ))
+      }
 
       <Accordion type="single" collapsible>
         <AccordionItem value="opened">
@@ -91,6 +87,6 @@ export function Screen({ onAccountClick }: Props) {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-    </>
+    </div>
   )
 }

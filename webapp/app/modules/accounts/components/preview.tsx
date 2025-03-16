@@ -16,7 +16,7 @@ export function Preview({ account, className, ...props }: ComponentProps<"div"> 
     <div
       className={
         cn(
-          "grid grid-cols-[min-content_1fr] gap-2 mb-1 cursor-pointer",
+          "grid grid-cols-[min-content_1fr] gap-2 cursor-pointer",
           !!account.archivedAt && "relative before:absolute before:inset-0 before:bg-background/40 before:z-50",
           className
         )
