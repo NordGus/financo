@@ -18,11 +18,12 @@ type Entry struct {
 }
 
 var (
-	CAD Type = "CAD"
-	USD Type = "USD"
-	EUR Type = "EUR"
-	CHF Type = "CHF"
-	GBP Type = "GBP"
+	CAD   Type = "CAD"
+	USD   Type = "USD"
+	EUR   Type = "EUR"
+	CHF   Type = "CHF"
+	GBP   Type = "GBP"
+	MULTI Type = "MULTI"
 
 	List = []Entry{
 		{Name: "Canadian Dollar", Code: "CAD"},
@@ -51,6 +52,8 @@ func New(currency string) (Type, error) {
 		return CHF, nil
 	case "GBP":
 		return GBP, nil
+	case "MULTI":
+		return MULTI, nil
 	}
 }
 
@@ -79,6 +82,8 @@ func (t *Type) UnmarshalJSON(b []byte) error {
 		*t = CHF
 	case "GBP":
 		*t = GBP
+	case "MULTI":
+		*t = MULTI
 	}
 
 	return nil
@@ -105,6 +110,8 @@ func (t Type) MarshalJSON() ([]byte, error) {
 		s = "CHF"
 	case GBP:
 		s = "GBP"
+	case MULTI:
+		s = "MULTI"
 	}
 
 	return json.Marshal(s)
@@ -133,6 +140,8 @@ func (t *Type) Scan(value any) error {
 		*t = CHF
 	case "GBP":
 		*t = GBP
+	case "MULTI":
+		*t = MULTI
 	}
 
 	return nil
@@ -158,6 +167,8 @@ func (t Type) Value() (driver.Value, error) {
 		s = "CHF"
 	case GBP:
 		s = "GBP"
+	case MULTI:
+		s = "MULTI"
 	}
 
 	return s, nil
