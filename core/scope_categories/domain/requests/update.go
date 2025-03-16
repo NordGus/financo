@@ -13,13 +13,12 @@ type Update struct {
 	ID          int64                 `json:"id"`
 	Name        string                `json:"name"`
 	Description nullable.Type[string] `json:"description"`
-	Currency    currency.Type         `json:"currency"`
 	Color       color.Type            `json:"color"`
 	Icon        icon.Type             `json:"icon"`
 }
 
 func (req *Update) ToRecord(r account.Record, timestamp time.Time) account.Record {
-	r.Currency = req.Currency
+	r.Currency = currency.MULTI
 	r.Name = req.Name
 	r.Description = req.Description
 	r.Color = req.Color
@@ -38,6 +37,7 @@ type UpdateChild struct {
 }
 
 func (req *UpdateChild) ToRecord(child account.Record, timestamp time.Time) account.Record {
+	child.Currency = currency.MULTI
 	child.Name = req.Name
 	child.Description = req.Description
 	child.Icon = req.Icon
