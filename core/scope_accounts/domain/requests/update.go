@@ -108,6 +108,7 @@ func (req *Update) HistoryTransaction(t transaction.Record, timestamp time.Time)
 
 	t.SourceAmount = req.History.Balance.OrElse(0)
 	t.TargetAmount = req.History.Balance.OrElse(0)
+	t.Currency = req.Currency
 	t.IssuedAt = req.History.At.Val.UTC()
 	t.ExecutedAt = req.History.At
 	t.UpdatedAt = timestamp
@@ -117,6 +118,12 @@ func (req *Update) HistoryTransaction(t transaction.Record, timestamp time.Time)
 
 	// Change the date into UTC
 	t.ExecutedAt.Val = t.ExecutedAt.Val.UTC()
+
+	if req.History.Balance.OrElse(0) < 0 {
+		t.Metadata.Kind = transaction.Expense
+	} else {
+		t.Metadata.Kind = transaction.Income
+	}
 
 	return t
 }
