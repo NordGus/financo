@@ -256,7 +256,20 @@ function Transfer({ account, onClick }: ComponentProps<"div"> & TransferProps) {
           )
         }
         {
-          (account.kind === "debt" || account.kind === "credit") && (
+          account.kind === "debt" && (
+            <>
+              <span className={currencyAmountColor(debt)}>
+                {currencyAmountToHuman(debt, account.currency)}
+              </span>{" "}
+              <span>owed out of</span>{" "}
+              <span className={currencyAmountColor(account.capital)}>
+                {currencyAmountToHuman(account.capital, account.currency)}
+              </span>
+            </>
+          )
+        }
+        {
+          account.kind === "credit" && (
             <>
               <span className={currencyAmountColor(debt)}>
                 {currencyAmountToHuman(debt, account.currency)}
