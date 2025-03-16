@@ -60,6 +60,9 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	}
 
 	record.CreatedAt = previous.CreatedAt
+	record.Metadata = previous.Metadata
+
+	record.Metadata.Kind = c.req.Kind
 
 	source, err = c.accounts.Find(ctx, record.SourceID)
 	if err != nil {
