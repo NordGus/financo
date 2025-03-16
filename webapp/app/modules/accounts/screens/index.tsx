@@ -15,6 +15,7 @@ import { DeleteAccountAction } from "../types/delete";
 import { UnarchiveAccountAction } from "../types/unarchive";
 import { Update, UpdateAccountAction } from "../types/update";
 import { Screen as ActivesScreen } from "./root/actives";
+import { Screen as PassivesScreen } from "./root/passives";
 
 interface Props {
   accounts: Account[]
@@ -265,7 +266,7 @@ export function Screen({
                 <ActivesScreen onAccountClick={onAccountChange} />
               </TabsContent>
               <TabsContent value="passives">
-                <ActivesScreen onAccountClick={onAccountChange} />
+                <PassivesScreen onAccountClick={onAccountChange} />
               </TabsContent>
             </Tabs>
             {/* <Heading2 className="flex gap-4 items-center">

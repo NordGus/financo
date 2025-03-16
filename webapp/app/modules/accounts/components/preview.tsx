@@ -43,7 +43,20 @@ export function Preview({ account, className, ...props }: ComponentProps<"div"> 
           )
         }
         {
-          (account.kind === "debt" || account.kind === "credit") && (
+          account.kind === "debt" && (
+            <>
+              <span className={currencyAmountColor(debt)}>
+                {currencyAmountToHuman(debt, account.currency)}
+              </span>{" "}
+              <span>owed out of</span>{" "}
+              <span className={currencyAmountColor(account.capital)}>
+                {currencyAmountToHuman(account.capital, account.currency)}
+              </span>
+            </>
+          )
+        }
+        {
+          account.kind === "credit" && (
             <>
               <span className={currencyAmountColor(debt)}>
                 {currencyAmountToHuman(debt, account.currency)}
