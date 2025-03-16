@@ -27,7 +27,9 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 	var (
 		out   = make([]transaction.Record, 0, 50)
 		args  = make([]any, 0, 4)
-		count = 3
+		count = 1
+		from  = filters.DateToLimit(f.From.OrElse(filters.FromDefault()), true)
+		to    = filters.DateToLimit(f.To.OrElse(filters.ToDefault()), false)
 	)
 
 	conn, err := r.db.Conn(ctx)
@@ -35,12 +37,6 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 		return out, err
 	}
 	defer conn.Close()
-
-	args = append(
-		args,
-		filters.DateToLimit(f.From.OrElse(filters.FromDefault()), true),
-		filters.DateToLimit(f.To.OrElse(filters.ToDefault()), false),
-	)
 
 	query := `
 	SELECT
@@ -63,8 +59,6 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 		INNER JOIN accounts trg ON trg.id = tr.target_id
 	WHERE
 		tr.deleted_at IS NULL
-		AND tr.executed_at IS NOT NULL
-		AND (tr.executed_at BETWEEN $1 AND $2)
 	`
 
 	if len(f.AccountIDs) > 0 {
@@ -83,6 +77,9 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 		args = append(args, f.CategoryIDs)
 		count++
 	}
+
+	query += fmt.Sprintf(" AND (tr.executed_at BETWEEN $%d AND $%d) AND tr.executed_at IS NOT NULL", count, count+1)
+	args = append(args, from, to)
 
 	rows, err := conn.QueryContext(ctx, query, args...)
 
