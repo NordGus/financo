@@ -2,28 +2,33 @@ package transactions
 
 import (
 	"financo/lib/nullable"
+	"financo/models/transaction"
 	"time"
 )
 
 type transactionsSeed struct {
-	Source       string
-	Target       string
-	SourceAmount int64
-	TargetAmount int64
-	Notes        nullable.Type[string]
-	IssuedAt     func(moment time.Time) time.Time
-	ExecutedAt   func(moment time.Time) nullable.Type[time.Time]
-	DeletedAt    func(moment time.Time) nullable.Type[time.Time]
+	Source         string
+	Target         string
+	SourceAmount   int64
+	TargetAmount   int64
+	Notes          nullable.Type[string]
+	CurrencySource string
+	Kind           transaction.Kind
+	IssuedAt       func(moment time.Time) time.Time
+	ExecutedAt     func(moment time.Time) nullable.Type[time.Time]
+	DeletedAt      func(moment time.Time) nullable.Type[time.Time]
 }
 
 var (
 	transactions = []transactionsSeed{
 		{ // Paycheck
-			Source:       "category.paycheck.day_job",
-			Target:       "account.personal_bank_account",
-			SourceAmount: 2_000_00,
-			TargetAmount: 2_000_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "category.paycheck.day_job",
+			Target:         "account.personal_bank_account",
+			SourceAmount:   2_000_00,
+			TargetAmount:   2_000_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.personal_bank_account",
+			Kind:           transaction.Income,
 			IssuedAt: func(moment time.Time) time.Time {
 				date := time.Date(moment.Year(), moment.Month(), 27, 0, 0, 0, 0, moment.Location()).UTC()
 
@@ -47,11 +52,13 @@ var (
 			},
 		},
 		{ // Monthly Savings
-			Source:       "account.personal_bank_account",
-			Target:       "account.personal_savings_account",
-			SourceAmount: 300_00,
-			TargetAmount: 300_00,
-			Notes:        nullable.New("Monthly savings"),
+			Source:         "account.personal_bank_account",
+			Target:         "account.personal_savings_account",
+			SourceAmount:   300_00,
+			TargetAmount:   300_00,
+			Notes:          nullable.New("Monthly savings"),
+			CurrencySource: "account.personal_savings_account",
+			Kind:           transaction.Transfer,
 			IssuedAt: func(moment time.Time) time.Time {
 				date := time.Date(moment.Year(), moment.Month(), 1, 0, 0, 0, 0, moment.Location()).UTC()
 
@@ -67,11 +74,13 @@ var (
 			},
 		},
 		{ // Credit Card Payment
-			Source:       "account.personal_bank_account",
-			Target:       "account.credit_card",
-			SourceAmount: 150_00,
-			TargetAmount: 150_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.personal_bank_account",
+			Target:         "account.credit_card",
+			SourceAmount:   150_00,
+			TargetAmount:   150_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.credit_card",
+			Kind:           transaction.Expense,
 			IssuedAt: func(moment time.Time) time.Time {
 				date := time.Date(moment.Year(), moment.Month(), 4, 0, 0, 0, 0, moment.Location()).UTC()
 
@@ -95,11 +104,13 @@ var (
 			},
 		},
 		{ // Car Payment
-			Source:       "account.personal_bank_account",
-			Target:       "account.car_loan",
-			SourceAmount: 100_00,
-			TargetAmount: 100_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.personal_bank_account",
+			Target:         "account.car_loan",
+			SourceAmount:   100_00,
+			TargetAmount:   100_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.car_loan",
+			Kind:           transaction.Expense,
 			IssuedAt: func(moment time.Time) time.Time {
 				date := time.Date(moment.Year(), moment.Month(), 7, 0, 0, 0, 0, moment.Location()).UTC()
 
@@ -123,11 +134,13 @@ var (
 			},
 		},
 		{ // Old Freelance payment
-			Source:       "category.paycheck.freelancing",
-			Target:       "account.freelance_bank_account",
-			SourceAmount: 800_00,
-			TargetAmount: 800_00,
-			Notes:        nullable.New("Wrestling Gig"),
+			Source:         "category.paycheck.freelancing",
+			Target:         "account.freelance_bank_account",
+			SourceAmount:   800_00,
+			TargetAmount:   800_00,
+			Notes:          nullable.New("Wrestling Gig"),
+			CurrencySource: "account.freelance_bank_account",
+			Kind:           transaction.Income,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, 0, -100).UTC()
 			},
@@ -139,11 +152,13 @@ var (
 			},
 		},
 		{ // Old Freelance paying to credit card
-			Source:       "account.freelance_bank_account",
-			Target:       "account.personal_savings_account",
-			SourceAmount: 500_00,
-			TargetAmount: 500_00,
-			Notes:        nullable.New("For the piggy bag"),
+			Source:         "account.freelance_bank_account",
+			Target:         "account.personal_savings_account",
+			SourceAmount:   500_00,
+			TargetAmount:   500_00,
+			Notes:          nullable.New("For the piggy bag"),
+			CurrencySource: "account.personal_savings_account",
+			Kind:           transaction.Transfer,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, 0, -100).UTC()
 			},
@@ -155,11 +170,13 @@ var (
 			},
 		},
 		{ // Old Freelance paying to credit card
-			Source:       "account.freelance_bank_account",
-			Target:       "account.credit_card",
-			SourceAmount: 300_00,
-			TargetAmount: 300_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.freelance_bank_account",
+			Target:         "account.credit_card",
+			SourceAmount:   300_00,
+			TargetAmount:   300_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.credit_card",
+			Kind:           transaction.Expense,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, 0, -100).UTC()
 			},
@@ -171,11 +188,13 @@ var (
 			},
 		},
 		{ // Teaching payment
-			Source:       "category.paycheck.teaching",
-			Target:       "account.personal_bank_account",
-			SourceAmount: 500_00,
-			TargetAmount: 500_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "category.paycheck.teaching",
+			Target:         "account.personal_bank_account",
+			SourceAmount:   500_00,
+			TargetAmount:   500_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.personal_bank_account",
+			Kind:           transaction.Income,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, 0, -10).UTC()
 			},
@@ -187,11 +206,13 @@ var (
 			},
 		},
 		{ // Personal loan with morgan (I'm owed)
-			Source:       "account.morgan_loan",
-			Target:       "account.personal_bank_account",
-			SourceAmount: 200_00,
-			TargetAmount: 200_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.morgan_loan",
+			Target:         "account.personal_bank_account",
+			SourceAmount:   200_00,
+			TargetAmount:   200_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.personal_bank_account",
+			Kind:           transaction.Income,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, 0, -3).UTC()
 			},
@@ -203,11 +224,13 @@ var (
 			},
 		},
 		{ // Transport expense without ExecutedAt
-			Source:       "account.personal_bank_account",
-			Target:       "category.transport",
-			SourceAmount: 50_00,
-			TargetAmount: 50_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.personal_bank_account",
+			Target:         "category.transport",
+			SourceAmount:   50_00,
+			TargetAmount:   50_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.personal_bank_account",
+			Kind:           transaction.Expense,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.UTC()
 			},
@@ -219,11 +242,13 @@ var (
 			},
 		},
 		{ // Hobby expense without ExecutedAt
-			Source:       "account.personal_bank_account",
-			Target:       "category.market.gardening_supplies",
-			SourceAmount: 80_00,
-			TargetAmount: 80_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.personal_bank_account",
+			Target:         "category.market.gardening_supplies",
+			SourceAmount:   80_00,
+			TargetAmount:   80_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.personal_bank_account",
+			Kind:           transaction.Expense,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.UTC()
 			},
@@ -235,11 +260,13 @@ var (
 			},
 		},
 		{ // Savings in the US, different currency account
-			Source:       "account.personal_bank_account",
-			Target:       "account.us_savings_account",
-			SourceAmount: 150_00,
-			TargetAmount: 163_50,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.personal_bank_account",
+			Target:         "account.us_savings_account",
+			SourceAmount:   150_00,
+			TargetAmount:   163_50,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.us_savings_account",
+			Kind:           transaction.Transfer,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, 0, -1).UTC()
 			},
@@ -251,11 +278,13 @@ var (
 			},
 		},
 		{ // Groceries
-			Source:       "account.personal_bank_account",
-			Target:       "category.market",
-			SourceAmount: 100_00,
-			TargetAmount: 100_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.personal_bank_account",
+			Target:         "category.market",
+			SourceAmount:   100_00,
+			TargetAmount:   100_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.personal_bank_account",
+			Kind:           transaction.Expense,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, 0, -7).UTC()
 			},
@@ -267,11 +296,13 @@ var (
 			},
 		},
 		{ // Fruits
-			Source:       "account.personal_bank_account",
-			Target:       "category.market.fruit_shop",
-			SourceAmount: 40_00,
-			TargetAmount: 40_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.personal_bank_account",
+			Target:         "category.market.fruit_shop",
+			SourceAmount:   40_00,
+			TargetAmount:   40_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.personal_bank_account",
+			Kind:           transaction.Expense,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.UTC()
 			},
@@ -283,11 +314,13 @@ var (
 			},
 		},
 		{ // Some meat
-			Source:       "account.personal_bank_account",
-			Target:       "category.market.food",
-			SourceAmount: 100_00,
-			TargetAmount: 100_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.personal_bank_account",
+			Target:         "category.market.food",
+			SourceAmount:   100_00,
+			TargetAmount:   100_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.personal_bank_account",
+			Kind:           transaction.Expense,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, 0, -1).UTC()
 			},
@@ -299,11 +332,13 @@ var (
 			},
 		},
 		{ // Carlos' lunch
-			Source:       "account.carlos_lunch",
-			Target:       "account.personal_bank_account",
-			SourceAmount: 80_00,
-			TargetAmount: 80_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.carlos_lunch",
+			Target:         "account.personal_bank_account",
+			SourceAmount:   80_00,
+			TargetAmount:   80_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.personal_bank_account",
+			Kind:           transaction.Income,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, 0, -1).UTC()
 			},
@@ -315,11 +350,13 @@ var (
 			},
 		},
 		{ // Carlos' lunch
-			Source:       "account.personal_bank_account",
-			Target:       "account.laptop_credit",
-			SourceAmount: 1_162_58,
-			TargetAmount: 1_162_58,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.personal_bank_account",
+			Target:         "account.laptop_credit",
+			SourceAmount:   1_162_58,
+			TargetAmount:   1_162_58,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.laptop_credit",
+			Kind:           transaction.Expense,
 			IssuedAt: func(moment time.Time) time.Time {
 				return moment.AddDate(0, -4, 0).UTC()
 			},
@@ -331,11 +368,13 @@ var (
 			},
 		},
 		{ // Next Credit Card Payment
-			Source:       "account.personal_bank_account",
-			Target:       "account.credit_card",
-			SourceAmount: 150_00,
-			TargetAmount: 150_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.personal_bank_account",
+			Target:         "account.credit_card",
+			SourceAmount:   150_00,
+			TargetAmount:   150_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.credit_card",
+			Kind:           transaction.Expense,
 			IssuedAt: func(moment time.Time) time.Time {
 				date := time.Date(moment.Year(), moment.Month(), 4, 0, 0, 0, 0, moment.Location()).UTC()
 
@@ -359,11 +398,13 @@ var (
 			},
 		},
 		{ // Next Car Payment
-			Source:       "account.personal_bank_account",
-			Target:       "account.car_loan",
-			SourceAmount: 100_00,
-			TargetAmount: 100_00,
-			Notes:        nullable.Type[string]{},
+			Source:         "account.personal_bank_account",
+			Target:         "account.car_loan",
+			SourceAmount:   100_00,
+			TargetAmount:   100_00,
+			Notes:          nullable.Type[string]{},
+			CurrencySource: "account.car_loan",
+			Kind:           transaction.Expense,
 			IssuedAt: func(moment time.Time) time.Time {
 				date := time.Date(moment.Year(), moment.Month(), 7, 0, 0, 0, 0, moment.Location()).UTC()
 

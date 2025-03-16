@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"financo/cmd/database/seed/lib/helpers"
-	"financo/core/domain/services"
 	"financo/core/scope_accounts/application/commands/archive_command"
 	"financo/core/scope_accounts/application/commands/create_command"
 	"financo/core/scope_accounts/domain/requests"
+	"financo/core/scope_accounts/domain/responses"
 	"financo/core/scope_accounts/infrastructure/repositories/accounts_repository"
 	"financo/core/scope_accounts/infrastructure/repositories/archival_repository"
 	"financo/core/scope_accounts/infrastructure/repositories/create_repository"
@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-func SeedAccounts(ctx context.Context, timestamp time.Time) (map[string]int64, error) {
+func SeedAccounts(ctx context.Context, timestamp time.Time) (map[string]responses.Listed, error) {
 	var (
 		db       = postgresql_database.New()
 		repo     = create_repository.NewPostgreSQL(db)
@@ -27,7 +27,7 @@ func SeedAccounts(ctx context.Context, timestamp time.Time) (map[string]int64, e
 		archival = archival_repository.NewPostgreSQL(db)
 		broker   = message_broker.New()
 
-		out     = make(map[string]int64, 10)
+		out     = make(map[string]responses.Listed, 10)
 		summary = make(map[account.Kind]uint, 8)
 	)
 
@@ -45,16 +45,7 @@ func SeedAccounts(ctx context.Context, timestamp time.Time) (map[string]int64, e
 			return out, errors.Join(fmt.Errorf("accounts: failed to seed account %s", req.Name), err)
 		}
 
-		out[helpers.AccountMapKey(key)] = res.ID
-
-		children, err := getChildrenCategories(ctx, db, res.ID)
-		if err != nil {
-			return out, errors.Join(fmt.Errorf("accounts: failed to retrieve account %s children", req.Name), err)
-		}
-
-		for i := 0; i < len(children); i++ {
-			out[helpers.ChildCategoryMapKey(key, "interest")] = children[i]
-		}
+		out[helpers.AccountMapKey(key)] = res
 
 		if archive {
 			r := requests.Archive{ID: res.ID}
@@ -74,48 +65,4 @@ func SeedAccounts(ctx context.Context, timestamp time.Time) (map[string]int64, e
 	}
 
 	return out, nil
-}
-
-func getChildrenCategories(ctx context.Context, db services.SQLDatabaseService, parent int64) ([]int64, error) {
-	ids := make([]int64, 0, 10)
-
-	conn, err := db.Conn(ctx)
-	if err != nil {
-		return ids, err
-	}
-	defer conn.Close()
-
-	rows, err := conn.QueryContext(
-		ctx,
-		`
-		SELECT id
-		FROM accounts
-		WHERE
-			parent_id = $1
-			AND deleted_at IS NULL
-			AND archived_at IS NULL
-			AND kind != $2
-		`,
-		parent,
-		account.History,
-	)
-	if err != nil {
-		return ids, err
-	}
-
-	for rows.Next() {
-		var id int64
-
-		err = rows.Scan(&id)
-		if err != nil {
-			_ = rows.Close()
-			return ids, err
-		}
-
-		ids = append(ids, id)
-	}
-
-	_ = rows.Close()
-
-	return ids, nil
 }
