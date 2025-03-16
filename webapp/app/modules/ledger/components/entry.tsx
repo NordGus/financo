@@ -22,32 +22,18 @@ function accountName(account: Account, parent: Account | null): string {
   return `${parent.name} (${account.name})`
 }
 
-function account(source: Account, target: Account): Account {
-  switch (true) {
-    case source.kind === "credit":
-    case source.kind === "debt":
-    case source.kind === "expense":
-    case source.kind === "income":
-    case source.kind === "history":
-      return source
-    default:
-      return target
-  }
+function account(source: Account, target: Account, transaction: Transaction): Account {
+  if (transaction.metadata.kind === "expense") return target
+  if (transaction.metadata.kind === "income") return source
+
+  return target
 }
 
-function amountColorCode(source: Account, target: Account): number {
-  switch (true) {
-    case source.kind === "credit":
-    case source.kind === "debt":
-    case source.kind === "expense":
-    case source.kind === "income":
-    case source.kind === "history":
+function amountColorCode(transaction: Transaction): number {
+  switch (transaction.metadata.kind) {
+    case "income":
       return 1
-    case target.kind === "credit":
-    case target.kind === "debt":
-    case target.kind === "expense":
-    case target.kind === "income":
-    case target.kind === "history":
+    case "expense":
       return -1
     default:
       return 0
@@ -61,7 +47,7 @@ export const Entry = memo(function Entry({
   target,
   targetParent = null
 }: Props) {
-  const start = account(source, target)
+  const start = account(source, target, transaction)
   const dest = start.id === source.id ? target : source
   const startParent = start.parentId === sourceParent?.id
     ? sourceParent
@@ -101,8 +87,8 @@ export const Entry = memo(function Entry({
           </span>
         </div>
       </div>
-      <span className={cn("text-right leading-none", currencyAmountColor(amountColorCode(source, target)))}>
-        {currencyAmountToHuman(amount, dest.currency)}
+      <span className={cn("text-right leading-none", currencyAmountColor(amountColorCode(transaction)))}>
+        {currencyAmountToHuman(amount, transaction.currency)}
       </span>
     </div>
   )

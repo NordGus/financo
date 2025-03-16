@@ -1,3 +1,22 @@
+import { Currency } from "~/modules/shared/types/currency"
+
+export const KINDS = {
+  expense: "expense",
+  income: "income",
+  transfer: "transfer"
+} as const
+
+export type Kinds = typeof KINDS
+
+export type Kind =
+  Kinds["expense"] |
+  Kinds["income"] |
+  Kinds["transfer"]
+
+export type Metadata = {
+  kind: Kind
+}
+
 export type Transaction = {
   id: number
   sourceId: number
@@ -5,11 +24,13 @@ export type Transaction = {
   sourceAmount: number
   targetAmount: number
   notes: string | null
+  currency: Currency,
   issuedAt: string
   executedAt: string | null
   deletedAt: string | null
   createdAt: string
-  updatedAt: string
+  updatedAt: string,
+  metadata: Metadata
 }
 
 export type Filters = {

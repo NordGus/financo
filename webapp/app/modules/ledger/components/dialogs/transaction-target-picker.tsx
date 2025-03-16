@@ -18,6 +18,7 @@ import {
 } from "~/modules/shared/components/ui/tabs"
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color"
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human"
+import { Currency } from "~/modules/shared/types/currency"
 import { useTransactionsStore } from "../../stores/transactions"
 import { Account } from "../../types/accounts"
 
@@ -251,7 +252,7 @@ function Transfer({ account, onClick }: ComponentProps<"div"> & TransferProps) {
         {
           (account.kind === "capital" || account.kind === "savings") && (
             <span className={currencyAmountColor(account.balance)}>
-              {currencyAmountToHuman(account.balance, account.currency)}
+              {currencyAmountToHuman(account.balance, account.currency as Currency)}
             </span>
           )
         }
@@ -259,11 +260,11 @@ function Transfer({ account, onClick }: ComponentProps<"div"> & TransferProps) {
           account.kind === "debt" && (
             <>
               <span className={currencyAmountColor(debt)}>
-                {currencyAmountToHuman(debt, account.currency)}
+                {currencyAmountToHuman(debt, account.currency as Currency)}
               </span>{" "}
               <span>owed out of</span>{" "}
               <span className={currencyAmountColor(account.capital)}>
-                {currencyAmountToHuman(account.capital, account.currency)}
+                {currencyAmountToHuman(account.capital, account.currency as Currency)}
               </span>
             </>
           )
@@ -272,11 +273,11 @@ function Transfer({ account, onClick }: ComponentProps<"div"> & TransferProps) {
           account.kind === "credit" && (
             <>
               <span className={currencyAmountColor(debt)}>
-                {currencyAmountToHuman(debt, account.currency)}
+                {currencyAmountToHuman(debt, account.currency as Currency)}
               </span>{" "}
               <span>owed with</span>{" "}
               <span className={currencyAmountColor(account.balance)}>
-                {currencyAmountToHuman(account.balance, account.currency)}
+                {currencyAmountToHuman(account.balance, account.currency as Currency)}
               </span>{" "}
               <span>available</span>
             </>
