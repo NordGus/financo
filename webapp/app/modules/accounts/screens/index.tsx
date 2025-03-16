@@ -15,6 +15,7 @@ import { DeleteAccountAction } from "../types/delete";
 import { UnarchiveAccountAction } from "../types/unarchive";
 import { Update, UpdateAccountAction } from "../types/update";
 import { Screen as ActivesScreen } from "./root/actives";
+import { Screen as FinancesScreen } from "./root/finances";
 import { Screen as PassivesScreen } from "./root/passives";
 
 interface Props {
@@ -267,6 +268,9 @@ export function Screen({
               </TabsContent>
               <TabsContent value="passives">
                 <PassivesScreen onAccountClick={onAccountChange} />
+              </TabsContent>
+              <TabsContent value="finances">
+                <FinancesScreen />
               </TabsContent>
             </Tabs>
             <span className="content-[''] h-9" />

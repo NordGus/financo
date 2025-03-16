@@ -32,7 +32,7 @@ export function Screen({ onAccountClick }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex gap-2 items-center mb-2">
+      <div className="flex gap-2 items-center">
         <p className="text-2xl">Debts</p>
         <InfoDialog copy={accountKindsManual.capital} />
       </div>
@@ -46,7 +46,7 @@ export function Screen({ onAccountClick }: Props) {
         ))
       }
 
-      <div className="flex gap-2 items-center mb-2">
+      <div className="flex gap-2 items-center">
         <p className="text-2xl">Credit</p>
         <InfoDialog copy={accountKindsManual.savings} />
       </div>
