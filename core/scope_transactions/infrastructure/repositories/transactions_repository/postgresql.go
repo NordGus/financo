@@ -108,7 +108,6 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 			&r.DeletedAt,
 			&r.CreatedAt,
 			&r.UpdatedAt,
-			&r.DeletedAt,
 			&r.Metadata,
 		)
 		if err != nil {
