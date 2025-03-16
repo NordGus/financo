@@ -97,9 +97,9 @@
       "settings": {
         "go.useLanguageServer": true,
         "window.autoDetectColorScheme": true,
-        "workbench.preferredDarkColorTheme": "GitHub Dark Colorblind (Beta)",
+        "workbench.preferredDarkColorTheme": "GitHub Dark",
         "workbench.preferredHighContrastColorTheme": "GitHub Dark High Contrast",
-        "workbench.preferredLightColorTheme": "GitHub Light Colorblind (Beta)",
+        "workbench.preferredLightColorTheme": "GitHub Light",
         "workbench.preferredHighContrastLightColorTheme": "GitHub Light High Contrast",
         "workbench.iconTheme": "catppuccin-mocha",
         "editor.rulers": [
