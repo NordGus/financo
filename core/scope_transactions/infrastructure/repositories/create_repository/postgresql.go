@@ -54,11 +54,13 @@ func create(ctx context.Context, tx *sql.Tx, record transaction.Record) (transac
 			source_amount,
 			target_amount,
 			notes,
+			currency,
 			issued_at,
 			executed_at,
 			created_at,
-			updated_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+			updated_at,
+			metadata
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 		RETURNING id
 		`,
 		record.SourceID,
@@ -66,10 +68,12 @@ func create(ctx context.Context, tx *sql.Tx, record transaction.Record) (transac
 		record.SourceAmount,
 		record.TargetAmount,
 		record.Notes,
+		record.Currency,
 		record.IssuedAt,
 		record.ExecutedAt,
 		record.CreatedAt,
 		record.UpdatedAt,
+		record.Metadata,
 	).Scan(&record.ID)
 
 	return record, err
