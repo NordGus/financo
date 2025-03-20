@@ -60,6 +60,11 @@
       "type": "bind",
       "source": "${localEnv:HOME}/.ssh",
       "target": "/home/vscode/.ssh:ro"
+    },
+    {
+      "type": "bind",
+      "source": "${localEnv:HOME}/.gitconfig",
+      "target": "/home/vscode/.gitconfig:ro"
     }
   ],
   "postStartCommand": {
@@ -92,7 +97,8 @@
         "cweijan.vscode-database-client2",
         "streetsidesoftware.code-spell-checker-spanish",
         "dbaeumer.vscode-eslint",
-        "GitHub.vscode-github-actions"
+        "GitHub.vscode-github-actions",
+        "GitHub.github-vscode-theme"
       ],
       "settings": {
         "go.useLanguageServer": true,
@@ -102,6 +108,7 @@
         "workbench.preferredLightColorTheme": "GitHub Light",
         "workbench.preferredHighContrastLightColorTheme": "GitHub Light High Contrast",
         "workbench.iconTheme": "catppuccin-mocha",
+        "workbench.sideBar.location": "right",
         "editor.rulers": [
           80,
           120
