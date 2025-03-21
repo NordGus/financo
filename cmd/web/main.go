@@ -10,7 +10,7 @@ import (
 	"financo/cmd/web/api/json/handlers/my_journey"
 	"financo/cmd/web/api/json/handlers/savings_goals"
 	"financo/cmd/web/api/json/handlers/transactions"
-	"financo/cmd/web/files"
+	"financo/cmd/web/middleware/cors"
 	"fmt"
 	"log"
 	"net/http"
@@ -77,6 +77,7 @@ func startHTTPServer(ctx context.Context) {
 		chimiddleware.RealIP,
 		chimiddleware.Logger,
 		chimiddleware.Recoverer,
+		cors.CORS(),
 	)
 
 	router.Route("/api", func(r chi.Router) {
@@ -100,12 +101,6 @@ func startHTTPServer(ctx context.Context) {
 			protected.Route("/my-journey", my_journey.Routes)
 			protected.Route("/savings-goals", savings_goals.Routes)
 			protected.Route("/transactions", transactions.Routes)
-		})
-	})
-
-	router.Route("/", func(r chi.Router) {
-		r.Group(func(webapp chi.Router) {
-			webapp.Route("/", files.Routes)
 		})
 	})
 

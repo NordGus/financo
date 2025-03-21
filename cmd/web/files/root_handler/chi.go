@@ -1,5 +1,3 @@
-//go:build development
-
 package root_handler
 
 import (
