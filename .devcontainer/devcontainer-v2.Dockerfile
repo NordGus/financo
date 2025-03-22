@@ -15,15 +15,20 @@ RUN go install github.com/pressly/goose/v3/cmd/goose@latest
 # installing go-delve/delve to debug go programs
 RUN go install github.com/go-delve/delve/cmd/dlv@latest
 
+# giving access to /go/pkg to all users
+RUN chmod -R a+w /go/pkg
+
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 
 USER vscode
 
+ENV NVM_DIR=/home/vscode/.nvm
+
 # Installing NVM
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.2/install.sh | bash
 
 # Installing node
-RUN nvm install ${NODE_VERSION}
+RUN \. $NVM_DIR/nvm.sh && nvm install ${NODE_VERSION}
 
 EXPOSE 3000

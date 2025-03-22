@@ -3,8 +3,6 @@
   "dockerComposeFile": "../docker-compose.yml",
   "service": "devcontainer",
   "postStartCommand": {
-    "go:install:air": "go install github.com/air-verse/air@latest",
-    "go:install:goose": "go install github.com/pressly/goose/v3/cmd/goose@latest",
     "node:install:dependencies": "npm install -g npm@latest && npm install",
     "go:install:dependencies": "go mod download"
   },
