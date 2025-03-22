@@ -1,5 +1,5 @@
 import { ListFilterIcon, PlusIcon } from "lucide-react";
-import { Fragment, useCallback, useReducer, useRef } from "react";
+import { useCallback, useReducer, useRef } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
 import { SearchAbortedError } from "~/modules/shared/types/errors";
 import { AccountsFilter } from "../components/accounts-filter";
@@ -13,6 +13,7 @@ import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
 import { TransactionTargetPicker } from "../components/dialogs/transaction-target-picker";
 import { Entry } from "../components/entry";
 import { NoResults } from "../components/no-results";
+import { CreationContextProvider } from "../contexts/creation";
 import { filterFrom, filterTo } from "../defaults/filters";
 import { calculateDateRangeMovement, Movement } from "../helpers/calculate-date-range-movement";
 import { estimatePeriod } from "../helpers/estimate-period";
@@ -35,7 +36,8 @@ type Open = "period" |
   "range-picker" |
   "accounts" |
   "categories" |
-  "target-picker" |
+  "creation-target-picker" |
+  "creation-source-picker" |
   null
 
 type ScreenState = {
@@ -145,8 +147,8 @@ export function Screen({
     dispatch({ type: "OPEN_CHANGED", open: open ? "accounts" : null })
   const onOpenCategoriesFilterChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "categories" : null })
-  const onTransactionTargetPicker = (open: boolean) =>
-    dispatch({ type: "OPEN_CHANGED", open: open ? "target-picker" : null })
+  const onOpenTransactionTargetPickerChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "creation-target-picker" : null })
 
   const onSearch = useCallback(async (nextFilters: Filters, signal: AbortSignal) => {
     await onSearchAction({ ...nextFilters }, signal, onActionSuccess, onActionFailed)
@@ -240,14 +242,18 @@ export function Screen({
     )
   }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts])
 
+  const onTransactionTargetSelect = useCallback(() => {
+    dispatch({ type: "OPEN_CHANGED", open: "creation-source-picker" })
+  }, [dispatch])
+
   return (
-    <Fragment>
+    <CreationContextProvider>
       <div className="relative overflow-hidden h-full flex flex-col">
         <div className="absolute bottom-0 right-0 p-4 inline-flex gap-4 flex-wrap justify-end">
           <Button
             size={"icon"}
             className="shadow-lg"
-            onClick={() => onTransactionTargetPicker(true)}
+            onClick={() => onOpenTransactionTargetPickerChange(true)}
           >
             <PlusIcon />
           </Button>
@@ -357,10 +363,10 @@ export function Screen({
       />
 
       <TransactionTargetPicker
-        open={screen.open === "target-picker"}
-        onOpenChange={onTransactionTargetPicker}
-        onSelect={() => { }}
+        open={screen.open === "creation-target-picker"}
+        onOpenChange={onOpenTransactionTargetPickerChange}
+        onSelected={onTransactionTargetSelect}
       />
-    </Fragment >
+    </CreationContextProvider>
   )
 }
