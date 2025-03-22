@@ -50,11 +50,33 @@ type Action =
 export function creationReducer(state: State, action: Action): State {
   switch (action.type) {
     case "TARGET_CHANGED":
-      return { ...state, kind: action.kind, target: action.target }
+      return {
+        ...state,
+        kind: action.kind,
+        target: action.kind === "income"
+          ? state.source
+          : action.target,
+        source: action.kind === "income"
+          ? action.target
+          : state.source,
+      }
     case "SOURCE_CHANGED":
-      return { ...state, source: action.source }
+      return {
+        ...state,
+        target: state.kind === "income"
+          ? action.source
+          : state.target,
+        source: state.kind === "income"
+          ? state.source
+          : action.source,
+      }
     case "RESET":
-      return { ...state, kind: "income" }
+      return {
+        ...state,
+        kind: DEFAULT_KIND,
+        target: DEFAULT_TARGET,
+        source: DEFAULT_SOURCE
+      }
   }
 }
 
