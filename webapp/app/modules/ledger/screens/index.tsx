@@ -10,6 +10,7 @@ import { CategoryPicker } from "../components/dialogs/category-picker";
 import { DateDayPicker } from "../components/dialogs/date-day-picker";
 import { DateRangePicker } from "../components/dialogs/date-range-picker";
 import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
+import { TransactionSourcePicker } from "../components/dialogs/transaction-source-picker";
 import { TransactionTargetPicker } from "../components/dialogs/transaction-target-picker";
 import { Entry } from "../components/entry";
 import { NoResults } from "../components/no-results";
@@ -38,6 +39,7 @@ type Open = "period" |
   "categories" |
   "creation-target-picker" |
   "creation-source-picker" |
+  "create" |
   null
 
 type ScreenState = {
@@ -149,6 +151,8 @@ export function Screen({
     dispatch({ type: "OPEN_CHANGED", open: open ? "categories" : null })
   const onOpenTransactionTargetPickerChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "creation-target-picker" : null })
+  const onOpenTransactionSourcePickerChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "creation-source-picker" : null })
 
   const onSearch = useCallback(async (nextFilters: Filters, signal: AbortSignal) => {
     await onSearchAction({ ...nextFilters }, signal, onActionSuccess, onActionFailed)
@@ -244,6 +248,10 @@ export function Screen({
 
   const onTransactionTargetSelect = useCallback(() => {
     dispatch({ type: "OPEN_CHANGED", open: "creation-source-picker" })
+  }, [dispatch])
+
+  const onTransactionSourceSelect = useCallback(() => {
+    dispatch({ type: "OPEN_CHANGED", open: "create" })
   }, [dispatch])
 
   return (
@@ -366,6 +374,12 @@ export function Screen({
         open={screen.open === "creation-target-picker"}
         onOpenChange={onOpenTransactionTargetPickerChange}
         onSelected={onTransactionTargetSelect}
+      />
+
+      <TransactionSourcePicker
+        open={screen.open === "creation-source-picker"}
+        onOpenChange={onOpenTransactionSourcePickerChange}
+        onSelected={onTransactionSourceSelect}
       />
     </CreationContextProvider>
   )
