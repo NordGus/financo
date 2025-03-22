@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Drawer,
@@ -15,17 +15,17 @@ import {
   TabsList,
   TabsTrigger
 } from "~/modules/shared/components/ui/tabs"
+import { CreationContext, OnTargetChangeCallback } from "../../contexts/creation"
 import { useTransactionsStore } from "../../stores/transactions"
 import { Account } from "../../types/accounts"
+import { Kind } from "../../types/transactions"
 import { PreviewAccount } from "../previews/account"
 import { PreviewCategory } from "../previews/category"
-
-type TransactionKind = "income" | "expense" | "transfer"
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSelect: (id: number, kind: TransactionKind) => void
+  onSelected?: OnTargetChangeCallback
 }
 
 interface Sections {
@@ -64,8 +64,10 @@ function isTransfer(account: Account) {
   }
 }
 
-export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props) {
-  const [tab, setTab] = useState<TransactionKind>("income")
+export function TransactionTargetPicker({ open, onOpenChange, onSelected }: Props) {
+  const { kind, onTargetChange } = useContext(CreationContext)
+
+  const [tab, setTab] = useState<Kind>(kind)
 
   const accounts = useTransactionsStore((state) => state.accounts)
 
@@ -81,7 +83,8 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
     }
   }, [accounts])
 
-  const onAccountSelected = useCallback((id: number) => onSelect(id, tab), [tab, onSelect])
+  const onClick = (id: number) =>
+    onTargetChange(tab, id, onSelected)
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -111,7 +114,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
                   <PreviewCategory
                     key={`target.account.income.${account.id}`}
                     account={account}
-                    onClick={() => onAccountSelected(account.id)}
+                    onClick={() => onClick(account.id)}
                   />
                 ))
               }
@@ -120,7 +123,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
                   <PreviewCategory
                     key={`target.account.income.${account.id}`}
                     account={account}
-                    onClick={() => onAccountSelected(account.id)}
+                    onClick={() => onClick(account.id)}
                   />
                 ))
               }
@@ -133,7 +136,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
                   <PreviewCategory
                     key={`target.account.expense.${account.id}`}
                     account={account}
-                    onClick={() => onAccountSelected(account.id)}
+                    onClick={() => onClick(account.id)}
                   />
                 ))
               }
@@ -142,7 +145,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
                   <PreviewCategory
                     key={`target.account.expense.${account.id}`}
                     account={account}
-                    onClick={() => onAccountSelected(account.id)}
+                    onClick={() => onClick(account.id)}
                   />
                 ))
               }
@@ -155,7 +158,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
                 <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
                   account={account}
-                  onClick={() => onAccountSelected(account.id)}
+                  onClick={() => onClick(account.id)}
                 />
               ))
             }
@@ -165,7 +168,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
                 <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
                   account={account}
-                  onClick={() => onAccountSelected(account.id)}
+                  onClick={() => onClick(account.id)}
                 />
               ))
             }
@@ -175,7 +178,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
                 <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
                   account={account}
-                  onClick={() => onAccountSelected(account.id)}
+                  onClick={() => onClick(account.id)}
                 />
               ))
             }
@@ -185,7 +188,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
                 <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
                   account={account}
-                  onClick={() => onAccountSelected(account.id)}
+                  onClick={() => onClick(account.id)}
                 />
               ))
             }
