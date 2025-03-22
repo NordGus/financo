@@ -88,10 +88,12 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelected }: Prop
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
-        <DrawerHeader className="hidden">
-          <DrawerTitle>Target Account</DrawerTitle>
-          <DrawerDescription>Select the Transactions target Account</DrawerDescription>
+      <DrawerContent className="grid grid-rows-[auto_auto_60dvh_auto]">
+        <DrawerHeader>
+          <DrawerTitle>Register a Transaction</DrawerTitle>
+          <DrawerDescription>
+            {"What kind of transaction you want to register?"}
+          </DrawerDescription>
         </DrawerHeader>
         <Tabs
           value={tab}
@@ -100,9 +102,9 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelected }: Prop
             else setTab("income")
           }}
           defaultValue="income"
-          className="flex flex-col pt-2 px-4 min-h-[70dvh] max-h-[70dvh] [&_[data-slot=tabs-content]]:grow [&_[data-slot=tabs-content]]:overflow-y-auto [&_[data-slot=tabs-content]]:pt-4"
+          className="flex flex-col px-4 [&_[data-slot=tabs-content]]:overflow-y-auto [&_[data-slot=tabs-content]]:grow"
         >
-          <TabsList className="w-full">
+          <TabsList className="w-full mb-2">
             <TabsTrigger value="income">Income</TabsTrigger>
             <TabsTrigger value="expense">Expense</TabsTrigger>
             <TabsTrigger value="transfer">Transfer</TabsTrigger>
