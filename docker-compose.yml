@@ -25,7 +25,7 @@ services:
     user: vscode
     env_file: .env
     volumes:
-      - .:/workspace:cached
+      - .:/workspaces/financo:cached
       - ${HOME}/.ssh:/home/vscode/.ssh:ro
       - ${HOME}/.gitconfig:/home/vscode/.gitconfig:ro
     cap_add:

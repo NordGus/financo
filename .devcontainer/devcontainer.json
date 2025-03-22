@@ -6,7 +6,7 @@
     "node:install:dependencies": "npm install -g npm@latest && npm install",
     "go:install:dependencies": "go mod download"
   },
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/workspaces/financo",
   "customizations": {
     "vscode": {
       "extensions": [
