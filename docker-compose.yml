@@ -22,6 +22,9 @@ services:
     build:
       dockerfile: .devcontainer/devcontainer-v2.Dockerfile
       context: .
+      args:
+        - GO_VERSION=1.23
+        - NODE_VERSION=22
     user: vscode
     env_file: .env
     volumes:
