@@ -1,5 +1,4 @@
-import { ComponentProps, useCallback, useMemo, useState } from "react"
-import { AccountListingIcon } from "~/modules/shared/components/icons/account-icon"
+import { useCallback, useMemo, useState } from "react"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Drawer,
@@ -19,6 +18,7 @@ import {
 import { useTransactionsStore } from "../../stores/transactions"
 import { Account } from "../../types/accounts"
 import { PreviewAccount } from "../previews/account"
+import { PreviewCategory } from "../previews/category"
 
 type TransactionKind = "income" | "expense" | "transfer"
 
@@ -108,7 +108,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
             <div className="grid grid-cols-4 gap-2 items-start">
               {
                 sections.income.filter(({ kind }) => kind === "income").map((account) => (
-                  <IncomeOrExpense
+                  <PreviewCategory
                     key={`target.account.income.${account.id}`}
                     account={account}
                     onClick={() => onAccountSelected(account.id)}
@@ -117,7 +117,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
               }
               {
                 sections.income.filter(({ kind }) => kind !== "income").map((account) => (
-                  <IncomeOrExpense
+                  <PreviewCategory
                     key={`target.account.income.${account.id}`}
                     account={account}
                     onClick={() => onAccountSelected(account.id)}
@@ -130,7 +130,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
             <div className="grid grid-cols-4 gap-2 items-start">
               {
                 sections.expense.filter(({ kind }) => kind === "expense").map((account) => (
-                  <IncomeOrExpense
+                  <PreviewCategory
                     key={`target.account.expense.${account.id}`}
                     account={account}
                     onClick={() => onAccountSelected(account.id)}
@@ -139,7 +139,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
               }
               {
                 sections.expense.filter(({ kind }) => kind !== "expense").map((account) => (
-                  <IncomeOrExpense
+                  <PreviewCategory
                     key={`target.account.expense.${account.id}`}
                     account={account}
                     onClick={() => onAccountSelected(account.id)}
@@ -200,25 +200,5 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
         </DrawerFooter>
       </DrawerContent>
     </Drawer >
-  )
-}
-
-
-interface IncomeOrExpenseProps {
-  account: Account
-}
-
-function IncomeOrExpense({ account, onClick }: ComponentProps<"div"> & IncomeOrExpenseProps) {
-  return (
-    <div onClick={onClick} className="flex flex-col justify-center items-center gap-2">
-      <AccountListingIcon
-        kind={account.kind}
-        icon={account.icon}
-        color={account.color}
-        main={account.main}
-        className="row-span-2"
-      />
-      <p className="text-xs text-center">{account.name}</p>
-    </div>
   )
 }
