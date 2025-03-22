@@ -16,11 +16,9 @@ import {
   TabsList,
   TabsTrigger
 } from "~/modules/shared/components/ui/tabs"
-import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color"
-import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human"
-import { Currency } from "~/modules/shared/types/currency"
 import { useTransactionsStore } from "../../stores/transactions"
 import { Account } from "../../types/accounts"
+import { PreviewAccount } from "../previews/account"
 
 type TransactionKind = "income" | "expense" | "transfer"
 
@@ -154,7 +152,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
             <p className="text-xl mb-2">Capital</p>
             {
               sections.transfer.filter(({ kind }) => kind === "capital").map((account) => (
-                <Transfer
+                <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onAccountSelected(account.id)}
@@ -164,7 +162,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
             <p className="text-xl mb-2">Savings</p>
             {
               sections.transfer.filter(({ kind }) => kind === "savings").map((account) => (
-                <Transfer
+                <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onAccountSelected(account.id)}
@@ -174,7 +172,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
             <p className="text-xl mb-2">Debts</p>
             {
               sections.transfer.filter(({ kind }) => kind === "debt").map((account) => (
-                <Transfer
+                <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onAccountSelected(account.id)}
@@ -184,7 +182,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelect }: Props)
             <p className="text-xl mb-2">Credit</p>
             {
               sections.transfer.filter(({ kind }) => kind === "credit").map((account) => (
-                <Transfer
+                <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onAccountSelected(account.id)}
@@ -221,69 +219,6 @@ function IncomeOrExpense({ account, onClick }: ComponentProps<"div"> & IncomeOrE
         className="row-span-2"
       />
       <p className="text-xs text-center">{account.name}</p>
-    </div>
-  )
-}
-
-interface TransferProps {
-  account: Account
-}
-
-function Transfer({ account, onClick }: ComponentProps<"div"> & TransferProps) {
-  const debt = account.capital + account.balance
-
-  return (
-    <div
-      className="grid grid-cols-[min-content_1fr] gap-2 mb-1"
-      onClick={onClick}
-    >
-      <AccountListingIcon
-        kind={account.kind}
-        icon={account.icon}
-        color={account.color}
-        main={account.main}
-        className="row-span-2"
-      />
-      <div className="flex flex-col gap-1 [&_>*]:leading-none">
-        <p>{account.name}</p>
-        <p className="text-muted-foreground text-xs">{account.description}</p>
-      </div>
-      <p className="text-sm">
-        {
-          (account.kind === "capital" || account.kind === "savings") && (
-            <span className={currencyAmountColor(account.balance)}>
-              {currencyAmountToHuman(account.balance, account.currency as Currency)}
-            </span>
-          )
-        }
-        {
-          account.kind === "debt" && (
-            <>
-              <span className={currencyAmountColor(debt)}>
-                {currencyAmountToHuman(debt, account.currency as Currency)}
-              </span>{" "}
-              <span>owed out of</span>{" "}
-              <span className={currencyAmountColor(account.capital)}>
-                {currencyAmountToHuman(account.capital, account.currency as Currency)}
-              </span>
-            </>
-          )
-        }
-        {
-          account.kind === "credit" && (
-            <>
-              <span className={currencyAmountColor(debt)}>
-                {currencyAmountToHuman(debt, account.currency as Currency)}
-              </span>{" "}
-              <span>owed with</span>{" "}
-              <span className={currencyAmountColor(account.balance)}>
-                {currencyAmountToHuman(account.balance, account.currency as Currency)}
-              </span>{" "}
-              <span>available</span>
-            </>
-          )
-        }
-      </p>
     </div>
   )
 }
