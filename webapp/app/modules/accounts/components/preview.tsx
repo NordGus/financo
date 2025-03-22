@@ -5,6 +5,8 @@ import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-co
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
 import { Account } from "../types/account";
 
+// TODO: Move to shared module and unify with all other implementations
+
 interface Props {
   account: Account
 }
