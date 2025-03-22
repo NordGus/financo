@@ -4,7 +4,8 @@
   "service": "devcontainer",
   "postStartCommand": {
     "node:install:dependencies": "npm install -g npm@latest && npm install",
-    "go:install:dependencies": "go mod download"
+    "go:install:dependencies": "go mod download",
+    "application:setup": "make db-setup"
   },
   "workspaceFolder": "/workspaces/financo",
   "customizations": {
