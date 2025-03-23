@@ -8,7 +8,7 @@ interface IncomeOrExpenseProps {
 
 export function PreviewCategory({ account, onClick }: ComponentProps<"div"> & IncomeOrExpenseProps) {
   return (
-    <div onClick={onClick} className="flex flex-col justify-center items-center gap-2">
+    <div onClick={onClick} className="flex flex-col justify-center items-center gap-2 cursor-pointer">
       <AccountListingIcon
         kind={account.kind}
         icon={account.icon}

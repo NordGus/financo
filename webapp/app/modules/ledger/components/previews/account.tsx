@@ -16,7 +16,7 @@ export function PreviewAccount({ account, onClick }: ComponentProps<"div"> & Pro
 
   return (
     <div
-      className="grid grid-cols-[min-content_1fr] gap-2 mb-1"
+      className="grid grid-cols-[min-content_1fr] gap-2 mb-1 cursor-pointer"
       onClick={onClick}
     >
       <AccountListingIcon
