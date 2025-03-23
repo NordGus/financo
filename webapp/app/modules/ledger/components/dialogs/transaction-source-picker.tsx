@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo } from "react"
+import { useCallback, useMemo } from "react"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Drawer,
@@ -10,7 +10,7 @@ import {
   DrawerTitle
 } from "~/modules/shared/components/ui/drawer"
 import { Kind } from "~/modules/shared/types/account"
-import { CreationContext, OnSourceChangeCallback } from "../../contexts/creation"
+import { OnSourceChangeCallback, useCreationStore } from "../../stores/creation"
 import { useTransactionsStore } from "../../stores/transactions"
 import { Account } from "../../types/accounts"
 import { PreviewAccount } from "../previews/account"
@@ -22,7 +22,8 @@ interface Props {
 }
 
 export function TransactionSourcePicker({ open, onOpenChange, onSelected }: Props) {
-  const { kind, target, onSourceChange } = useContext(CreationContext)
+  const { kind, target } = useCreationStore(state => state)
+  const onSourceChange = useCreationStore(state => state.onSourceChange)
 
   const accounts = useTransactionsStore((state) => state.accounts)
 
@@ -42,8 +43,7 @@ export function TransactionSourcePicker({ open, onOpenChange, onSelected }: Prop
   const debt = useMemo(() => accountsFor("debt"), [accountsFor])
   const credit = useMemo(() => accountsFor("credit"), [accountsFor])
 
-  const onClick = (id: number) =>
-    onSourceChange(id, onSelected)
+  const onClick = (id: number) => onSourceChange(id, onSelected)
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>

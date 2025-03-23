@@ -14,7 +14,6 @@ import { TransactionSourcePicker } from "../components/dialogs/transaction-sourc
 import { TransactionTargetPicker } from "../components/dialogs/transaction-target-picker";
 import { Entry } from "../components/entry";
 import { NoResults } from "../components/no-results";
-import { CreationContextProvider } from "../contexts/creation";
 import { filterFrom, filterTo } from "../defaults/filters";
 import { calculateDateRangeMovement, Movement } from "../helpers/calculate-date-range-movement";
 import { estimatePeriod } from "../helpers/estimate-period";
@@ -255,7 +254,7 @@ export function Screen({
   }, [dispatch])
 
   return (
-    <CreationContextProvider>
+    <>
       <div className="relative overflow-hidden h-full flex flex-col">
         <div className="absolute bottom-0 right-0 p-4 inline-flex gap-4 flex-wrap justify-end">
           <Button
@@ -381,6 +380,6 @@ export function Screen({
         onOpenChange={onOpenTransactionSourcePickerChange}
         onSelected={onTransactionSourceSelect}
       />
-    </CreationContextProvider>
+    </>
   )
 }

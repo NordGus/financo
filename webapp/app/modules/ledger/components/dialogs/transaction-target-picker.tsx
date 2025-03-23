@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Drawer,
@@ -15,7 +15,7 @@ import {
   TabsList,
   TabsTrigger
 } from "~/modules/shared/components/ui/tabs"
-import { CreationContext, OnTargetChangeCallback } from "../../contexts/creation"
+import { OnTargetChangeCallback, useCreationStore } from "../../stores/creation"
 import { useTransactionsStore } from "../../stores/transactions"
 import { Account } from "../../types/accounts"
 import { Kind } from "../../types/transactions"
@@ -65,9 +65,9 @@ function isTransfer(account: Account) {
 }
 
 export function TransactionTargetPicker({ open, onOpenChange, onSelected }: Props) {
-  const { kind, onTargetChange } = useContext(CreationContext)
+  const onTargetChange = useCreationStore(state => state.onTargetChange)
 
-  const [tab, setTab] = useState<Kind>(kind)
+  const [tab, setTab] = useState<Kind>("income")
 
   const accounts = useTransactionsStore((state) => state.accounts)
 
