@@ -13,6 +13,7 @@ import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
 import { TransactionSourcePicker } from "../components/dialogs/transaction-source-picker";
 import { TransactionTargetPicker } from "../components/dialogs/transaction-target-picker";
 import { Entry } from "../components/entry";
+import { CreateTransaction } from "../components/forms/create";
 import { NoResults } from "../components/no-results";
 import { filterFrom, filterTo } from "../defaults/filters";
 import { calculateDateRangeMovement, Movement } from "../helpers/calculate-date-range-movement";
@@ -152,6 +153,8 @@ export function Screen({
     dispatch({ type: "OPEN_CHANGED", open: open ? "creation-target-picker" : null })
   const onOpenTransactionSourcePickerChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "creation-source-picker" : null })
+  const onOpenTransactionCreateChange = (open: boolean) =>
+    dispatch({ type: "OPEN_CHANGED", open: open ? "create" : null })
 
   const onSearch = useCallback(async (nextFilters: Filters, signal: AbortSignal) => {
     await onSearchAction({ ...nextFilters }, signal, onActionSuccess, onActionFailed)
@@ -379,6 +382,13 @@ export function Screen({
         open={screen.open === "creation-source-picker"}
         onOpenChange={onOpenTransactionSourcePickerChange}
         onSelected={onTransactionSourceSelect}
+      />
+
+      <CreateTransaction
+        open={screen.open === "create"}
+        onOpenChange={onOpenTransactionCreateChange}
+        onSubmitAction={async (__values) => { }}
+        submitting={screen.submitting}
       />
     </>
   )
