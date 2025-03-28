@@ -8,6 +8,7 @@
     "application:setup": "make db-setup"
   },
   "workspaceFolder": "/workspaces/financo",
+  "shutdownAction": "stopCompose",
   "customizations": {
     "vscode": {
       "extensions": [
