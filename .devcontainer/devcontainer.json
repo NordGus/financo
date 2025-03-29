@@ -34,7 +34,9 @@
         "dbaeumer.vscode-eslint",
         "GitHub.vscode-github-actions",
         "GitHub.github-vscode-theme",
-        "ms-azuretools.vscode-docker"
+        "ms-azuretools.vscode-docker",
+        "GitHub.copilot-chat",
+        "GitHub.copilot"
       ],
       "settings": {
         "go.useLanguageServer": true,
