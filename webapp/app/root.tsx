@@ -12,6 +12,7 @@ import {
 } from "react-router";
 import { z } from "zod";
 import { zodErrorMap } from "~/config/zod-custom-error-map";
+import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Heading1 } from "~/modules/shared/components/ui/headings";
 import { TooltipProvider } from "~/modules/shared/components/ui/tooltip";
@@ -37,6 +38,10 @@ export async function clientLoader({ }: Route.LoaderArgs) {
   return {
     breadcrumb: "financo"
   }
+}
+
+export function HydrateFallback() {
+  return <FullScreenThrobber />;
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
