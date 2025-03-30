@@ -2,6 +2,8 @@ import { Kind } from "~/modules/shared/types/account"
 import { SystemCurrency } from "~/modules/shared/types/currency"
 import { Icon } from "~/modules/shared/types/icon"
 
+export type Accounts = Map<number, Account>
+
 export type Account = {
   id: number
   parentId: number | null

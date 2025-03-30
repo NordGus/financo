@@ -1,4 +1,5 @@
 import { Currency } from "~/modules/shared/types/currency"
+import { Filters } from "./filters"
 
 export const KINDS = {
   expense: "expense",
@@ -33,16 +34,14 @@ export type Transaction = {
   metadata: Metadata
 }
 
-export type Filters = {
-  from?: Date
-  to?: Date
-  accounts?: number[]
-  categories?: number[]
+export interface ExecutedTransaction extends Transaction {
+  executedAt: string
 }
 
 export type Period = "unlimited" | "daily" | "weekly" | "monthly" | "yearly" | "custom"
 
 export type Transactions = [string, Transaction[]][]
+export type ExecutedTransactions = [string, ExecutedTransaction[]][]
 
 export type SearchAction = (
   filter: Filters,
