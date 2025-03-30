@@ -1,6 +1,6 @@
 import { cva } from "class-variance-authority";
 import { PropsWithChildren } from "react";
-import { NavLink } from "react-router";
+import { NavLink, NavLinkProps } from "react-router";
 import { cn } from "~/lib/utils";
 
 const linkVariants = cva(
@@ -19,11 +19,7 @@ const linkVariants = cva(
   },
 )
 
-interface Props {
-  to: string
-}
-
-export function NavItem({ to, children }: PropsWithChildren<Props>) {
+export function NavMenuItem({ to, children, ...props }: PropsWithChildren<NavLinkProps>) {
   return (
     <NavLink
       to={to}
@@ -37,6 +33,7 @@ export function NavItem({ to, children }: PropsWithChildren<Props>) {
                 : undefined
         }),
       )}
+      {...props}
     >
       {children}
     </NavLink>
