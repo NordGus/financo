@@ -12,7 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigation } from "react-router";
 import { Breadcrumbs } from "./components/breadcrumbs";
-import { NavItem } from "./components/nav-item";
+import { NavMenuItem } from "./components/nav-menu-item";
 import { Throbber } from "./components/throbber";
 import { Button } from "./components/ui/button";
 import {
@@ -30,6 +30,8 @@ export default function Layout() {
   const [openNav, setOpenNav] = useState(false)
 
   useEffect(() => setOpenNav(false), [location.pathname])
+
+  const onNavLinkClick = () => setOpenNav(false)
 
   return (
     <>
@@ -63,31 +65,31 @@ export default function Layout() {
             <DrawerDescription>Navigate through financo</DrawerDescription>
           </DrawerHeader>
           <nav className="grid grid-cols-2 gap-2 p-4">
-            <NavItem to="/morning-brew" onClick={() => setOpenNav(false)}>
+            <NavMenuItem to="/morning-brew" onClick={onNavLinkClick}>
               <CoffeeIcon /> Morning Brew
-            </NavItem>
-            <NavItem to="/accounts" onClick={() => setOpenNav(false)}>
+            </NavMenuItem>
+            <NavMenuItem to="/accounts" onClick={onNavLinkClick}>
               <VaultIcon /> Accounts
-            </NavItem>
-            <NavItem to="/categories" onClick={() => setOpenNav(false)}>
+            </NavMenuItem>
+            <NavMenuItem to="/categories" onClick={onNavLinkClick}>
               <BookmarkIcon /> Categories
-            </NavItem>
-            <NavItem to="/ledger" onClick={() => setOpenNav(false)}>
+            </NavMenuItem>
+            <NavMenuItem to="/ledger" onClick={onNavLinkClick}>
               <BookMarkedIcon /> Ledger
-            </NavItem>
-            <NavItem to="/budgets" onClick={() => setOpenNav(false)}>
+            </NavMenuItem>
+            <NavMenuItem to="/budgets" onClick={onNavLinkClick}>
               <NotebookTabsIcon /> Budgets
-            </NavItem>
-            <NavItem to="/payment-plans" onClick={() => setOpenNav(false)}>
+            </NavMenuItem>
+            <NavMenuItem to="/payment-plans" onClick={onNavLinkClick}>
               <RouteIcon /> Payment plans
-            </NavItem>
+            </NavMenuItem>
             <span className="grow contents-[''] h-10 col-span-2" />
-            <NavItem to="/achievements" onClick={() => setOpenNav(false)}>
+            <NavMenuItem to="/achievements" onClick={onNavLinkClick}>
               <TrophyIcon /> Achievements
-            </NavItem>
-            <NavItem to="/settings" onClick={() => setOpenNav(false)}>
+            </NavMenuItem>
+            <NavMenuItem to="/settings" onClick={onNavLinkClick}>
               <SettingsIcon /> Settings
-            </NavItem>
+            </NavMenuItem>
           </nav>
         </DrawerContent>
       </Drawer>
