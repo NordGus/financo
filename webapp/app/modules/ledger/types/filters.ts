@@ -17,7 +17,7 @@ import {
 } from "date-fns"
 import { URLSearchParamsInit } from "react-router"
 
-export { FiltersSearchParamsKeys, fromURLSearchParams, toURLSearchParamsInit }
+export { FiltersSearchParamsKeys, fromURLSearchParams, toURLSearchParams }
 export type { Filters, Period }
 
 /**
@@ -177,10 +177,11 @@ function numbersToParam(numbers: number[]) {
 }
 
 /**
-  Converts Filters to URLSearchParamsInit.
+  Converts Filters to URLSearchParams.
   Filters that are not set are omitted from the URLSearchParams.
 */
-function toURLSearchParamsInit({ period, from, to, accounts, categories }: Filters): URLSearchParamsInit {
+function toURLSearchParams(filters: Filters): URLSearchParams
+function toURLSearchParams({ period, from, to, accounts, categories }: Filters): URLSearchParamsInit {
   return Object.fromEntries([
     [FiltersSearchParamsKeys.PERIOD, period],
     [FiltersSearchParamsKeys.FROM, optionalDateToParam(from)],
@@ -213,8 +214,8 @@ function fromURLSearchParams(params: URLSearchParams): Filters {
 function defaultValues(): Filters {
   return {
     period: "custom",
-    from: new Date(),
-    to: add(new Date(), { months: -1 }),
+    from: add(new Date(), { months: -1 }),
+    to: new Date(),
     accounts: [],
     categories: []
   }
