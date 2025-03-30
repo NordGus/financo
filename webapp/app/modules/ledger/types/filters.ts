@@ -17,7 +17,7 @@ import {
 } from "date-fns"
 import { URLSearchParamsInit } from "react-router"
 
-export { FiltersSearchParamsKeys, fromURLSearchParams, toURLSearchParams }
+export { FiltersSearchParamsKeys, fromURLSearchParams, toURLSearchParams, updateURLSearchParams }
 export type { Filters, Period }
 
 /**
@@ -207,6 +207,27 @@ function fromURLSearchParams(params: URLSearchParams): Filters {
   return { period, from, to, accounts, categories }
 }
 
+/**
+  Updates the URLSearchParams with the provided filters.
+  Filters that are not set are omitted from the URLSearchParams.
+*/
+function updateURLSearchParams(searchParams: URLSearchParams, filters: Filters): URLSearchParams
+function updateURLSearchParams(searchParams: URLSearchParams, filters: Filters): URLSearchParamsInit {
+  return Object.fromEntries([
+    ...Array.from(searchParams.entries()).filter(([key,]) => ([
+      FiltersSearchParamsKeys.PERIOD as string,
+      FiltersSearchParamsKeys.FROM as string,
+      FiltersSearchParamsKeys.TO as string,
+      FiltersSearchParamsKeys.ACCOUNTS as string,
+      FiltersSearchParamsKeys.CATEGORIES as string,
+    ].includes(key))),
+    [FiltersSearchParamsKeys.PERIOD, filters.period],
+    [FiltersSearchParamsKeys.FROM, optionalDateToParam(filters.from)],
+    [FiltersSearchParamsKeys.TO, optionalDateToParam(filters.to)],
+    [FiltersSearchParamsKeys.ACCOUNTS, numbersToParam(filters.accounts)],
+    [FiltersSearchParamsKeys.CATEGORIES, numbersToParam(filters.categories)]
+  ].filter(([, val]) => !!val))
+}
 /**
   Returns default values for Filters.
   The default period is "custom", and the date range is set to the last month.
