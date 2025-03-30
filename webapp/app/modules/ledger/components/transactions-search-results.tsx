@@ -1,5 +1,5 @@
 import { useAccountsMap } from "../hooks/use-accounts-map"
-import { useExecutedTransaction } from "../hooks/use-executed-transaction"
+import { useExecutedTransactions } from "../hooks/use-executed-transaction"
 import { Transaction } from "../types/transactions"
 import { DateGroup } from "./date-group"
 import { Entry } from "./entry"
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function TransactionsSearchResults({ }: Props) {
-  const { empty: noData, data: transactions } = useExecutedTransaction()
+  const { empty: noData, data: transactions } = useExecutedTransactions()
   const accounts = useAccountsMap()
 
   if (noData) return <NoResults />

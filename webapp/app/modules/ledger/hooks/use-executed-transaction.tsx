@@ -26,12 +26,12 @@ function value<T>(data: T): Value<T> {
 }
 
 /**
- * useExecutedTransaction is a custom hook that retrieves the executed transactions
+ * useExecutedTransactions is a custom hook that retrieves the executed transactions
  * data from the loader and returns it as a map of executed transactions grouped by date.
  *
  * @returns {ExecutedTransactions} A map of executed transactions grouped by date.
  */
-export function useExecutedTransaction(): Results<ExecutedTransactions> {
+export function useExecutedTransactions(): Results<ExecutedTransactions> {
   const { transactions } = useLoaderData<typeof clientLoader>()
 
   if (transactions.length === 0) return none()
