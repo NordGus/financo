@@ -1,6 +1,5 @@
 import { isFuture } from "date-fns";
 import { DynamicIcon } from "lucide-react/dynamic";
-import { memo } from "react";
 import { cn } from "~/lib/utils";
 import { AccountListingIcon } from "~/modules/shared/components/icons/account-icon";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
@@ -40,7 +39,7 @@ function amountColorCode(transaction: Transaction): number {
   }
 }
 
-export const Entry = memo(function Entry({
+export function Entry({
   transaction,
   source,
   sourceParent = null,
@@ -92,4 +91,4 @@ export const Entry = memo(function Entry({
       </span>
     </div>
   )
-})
+}

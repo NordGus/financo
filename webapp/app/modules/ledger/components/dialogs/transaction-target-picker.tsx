@@ -15,8 +15,8 @@ import {
   TabsList,
   TabsTrigger
 } from "~/modules/shared/components/ui/tabs"
+import { useAccountsMap } from "../../hooks/use-accounts-map"
 import { OnTargetChangeCallback, useCreationStore } from "../../stores/creation"
-import { useTransactionsStore } from "../../stores/transactions"
 import { Account } from "../../types/accounts"
 import { Kind } from "../../types/transactions"
 import { PreviewAccount } from "../previews/account"
@@ -69,7 +69,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelected }: Prop
 
   const [tab, setTab] = useState<Kind>("income")
 
-  const accounts = useTransactionsStore((state) => state.accounts)
+  const accounts = useAccountsMap()
 
   const sections = useMemo<Sections>(() => {
     const entries = Array.from(accounts.values())

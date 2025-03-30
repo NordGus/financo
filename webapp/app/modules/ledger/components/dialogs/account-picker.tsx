@@ -11,6 +11,7 @@ import {
   DrawerTitle
 } from "~/modules/shared/components/ui/drawer";
 import { Kind } from "~/modules/shared/types/account";
+import { useAccounts } from "../../hooks/use-accounts";
 import { Account } from "../../types/accounts";
 import { AccordionSection, Section } from "../picker-section";
 
@@ -35,8 +36,11 @@ function isAccount(kind: Kind): boolean {
   }
 }
 
-export function AccountPicker({ open, onOpenChange, onChangePick, accounts, selected, submitting }: Props) {
+export function AccountPicker({ open, onOpenChange, onChangePick, selected, submitting }: Props) {
   const [ids, setIds] = useState(selected)
+
+  const accounts = useAccounts()
+
   const onAdd = (id: number) => !ids.includes(id) && setIds([...ids, id])
   const onRemove = (id: number) => setIds(ids.filter((prev) => prev !== id))
 

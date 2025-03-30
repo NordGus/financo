@@ -10,8 +10,8 @@ import {
   DrawerTitle
 } from "~/modules/shared/components/ui/drawer"
 import { Kind } from "~/modules/shared/types/account"
+import { useAccountsMap } from "../../hooks/use-accounts-map"
 import { OnSourceChangeCallback, useCreationStore } from "../../stores/creation"
-import { useTransactionsStore } from "../../stores/transactions"
 import { Account } from "../../types/accounts"
 import { PreviewAccount } from "../previews/account"
 
@@ -25,7 +25,7 @@ export function TransactionSourcePicker({ open, onOpenChange, onSelected }: Prop
   const { kind, target } = useCreationStore(state => state)
   const onSourceChange = useCreationStore(state => state.onSourceChange)
 
-  const accounts = useTransactionsStore((state) => state.accounts)
+  const accounts = useAccountsMap()
 
   const selectableAccounts = useMemo<Account[]>(() => {
     return Array.from(accounts.values())

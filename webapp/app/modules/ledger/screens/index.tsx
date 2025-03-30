@@ -1,10 +1,11 @@
 import { ListFilterIcon, PlusIcon } from "lucide-react";
 import { useCallback, useReducer, useRef } from "react";
+import { useNavigation } from "react-router";
+import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
 import { SearchAbortedError } from "~/modules/shared/types/errors";
 import { AccountsFilter } from "../components/accounts-filter";
 import { DateFilter } from "../components/date-filter";
-import { DateGroup } from "../components/date-group";
 import { AccountPicker } from "../components/dialogs/account-picker";
 import { CategoryPicker } from "../components/dialogs/category-picker";
 import { DateDayPicker } from "../components/dialogs/date-day-picker";
@@ -12,17 +13,14 @@ import { DateRangePicker } from "../components/dialogs/date-range-picker";
 import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
 import { TransactionSourcePicker } from "../components/dialogs/transaction-source-picker";
 import { TransactionTargetPicker } from "../components/dialogs/transaction-target-picker";
-import { Entry } from "../components/entry";
 import { CreateTransaction } from "../components/forms/create";
-import { NoResults } from "../components/no-results";
-import { filterFrom, filterTo } from "../defaults/filters";
+import { TransactionsSearchResults } from "../components/transactions-search-results";
 import { calculateDateRangeMovement, Movement } from "../helpers/calculate-date-range-movement";
-import { estimatePeriod } from "../helpers/estimate-period";
 import { Account } from "../types/accounts";
-import { Filters, Period, SearchAction, Transactions } from "../types/transactions";
+import { Filters, Period } from "../types/filters";
+import { SearchAction } from "../types/transactions";
 
 interface Props {
-  transactions: Transactions
   accounts: Map<number, Account>
   filters: Filters
   onSearchAction: SearchAction
@@ -114,18 +112,17 @@ function reducer(state: ScreenState, action: Action): ScreenState {
 function init({ filters }: InitialState): ScreenState {
   return {
     ...filters,
-    from: filters.from ?? filterFrom(),
-    to: filters.to ?? filterTo(),
+    from: filters.from,
+    to: filters.to,
     accounts: filters.accounts ?? [],
     categories: filters.categories ?? [],
     open: null,
-    period: estimatePeriod(filters.from ?? filterFrom(), filters.to ?? filterTo()),
+    period: filters.period,
     submitting: false,
   }
 }
 
 export function Screen({
-  transactions,
   accounts,
 
   filters,
@@ -133,6 +130,7 @@ export function Screen({
   onSearchAction,
 }: Props) {
   const [screen, dispatch] = useReducer(reducer, { filters }, init)
+  const { state: navigationState } = useNavigation()
 
   const abort = useRef(new AbortController())
 
@@ -167,6 +165,7 @@ export function Screen({
     dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period })
     onSearch(
       {
+        period,
         from,
         to,
         accounts: [...screen.accounts],
@@ -187,6 +186,7 @@ export function Screen({
     dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period: screen.period })
     onSearch(
       {
+        period: screen.period,
         from,
         to,
         accounts: [...screen.accounts],
@@ -207,6 +207,7 @@ export function Screen({
     dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period: screen.period })
     onSearch(
       {
+        period: screen.period,
         from,
         to,
         accounts: [...screen.accounts],
@@ -223,6 +224,7 @@ export function Screen({
     dispatch({ type: "ACCOUNTS_FILTER_CHANGED", ids })
     onSearch(
       {
+        period: screen.period,
         from: screen.from,
         to: screen.to,
         accounts: [...ids],
@@ -239,6 +241,7 @@ export function Screen({
     dispatch({ type: "CATEGORIES_FILTER_CHANGED", ids })
     onSearch(
       {
+        period: screen.period,
         from: screen.from,
         to: screen.to,
         accounts: screen.accounts,
@@ -259,7 +262,7 @@ export function Screen({
   return (
     <>
       <div className="relative overflow-hidden h-full flex flex-col">
-        <div className="absolute bottom-0 right-0 p-4 inline-flex gap-4 flex-wrap justify-end">
+        <div className="absolute bottom-0 right-0 p-4 inline-flex gap-4 flex-wrap justify-end z-60">
           <Button
             size={"icon"}
             className="shadow-lg"
@@ -291,41 +294,13 @@ export function Screen({
           onForwards={onDateFilterMoveForward}
           onBackwards={onDateFilterMoveBackwards}
         />
-        <div className="overflow-x-hidden overflow-y-auto h-full">
+        <div className="overflow-x-hidden overflow-y-auto h-full relative">
           {
-            transactions.length === 0
-              ? <NoResults />
-              : (
-                <>
-                  <div className="flex flex-col">
-                    {
-                      transactions.map(([date, entries], idx) => (
-                        <DateGroup key={date} date={date} isFirst={idx === 0}>
-                          {entries.map((transaction) => {
-                            const source = accounts.get(transaction.sourceId)!
-                            const sourceParent = source.parentId === null ? null : accounts.get(source.parentId)!
-                            const target = accounts.get(transaction.targetId)!
-                            const targetParent = target.parentId === null ? null : accounts.get(target.parentId)!
-
-                            return (
-                              <Entry
-                                key={`${date}.${transaction.id}`}
-                                transaction={transaction}
-                                source={source}
-                                sourceParent={sourceParent}
-                                target={target}
-                                targetParent={targetParent}
-                              />
-                            )
-                          })}
-                        </DateGroup>
-                      ))
-                    }
-                  </div>
-                  <span className="content-[''] h-9 block my-2" />
-                </>
-              )
+            navigationState === "loading" && (
+              <FullScreenThrobber className="absolute inset-0 z-50" />
+            )
           }
+          <TransactionsSearchResults />
         </div>
       </div>
 
