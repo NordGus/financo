@@ -1,11 +1,11 @@
-import { format } from "date-fns";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
-import { filterFrom, filterTo } from "~/modules/ledger/defaults/filters";
+import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts/list";
+import { list as listTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list";
+import { useAccountsMap } from "~/modules/ledger/hooks/use-accounts-map";
 import { Screen } from "~/modules/ledger/screens";
-import { useTransactionsStore } from "~/modules/ledger/stores/transactions";
-import { Filters } from "~/modules/ledger/types/transactions";
+import { Filters, fromURLSearchParams, toURLSearchParams } from "~/modules/ledger/types/filters";
 import { SearchAbortedError } from "~/modules/shared/types/errors";
 import { Route } from "./+types/index";
 
@@ -16,49 +16,40 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
-export async function clientLoader({ }: Route.LoaderArgs) {
+export async function clientLoader({ request }: Route.LoaderArgs) {
+  const searchParams = new URL(request.url).searchParams
+  const filters = fromURLSearchParams(searchParams)
+
+  const [accounts, transactions] = await Promise.allSettled([
+    listAccountsQuery(),
+    listTransactionsQuery(filters),
+  ]);
+
+  if (accounts.status === "rejected") throw new Error(accounts.reason)
+  if (transactions.status === "rejected") throw new Error(transactions.reason)
+
   return {
-    breadcrumb: "Ledger"
+    breadcrumb: "Ledger",
+    accounts: accounts.value,
+    transactions: transactions.value,
+    filters
   }
 }
 
-export default function Index() {
-  const transactions = useTransactionsStore((state) => state.transactions)
-  const accounts = useTransactionsStore((state) => state.accounts)
-
-  const initStore = useTransactionsStore((state) => state.init)
-  const listTransactionsQuery = useTransactionsStore((state) => state.list)
-
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const filters: Filters = useMemo(() => {
-    const from = searchParams.get("from") ? new Date(searchParams.get("from")!) : filterFrom()
-    const to = searchParams.get("to") ? new Date(searchParams.get("to")!) : filterTo()
-    const accounts = searchParams.getAll("accounts").map((id) => Number(id))
-    const categories = searchParams.getAll("categories").map((id) => Number(id))
-
-    return { from, to, accounts, categories }
-  }, [searchParams])
+export default function Index({ loaderData: { filters } }: Route.ComponentProps) {
+  const accounts = useAccountsMap()
+  const [, setSearchParams] = useSearchParams()
 
   const onSearchParamsChange = useCallback((filters: Filters) => {
-    setSearchParams(
-      Object.fromEntries(
-        [
-          ["from", !filters.from ? undefined : format(filters.from, "yyyy-MM-dd")],
-          ["to", !filters.to ? undefined : format(filters.to, "yyyy-MM-dd")],
-          ["accounts", filters.accounts?.map((id) => id.toString())],
-          ["categories", filters.categories?.map((id) => id.toString())]
-        ].filter(([__key, value]) => !!value)
-      )
-    )
+    setSearchParams(toURLSearchParams(filters))
   }, [setSearchParams])
 
   const search = useCallback(
-    async (filters: Filters, signal: AbortSignal, success: () => void, failure: () => void) => {
+    async (filters: Filters, __signal: AbortSignal, success: () => void, failure: () => void) => {
       onSearchParamsChange(filters)
 
       try {
-        await listTransactionsQuery(filters, signal)
+        // await listTransactionsQuery(filters, signal)
 
         success()
       } catch (error) {
@@ -74,16 +65,7 @@ export default function Index() {
     [listTransactionsQuery, onSearchParamsChange]
   )
 
-  useEffect(() => {
-    const abort = new AbortController()
-
-    onSearchParamsChange({ ...filters })
-    initStore({ ...filters }, abort.signal)
-    return () => { abort.abort() }
-  }, [])
-
   return <Screen
-    transactions={transactions}
     accounts={accounts}
 
     filters={filters}
