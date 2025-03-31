@@ -214,7 +214,7 @@ function fromURLSearchParams(params: URLSearchParams): Filters {
 function updateURLSearchParams(searchParams: URLSearchParams, filters: Filters): URLSearchParams
 function updateURLSearchParams(searchParams: URLSearchParams, filters: Filters): URLSearchParamsInit {
   return Object.fromEntries([
-    ...Array.from(searchParams.entries()).filter(([key,]) => ([
+    ...Array.from(searchParams.entries()).filter(([key,]) => (![
       FiltersSearchParamsKeys.PERIOD as string,
       FiltersSearchParamsKeys.FROM as string,
       FiltersSearchParamsKeys.TO as string,
