@@ -10,27 +10,22 @@ type UseFiltersHookValue = {
   setFilters: SetFiltersDispatch;
 }
 
+/**
+ * useFilters is a custom hook that provides access to the current filters and
+ * a way to updated them.
+ *
+ * @returns {UseFiltersHookValue} - The filters and a dispatch function to update them.
+ */
 export function useFilters(): UseFiltersHookValue {
   const { filters } = useLoaderData<typeof clientLoader>()
   const [, setSearchParams] = useSearchParams()
-
-  console.log(filters)
-
 
   const values = useMemo<UseFiltersHookValue>(() => {
     return {
       filters,
       setFilters: (filters) => setSearchParams((prev) => updateURLSearchParams(prev, filters)),
     }
-  }, [
-    filters,
-    filters.accounts.length,
-    filters.categories.length,
-    filters.from?.toISOString(),
-    filters.to?.toISOString(),
-    filters.period,
-    setSearchParams
-  ])
+  }, [filters, setSearchParams])
 
   return values
 }
