@@ -16,12 +16,12 @@ import { TransactionTargetPicker } from "../components/dialogs/transaction-targe
 import { CreateTransaction } from "../components/forms/create";
 import { TransactionsSearchResults } from "../components/transactions-search-results";
 import { calculateDateRangeMovement, Movement } from "../helpers/calculate-date-range-movement";
-import { Account } from "../types/accounts";
+import { Accounts } from "../types/accounts";
 import { Filters, Period } from "../types/filters";
 import { SearchAction } from "../types/transactions";
 
 interface Props {
-  accounts: Map<number, Account>
+  accounts: Accounts
   filters: Filters
   onSearchAction: SearchAction
 }
@@ -288,7 +288,7 @@ export function Screen({
           </Button>
         </div>
         <DateFilter
-          range={{ from: screen.from, to: screen.to }}
+          range={{ from: filters.from, to: filters.to }}
           period={screen.period}
           onClick={() => onOpenPeriodFilterChange(true)}
           onForwards={onDateFilterMoveForward}
