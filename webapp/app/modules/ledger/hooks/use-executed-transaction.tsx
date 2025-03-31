@@ -47,5 +47,6 @@ export function useExecutedTransactions(): Results<ExecutedTransactions> {
 
         return acc
       }, {}))
+      .sort((a, b) => Date.parse(b[0]) - Date.parse(a[0]))
   )
 }
