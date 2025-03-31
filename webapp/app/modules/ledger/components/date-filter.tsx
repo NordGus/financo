@@ -1,9 +1,10 @@
 import { format } from "date-fns";
-import { ChevronLeftIcon, ChevronRightIcon, MoveHorizontalIcon } from "lucide-react";
+import { MoveHorizontalIcon } from "lucide-react";
 import { useMemo } from "react";
 import { DateRange } from "react-day-picker";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Period } from "../types/transactions";
+import { MoveDateRange } from "./buttons/move-date-rage";
 import { PeriodIcon } from "./period-icon";
 
 const FORMAT_DATE_STRING = "LLL dd, y"
@@ -14,6 +15,23 @@ interface Props {
   onClick: () => void
   onForwards: () => void
   onBackwards: () => void
+}
+
+export function DateFilter({ range, period, onClick }: Props) {
+  return (
+    <div className="p-2 gap-2 flex border-b">
+      {range.from && <MoveDateRange direction="backwards" />}
+      <Button
+        variant={"secondary"}
+        className="grow"
+        type="button"
+        onClick={onClick}
+      >
+        <PeriodDisplay range={range} period={period} />
+      </Button>
+      {range.to && <MoveDateRange direction="forwards" />}
+    </div>
+  )
 }
 
 interface PeriodDisplayProps {
@@ -36,42 +54,5 @@ function PeriodDisplay({ range, period }: PeriodDisplayProps) {
     <>
       <PeriodIcon period={period} size={"sm"} from={range.from} /> {from} <MoveHorizontalIcon /> {to}
     </>
-  )
-}
-
-export function DateFilter({ range, period, onClick, onForwards, onBackwards }: Props) {
-  return (
-    <div className="p-2 gap-2 flex border-b">
-      {
-        range.from && (
-          <Button
-            variant={"secondary"}
-            onClick={onBackwards}
-            size={"icon"}
-          >
-            <ChevronLeftIcon />
-          </Button>
-        )
-      }
-      <Button
-        variant={"secondary"}
-        className="grow"
-        type="button"
-        onClick={onClick}
-      >
-        <PeriodDisplay range={range} period={period} />
-      </Button>
-      {
-        range.to && (
-          <Button
-            variant={"secondary"}
-            onClick={onForwards}
-            size={"icon"}
-          >
-            <ChevronRightIcon />
-          </Button>
-        )
-      }
-    </div>
   )
 }
