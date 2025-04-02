@@ -5,6 +5,7 @@ import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
 import { SearchAbortedError } from "~/modules/shared/types/errors";
 import { AccountsFilter } from "../components/accounts-filter";
+import { MoveDateRangeLink } from "../components/buttons/move-date-rage-link";
 import { DateFilter } from "../components/date-filter";
 import { AccountPicker } from "../components/dialogs/account-picker";
 import { CategoryPicker } from "../components/dialogs/category-picker";
@@ -15,7 +16,6 @@ import { TransactionSourcePicker } from "../components/dialogs/transaction-sourc
 import { TransactionTargetPicker } from "../components/dialogs/transaction-target-picker";
 import { CreateTransaction } from "../components/forms/create";
 import { TransactionsSearchResults } from "../components/transactions-search-results";
-import { calculateDateRangeMovement, Movement } from "../helpers/calculate-date-range-movement";
 import { Accounts } from "../types/accounts";
 import { Filters, Period } from "../types/filters";
 import { SearchAction } from "../types/transactions";
@@ -175,48 +175,6 @@ export function Screen({
     )
   }, [dispatch, onSearch, abort.current, screen.accounts, screen.categories])
 
-  const onDateFilterMoveForward = useCallback(() => {
-    if (!screen.from || !screen.to) return
-
-    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
-    abort.current = new AbortController()
-
-    const { from, to } = calculateDateRangeMovement(Movement.Forwards, screen.from, screen.to, screen.period)
-
-    dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period: screen.period })
-    onSearch(
-      {
-        period: screen.period,
-        from,
-        to,
-        accounts: [...screen.accounts],
-        categories: [...screen.categories]
-      },
-      abort.current.signal
-    )
-  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
-
-  const onDateFilterMoveBackwards = useCallback(() => {
-    if (!screen.from || !screen.to) return
-
-    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
-    abort.current = new AbortController()
-
-    const { from, to } = calculateDateRangeMovement(Movement.Backwards, screen.to, screen.from, screen.period)
-
-    dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period: screen.period })
-    onSearch(
-      {
-        period: screen.period,
-        from,
-        to,
-        accounts: [...screen.accounts],
-        categories: [...screen.categories]
-      },
-      abort.current.signal
-    )
-  }, [dispatch, onSearch, abort.current, screen.from, screen.to, screen.accounts, screen.categories])
-
   const onAccountFilterChange = useCallback((ids: number[]) => {
     if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
     abort.current = new AbortController()
@@ -261,7 +219,7 @@ export function Screen({
 
   return (
     <>
-      <div className="relative overflow-hidden h-full flex flex-col">
+      <div className="relative overflow-hidden h-full grid grid-cols-2">
         <div className="absolute bottom-0 right-0 p-4 inline-flex gap-4 flex-wrap justify-end z-60">
           <Button
             size={"icon"}
@@ -270,6 +228,30 @@ export function Screen({
           >
             <PlusIcon />
           </Button>
+        </div>
+        <div className="flex flex-col h-full overflow-hidden">
+          <div className="relative">
+            <div className="flex items-center gap-2">
+              <MoveDateRangeLink direction="backwards" className="size-10" size={"lg"} variant={"outline"} />
+              <DateFilter
+                onClick={() => onOpenPeriodFilterChange(true)}
+                className="grow cursor-pointer"
+                size={"lg"}
+                variant={"outline"}
+              />
+              <MoveDateRangeLink direction="forwards" className="size-10" size={"lg"} variant={"outline"} />
+            </div>
+            <span className="absolute -bottom-9 left-0 right-0 bg-linear-to-b from-background to-transparent content-[' '] h-9 z-40" />
+          </div>
+          <div className="overflow-x-hidden overflow-y-auto h-full relative grow">
+            {
+              navigationState === "loading" && (
+                <FullScreenThrobber className="absolute inset-0 z-50" />
+              )
+            }
+            <TransactionsSearchResults className="my-4" />
+          </div>
+          <span className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-background to-transparent content-[' '] h-9 z-40" />
         </div>
         <div className="flex items-start gap-2 p-2">
           <span className="h-9 w-9" />
@@ -286,21 +268,6 @@ export function Screen({
           >
             <ListFilterIcon />
           </Button>
-        </div>
-        <DateFilter
-          range={{ from: filters.from, to: filters.to }}
-          period={screen.period}
-          onClick={() => onOpenPeriodFilterChange(true)}
-          onForwards={onDateFilterMoveForward}
-          onBackwards={onDateFilterMoveBackwards}
-        />
-        <div className="overflow-x-hidden overflow-y-auto h-full relative">
-          {
-            navigationState === "loading" && (
-              <FullScreenThrobber className="absolute inset-0 z-50" />
-            )
-          }
-          <TransactionsSearchResults />
         </div>
       </div>
 

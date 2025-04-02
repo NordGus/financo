@@ -31,7 +31,7 @@ export function Throbber({ size, className }: ComponentProps<"span"> & VariantPr
 
 export function FullScreenThrobber({ className }: ComponentProps<"div">) {
   return (
-    <div className={cn("h-full flex justify-center items-center bg-background/50", className)}>
+    <div className={cn("h-full flex justify-center items-center bg-background/70", className)}>
       <Throbber />
     </div>
   );
