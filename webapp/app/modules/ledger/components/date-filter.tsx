@@ -1,36 +1,25 @@
 import { format } from "date-fns";
 import { MoveHorizontalIcon } from "lucide-react";
-import { useMemo } from "react";
+import { ComponentProps, useMemo } from "react";
 import { DateRange } from "react-day-picker";
 import { Button } from "~/modules/shared/components/ui/button";
+import { useFilters } from "../hooks/use-filters";
 import { Period } from "../types/transactions";
-import { MoveDateRange } from "./buttons/move-date-rage";
 import { PeriodIcon } from "./period-icon";
 
 const FORMAT_DATE_STRING = "LLL dd, y"
 
-interface Props {
-  range: DateRange
-  period: Period
-  onClick: () => void
-  onForwards: () => void
-  onBackwards: () => void
-}
+export function DateFilter({ ...props }: ComponentProps<typeof Button>) {
+  const [{ to, from, period },] = useFilters()
 
-export function DateFilter({ range, period, onClick }: Props) {
   return (
-    <div className="p-2 gap-2 flex border-b">
-      {range.from && <MoveDateRange direction="backwards" />}
-      <Button
-        variant={"secondary"}
-        className="grow"
-        type="button"
-        onClick={onClick}
-      >
-        <PeriodDisplay range={range} period={period} />
-      </Button>
-      {range.to && <MoveDateRange direction="forwards" />}
-    </div>
+    <Button
+      variant={"ghost"}
+      type="button"
+      {...props}
+    >
+      <PeriodDisplay range={{ to, from }} period={period} />
+    </Button>
   )
 }
 

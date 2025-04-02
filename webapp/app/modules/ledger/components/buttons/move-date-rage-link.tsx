@@ -1,6 +1,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { ComponentProps } from "react"
 import { createSearchParams, Link, useNavigation, useSearchParams } from "react-router"
+import { cn } from "~/lib/utils"
 import { Button } from "~/modules/shared/components/ui/button"
 import { calculateDateRangeMovement, Movement } from "../../helpers/calculate-date-range-movement"
 import { useFilters } from "../../hooks/use-filters"
@@ -12,7 +13,7 @@ type Props = {
   direction: Direction
 }
 
-export function MoveDateRange({ direction, ...props }: ComponentProps<"button"> & Props) {
+export function MoveDateRangeLink({ direction, className, ...props }: ComponentProps<typeof Button> & Props) {
   const [filters,] = useFilters()
   const [searchParams,] = useSearchParams()
   const { state } = useNavigation()
@@ -27,9 +28,9 @@ export function MoveDateRange({ direction, ...props }: ComponentProps<"button"> 
 
   return (
     <Button
-      variant={"secondary"}
-      size={"icon"}
+      variant={"ghost"}
       {...props}
+      className={cn(className, "px-0")}
       asChild
       disabled={state !== "idle"}
     >
