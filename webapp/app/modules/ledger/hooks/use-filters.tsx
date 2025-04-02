@@ -1,31 +1,38 @@
-import { useMemo } from "react";
+import { useCallback } from "react";
 import { useLoaderData, useSearchParams } from "react-router";
 import { clientLoader } from "~/routes/ledger";
 import { Filters, updateURLSearchParams } from "../types/filters";
 
-type SetFiltersDispatch = (filters: Filters) => void
-
-type UseFiltersHookValue = {
-  filters: Filters;
-  setFilters: SetFiltersDispatch;
-}
+type SetFilters = (nextFilters: Filters | ((prev: Filters) => Filters)) => void
 
 /**
- * useFilters is a custom hook that provides access to the current filters and
- * a way to updated them.
+ * Returns a tuple of the current screen's {@link Filters} and a function to
+ * update them. Setting the filters causes a navigation.
  *
- * @returns {UseFiltersHookValue} - The filters and a dispatch function to update them.
+ * ```tsx
+ *  export default function Component() {
+ *    const [filters, setFilters] = useFilters()
+ *    // ...
+ *  }
+ * ```
+ *
+ * @returns [{@link Filters}, {@link SetFilters}] - The filters and a dispatch function to update them.
+ * @category Hooks
  */
-export function useFilters(): UseFiltersHookValue {
+export function useFilters(): [Filters, SetFilters] {
   const { filters } = useLoaderData<typeof clientLoader>()
   const [, setSearchParams] = useSearchParams()
 
-  const values = useMemo<UseFiltersHookValue>(() => {
-    return {
-      filters,
-      setFilters: (filters) => setSearchParams((prev) => updateURLSearchParams(prev, filters)),
-    }
-  }, [filters, setSearchParams])
+  const setFilters = useCallback<SetFilters>((nextFilters) => {
+    setSearchParams((prev) =>
+      updateURLSearchParams(
+        prev,
+        typeof nextFilters === "function"
+          ? nextFilters(filters)
+          : nextFilters
+      )
+    )
+  }, [setSearchParams])
 
-  return values
+  return [filters, setFilters]
 }
