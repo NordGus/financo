@@ -1,6 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { ComponentProps } from "react"
-import { createSearchParams, Link, useSearchParams } from "react-router"
+import { createSearchParams, Link, useNavigation, useSearchParams } from "react-router"
 import { Button } from "~/modules/shared/components/ui/button"
 import { calculateDateRangeMovement, Movement } from "../../helpers/calculate-date-range-movement"
 import { useFilters } from "../../hooks/use-filters"
@@ -13,8 +13,9 @@ type Props = {
 }
 
 export function MoveDateRange({ direction, ...props }: ComponentProps<"button"> & Props) {
-  const { filters } = useFilters()
+  const [filters,] = useFilters()
   const [searchParams,] = useSearchParams()
+  const { state } = useNavigation()
 
   if (!filters.from || !filters.to) return null
 
@@ -22,9 +23,7 @@ export function MoveDateRange({ direction, ...props }: ComponentProps<"button"> 
     ? calculateDateRangeMovement(Movement.Forwards, filters.from, filters.to, filters.period)
     : calculateDateRangeMovement(Movement.Backwards, filters.to, filters.from, filters.period)
 
-  const newSearchParams = createSearchParams(
-    updateURLSearchParams(searchParams, { ...filters, from, to })
-  )
+  const newSearchParams = createSearchParams(updateURLSearchParams(searchParams, { ...filters, from, to }))
 
   return (
     <Button
@@ -32,15 +31,10 @@ export function MoveDateRange({ direction, ...props }: ComponentProps<"button"> 
       size={"icon"}
       {...props}
       asChild
+      disabled={state !== "idle"}
     >
-      <Link to={"?" + newSearchParams} discover="render" prefetch="viewport" replace>
-        {
-          direction === "forwards" ? (
-            <ChevronRightIcon />
-          ) : (
-            <ChevronLeftIcon />
-          )
-        }
+      <Link to={"?" + newSearchParams} prefetch="intent" replace>
+        {direction === "forwards" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
       </Link>
     </Button>
   )
