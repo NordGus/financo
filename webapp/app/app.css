@@ -87,7 +87,7 @@
 
   --transition-property-height: height;
 
-  --grid-template-rows-layout: 1fr fit-content(20dvw);
+  --grid-template-columns-layout: 15dvw 1fr;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);

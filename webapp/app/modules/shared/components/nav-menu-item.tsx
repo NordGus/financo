@@ -10,7 +10,7 @@ const linkVariants = cva(
       variant: {
         "active": "text-foreground dark:text-foreground bg-muted",
         "pending": "bg-background text-foreground animate-pulse",
-        "default": "text-foreground/50 hover:text-foreground hover:bg-muted"
+        "default": "text-muted-foreground hover:text-foreground hover:bg-muted"
       }
     },
     defaultVariants: {

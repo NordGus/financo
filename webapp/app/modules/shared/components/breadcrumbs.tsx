@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { ComponentProps, PropsWithChildren } from "react";
 import { Link, useMatches } from "react-router";
 import {
   Breadcrumb,
@@ -39,14 +39,14 @@ function Entry({ withSeparator, withLink, to, children }: PropsWithChildren<Entr
   </>);
 }
 
-export function Breadcrumbs() {
+export function Breadcrumbs({ ...props }: ComponentProps<typeof Breadcrumb>) {
   const matches = useMatches();
   const crumbs = matches
     .filter(({ data }) => Boolean(data))
     .filter(({ data }) => Boolean((data as WithBreadcrumb).breadcrumb));
   const last = crumbs.length - 1;
 
-  return <Breadcrumb>
+  return <Breadcrumb {...props}>
     <BreadcrumbList>
       {
         crumbs.map(({ data, pathname }, idx) => {
