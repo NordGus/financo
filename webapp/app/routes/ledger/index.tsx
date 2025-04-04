@@ -1,11 +1,10 @@
-import { useCallback } from "react";
-import { useSearchParams } from "react-router";
+import { createSearchParams, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts/list";
 import { list as listTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list";
 import { useAccountsMap } from "~/modules/ledger/hooks/use-accounts-map";
 import { Screen } from "~/modules/ledger/screens";
-import { Filters, fromURLSearchParams, toURLSearchParams } from "~/modules/ledger/types/filters";
+import { Filters, fromURLSearchParams, updateURLSearchParams } from "~/modules/ledger/types/filters";
 import { SearchAbortedError } from "~/modules/shared/types/errors";
 import { Route } from "./+types/index";
 
@@ -40,30 +39,23 @@ export default function Index({ loaderData: { filters } }: Route.ComponentProps)
   const accounts = useAccountsMap()
   const [, setSearchParams] = useSearchParams()
 
-  const onSearchParamsChange = useCallback((filters: Filters) => {
-    setSearchParams(toURLSearchParams(filters))
-  }, [setSearchParams])
+  const search = async (filters: Filters, __signal: AbortSignal, success: () => void, failure: () => void) => {
+    setSearchParams((prev) => createSearchParams(updateURLSearchParams(prev, filters)))
 
-  const search = useCallback(
-    async (filters: Filters, __signal: AbortSignal, success: () => void, failure: () => void) => {
-      onSearchParamsChange(filters)
+    try {
+      // await listTransactionsQuery(filters, signal)
 
-      try {
-        // await listTransactionsQuery(filters, signal)
+      success()
+    } catch (error) {
+      failure()
 
-        success()
-      } catch (error) {
-        failure()
+      if (error instanceof SearchAbortedError) return; // this is an expected error
 
-        if (error instanceof SearchAbortedError) return; // this is an expected error
+      toast.error("Oops!. Something went wrong")
 
-        toast.error("Oops!. Something went wrong")
-
-        console.error({ action: "ledger: search transactions", error })
-      }
-    },
-    [listTransactionsQuery, onSearchParamsChange]
-  )
+      console.error({ action: "ledger: search transactions", error })
+    }
+  }
 
   return <Screen
     accounts={accounts}

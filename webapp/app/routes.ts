@@ -8,9 +8,8 @@ import {
 
 export default [
   layout("modules/shared/layout.tsx", [
-    index("routes/home.tsx"),
+    index("routes/morning-brew/index.tsx"),
 
-    route("morning-brew", "routes/morning-brew/index.tsx"),
     route("accounts", "routes/accounts/index.tsx"),
     route("categories", "routes/categories/index.tsx"),
 
