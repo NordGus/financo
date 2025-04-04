@@ -93,10 +93,15 @@ const footer = [
 ]
 
 export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
-  const { pathname: current } = useLocation()
-  const { location } = useNavigation()
+  // useLocation to get the current pathname when navigation is idle.
+  const staticLocation = useLocation()
+  // useNavigation to get the current pathname when navigation is not idle.
+  const { location: navigationLocation } = useNavigation()
 
-  const pathname = location?.pathname ?? current
+  const { pathname } = navigationLocation ?? staticLocation
+
+  // use matchPath to check if the current pathname matches the url of the item.
+  // This is used to highlight the active item in the sidebar.
   const isActive = (url: string) => matchPath(url, pathname) !== null
 
   return (
