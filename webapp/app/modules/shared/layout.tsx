@@ -1,7 +1,8 @@
 import { Outlet, useLocation, useNavigation } from "react-router";
+import { cn } from "~/lib/utils";
 import { AppSidebar } from "./components/app-sidebar";
-import { Throbber } from "./components/throbber";
-import { Topbar } from "./components/topbar";
+import { FullScreenThrobber } from "./components/throbber";
+import { ToolBar } from "./components/tool-bar";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { Toaster } from "./components/ui/sonner";
 
@@ -10,19 +11,22 @@ export default function Layout() {
   const { state: navigationState } = useNavigation()
 
   return (
-    <SidebarProvider>
-      <AppSidebar collapsible="icon" />
-      <main className="block min-h-100dvh w-full overflow-y-auto">
-        <Topbar />
-        {
-          navigationState === "loading" && location.search.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
-              <Throbber />
-            </div>
-          ) : <Outlet />
-        }
-        <Toaster position="top-center" closeButton richColors />
+    <SidebarProvider className="min-h-body items-stretch">
+      <AppSidebar className="h-dvh" />
+      <main className="relative grow">
+        <div className="bg-background absolute inset-0 overflow-y-auto rounded-xl shadow-md/10">
+          <ToolBar>
+            <FullScreenThrobber
+              className={cn(
+                "absolute inset-0 z-50",
+                (navigationState === "idle" || location.search.length !== 0) && "hidden"
+              )}
+            />
+            <Outlet />
+          </ToolBar>
+        </div>
       </main>
+      <Toaster position="top-center" closeButton richColors />
     </SidebarProvider >
   )
 }
