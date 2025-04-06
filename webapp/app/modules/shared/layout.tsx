@@ -11,19 +11,18 @@ export default function Layout() {
   const { state: navigationState } = useNavigation()
 
   return (
-    <SidebarProvider className="min-h-body items-stretch">
+    <SidebarProvider className="min-h-body items-stretch" defaultOpen={true}>
       <AppSidebar className="h-dvh" />
-      <main className="relative grow">
-        <div className="bg-background absolute inset-0 overflow-y-auto rounded-xl shadow-md/10">
-          <ToolBar>
-            <FullScreenThrobber
-              className={cn(
-                "absolute inset-0 z-50",
-                (navigationState === "idle" || location.search.length !== 0) && "hidden"
-              )}
-            />
-            <Outlet />
-          </ToolBar>
+      <main className="block grow relative h-dvh overflow-y-auto">
+        <ToolBar />
+        <FullScreenThrobber
+          className={cn(
+            "absolute inset-0 z-50",
+            (navigationState === "idle" || location.search.length !== 0) && "hidden"
+          )}
+        />
+        <div className="relative w-[80dvw] mx-auto">
+          <Outlet />
         </div>
       </main>
       <Toaster position="top-center" closeButton richColors />

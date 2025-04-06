@@ -15,7 +15,6 @@ import { zodErrorMap } from "~/config/zod-custom-error-map";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Heading1 } from "~/modules/shared/components/ui/headings";
-import { TooltipProvider } from "~/modules/shared/components/ui/tooltip";
 import { useCurrenciesStore } from "~/modules/shared/hooks/use-currencies-store";
 import useDetectColorScheme from "~/modules/shared/hooks/use-detect-color-scheme";
 import type { Route } from "./+types/root";
@@ -74,9 +73,7 @@ export default function App() {
   }, [])
 
   return (
-    <TooltipProvider>
-      <Outlet />
-    </TooltipProvider>
+    <Outlet />
   );
 }
 
