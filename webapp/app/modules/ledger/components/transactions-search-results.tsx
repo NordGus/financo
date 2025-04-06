@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { useAccountsMap } from "../hooks/use-accounts-map"
 import { useExecutedTransactions } from "../hooks/use-executed-transaction"
 import { Transaction } from "../types/transactions"
@@ -12,13 +13,14 @@ interface Props {
 }
 
 export function TransactionsSearchResults({ }: Props) {
-  const { empty: noData, data: transactions } = useExecutedTransactions()
+  const transactions = useExecutedTransactions()
   const accounts = useAccountsMap()
+  const last = useMemo(() => transactions.length - 1, [transactions.length])
 
-  if (noData) return <NoResults />
+  if (transactions.length === 0) return <NoResults />
 
   return transactions.map(([date, entries], idx) => (
-    <DateGroup key={date} date={date} isFirst={idx === 0}>
+    <DateGroup key={date} date={date} isLast={idx === last}>
       {entries.map((transaction) => {
         const source = accounts.get(transaction.sourceId)!
         const sourceParent = source.parentId === null ? null : accounts.get(source.parentId)!
@@ -33,6 +35,7 @@ export function TransactionsSearchResults({ }: Props) {
             sourceParent={sourceParent}
             target={target}
             targetParent={targetParent}
+            futureEnable
           />
         )
       })}

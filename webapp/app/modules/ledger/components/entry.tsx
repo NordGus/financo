@@ -1,5 +1,6 @@
 import { isFuture } from "date-fns";
 import { DynamicIcon } from "lucide-react/dynamic";
+import { useMemo } from "react";
 import { cn } from "~/lib/utils";
 import { AccountListingIcon } from "~/modules/shared/components/icons/account-icon";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
@@ -13,6 +14,7 @@ interface Props {
   sourceParent?: Account | null
   target: Account
   targetParent?: Account | null
+  futureEnable?: boolean
 }
 
 function accountName(account: Account, parent: Account | null): string {
@@ -44,7 +46,8 @@ export function Entry({
   source,
   sourceParent = null,
   target,
-  targetParent = null
+  targetParent = null,
+  futureEnable = false
 }: Props) {
   const start = account(source, target, transaction)
   const dest = start.id === source.id ? target : source
@@ -62,18 +65,21 @@ export function Entry({
       ? targetParent
       : null
 
+  const inTheFuture = useMemo(() => {
+    return transaction.executedAt && isFuture(transaction.executedAt)
+  }, [transaction?.executedAt])
+
   return (
     <div className={cn(
-      "grid grid-cols-[min-content_2fr_1fr] items-top gap-2 py-1",
-      (!transaction.executedAt || isFuture(transaction.executedAt)) &&
-      "relative before:absolute before:inset-0 before:bg-background/50"
+      "grid grid-cols-[min-content_2fr_1fr] items-top gap-2 p-2 hover:bg-muted rounded-md cursor",
+      futureEnable && inTheFuture && "relative before:absolute before:inset-0 before:bg-background/50",
     )}>
       <AccountListingIcon
         kind={start.kind}
         icon={start.icon}
         color={start.color}
         main={start.main}
-        className="size-8 [&_svg]:size-6"
+        className="size-8 [&_svg]:size-6 z-0"
       />
       <div>
         <p className="mb-1.5 leading-none">{accountName(start, startParent)}</p>

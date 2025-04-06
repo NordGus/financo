@@ -29,6 +29,7 @@ export function MoveDateRangeLink({ direction, className, ...props }: ComponentP
   return (
     <Button
       variant={"ghost"}
+      size={"icon"}
       {...props}
       className={cn(className, "px-0")}
       asChild

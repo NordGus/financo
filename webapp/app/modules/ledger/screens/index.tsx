@@ -1,6 +1,8 @@
 import { useCallback, useReducer, useRef } from "react";
-import { useNavigation } from "react-router";
+import { Link, useNavigation } from "react-router";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
+import { Button } from "~/modules/shared/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "~/modules/shared/components/ui/card";
 import { SearchAbortedError } from "~/modules/shared/types/errors";
 import { DateFilter } from "../components/date-filter";
 import { AccountPicker } from "../components/dialogs/account-picker";
@@ -188,17 +190,46 @@ export function Screen({
   }, [dispatch])
 
   return (
-    <>
-      <div className="sticky top-0 bg-background border-b z-50 p-2">
-        <DateFilter />
+    <div className="grid grid-cols-[1fr_1.5fr] gap-4 px-2 h-full">
+      <div className="pt-2 h-full overflow-y-auto no-scrollbar">
+        <Card className="overflow-clip sticky top-0 z-40">
+          <CardHeader>
+            <CardTitle>
+              Ledger
+            </CardTitle>
+            <CardDescription>
+              View and manage your financial transactions
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <DateFilter />
+            <div className="flex gap-2">
+              <Button className="flex-1">Accounts</Button>
+              <Button className="flex-1">Category</Button>
+            </div>
+          </CardContent>
+          <CardFooter className="justify-end">
+            <Button asChild>
+              <Link to={"./"}>
+                Reset Filters
+              </Link>
+            </Button>
+          </CardFooter>
+        </Card>
+        <div className="mt-2">
+          <TransactionsSearchResults />
+          <TransactionsSearchResults />
+          <TransactionsSearchResults />
+        </div>
       </div>
-
-      {
-        navigationState !== "idle" && (
-          <FullScreenThrobber className="absolute inset-0 z-50" />
-        )
-      }
-      <TransactionsSearchResults />
+      <div className="h-full overflow-y-auto no-scrollbar">
+        {
+          navigationState !== "idle" && (
+            <FullScreenThrobber className="absolute inset-0 z-50" />
+          )
+        }
+        <TransactionsSearchResults />
+      </div>
 
       <AccountPicker
         open={screen.open === "accounts"}
@@ -236,6 +267,6 @@ export function Screen({
         onSubmitAction={async (__values) => { }}
         submitting={screen.submitting}
       />
-    </>
+    </div>
   )
 }

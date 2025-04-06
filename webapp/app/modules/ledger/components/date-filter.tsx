@@ -3,9 +3,11 @@ import { MoveHorizontalIcon } from "lucide-react";
 import { ComponentProps, useMemo, useReducer } from "react";
 import { DateRange } from "react-day-picker";
 import { useNavigation } from "react-router";
+import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
 import { useFilters } from "../hooks/use-filters";
 import { Period } from "../types/transactions";
+import { MoveDateRangeLink } from "./buttons/move-date-rage-link";
 import { DateDayPicker } from "./dialogs/date-day-picker";
 import { DateRangePicker } from "./dialogs/date-range-picker";
 import { PeriodShortcuts } from "./dialogs/period-shortcuts";
@@ -65,7 +67,7 @@ function reducer(state: DateFilterState, action: Action): DateFilterState {
   }
 }
 
-export function DateFilter({ ...props }: ComponentProps<typeof Button>) {
+export function DateFilter({ className, ...props }: ComponentProps<"div">) {
   const { state: navigationState } = useNavigation()
   const [{ to, from, period }, setFilters] = useFilters()
 
@@ -80,14 +82,18 @@ export function DateFilter({ ...props }: ComponentProps<typeof Button>) {
 
   return (
     <>
-      <Button
-        variant={"ghost"}
-        type="button"
-        {...props}
-        onClick={() => setState({ type: _actions.OPEN_CHANGED, open: true })}
-      >
-        <PeriodDisplay range={{ to, from }} period={period} />
-      </Button>
+      <div className={cn("flex gap-2 w-full", className)} {...props}>
+        <MoveDateRangeLink direction="backwards" variant={"outline"} />
+        <Button
+          variant={"outline"}
+          type="button"
+          onClick={() => setState({ type: _actions.OPEN_CHANGED, open: true })}
+          className="grow"
+        >
+          <PeriodDisplay range={{ to, from }} period={period} />
+        </Button>
+        <MoveDateRangeLink direction="forwards" variant={"outline"} />
+      </div>
 
       <PeriodShortcuts
         open={state.open}
