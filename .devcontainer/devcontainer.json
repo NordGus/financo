@@ -55,6 +55,9 @@
         "editor.pasteAs.preferences": [
           "text.updateImports.jsts"
         ],
+        "editor.linkedEditing": true,
+        "javascript.preferences.renameMatchingJsxTags": true,
+        "typescript.preferences.renameMatchingJsxTags": true,
         "editor.wordWrap": "wordWrapColumn",
         "editor.wordWrapColumn": 120,
         "editor.formatOnSave": true,
