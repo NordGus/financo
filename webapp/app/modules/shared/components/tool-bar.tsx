@@ -6,7 +6,7 @@ import { Button } from "./ui/button"
 import { useSidebar } from "./ui/sidebar"
 
 export function ToolBar({ className, ...props }: ComponentProps<"div">) {
-  const { toggleSidebar, open } = useSidebar()
+  const { toggleSidebar, open, isMobile } = useSidebar()
 
   return (
     <div
@@ -21,7 +21,7 @@ export function ToolBar({ className, ...props }: ComponentProps<"div">) {
         onClick={toggleSidebar}
         variant={"ghost"}
         className={
-          cn("cursor-pointer", open && "bg-accent dark:bg-accent/50")
+          cn("cursor-pointer", open && !isMobile && "bg-accent dark:bg-accent/50")
         }
         size={"icon"}
       >
