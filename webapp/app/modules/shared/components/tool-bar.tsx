@@ -21,7 +21,7 @@ export function ToolBar({ className, ...props }: ComponentProps<"div">) {
         onClick={toggleSidebar}
         variant={"ghost"}
         className={
-          cn("cursor-pointer size-7", open && "bg-accent dark:bg-accent/50")
+          cn("cursor-pointer", open && "bg-accent dark:bg-accent/50")
         }
         size={"icon"}
       >
