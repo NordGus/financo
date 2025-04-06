@@ -13,7 +13,7 @@ export default function Layout() {
   return (
     <SidebarProvider className="min-h-body items-stretch" defaultOpen={true}>
       <AppSidebar className="h-dvh" />
-      <main className="block grow relative h-dvh overflow-y-auto">
+      <main className="flex flex-col grow h-dvh overflow-hidden">
         <ToolBar />
         <FullScreenThrobber
           className={cn(
@@ -21,7 +21,7 @@ export default function Layout() {
             (navigationState === "idle" || location.search.length !== 0) && "hidden"
           )}
         />
-        <div className="relative w-[80dvw] mx-auto">
+        <div className="grow w-full md:w-[80dvw] mx-auto overflow-y-auto no-scrollbar">
           <Outlet />
         </div>
       </main>
