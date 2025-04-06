@@ -1,17 +1,10 @@
-import { ListFilterIcon, PlusIcon } from "lucide-react";
 import { useCallback, useReducer, useRef } from "react";
 import { useNavigation } from "react-router";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
-import { Button } from "~/modules/shared/components/ui/button";
 import { SearchAbortedError } from "~/modules/shared/types/errors";
-import { AccountsFilter } from "../components/accounts-filter";
-import { MoveDateRangeLink } from "../components/buttons/move-date-rage-link";
 import { DateFilter } from "../components/date-filter";
 import { AccountPicker } from "../components/dialogs/account-picker";
 import { CategoryPicker } from "../components/dialogs/category-picker";
-import { DateDayPicker } from "../components/dialogs/date-day-picker";
-import { DateRangePicker } from "../components/dialogs/date-range-picker";
-import { PeriodShortcuts } from "../components/dialogs/period-shortcuts";
 import { TransactionSourcePicker } from "../components/dialogs/transaction-source-picker";
 import { TransactionTargetPicker } from "../components/dialogs/transaction-target-picker";
 import { CreateTransaction } from "../components/forms/create";
@@ -137,12 +130,6 @@ export function Screen({
   const onActionSuccess = useCallback(() => dispatch({ type: "ACTION_SUCCEED" }), [dispatch])
   const onActionFailed = useCallback(() => dispatch({ type: "ACTION_FAILED" }), [dispatch])
 
-  const onOpenPeriodFilterChange = (open: boolean) =>
-    dispatch({ type: "OPEN_CHANGED", open: open ? "period" : null })
-  const onOpenRangePickerChange = (open: boolean) =>
-    dispatch({ type: "OPEN_CHANGED", open: open ? "range-picker" : null })
-  const onOpenDayPickerChange = (open: boolean) =>
-    dispatch({ type: "OPEN_CHANGED", open: open ? "day-picker" : null })
   const onOpenAccountsFilterChange = (open: boolean) =>
     dispatch({ type: "OPEN_CHANGED", open: open ? "accounts" : null })
   const onOpenCategoriesFilterChange = (open: boolean) =>
@@ -157,23 +144,6 @@ export function Screen({
   const onSearch = useCallback(async (nextFilters: Filters, signal: AbortSignal) => {
     await onSearchAction({ ...nextFilters }, signal, onActionSuccess, onActionFailed)
   }, [onSearchAction, onActionSuccess, onActionFailed])
-
-  const onDateFilterChange = useCallback((from: Date | undefined, to: Date | undefined, period: Period) => {
-    if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
-    abort.current = new AbortController()
-
-    dispatch({ type: "DATE_FILTER_CHANGED", filters: { from, to }, period })
-    onSearch(
-      {
-        period,
-        from,
-        to,
-        accounts: [...screen.accounts],
-        categories: [...screen.categories]
-      },
-      abort.current.signal
-    )
-  }, [dispatch, onSearch, abort.current, screen.accounts, screen.categories])
 
   const onAccountFilterChange = useCallback((ids: number[]) => {
     if (!abort.current.signal.aborted) abort.current.abort(new SearchAbortedError())
@@ -219,82 +189,16 @@ export function Screen({
 
   return (
     <>
-      <div className="relative overflow-hidden h-full grid grid-cols-2">
-        <div className="absolute bottom-0 right-0 p-4 inline-flex gap-4 flex-wrap justify-end z-60">
-          <Button
-            size={"icon"}
-            className="shadow-lg"
-            onClick={() => onOpenTransactionTargetPickerChange(true)}
-          >
-            <PlusIcon />
-          </Button>
-        </div>
-        <div className="flex flex-col h-full overflow-hidden">
-          <div className="relative">
-            <div className="flex items-center gap-2">
-              <MoveDateRangeLink direction="backwards" className="size-10" size={"lg"} variant={"outline"} />
-              <DateFilter
-                onClick={() => onOpenPeriodFilterChange(true)}
-                className="grow cursor-pointer"
-                size={"lg"}
-                variant={"outline"}
-              />
-              <MoveDateRangeLink direction="forwards" className="size-10" size={"lg"} variant={"outline"} />
-            </div>
-            <span className="absolute -bottom-9 left-0 right-0 bg-linear-to-b from-background to-transparent content-[' '] h-9 z-40" />
-          </div>
-          <div className="overflow-x-hidden overflow-y-auto h-full relative grow">
-            {
-              navigationState === "loading" && (
-                <FullScreenThrobber className="absolute inset-0 z-50" />
-              )
-            }
-            <TransactionsSearchResults className="my-4" />
-          </div>
-          <span className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-background to-transparent content-[' '] h-9 z-40" />
-        </div>
-        <div className="flex items-start gap-2 p-2">
-          <span className="h-9 w-9" />
-          <AccountsFilter
-            className="grow"
-            accounts={accounts}
-            selected={screen.accounts}
-            onClick={() => onOpenAccountsFilterChange(true)}
-          />
-          <Button
-            size={"icon"}
-            variant={"link"}
-            onClick={() => onOpenCategoriesFilterChange(true)}
-          >
-            <ListFilterIcon />
-          </Button>
-        </div>
+      <div className="sticky top-0 bg-background border-b z-50 p-2">
+        <DateFilter />
       </div>
 
-      <PeriodShortcuts
-        open={screen.open === "period"}
-        onOpenChange={onOpenPeriodFilterChange}
-        onOpenRangePicker={onOpenRangePickerChange}
-        onOpenDayPicker={onOpenDayPickerChange}
-        onFilterChange={onDateFilterChange}
-        submitting={screen.submitting}
-      />
-
-      <DateRangePicker
-        open={screen.open === "range-picker"}
-        onOpenChange={onOpenRangePickerChange}
-        range={{ from: screen.from, to: screen.to }}
-        onConfirm={(range) => onDateFilterChange(range?.from, range?.to, "custom")}
-        submitting={screen.submitting}
-      />
-
-      <DateDayPicker
-        open={screen.open === "day-picker"}
-        onOpenChange={onOpenDayPickerChange}
-        date={screen.to}
-        onConfirm={(date) => onDateFilterChange(date, date, "daily")}
-        submitting={screen.submitting}
-      />
+      {
+        navigationState !== "idle" && (
+          <FullScreenThrobber className="absolute inset-0 z-50" />
+        )
+      }
+      <TransactionsSearchResults />
 
       <AccountPicker
         open={screen.open === "accounts"}

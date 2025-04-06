@@ -1,5 +1,5 @@
 import { ListFilterIcon } from "lucide-react"
-import { useEffect, useState } from "react"
+import { ComponentProps, useEffect, useState } from "react"
 import { DateRange } from "react-day-picker"
 import { Button } from "~/modules/shared/components/ui/button"
 import { Calendar } from "~/modules/shared/components/ui/calendar"
@@ -21,13 +21,20 @@ interface Props {
   submitting: boolean
 }
 
-export function DateRangePicker({ open, onOpenChange, range, onConfirm, submitting }: Props) {
+export function DateRangePicker({
+  open,
+  onOpenChange,
+  range,
+  onConfirm,
+  submitting,
+  ...props
+}: ComponentProps<typeof Drawer> & Props) {
   const [date, setDate] = useState<DateRange | undefined>(range)
 
   useEffect(() => setDate(range), [open])
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+    <Drawer open={open} onOpenChange={onOpenChange} {...props}>
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>Period</DrawerTitle>

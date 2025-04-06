@@ -9,15 +9,15 @@ interface Props {
 
 export function DateGroup({ date, isFirst, children }: PropsWithChildren<Props>) {
   return (
-    <>
-      <div className={cn("flex items-center justify-between border-b py-2 px-4", !isFirst && "border-t")}>
+    <div>
+      <div className={cn("flex items-center justify-between border-b", !isFirst && "border-t")}>
         <p className="text-muted-foreground">
           {format(date, "PPP")}
         </p>
       </div>
-      <div className="flex flex-col px-4 py-2">
+      <div className="flex flex-col">
         {children}
       </div>
-    </>
+    </div>
   )
 }

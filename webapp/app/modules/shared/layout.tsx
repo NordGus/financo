@@ -21,7 +21,7 @@ export default function Layout() {
             (navigationState === "idle" || location.search.length !== 0) && "hidden"
           )}
         />
-        <div className="grow md:max-w-[80dvw] mx-auto overflow-y-auto no-scrollbar">
+        <div className="grow  overflow-y-auto no-scrollbar">
           <Outlet />
         </div>
       </main>

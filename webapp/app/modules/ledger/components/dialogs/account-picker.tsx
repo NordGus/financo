@@ -41,8 +41,8 @@ export function AccountPicker({ open, onOpenChange, onChangePick, selected, subm
 
   const accounts = useAccounts()
 
-  const onAdd = (id: number) => !ids.includes(id) && setIds([...ids, id])
-  const onRemove = (id: number) => setIds(ids.filter((prev) => prev !== id))
+  const onAdd = (id: number) => setIds((prev) => prev.includes(id) ? [...prev] : [...ids, id])
+  const onRemove = (id: number) => setIds((prev) => prev.filter((prevId) => prevId !== id))
 
   const capital = useMemo(
     () => accounts.filter(({ kind, archivedAt }) => kind === "capital" && !archivedAt),
@@ -97,7 +97,7 @@ export function AccountPicker({ open, onOpenChange, onChangePick, selected, subm
           <DrawerClose asChild>
             <Button
               disabled={submitting}
-              onClick={() => onChangePick(ids)}
+              onClick={() => onChangePick([...ids])}
             >
               <ListFilterIcon /> Apply
             </Button>
