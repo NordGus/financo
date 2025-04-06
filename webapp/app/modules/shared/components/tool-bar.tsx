@@ -5,13 +5,13 @@ import { Breadcrumbs } from "./breadcrumbs"
 import { Button } from "./ui/button"
 import { useSidebar } from "./ui/sidebar"
 
-export function ToolBar({ className, ...props }: ComponentProps<"div">) {
+export function ToolBar({ className, children, ...props }: ComponentProps<"div">) {
   const { toggleSidebar, open, isMobile } = useSidebar()
 
   return (
     <div
       className={cn(
-        "bg-background sticky top-0 z-30 flex gap-2 items-center px-2 py-1 border-b",
+        "bg-background sticky top-0 z-30 flex gap-2 items-center px-4 py-2 border-b",
         className
       )}
       {...props}
@@ -29,6 +29,7 @@ export function ToolBar({ className, ...props }: ComponentProps<"div">) {
       </Button>
       <Breadcrumbs />
       <span className="grow content-[' ']" />
+      {children}
     </div>
   )
 }
