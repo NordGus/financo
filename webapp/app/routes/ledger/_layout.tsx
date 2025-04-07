@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { Outlet } from "react-router";
 import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts/list";
 import { DateFilter } from "~/modules/ledger/components/date-filter";
+import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
 import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-contenxt";
 import { Accounts } from "~/modules/ledger/types/accounts";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
@@ -29,24 +30,26 @@ export async function clientLoader({ request }: Route.LoaderArgs) {
   }
 }
 
-export default function Layout({ loaderData: { filters } }: Route.ComponentProps) {
+export default function Layout({ loaderData: { filters, accounts, accountsMap } }: Route.ComponentProps) {
   return (
-    <FiltersContextProvider filters={filters}>
-      <ToolBar>
-        <DateFilter />
-        <Button variant={"secondary"}>
-          Filter Accounts
-        </Button>
-        <Button variant={"secondary"}>
-          Filter categories
-        </Button>
-        <Button size={"icon"}>
-          <Plus />
-        </Button>
-      </ToolBar>
-      <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 gap-4 px-4">
-        <Outlet />
-      </div>
-    </FiltersContextProvider>
+    <AccountsContextProvider accounts={accounts} accountsMap={accountsMap}>
+      <FiltersContextProvider filters={filters}>
+        <ToolBar>
+          <DateFilter />
+          <Button variant={"secondary"}>
+            Filter Accounts
+          </Button>
+          <Button variant={"secondary"}>
+            Filter categories
+          </Button>
+          <Button size={"icon"}>
+            <Plus />
+          </Button>
+        </ToolBar>
+        <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 gap-4 px-4">
+          <Outlet />
+        </div>
+      </FiltersContextProvider>
+    </AccountsContextProvider>
   )
 }
