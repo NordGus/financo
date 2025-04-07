@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import {
   isRouteErrorResponse,
   Link,
@@ -10,12 +9,9 @@ import {
   ScrollRestoration,
   useNavigate,
 } from "react-router";
-import { z } from "zod";
-import { zodErrorMap } from "~/config/zod-custom-error-map";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Heading1 } from "~/modules/shared/components/ui/headings";
-import { useCurrenciesStore } from "~/modules/shared/hooks/use-currencies-store";
 import useDetectColorScheme from "~/modules/shared/hooks/use-detect-color-scheme";
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -32,12 +28,6 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
-
-export async function clientLoader({ }: Route.LoaderArgs) {
-  return {
-    breadcrumb: "financo"
-  }
-}
 
 export function HydrateFallback() {
   return <FullScreenThrobber />;
@@ -64,14 +54,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  const listCurrenciesQuery = useCurrenciesStore((state) => state.list)
-
-  useEffect(() => {
-    z.setErrorMap(zodErrorMap)
-
-    listCurrenciesQuery()
-  }, [])
-
   return (
     <Outlet />
   );
