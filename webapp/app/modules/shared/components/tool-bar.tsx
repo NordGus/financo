@@ -28,8 +28,9 @@ export function ToolBar({ className, children, ...props }: ComponentProps<"div">
         <Sidebar />
       </Button>
       <Breadcrumbs />
-      <span className="grow content-[' ']" />
-      {children}
+      <div className="grow flex gap-2 justify-end">
+        {children}
+      </div>
     </div>
   )
 }
