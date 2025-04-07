@@ -1,7 +1,6 @@
 import { useMemo } from "react"
-import { useAccountsMap } from "../hooks/use-accounts-map"
-import { useExecutedTransactions } from "../hooks/use-executed-transaction"
-import { Transaction } from "../types/transactions"
+import { Accounts } from "../types/accounts"
+import { Transaction, Transactions } from "../types/transactions"
 import { DateGroup } from "./date-group"
 import { Entry } from "./entry"
 import { NoResults } from "./no-results"
@@ -9,12 +8,13 @@ import { NoResults } from "./no-results"
 type OnTransactionClick = (transaction: Transaction) => void
 
 interface Props {
+  accounts: Accounts
+  transactions: Transactions
   onTransactionClick?: OnTransactionClick
+  futureEnable?: boolean
 }
 
-export function TransactionsSearchResults({ }: Props) {
-  const transactions = useExecutedTransactions()
-  const accounts = useAccountsMap()
+export function TransactionsSearchResults({ transactions, accounts, futureEnable = false }: Props) {
   const last = useMemo(() => transactions.length - 1, [transactions.length])
 
   if (transactions.length === 0) return <NoResults />
@@ -23,9 +23,9 @@ export function TransactionsSearchResults({ }: Props) {
     <DateGroup key={date} date={date} isLast={idx === last}>
       {entries.map((transaction) => {
         const source = accounts.get(transaction.sourceId)!
-        const sourceParent = source.parentId === null ? null : accounts.get(source.parentId)!
+        const sourceParent = accounts.get(source.parentId ?? -1) ?? null
         const target = accounts.get(transaction.targetId)!
-        const targetParent = target.parentId === null ? null : accounts.get(target.parentId)!
+        const targetParent = accounts.get(target.parentId ?? -1) ?? null
 
         return (
           <Entry
@@ -35,7 +35,7 @@ export function TransactionsSearchResults({ }: Props) {
             sourceParent={sourceParent}
             target={target}
             targetParent={targetParent}
-            futureEnable
+            futureEnable={futureEnable}
           />
         )
       })}

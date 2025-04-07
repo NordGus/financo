@@ -71,7 +71,7 @@ export function Entry({
 
   return (
     <div className={cn(
-      "grid grid-cols-[min-content_2fr_1fr] items-top gap-2 p-2 hover:bg-muted rounded-md cursor",
+      "grid grid-cols-[min-content_1fr_1fr] items-top gap-2 p-2 hover:bg-muted cursor-pointer",
       futureEnable && inTheFuture && "relative before:absolute before:inset-0 before:bg-background/50",
     )}>
       <AccountListingIcon

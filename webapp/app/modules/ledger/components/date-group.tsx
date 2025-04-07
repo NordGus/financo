@@ -15,7 +15,7 @@ export function DateGroup({ date, isLast, children }: PropsWithChildren<Props>) 
           {format(date, "PPP")}
         </p>
       </div>
-      <div className={cn("flex flex-col gap-1.5 py-1.5 px-2", !isLast && "border-b")}>
+      <div className={cn("flex flex-col gap-1.5", !isLast && "border-b")}>
         {children}
       </div>
     </>
