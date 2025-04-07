@@ -49,3 +49,18 @@ export type SearchAction = (
   success: () => void,
   failure: () => void
 ) => Promise<void>
+
+export function mapToExecutedTransactions(transactions: Transaction[]): ExecutedTransactions {
+  return Object.entries(
+    transactions.filter(({ executedAt }) => executedAt !== null)
+      .reduce<Record<string, ExecutedTransaction[]>>((acc, transaction) => {
+        const executed = transaction as ExecutedTransaction
+        const key = executed.executedAt
+
+        if (!acc[key]) acc[key] = [{ ...executed }]
+        else acc[key].push({ ...executed })
+
+        return acc
+      }, {}))
+    .sort((a, b) => Date.parse(b[0]) - Date.parse(a[0]))
+}
