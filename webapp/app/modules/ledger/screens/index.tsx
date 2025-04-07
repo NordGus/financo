@@ -205,7 +205,7 @@ export function Screen({
             <DateFilter />
             <div className="flex gap-2">
               <Button className="flex-1">Accounts</Button>
-              <Button className="flex-1">Category</Button>
+              <Button className="flex-">Category</Button>
             </div>
           </CardContent>
           <CardFooter className="justify-end">
