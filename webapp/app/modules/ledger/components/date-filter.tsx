@@ -5,7 +5,7 @@ import { DateRange } from "react-day-picker";
 import { useNavigation } from "react-router";
 import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
-import { useFilters } from "../hooks/use-filters";
+import { Filters, SetFilters } from "../types/filters";
 import { Period } from "../types/transactions";
 import { MoveDateRangeLink } from "./buttons/move-date-rage-link";
 import { DateDayPicker } from "./dialogs/date-day-picker";
@@ -14,6 +14,11 @@ import { PeriodShortcuts } from "./dialogs/period-shortcuts";
 import { PeriodIcon } from "./period-icon";
 
 const FORMAT_DATE_STRING = "LLL dd, y"
+
+type Props = {
+  filters: Filters
+  setFilters: SetFilters
+}
 
 type DateFilterState = {
   open: boolean
@@ -67,9 +72,9 @@ function reducer(state: DateFilterState, action: Action): DateFilterState {
   }
 }
 
-export function DateFilter({ className, ...props }: ComponentProps<"div">) {
+export function DateFilter({ filters, setFilters, className, ...props }: ComponentProps<"div"> & Props) {
   const { state: navigationState } = useNavigation()
-  const [{ to, from, period }, setFilters] = useFilters()
+  const { to, from, period } = filters
 
   const [state, setState] = useReducer(reducer, { from, to, period, open: false, picker: null })
 
@@ -82,17 +87,17 @@ export function DateFilter({ className, ...props }: ComponentProps<"div">) {
 
   return (
     <>
-      <div className={cn("flex gap-2 w-full", className)} {...props}>
-        <MoveDateRangeLink direction="backwards" variant={"outline"} />
+      <div className={cn("grid grid-cols-[1fr_10fr_1fr] gap-1 lg:min-w-sm lg:max-w-sm", className)} {...props}>
+        <MoveDateRangeLink filters={filters} direction="backwards" variant={"outline"} />
         <Button
           variant={"outline"}
           type="button"
           onClick={() => setState({ type: _actions.OPEN_CHANGED, open: true })}
-          className="grow"
+          className={cn((!filters.from || !filters.to) && "col-span-3")}
         >
           <PeriodDisplay range={{ to, from }} period={period} />
         </Button>
-        <MoveDateRangeLink direction="forwards" variant={"outline"} />
+        <MoveDateRangeLink filters={filters} direction="forwards" variant={"outline"} />
       </div>
 
       <PeriodShortcuts
@@ -139,6 +144,13 @@ function PeriodDisplay({ range, period }: PeriodDisplayProps) {
 
   const from = useMemo(() => format(range.from!, FORMAT_DATE_STRING), [range.from])
   const to = useMemo(() => format(range.to!, FORMAT_DATE_STRING), [range.to])
+
+  if (period === "daily")
+    return (
+      <>
+        <PeriodIcon period={period} size={"sm"} from={range.from} /> {from}
+      </>
+    )
 
   return (
     <>
