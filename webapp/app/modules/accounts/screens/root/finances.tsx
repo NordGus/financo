@@ -1,8 +1,8 @@
-import { Fragment, useMemo } from "react";
+import { Fragment, use, useMemo } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/modules/shared/components/ui/table";
+import { CurrenciesContext } from "~/modules/shared/contexts/currencies-context";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
-import { useCurrenciesStore } from "~/modules/shared/hooks/use-currencies-store";
 import { Currency } from "~/modules/shared/types/currency";
 import { useAccountsStore } from "../../stores/accounts";
 
@@ -15,7 +15,7 @@ type Finances = Record<string, Summary>
 
 export function Screen() {
   const accounts = useAccountsStore((state => state.accounts))
-  const currencies = useCurrenciesStore(state => state.currencies)
+  const { currencies } = use(CurrenciesContext)
 
   const summaries = useMemo<Finances>(() => {
     return accounts.filter(({ deletedAt }) => !deletedAt).reduce<Finances>((finances, account) => {
