@@ -1,6 +1,9 @@
 import { Plus } from "lucide-react";
 import { Outlet } from "react-router";
 import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts/list";
+import { DateFilter } from "~/modules/ledger/components/date-filter";
+import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-contenxt";
+import { Accounts } from "~/modules/ledger/types/accounts";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
 import { ToolBar } from "~/modules/shared/components/tool-bar";
 import { Button } from "~/modules/shared/components/ui/button";
@@ -16,21 +19,21 @@ export function meta({ }: Route.MetaArgs) {
 export async function clientLoader({ request }: Route.LoaderArgs) {
   const filters = getFilters(request)
   const accounts = await listAccountsQuery()
+  const accountsMap: Accounts = new Map(accounts.map((account) => ([account.id, account])))
 
   return {
     breadcrumb: "Ledger",
     accounts,
+    accountsMap,
     filters
   }
 }
 
-export default function Layout({ }: Route.ComponentProps) {
+export default function Layout({ loaderData: { filters } }: Route.ComponentProps) {
   return (
-    <>
+    <FiltersContextProvider filters={filters}>
       <ToolBar>
-        <Button variant={"secondary"}>
-          Filter Date
-        </Button>
+        <DateFilter />
         <Button variant={"secondary"}>
           Filter Accounts
         </Button>
@@ -44,6 +47,6 @@ export default function Layout({ }: Route.ComponentProps) {
       <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 gap-4 px-4">
         <Outlet />
       </div>
-    </>
+    </FiltersContextProvider>
   )
 }

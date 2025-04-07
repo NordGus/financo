@@ -1,19 +1,20 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
-import { ComponentProps } from "react"
+import { ComponentProps, use } from "react"
 import { createSearchParams, Link, useSearchParams } from "react-router"
 import { cn } from "~/lib/utils"
 import { Button } from "~/modules/shared/components/ui/button"
+import { FiltersContext } from "../../contexts/filters-contenxt"
 import { calculateDateRangeMovement, Movement } from "../../helpers/calculate-date-range-movement"
-import { Filters, updateURLSearchParams } from "../../types/filters"
+import { updateURLSearchParams } from "../../types/filters"
 
 type Direction = "forwards" | "backwards"
 
 type Props = {
-  filters: Filters
   direction: Direction
 }
 
-export function MoveDateRangeLink({ filters, direction, className, ...props }: ComponentProps<typeof Button> & Props) {
+export function MoveDateRangeLink({ direction, className, ...props }: ComponentProps<typeof Button> & Props) {
+  const { filters } = use(FiltersContext)
   const [searchParams,] = useSearchParams()
 
   if (!filters.from || !filters.to) return null

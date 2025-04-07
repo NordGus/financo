@@ -1,11 +1,11 @@
 import { format } from "date-fns";
 import { MoveHorizontalIcon } from "lucide-react";
-import { ComponentProps, useMemo, useReducer } from "react";
+import { ComponentProps, use, useMemo, useReducer } from "react";
 import { DateRange } from "react-day-picker";
 import { useNavigation } from "react-router";
 import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
-import { Filters, SetFilters } from "../types/filters";
+import { FiltersContext } from "../contexts/filters-contenxt";
 import { Period } from "../types/transactions";
 import { MoveDateRangeLink } from "./buttons/move-date-rage-link";
 import { DateDayPicker } from "./dialogs/date-day-picker";
@@ -14,11 +14,6 @@ import { PeriodShortcuts } from "./dialogs/period-shortcuts";
 import { PeriodIcon } from "./period-icon";
 
 const FORMAT_DATE_STRING = "LLL dd, y"
-
-type Props = {
-  filters: Filters
-  setFilters: SetFilters
-}
 
 type DateFilterState = {
   open: boolean
@@ -72,9 +67,9 @@ function reducer(state: DateFilterState, action: Action): DateFilterState {
   }
 }
 
-export function DateFilter({ filters, setFilters, className, ...props }: ComponentProps<"div"> & Props) {
+export function DateFilter({ className, ...props }: ComponentProps<"div">) {
   const { state: navigationState } = useNavigation()
-  const { to, from, period } = filters
+  const { filters: { to, from, period }, setFilters } = use(FiltersContext)
 
   const [state, setState] = useReducer(reducer, { from, to, period, open: false, picker: null })
 
@@ -88,16 +83,16 @@ export function DateFilter({ filters, setFilters, className, ...props }: Compone
   return (
     <>
       <div className={cn("grid grid-cols-[1fr_10fr_1fr] gap-1 lg:min-w-sm lg:max-w-sm", className)} {...props}>
-        <MoveDateRangeLink filters={filters} direction="backwards" variant={"outline"} />
+        <MoveDateRangeLink direction="backwards" variant={"outline"} />
         <Button
           variant={"outline"}
           type="button"
           onClick={() => setState({ type: _actions.OPEN_CHANGED, open: true })}
-          className={cn((!filters.from || !filters.to) && "col-span-3")}
+          className={cn((!from || !to) && "col-span-3")}
         >
           <PeriodDisplay range={{ to, from }} period={period} />
         </Button>
-        <MoveDateRangeLink filters={filters} direction="forwards" variant={"outline"} />
+        <MoveDateRangeLink direction="forwards" variant={"outline"} />
       </div>
 
       <PeriodShortcuts
