@@ -4,6 +4,7 @@ import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts
 import { AccountsFilterBar } from "~/modules/ledger/components/accounts-filter-bar";
 import { DateFilter } from "~/modules/ledger/components/date-filter";
 import { AccountsFilter } from "~/modules/ledger/components/dialogs/accounts-filter";
+import { CategoriesFilter } from "~/modules/ledger/components/dialogs/categories-filter";
 import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
 import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-contenxt";
 import { Accounts } from "~/modules/ledger/types/accounts";
@@ -42,6 +43,11 @@ export default function Layout({ loaderData: { filters, accounts, accountsMap } 
     { ...filters, accounts: [...ids] }
   ))
 
+  const onApplyCategoriesFilter = (ids: number[]) => setSearchParams(prev => updateURLSearchParams(
+    prev,
+    { ...filters, categories: [...ids] }
+  ))
+
   const onAccountFilterClicked = (id: number) => {
     setSearchParams(prev => updateURLSearchParams(
       prev,
@@ -62,9 +68,7 @@ export default function Layout({ loaderData: { filters, accounts, accountsMap } 
         <ToolBar>
           <DateFilter />
           <AccountsFilter selected={filters.accounts} onApplyFilters={onApplyAccountsFilter} />
-          <Button variant={"secondary"}>
-            Filter categories
-          </Button>
+          <CategoriesFilter selected={filters.categories} onApplyFilters={onApplyCategoriesFilter} />
           <Button size={"icon"}>
             <Plus />
           </Button>

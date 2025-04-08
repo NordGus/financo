@@ -5,7 +5,7 @@ import { Button } from "~/modules/shared/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "~/modules/shared/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/modules/shared/components/ui/tabs";
 import { AccountsContext } from "../../contexts/accounts-context";
-import { isAccount, isArchived } from "../../types/accounts";
+import { isArchived, isCategory, isDebt } from "../../types/accounts";
 import { Section } from "../picker-section";
 
 interface Props {
@@ -63,7 +63,7 @@ function init(ids: number[]): State {
   }
 }
 
-export function AccountsFilter({
+export function CategoriesFilter({
   selected,
   onApplyFilters,
   className,
@@ -72,8 +72,8 @@ export function AccountsFilter({
   const [state, setState] = useReducer(reducer, selected, init)
   const { accounts } = use(AccountsContext)
 
-  const activeAccounts = accounts.filter(account => isAccount(account) && !isArchived(account))
-  const archivedAccounts = accounts.filter(account => isAccount(account) && isArchived(account))
+  const activeCategories = accounts.filter(account => (isCategory(account) || isDebt(account)) && !isArchived(account))
+  const archivedCategories = accounts.filter(account => (isCategory(account) || isDebt(account)) && isArchived(account))
 
   const onOpenChange = (open: boolean) =>
     setState({ type: _actions.OPEN_CHANGED, open })
@@ -103,14 +103,14 @@ export function AccountsFilter({
             className={cn("[&_svg]:size-5", className)}
             {...props}
           >
-            <ListFilter /> Accounts
+            <ListFilter /> Categories
           </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Filter By Accounts</DialogTitle>
+            <DialogTitle>Filter By Category</DialogTitle>
             <DialogDescription>
-              {"Select which Accounts you to filter the ledger's transaction"}
+              {"Select which Categories you to filter the ledger's transaction"}
             </DialogDescription>
           </DialogHeader>
           <div className="min-h-[40dvh]">
@@ -121,28 +121,28 @@ export function AccountsFilter({
               </TabsList>
               <TabsContent value={"active"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto">
                 <Section
-                  accounts={activeAccounts.filter(({ kind }) => kind === "capital")}
-                  title="Capital"
+                  accounts={activeCategories.filter(({ kind }) => kind === "expense")}
+                  title="Expenses"
                   selected={state.ids}
                   onAdd={onAdd}
                   onRemove={onRemove}
                 />
                 <Section
-                  accounts={activeAccounts.filter(({ kind }) => kind === "savings")}
+                  accounts={activeCategories.filter(({ kind }) => kind === "income")}
                   title="Savings"
                   selected={state.ids}
                   onAdd={onAdd}
                   onRemove={onRemove}
                 />
                 <Section
-                  accounts={activeAccounts.filter(({ kind }) => kind === "debt")}
+                  accounts={activeCategories.filter(({ kind }) => kind === "debt")}
                   title="Debts"
                   selected={state.ids}
                   onAdd={onAdd}
                   onRemove={onRemove}
                 />
                 <Section
-                  accounts={activeAccounts.filter(({ kind }) => kind === "credit")}
+                  accounts={activeCategories.filter(({ kind }) => kind === "credit")}
                   title="Credit"
                   selected={state.ids}
                   onAdd={onAdd}
@@ -151,28 +151,28 @@ export function AccountsFilter({
               </TabsContent>
               <TabsContent value={"archived"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto">
                 <Section
-                  accounts={archivedAccounts.filter(({ kind }) => kind === "capital")}
-                  title="Capital"
+                  accounts={archivedCategories.filter(({ kind }) => kind === "expense")}
+                  title="Expenses"
                   selected={state.ids}
                   onAdd={onAdd}
                   onRemove={onRemove}
                 />
                 <Section
-                  accounts={archivedAccounts.filter(({ kind }) => kind === "savings")}
+                  accounts={archivedCategories.filter(({ kind }) => kind === "income")}
                   title="Savings"
                   selected={state.ids}
                   onAdd={onAdd}
                   onRemove={onRemove}
                 />
                 <Section
-                  accounts={archivedAccounts.filter(({ kind }) => kind === "debt")}
+                  accounts={archivedCategories.filter(({ kind }) => kind === "debt")}
                   title="Debts"
                   selected={state.ids}
                   onAdd={onAdd}
                   onRemove={onRemove}
                 />
                 <Section
-                  accounts={archivedAccounts.filter(({ kind }) => kind === "credit")}
+                  accounts={archivedCategories.filter(({ kind }) => kind === "credit")}
                   title="Credit"
                   selected={state.ids}
                   onAdd={onAdd}
