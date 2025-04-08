@@ -3,6 +3,7 @@ import { Outlet, useSearchParams } from "react-router";
 import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts/list";
 import { AccountsFilterBar } from "~/modules/ledger/components/accounts-filter-bar";
 import { DateFilter } from "~/modules/ledger/components/date-filter";
+import { AccountsFilter } from "~/modules/ledger/components/dialogs/accounts-filter";
 import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
 import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-contenxt";
 import { Accounts } from "~/modules/ledger/types/accounts";
@@ -36,6 +37,11 @@ export async function clientLoader({ request }: Route.LoaderArgs) {
 export default function Layout({ loaderData: { filters, accounts, accountsMap } }: Route.ComponentProps) {
   const [, setSearchParams] = useSearchParams()
 
+  const onApplyAccountsFilter = (ids: number[]) => setSearchParams(prev => updateURLSearchParams(
+    prev,
+    { ...filters, accounts: [...ids] }
+  ))
+
   const onAccountFilterClicked = (id: number) => {
     setSearchParams(prev => updateURLSearchParams(
       prev,
@@ -55,9 +61,7 @@ export default function Layout({ loaderData: { filters, accounts, accountsMap } 
       <FiltersContextProvider filters={filters}>
         <ToolBar>
           <DateFilter />
-          <Button variant={"secondary"}>
-            Filter Accounts
-          </Button>
+          <AccountsFilter selected={filters.accounts} onApplyFilters={onApplyAccountsFilter} />
           <Button variant={"secondary"}>
             Filter categories
           </Button>

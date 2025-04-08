@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/modules/shared/components/ui/accordion"
 import { Heading6 } from "~/modules/shared/components/ui/headings"
-import { Account } from "../types/accounts"
+import { Account, isCategory } from "../types/accounts"
 import { AccountSelectOption } from "./account-select-option"
 
 interface Props {
@@ -29,7 +29,7 @@ export function Section({ accounts, selected, title, onAdd, onRemove }: Props) {
             color={account.color}
             selected={isSelected}
             onClick={isSelected ? () => onRemove(account.id) : () => onAdd(account.id)}
-            asCategory={account.kind === "expense" || account.kind === "income"}
+            asCategory={isCategory(account)}
           />
         )
       })}
