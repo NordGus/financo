@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react"
+import { use, useCallback, useMemo } from "react"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Drawer,
@@ -10,7 +10,7 @@ import {
   DrawerTitle
 } from "~/modules/shared/components/ui/drawer"
 import { Kind } from "~/modules/shared/types/account"
-import { useAccountsMap } from "../../hooks/use-accounts-map"
+import { AccountsContext } from "../../contexts/accounts-context"
 import { OnSourceChangeCallback, useCreationStore } from "../../stores/creation"
 import { Account } from "../../types/accounts"
 import { PreviewAccount } from "../previews/account"
@@ -25,7 +25,7 @@ export function TransactionSourcePicker({ open, onOpenChange, onSelected }: Prop
   const { kind, target } = useCreationStore(state => state)
   const onSourceChange = useCreationStore(state => state.onSourceChange)
 
-  const accounts = useAccountsMap()
+  const { accounts } = use(AccountsContext)
 
   const selectableAccounts = useMemo<Account[]>(() => {
     return Array.from(accounts.values())
