@@ -88,7 +88,7 @@ export function DateFilter({ className, ...props }: ComponentProps<"div">) {
           variant={"outline"}
           type="button"
           onClick={() => setState({ type: _actions.OPEN_CHANGED, open: true })}
-          className={cn((!from || !to) && "col-span-3")}
+          className={cn("cursor-pointer", (!from || !to) && "col-span-3")}
         >
           <PeriodDisplay range={{ to, from }} period={period} />
         </Button>

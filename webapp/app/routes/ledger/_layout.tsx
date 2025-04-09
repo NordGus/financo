@@ -1,5 +1,5 @@
-import { Plus } from "lucide-react";
-import { Outlet, useSearchParams } from "react-router";
+import { Plus, Trash } from "lucide-react";
+import { Link, Outlet, useHref, useLocation, useSearchParams } from "react-router";
 import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts/list";
 import { AccountsFilterBar } from "~/modules/ledger/components/accounts-filter-bar";
 import { DateFilter } from "~/modules/ledger/components/date-filter";
@@ -8,7 +8,7 @@ import { CategoriesFilter } from "~/modules/ledger/components/dialogs/categories
 import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
 import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-contenxt";
 import { Accounts } from "~/modules/ledger/types/accounts";
-import { updateURLSearchParams } from "~/modules/ledger/types/filters";
+import { noFiltersApplied, updateURLSearchParams } from "~/modules/ledger/types/filters";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
 import { ToolBar } from "~/modules/shared/components/tool-bar";
 import { Button } from "~/modules/shared/components/ui/button";
@@ -21,14 +21,13 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
-export async function clientLoader({ request }: Route.LoaderArgs) {
+export async function clientLoader({ request }: Route.ClientActionArgs) {
   const filters = getFilters(request)
   const accountsData = await listAccountsQuery()
   const accountsMap: Accounts = new Map(accountsData.map((account) => ([account.id, account])))
   const accounts = accountsData.filter(account => !account.parentId)
 
   return {
-    breadcrumb: "Ledger",
     accounts,
     accountsMap,
     filters
@@ -36,7 +35,8 @@ export async function clientLoader({ request }: Route.LoaderArgs) {
 }
 
 export default function Layout({ loaderData: { filters, accounts, accountsMap } }: Route.ComponentProps) {
-  const [, setSearchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { pathname, search, hash } = useLocation()
 
   const onApplyAccountsFilter = (ids: number[]) => setSearchParams(prev => updateURLSearchParams(
     prev,
@@ -66,11 +66,22 @@ export default function Layout({ loaderData: { filters, accounts, accountsMap } 
     <AccountsContextProvider accounts={accounts} accountsMap={accountsMap}>
       <FiltersContextProvider filters={filters}>
         <ToolBar>
+          {
+            !noFiltersApplied(searchParams) && (
+              <Button asChild variant={"link"}>
+                <Link to={pathname}>
+                  <Trash /> Reset
+                </Link>
+              </Button>
+            )
+          }
           <DateFilter />
           <AccountsFilter selected={filters.accounts} onApplyFilters={onApplyAccountsFilter} />
           <CategoriesFilter selected={filters.categories} onApplyFilters={onApplyCategoriesFilter} />
-          <Button size={"icon"}>
-            <Plus />
+          <Button asChild>
+            <Link to={{ pathname: useHref("ledger/new"), search: search ?? "", hash: hash ?? "" }}>
+              <Plus /> Add
+            </Link>
           </Button>
         </ToolBar>
         <AccountsFilterBar selected={filters.accounts} onSelectedClick={onAccountFilterClicked} />

@@ -2,7 +2,15 @@ import { ListFilter, ListFilterPlus, Trash } from "lucide-react";
 import { ComponentProps, use, useEffect, useReducer } from "react";
 import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "~/modules/shared/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "~/modules/shared/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/modules/shared/components/ui/tabs";
 import { AccountsContext } from "../../contexts/accounts-context";
 import { isArchived, isCategory, isDebt } from "../../types/accounts";
@@ -100,7 +108,7 @@ export function CategoriesFilter({
         <DialogTrigger asChild>
           <Button
             variant={"outline"}
-            className={cn("[&_svg]:size-5", className)}
+            className={cn("cursor-pointer", className)}
             {...props}
           >
             <ListFilter /> Categories
