@@ -19,8 +19,7 @@ export async function clientLoader({ request }: Route.LoaderArgs) {
 export default function Index({ loaderData: { executedTransactions }, matches }: Route.ComponentProps) {
   const { data: { accountsMap } } = matches[2] // extracting data from webapp/app/routes/ledger/_layout.tsx's loader.
 
-
-  const { pathname } = useLocation() // current location
+  const { search } = useLocation() // current location
   const { state: navigationState, location } = useNavigation() // navigation location
 
   return (
@@ -29,7 +28,7 @@ export default function Index({ loaderData: { executedTransactions }, matches }:
         <FullScreenThrobber
           className={cn(
             "absolute inset-0 z-50",
-            (navigationState === "idle" || location?.pathname === pathname) && "hidden"
+            (navigationState === "idle" || location?.search === search) && "hidden"
           )}
         />
         <div className="my-4 grow border rounded-lg overflow-clip">
