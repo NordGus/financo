@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { use, useMemo, useState } from "react"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Drawer,
@@ -15,7 +15,7 @@ import {
   TabsList,
   TabsTrigger
 } from "~/modules/shared/components/ui/tabs"
-import { useAccountsMap } from "../../hooks/use-accounts-map"
+import { AccountsContext } from "../../contexts/accounts-context"
 import { OnTargetChangeCallback, useCreationStore } from "../../stores/creation"
 import { Account } from "../../types/accounts"
 import { Kind } from "../../types/transactions"
@@ -35,9 +35,15 @@ interface Sections {
 }
 
 function isIncome(account: Account) {
-  if (account.kind === "income") return true
-
-  return (account.kind === "debt" || account.kind === "credit") && account.capital > 0
+  switch (account.kind) {
+    case "income":
+      return true
+    case "credit":
+    case "debt":
+      return account.capital > 0
+    default:
+      return false
+  }
 }
 
 function isExpense(account: Account) {
@@ -69,7 +75,7 @@ export function TransactionTargetPicker({ open, onOpenChange, onSelected }: Prop
 
   const [tab, setTab] = useState<Kind>("income")
 
-  const accounts = useAccountsMap()
+  const { accounts } = use(AccountsContext)
 
   const sections = useMemo<Sections>(() => {
     const entries = Array.from(accounts.values())
