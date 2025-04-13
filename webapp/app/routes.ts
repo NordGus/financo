@@ -17,7 +17,8 @@ export default [
     layout("routes/ledger/_layout.tsx", [
       route("ledger", "routes/ledger/ledger.tsx", [
         index("routes/ledger/index.tsx"),
-        route("new", "routes/ledger/new.tsx")
+        route("new", "routes/ledger/new.tsx"),
+        route(":id", "routes/ledger/edit.tsx")
       ])
     ]),
 

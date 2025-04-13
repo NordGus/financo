@@ -1,5 +1,5 @@
 import { Plus, Trash } from "lucide-react";
-import { Link, Outlet, useHref, useLocation, useSearchParams } from "react-router";
+import { Link, Outlet, useLocation, useResolvedPath, useSearchParams } from "react-router";
 import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts/list";
 import { AccountsFilterBar } from "~/modules/ledger/components/accounts-filter-bar";
 import { DateFilter } from "~/modules/ledger/components/date-filter";
@@ -36,6 +36,7 @@ export async function clientLoader({ request }: Route.ClientActionArgs) {
 
 export default function Layout({ loaderData: { filters, accounts, accountsMap } }: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams()
+  const { pathname: newPathname } = useResolvedPath("ledger/new", { relative: "path" })
   const { pathname, search, hash } = useLocation()
 
   const onApplyAccountsFilter = (ids: number[]) => setSearchParams(prev => updateURLSearchParams(
@@ -79,7 +80,7 @@ export default function Layout({ loaderData: { filters, accounts, accountsMap } 
           <AccountsFilter selected={filters.accounts} onApplyFilters={onApplyAccountsFilter} />
           <CategoriesFilter selected={filters.categories} onApplyFilters={onApplyCategoriesFilter} />
           <Button asChild>
-            <Link to={{ pathname: useHref("ledger/new"), search: search ?? "", hash: hash ?? "" }}>
+            <Link to={{ pathname: newPathname, search, hash }}>
               <Plus /> Add
             </Link>
           </Button>

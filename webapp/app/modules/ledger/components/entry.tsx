@@ -1,6 +1,7 @@
 import { isFuture } from "date-fns";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useMemo } from "react";
+import { Link, useLocation, useResolvedPath } from "react-router";
 import { cn } from "~/lib/utils";
 import { AccountListingIcon } from "~/modules/shared/components/icons/account-icon";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
@@ -49,6 +50,8 @@ export function Entry({
   targetParent = null,
   futureEnable = false
 }: Props) {
+  const { pathname } = useResolvedPath(`./${transaction.id}`, { relative: "path" })
+  const { search, hash } = useLocation()
   const start = account(source, target, transaction)
   const dest = start.id === source.id ? target : source
   const startParent = start.parentId === sourceParent?.id
@@ -70,10 +73,13 @@ export function Entry({
   }, [transaction?.executedAt])
 
   return (
-    <div className={cn(
-      "grid grid-cols-[min-content_1fr_1fr] items-top gap-2 p-2 hover:bg-muted cursor-pointer",
-      futureEnable && inTheFuture && "relative before:absolute before:inset-0 before:bg-background/50",
-    )}>
+    <Link
+      to={{ pathname, search, hash }}
+      className={cn(
+        "grid grid-cols-[min-content_1fr_1fr] items-top gap-2 p-2 hover:bg-muted cursor-pointer",
+        futureEnable && inTheFuture && "relative before:absolute before:inset-0 before:bg-background/50",
+      )}
+    >
       <AccountListingIcon
         kind={start.kind}
         icon={start.icon}
@@ -82,7 +88,7 @@ export function Entry({
         className="size-8 [&_svg]:size-6 z-0"
       />
       <div>
-        <p className="mb-1.5 leading-none">{accountName(start, startParent)}</p>
+        <span className="mb-1.5 leading-none">{accountName(start, startParent)}</span>
         <div className="flex gap-1 items-center text-xs [&_svg]:size-4 text-muted-foreground">
           <span className="leading-none">
             <DynamicIcon name={dest.icon} />
@@ -95,6 +101,6 @@ export function Entry({
       <span className={cn("text-right leading-none", currencyAmountColor(amountColorCode(transaction)))}>
         {currencyAmountToHuman(amount, transaction.currency)}
       </span>
-    </div>
+    </Link>
   )
 }

@@ -8,10 +8,10 @@ import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-
 import { Route } from "./+types/new";
 
 export function clientLoader({ }: Route.ClientLoaderArgs) {
-  return { breadcrumb: "New Transaction" }
+  return { breadcrumb: "Edit Transaction" }
 }
 
-export default function New({ matches }: Route.ComponentProps) {
+export default function Edit({ matches }: Route.ComponentProps) {
   // extracting data from webapp/app/modules/shared/layout.tsx's loader.
   const { data: { currencies } } = matches[1]
   // extracting data from webapp/app/routes/ledger/_layout.tsx's loader.
