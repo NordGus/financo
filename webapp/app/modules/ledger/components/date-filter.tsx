@@ -13,7 +13,7 @@ import { DateRangePicker } from "./dialogs/date-range-picker";
 import { PeriodShortcuts } from "./dialogs/period-shortcuts";
 import { PeriodIcon } from "./period-icon";
 
-const FORMAT_DATE_STRING = "LLL dd, y"
+const FORMAT_DATE_STRING = "P"
 
 type DateFilterState = {
   open: boolean
