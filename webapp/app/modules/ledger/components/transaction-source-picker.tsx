@@ -6,10 +6,11 @@ import { PreviewAccount } from "./previews/account"
 
 interface Props {
   target: number
+  selected: number | null
   onSelected: (id: number) => void
 }
 
-export function TransactionSourcePicker({ target, onSelected }: Props) {
+export function TransactionSourcePicker({ target, selected, onSelected }: Props) {
   const { accounts } = use(AccountsContext)
 
   const selectableAccounts = useMemo<Account[]>(() => {
@@ -42,6 +43,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }
@@ -58,6 +60,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }
@@ -74,6 +77,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }
@@ -90,6 +94,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }
@@ -106,6 +111,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }
@@ -122,6 +128,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }
@@ -138,6 +145,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }
@@ -154,6 +162,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }
@@ -170,6 +179,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }
@@ -186,6 +196,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }
@@ -202,6 +213,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }
@@ -218,6 +230,7 @@ export function TransactionSourcePicker({ target, onSelected }: Props) {
                   key={`target.account.transfer.${account.id}`}
                   account={account}
                   onClick={() => onClick(account.id)}
+                  selected={selected === account.id}
                 />
               ))
             }

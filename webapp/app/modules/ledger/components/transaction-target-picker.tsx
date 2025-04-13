@@ -67,7 +67,6 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
     const entries = Array.from(accounts.values())
       .filter(({ parentId }) => !parentId)
       .filter(({ archivedAt }) => !archivedAt)
-      .filter(({ id }) => id !== selected)
 
     return {
       income: entries.filter(isIncome),
@@ -101,6 +100,7 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
                 key={`target.account.income.${account.id}`}
                 account={account}
                 onClick={() => onClick(account.id)}
+                selected={selected === account.id}
               />
             ))
           }
@@ -110,6 +110,7 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
                 key={`target.account.income.${account.id}`}
                 account={account}
                 onClick={() => onClick(account.id)}
+                selected={selected === account.id}
               />
             ))
           }
@@ -123,6 +124,7 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
                 key={`target.account.expense.${account.id}`}
                 account={account}
                 onClick={() => onClick(account.id)}
+                selected={selected === account.id}
               />
             ))
           }
@@ -132,6 +134,7 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
                 key={`target.account.expense.${account.id}`}
                 account={account}
                 onClick={() => onClick(account.id)}
+                selected={selected === account.id}
               />
             ))
           }
@@ -145,6 +148,7 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
               key={`target.account.transfer.${account.id}`}
               account={account}
               onClick={() => onClick(account.id)}
+              selected={selected === account.id}
             />
           ))
         }
@@ -155,6 +159,7 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
               key={`target.account.transfer.${account.id}`}
               account={account}
               onClick={() => onClick(account.id)}
+              selected={selected === account.id}
             />
           ))
         }
@@ -165,6 +170,7 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
               key={`target.account.transfer.${account.id}`}
               account={account}
               onClick={() => onClick(account.id)}
+              selected={selected === account.id}
             />
           ))
         }
@@ -175,6 +181,7 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
               key={`target.account.transfer.${account.id}`}
               account={account}
               onClick={() => onClick(account.id)}
+              selected={selected === account.id}
             />
           ))
         }

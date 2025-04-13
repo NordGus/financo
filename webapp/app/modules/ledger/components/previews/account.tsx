@@ -1,23 +1,26 @@
 import { ComponentProps } from "react"
+import { cn } from "~/lib/utils"
 import { AccountListingIcon } from "~/modules/shared/components/icons/account-icon"
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color"
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human"
 import { Currency } from "~/modules/shared/types/currency"
 import { Account } from "../../types/accounts"
+import { SelectedAccountBadge } from "../badges/selected-account"
 
 // TODO: Move to shared module and unify with all other implementations
 
 interface Props {
   account: Account
+  selected: boolean
 }
 
-export function PreviewAccount({ account, onClick }: ComponentProps<"div"> & Props) {
+export function PreviewAccount({ account, selected, className, ...props }: ComponentProps<"div"> & Props) {
   const debt = account.capital + account.balance
 
   return (
     <div
-      className="grid grid-cols-[min-content_1fr] gap-2 mb-1 cursor-pointer"
-      onClick={onClick}
+      className={cn("grid grid-cols-[min-content_1fr] gap-2 mb-1 cursor-pointer relative", className)}
+      {...props}
     >
       <AccountListingIcon
         kind={account.kind}
@@ -66,6 +69,7 @@ export function PreviewAccount({ account, onClick }: ComponentProps<"div"> & Pro
           )
         }
       </p>
+      {selected && <SelectedAccountBadge />}
     </div>
   )
 }
