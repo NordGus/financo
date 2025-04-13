@@ -1,4 +1,4 @@
-import { ListFilter, ListFilterPlus, Trash } from "lucide-react";
+import { Funnel, ListFilterPlus, Trash } from "lucide-react";
 import { ComponentProps, use, useEffect, useReducer } from "react";
 import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
@@ -111,7 +111,7 @@ export function CategoriesFilter({
             className={cn("cursor-pointer", className)}
             {...props}
           >
-            <ListFilter /> Categories
+            <Funnel /> Categories
           </Button>
         </DialogTrigger>
         <DialogContent>
