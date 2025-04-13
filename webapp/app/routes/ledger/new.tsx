@@ -130,6 +130,7 @@ export default function New({ matches }: Route.ComponentProps) {
                 </CardHeader>
                 <CardContent className="flex flex-col grow overflow-hidden">
                   <TransactionSourcePicker
+                    selected={null}
                     target={state.kind === "income" ? state.sourceId : state.targetId}
                     onSelected={(id) => setState({ type: _actions.SOURCE_CHANGED, id })}
                   />
