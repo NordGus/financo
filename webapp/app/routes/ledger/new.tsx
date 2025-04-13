@@ -1,14 +1,72 @@
-import { format } from "date-fns";
-import { useRef } from "react";
+import { useReducer } from "react";
 import { useLocation, useNavigation } from "react-router";
 import { cn } from "~/lib/utils";
+import { FormTemplate } from "~/modules/ledger/components/form-template";
+import { TransactionSourcePicker } from "~/modules/ledger/components/transaction-source-picker";
+import { TransactionTargetPicker } from "~/modules/ledger/components/transaction-target-picker";
 import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
+import { Kind } from "~/modules/ledger/types/transactions";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/modules/shared/components/ui/card";
 import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-context";
 import { Route } from "./+types/new";
 
 export function clientLoader({ }: Route.ClientLoaderArgs) {
   return { breadcrumb: "New Transaction" }
+}
+
+export function clientAction({ }: Route.ClientActionArgs) { }
+
+const DEFAULT_KIND: Kind = "income"
+const DEFAULT_TARGET: number = -1
+const DEFAULT_SOURCE: number = -1
+
+type State = {
+  sourceId: number
+  targetId: number
+  kind: Kind
+  stage: "target" | "source" | "form"
+}
+
+const _actions = {
+  TARGET_CHANGED: "TARGET_CHANGED",
+  SOURCE_CHANGED: "SOURCE_CHANGED"
+} as const
+
+type Actions = typeof _actions
+
+type Action =
+  { type: Actions["TARGET_CHANGED"], id: number, kind: Kind } |
+  { type: Actions["SOURCE_CHANGED"], id: number }
+
+export function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case _actions.TARGET_CHANGED:
+      return {
+        ...state,
+        kind: action.kind,
+        sourceId: action.kind === "income" ? action.id : DEFAULT_SOURCE,
+        targetId: action.kind === "income" ? DEFAULT_TARGET : action.id,
+        stage: "source"
+      }
+    case _actions.SOURCE_CHANGED:
+      return {
+        ...state,
+        stage: "form",
+        ...state.kind === "income"
+          ? { targetId: action.id }
+          : { sourceId: action.id }
+      }
+  }
+}
+
+export function init(): State {
+  return {
+    sourceId: DEFAULT_SOURCE,
+    targetId: DEFAULT_TARGET,
+    kind: DEFAULT_KIND,
+    stage: "target"
+  }
 }
 
 export default function New({ matches }: Route.ComponentProps) {
@@ -20,7 +78,7 @@ export default function New({ matches }: Route.ComponentProps) {
   const { pathname } = useLocation() // current location
   const { state: navigationState, location } = useNavigation() // navigation location
 
-  const today = useRef<Date>(new Date())
+  const [state, setState] = useReducer(reducer, {}, init)
 
 
   return (
@@ -33,52 +91,59 @@ export default function New({ matches }: Route.ComponentProps) {
               (navigationState === "idle" || location.pathname === pathname) && "hidden"
             )}
           />
-          <div className="rounded-lg border">
-            From account
-          </div>
-          <div className="rounded-lg border">
-            To account
-          </div>
-          <div className="rounded-lg bg-zinc-700">
-            Source amount
-          </div>
-          <div className="rounded-lg bg-zinc-700">
-            Target amount
-          </div>
-          <div className="rounded-lg border">
-            Issued {format(today.current, "LLL dd, y")}
-          </div>
-          <div className="rounded-lg border">
-            Effective {format(today.current, "LLL dd, y")}
-          </div>
-          <div className="col-span-2">
-            Date controls
-          </div>
-          <div className="rounded-lg border col-span-2">
-            Notes
-          </div>
-
-          <div className="grid col-span-2 grid-cols-5 grid-rows-4 gap-2 mx-auto w-full max-w-[45dvh]">
-            <div className="rounded-lg border aspect-square">div</div>
-            <div className="rounded-lg border aspect-square">7</div>
-            <div className="rounded-lg border aspect-square">8</div>
-            <div className="rounded-lg border aspect-square">9</div>
-            <div className="rounded-lg border aspect-square">back</div>
-            <div className="rounded-lg border aspect-square">by</div>
-            <div className="rounded-lg border aspect-square">4</div>
-            <div className="rounded-lg border aspect-square">5</div>
-            <div className="rounded-lg border aspect-square">6</div>
-            <div className="rounded-lg border aspect-square">date</div>
-            <div className="rounded-lg border aspect-square">minus</div>
-            <div className="rounded-lg border aspect-square">1</div>
-            <div className="rounded-lg border aspect-square">2</div>
-            <div className="rounded-lg border aspect-square">3</div>
-            <div className="rounded-lg border row-span-2">done</div>
-            <div className="rounded-lg border aspect-square">plus</div>
-            <div className="rounded-lg border aspect-square">curr</div>
-            <div className="rounded-lg border aspect-square">0</div>
-            <div className="rounded-lg border aspect-square">info</div>
-          </div>
+          {
+            state.stage === "target" && (
+              <Card className="col-span-2 row-span-6">
+                <CardHeader>
+                  <CardTitle>Register a Transaction</CardTitle>
+                  <CardDescription>
+                    {"What kind of transaction you want to register?"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col grow overflow-hidden">
+                  <TransactionTargetPicker
+                    selected={null}
+                    onSelected={(kind, id) => setState({ type: _actions.TARGET_CHANGED, kind, id })}
+                  />
+                </CardContent>
+              </Card >
+            )
+          }
+          {
+            state.stage === "source" && (
+              <Card className="col-span-2 row-span-6">
+                <CardHeader>
+                  <CardTitle>
+                    {
+                      state.kind === "income"
+                        ? "To Account"
+                        : "From Account"
+                    }
+                  </CardTitle>
+                  <CardDescription>
+                    {
+                      state.kind === "income"
+                        ? "Select the Transaction's target Account"
+                        : "Select the Transaction's source Account"
+                    }
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col grow overflow-hidden">
+                  <TransactionSourcePicker
+                    target={state.kind === "income" ? state.sourceId : state.targetId}
+                    onSelected={(id) => setState({ type: _actions.SOURCE_CHANGED, id })}
+                  />
+                </CardContent>
+              </Card >
+            )
+          }
+          {
+            state.stage === "form" && (
+              <FormTemplate
+                onSubmit={() => { }}
+              />
+            )
+          }
         </section>
       </AccountsContextProvider>
     </CurrenciesContextProvider>
