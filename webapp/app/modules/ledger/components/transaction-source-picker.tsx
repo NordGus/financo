@@ -32,7 +32,7 @@ export function TransactionSourcePicker({ target, selected, onSelected }: Props)
   const onClick = (id: number) => onSelected(id)
 
   return (
-    <div className="space-y-2 flex-grow overflow-y-auto">
+    <div className="space-y-2 grow overflow-y-auto no-scrollbar">
       {
         capital.length > 0 && (
           <>

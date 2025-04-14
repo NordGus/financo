@@ -138,7 +138,7 @@ export function AccountsFilter({
               <TabsTrigger value={"active"}>Active</TabsTrigger>
               <TabsTrigger value={"archived"}>Archived</TabsTrigger>
             </TabsList>
-            <TabsContent value={"active"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto">
+            <TabsContent value={"active"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto no-scrollbar">
               <Section
                 accounts={activeAccounts.filter(({ kind }) => kind === "capital")}
                 title="Capital"
@@ -168,7 +168,7 @@ export function AccountsFilter({
                 onRemove={onRemove}
               />
             </TabsContent>
-            <TabsContent value={"archived"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto">
+            <TabsContent value={"archived"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto no-scrollbar">
               <Section
                 accounts={archivedAccounts.filter(({ kind }) => kind === "capital")}
                 title="Capital"

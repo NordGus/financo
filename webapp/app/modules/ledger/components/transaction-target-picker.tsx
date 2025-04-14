@@ -92,7 +92,7 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
         <TabsTrigger value="expense">Expense</TabsTrigger>
         <TabsTrigger value="transfer">Transfer</TabsTrigger>
       </TabsList>
-      <TabsContent value="income">
+      <TabsContent value="income" className="no-scrollbar">
         <div className="grid grid-cols-4 gap-2 items-start">
           {
             sections.income.filter(({ kind }) => kind === "income").map((account) => (
@@ -116,7 +116,7 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
           }
         </div>
       </TabsContent>
-      <TabsContent value="expense">
+      <TabsContent value="expense" className="no-scrollbar">
         <div className="grid grid-cols-4 gap-2 items-start">
           {
             sections.expense.filter(({ kind }) => kind === "expense").map((account) => (
@@ -140,7 +140,7 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
           }
         </div>
       </TabsContent>
-      <TabsContent value="transfer">
+      <TabsContent value="transfer" className="no-scrollbar">
         <p className="text-xl mb-2">Capital</p>
         {
           sections.transfer.filter(({ kind }) => kind === "capital").map((account) => (

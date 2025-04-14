@@ -138,7 +138,7 @@ export function CategoriesFilter({
               <TabsTrigger value={"active"}>Active</TabsTrigger>
               <TabsTrigger value={"archived"}>Archived</TabsTrigger>
             </TabsList>
-            <TabsContent value={"active"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto">
+            <TabsContent value={"active"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto no-scrollbar">
               <Section
                 accounts={activeCategories.filter(({ kind }) => kind === "expense")}
                 title="Expenses"
@@ -168,7 +168,7 @@ export function CategoriesFilter({
                 onRemove={onRemove}
               />
             </TabsContent>
-            <TabsContent value={"archived"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto">
+            <TabsContent value={"archived"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto no-scrollbar">
               <Section
                 accounts={archivedCategories.filter(({ kind }) => kind === "expense")}
                 title="Expenses"
