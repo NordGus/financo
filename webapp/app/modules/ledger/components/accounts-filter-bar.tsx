@@ -28,7 +28,7 @@ export function AccountsFilterBar({ selected, onSelectedClick }: ComponentProps<
   if (selected.length === 0) return null
 
   return (
-    <div className="bg-background sticky top-0 z-30 flex gap-2 items-center px-4 py-2 border-b flex-wrap">
+    <div className="bg-background sticky top-0 z-30 flex gap-2 items-center p-2 border-b flex-wrap">
       {
         selected.map(id => {
           const account = accountsMap.get(id)
@@ -47,7 +47,7 @@ export function AccountsFilterBar({ selected, onSelectedClick }: ComponentProps<
               }}
               onClick={() => onSelectedClick(id)}
               className={cn(
-                "cursor-pointer ring-1",
+                "cursor-pointer",
                 isCategory(account.kind) && "rounded-full"
               )}
             >

@@ -1,4 +1,4 @@
-import { Plus, Trash } from "lucide-react";
+import { FunnelX, Plus } from "lucide-react";
 import { Link, Outlet, useLocation, useResolvedPath, useSearchParams } from "react-router";
 import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts/list";
 import { AccountsFilterBar } from "~/modules/ledger/components/accounts-filter-bar";
@@ -12,6 +12,7 @@ import { noFiltersApplied, updateURLSearchParams } from "~/modules/ledger/types/
 import { getFilters } from "~/modules/ledger/utils/router-requests";
 import { ToolBar } from "~/modules/shared/components/tool-bar";
 import { Button } from "~/modules/shared/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
 import { Route } from "./+types/_layout";
 
 export function meta({ }: Route.MetaArgs) {
@@ -69,21 +70,35 @@ export default function Layout({ loaderData: { filters, accounts, accountsMap } 
         <ToolBar>
           {
             !noFiltersApplied(searchParams) && (
-              <Button asChild variant={"link"}>
-                <Link to={pathname}>
-                  <Trash /> Reset
-                </Link>
-              </Button>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button asChild variant={"ghost"} size={"icon"}>
+                    <Link to={pathname}>
+                      <FunnelX />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Reset Ledger Filters
+                </TooltipContent>
+              </Tooltip>
             )
           }
           <DateFilter />
           <AccountsFilter selected={filters.accounts} onApplyFilters={onApplyAccountsFilter} />
           <CategoriesFilter selected={filters.categories} onApplyFilters={onApplyCategoriesFilter} />
-          <Button asChild>
-            <Link to={{ pathname: newPathname, search, hash }}>
-              <Plus /> Add
-            </Link>
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button asChild size={"icon"}>
+                <Link to={{ pathname: newPathname, search, hash }}>
+                  <Plus />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Create New Transaction
+            </TooltipContent>
+          </Tooltip>
         </ToolBar>
         <AccountsFilterBar selected={filters.accounts} onSelectedClick={onAccountFilterClicked} />
         <AccountsFilterBar selected={filters.categories} onSelectedClick={onCategoryFilterClicked} />
