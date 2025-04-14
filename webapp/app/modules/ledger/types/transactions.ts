@@ -1,6 +1,8 @@
 import { Currency } from "~/modules/shared/types/currency"
 import { Filters } from "./filters"
 
+export const DATE_FORMAT = "yyyy-MM-dd"
+
 export const KINDS = {
   expense: "expense",
   income: "income",
