@@ -84,7 +84,7 @@ export default function New({ matches }: Route.ComponentProps) {
   return (
     <CurrenciesContextProvider currencies={currencies}>
       <AccountsContextProvider accounts={accounts} accountsMap={accountsMap}>
-        <section className="grid grid-cols-2 grid-rows-[0.75fr_1fr_0.5fr_min-content_0.75fr_min-content] h-full max-h-full py-4 gap-2 overflow-y-auto no-scrollbar relative">
+        <section className="flex flex-col h-full max-h-full py-4 overflow-hidden relative">
           <FullScreenThrobber
             className={cn(
               "absolute inset-0 z-50",
@@ -93,7 +93,7 @@ export default function New({ matches }: Route.ComponentProps) {
           />
           {
             state.stage === "target" && (
-              <Card className="col-span-2 row-span-6">
+              <Card className="flex-grow h-full max-h-full">
                 <CardHeader>
                   <CardTitle>Register a Transaction</CardTitle>
                   <CardDescription>
@@ -111,7 +111,7 @@ export default function New({ matches }: Route.ComponentProps) {
           }
           {
             state.stage === "source" && (
-              <Card className="col-span-2 row-span-6">
+              <Card className="flex-grow h-full max-h-full">
                 <CardHeader>
                   <CardTitle>
                     {
@@ -141,7 +141,17 @@ export default function New({ matches }: Route.ComponentProps) {
           {
             state.stage === "form" && (
               <FormTemplate
-                onSubmit={() => { }}
+                transaction={{
+                  sourceId: state.sourceId,
+                  targetId: state.targetId,
+                  sourceAmount: 0,
+                  targetAmount: 0,
+                  issuedAt: new Date(),
+                  executedAt: null,
+                  currency: "EUR",
+                  kind: state.kind
+                }}
+                role="create"
               />
             )
           }
