@@ -22,7 +22,7 @@ export function meta({ }: Route.MetaArgs) {
   ]
 }
 
-export async function clientLoader({ request }: Route.ClientActionArgs) {
+export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   const filters = getFilters(request)
   const accountsData = await listAccountsQuery()
   const accountsMap: Accounts = new Map(accountsData.map((account) => ([account.id, account])))
