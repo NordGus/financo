@@ -1,8 +1,10 @@
+import { format } from "date-fns"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 import { ComponentProps, use } from "react"
 import { createSearchParams, Link, useSearchParams } from "react-router"
 import { cn } from "~/lib/utils"
 import { Button } from "~/modules/shared/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip"
 import { FiltersContext } from "../../contexts/filters-contenxt"
 import { calculateDateRangeMovement, Movement } from "../../helpers/calculate-date-range-movement"
 import { updateURLSearchParams } from "../../types/filters"
@@ -26,16 +28,23 @@ export function MoveDateRangeLink({ direction, className, ...props }: ComponentP
   const newSearchParams = createSearchParams(updateURLSearchParams(searchParams, { ...filters, from, to }))
 
   return (
-    <Button
-      variant={"ghost"}
-      size={"icon"}
-      {...props}
-      className={cn(className, "px-0")}
-      asChild
-    >
-      <Link to={"?" + newSearchParams} prefetch="intent" replace>
-        {direction === "forwards" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-      </Link>
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant={"ghost"}
+          size={"icon"}
+          {...props}
+          className={cn(className, "px-0")}
+          asChild
+        >
+          <Link to={"?" + newSearchParams} prefetch="intent" replace>
+            {direction === "forwards" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </Link>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        {`Transactions from ${format(from, "PPP")} to ${format(to, "PPP")}`}
+      </TooltipContent>
+    </Tooltip>
   )
 }
