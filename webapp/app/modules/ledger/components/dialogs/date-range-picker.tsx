@@ -4,14 +4,14 @@ import { DateRange } from "react-day-picker"
 import { Button } from "~/modules/shared/components/ui/button"
 import { Calendar } from "~/modules/shared/components/ui/calendar"
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle
-} from "~/modules/shared/components/ui/drawer"
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "~/modules/shared/components/ui/dialog"
 
 interface Props {
   open: boolean
@@ -28,40 +28,41 @@ export function DateRangePicker({
   onConfirm,
   submitting,
   ...props
-}: ComponentProps<typeof Drawer> & Props) {
+}: ComponentProps<typeof Dialog> & Props) {
   const [date, setDate] = useState<DateRange | undefined>(range)
 
   useEffect(() => setDate(range), [open])
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange} {...props}>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Period</DrawerTitle>
-          <DrawerDescription className="hidden" data-hidden>
-            Select which period you want preview
-          </DrawerDescription>
-        </DrawerHeader>
+    <Dialog open={open} onOpenChange={onOpenChange} {...props}>
+      <DialogContent className="sm:max-w-fit">
+        <DialogHeader>
+          <DialogTitle>Pick a Date Range</DialogTitle>
+          <DialogDescription>
+            {"Select the date range you want to filter the ledger's Transactions by"}
+          </DialogDescription>
+        </DialogHeader>
         <div className="flex justify-center">
           <Calendar
             initialFocus
             mode="range"
+            numberOfMonths={3}
             defaultMonth={date?.from}
             selected={date}
             onSelect={setDate}
           />
         </div>
-        <DrawerFooter className="grid grid-cols-2">
-          <DrawerClose asChild>
+        <DialogFooter>
+          <DialogClose asChild>
             <Button variant={"outline"} disabled={submitting}>
               Cancel
             </Button>
-          </DrawerClose>
+          </DialogClose>
           <Button onClick={() => onConfirm(date)} disabled={submitting || !date?.from || !date.to}>
             <ListFilterIcon /> Apply
           </Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

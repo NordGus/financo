@@ -2,14 +2,9 @@ import { ListFilterIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Button } from "~/modules/shared/components/ui/button"
 import { Calendar } from "~/modules/shared/components/ui/calendar"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "~/modules/shared/components/ui/dialog"
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle
+  DrawerClose
 } from "~/modules/shared/components/ui/drawer"
 
 interface Props {
@@ -26,24 +21,25 @@ export function DateDayPicker({ open, onOpenChange, date, onConfirm, submitting 
   useEffect(() => setSelected(date), [open])
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Date</DrawerTitle>
-          <DrawerDescription className="hidden" data-hidden>
-            Select which Date you want preview
-          </DrawerDescription>
-        </DrawerHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-fit">
+        <DialogHeader>
+          <DialogTitle>Pick a Day</DialogTitle>
+          <DialogDescription className="hidden" data-hidden>
+            {"Select the date you want to filter the ledger's Transactions by"}
+          </DialogDescription>
+        </DialogHeader>
         <div className="flex justify-center">
           <Calendar
             initialFocus
             mode="single"
+            numberOfMonths={3}
             defaultMonth={selected}
             selected={selected}
             onSelect={setSelected}
           />
         </div>
-        <DrawerFooter className="grid grid-cols-2">
+        <DialogFooter>
           <DrawerClose asChild>
             <Button variant={"outline"} disabled={submitting}>
               Cancel
@@ -55,8 +51,8 @@ export function DateDayPicker({ open, onOpenChange, date, onConfirm, submitting 
           >
             <ListFilterIcon /> Apply
           </Button>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
