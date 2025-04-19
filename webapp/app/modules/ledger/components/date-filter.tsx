@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { FunnelPlus, MoveHorizontalIcon } from "lucide-react";
-import { ComponentProps, use, useMemo, useReducer } from "react";
+import { ComponentProps, use, useEffect, useMemo, useReducer } from "react";
 import { DateRange } from "react-day-picker";
 import { useNavigation } from "react-router";
 import { cn } from "~/lib/utils";
@@ -97,6 +97,15 @@ export function DateFilter({ className, ...props }: ComponentProps<"div">) {
     setState({ type: _actions.FILTERS_CHANGED, from, to, period })
     setFilters(prev => ({ ...prev, from, to, period }))
   }
+
+  useEffect(() => {
+    setState({
+      type: _actions.FILTERS_CHANGED,
+      from: filters.from,
+      to: filters.to,
+      period: filters.period
+    })
+  }, [filters.from, filters.to, filters.period])
 
   return (
     <Dialog
