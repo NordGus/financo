@@ -9,6 +9,7 @@ import { z } from "zod";
 import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Form } from "~/modules/shared/components/ui/form";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
 import { CURRENCIES, Currency } from "~/modules/shared/types/currency";
 import { DATE_FORMAT, Kind, KINDS } from "../types/transactions";
 
@@ -84,6 +85,24 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     )
   }
 
+  const onDestroy = async () => {
+    const promise = submit({
+      ...transaction,
+      issuedAt: format(transaction.issuedAt, DATE_FORMAT),
+      executedAt: transaction.executedAt ? format(transaction.executedAt, DATE_FORMAT) : null,
+      intent: "destroy"
+    }, { method: "post", encType: "application/json" })
+
+    toast.promise(
+      promise,
+      {
+        loading: "Deleting...",
+        success: () => "Transaction deleted",
+        error: "Oops!. Something went wrong"
+      }
+    )
+  }
+
   return (
     <Form {...form}>
       <form
@@ -94,16 +113,32 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
         <div className="col-span-2 flex gap-2 justify-end">
           {
             role === "update" && (
-              <>
-                <Button type="button" variant="destructive" size={"icon"}>
-                  <Trash />
-                </Button>
-              </>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button type="button" variant="destructive" size={"icon"} onClick={onDestroy}>
+                    <Trash />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {"Delete Transaction"}
+                </TooltipContent>
+              </Tooltip>
             )
           }
-          <Button type="submit" size={"icon"}>
-            <Save />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button type="submit" size={"icon"}>
+                <Save />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {
+                role === "update"
+                  ? "Update Transaction"
+                  : "Create Transaction"
+              }
+            </TooltipContent>
+          </Tooltip>
         </div>
         <div className="rounded-lg border">
           From account
