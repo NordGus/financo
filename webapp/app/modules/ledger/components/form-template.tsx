@@ -1,17 +1,21 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { Save, Trash } from "lucide-react";
-import { ComponentProps } from "react";
+import { ComponentProps, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSubmit } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
-import { Form } from "~/modules/shared/components/ui/form";
+import { Form, FormField, FormItem, FormMessage } from "~/modules/shared/components/ui/form";
+import { Label } from "~/modules/shared/components/ui/label";
+import { Switch } from "~/modules/shared/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
 import { CURRENCIES, Currency } from "~/modules/shared/types/currency";
 import { DATE_FORMAT, Kind, KINDS } from "../types/transactions";
+import { ExecutedAt, IssuedAt } from "./form/transaction-date-selectors";
+import { TransactionSource, TransactionTarget } from "./form/transaction-source-target";
 
 const schema = z.object({
   sourceId: z.number().positive(),
@@ -45,6 +49,7 @@ type Props = {
 }
 
 export function FormTemplate({ transaction, className, role, ...props }: ComponentProps<"form"> & Props) {
+  const [isPendingTransaction, setIsPendingTransaction] = useState(!transaction.executedAt)
   const submit = useSubmit()
 
   const form = useForm({
@@ -60,6 +65,19 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       kind: transaction.kind,
     }
   })
+
+  useEffect(() => {
+    form.setValue("sourceId", transaction.sourceId)
+    form.setValue("targetId", transaction.targetId)
+    form.setValue("sourceAmount", transaction.sourceAmount)
+    form.setValue("targetAmount", transaction.targetAmount)
+    form.setValue("issuedAt", transaction.issuedAt)
+    form.setValue("executedAt", transaction.executedAt)
+    form.setValue("currency", transaction.currency)
+    form.setValue("kind", transaction.kind)
+
+    setIsPendingTransaction(!transaction.executedAt)
+  }, [transaction])
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     const promise = submit({
@@ -106,7 +124,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   return (
     <Form {...form}>
       <form
-        className={cn("grid grid-cols-2 grid-rows-[min-content_0.75fr_1fr_0.5fr_min-content_0.75fr_min-content] h-full max-h-full gap-2 overflow-y-auto no-scrollbar", className)}
+        className={cn("grid grid-cols-2 grid-rows-[min-content_0.75fr_min-content_min-content_1fr_0.75fr_min-content] h-full max-h-full gap-2 overflow-y-auto no-scrollbar", className)}
         {...props}
         onSubmit={form.handleSubmit(onSubmit)}
       >
@@ -140,27 +158,86 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
             </TooltipContent>
           </Tooltip>
         </div>
-        <div className="rounded-lg border">
-          From account
+        <FormField
+          control={form.control}
+          name="sourceId"
+          render={({ field }) => (
+            <FormItem>
+              <TransactionSource
+                id={field.value}
+                onChange={field.onChange}
+              />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="targetId"
+          render={({ field }) => (
+            <FormItem>
+              <TransactionTarget
+                id={field.value}
+                onChange={field.onChange}
+              />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="issuedAt"
+          render={({ field }) => (
+            <FormItem>
+              <IssuedAt
+                value={field.value}
+                onChange={field.onChange}
+              />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="executedAt"
+          render={({ field }) => (
+            <FormItem>
+              <ExecutedAt
+                value={field.value}
+                issuedAt={form.getValues("issuedAt")}
+                onChange={(date) => {
+                  setIsPendingTransaction(!date)
+                  field.onChange(date)
+                }}
+              />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="col-span-2 flex gap-2 items-center *:cursor-pointer">
+          <Switch
+            id="is-pending-transaction"
+            checked={isPendingTransaction}
+            onCheckedChange={checked => {
+              console.log("switch ran")
+              if (checked) form.setValue("executedAt", null)
+              else form.setValue("executedAt", form.getValues("issuedAt"))
+
+              setIsPendingTransaction(checked)
+            }}
+          />
+          <Label htmlFor="is-pending-transaction">This transaction has no effective date, yet</Label>
         </div>
-        <div className="rounded-lg border">
-          To account
-        </div>
+
         <div className="rounded-lg bg-zinc-700">
           Source amount
         </div>
         <div className="rounded-lg bg-zinc-700">
           Target amount
         </div>
-        <div className="rounded-lg border">
-          Issued {format(transaction.issuedAt, "LLL dd, y")}
-        </div>
-        <div className="rounded-lg border">
-          Effective {format(transaction.issuedAt, "LLL dd, y")}
-        </div>
-        <div className="col-span-2">
-          Date controls
-        </div>
+
         <div className="rounded-lg border col-span-2">
           Notes
         </div>
