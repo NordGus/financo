@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { Save, Trash } from "lucide-react";
+import { ArrowLeftRight, Save, Trash } from "lucide-react";
 import { ComponentProps, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSubmit } from "react-router";
@@ -48,9 +48,13 @@ type Props = {
   role: "create" | "update"
 }
 
+// [ ] TODO: build logic for currency change.
+
 export function FormTemplate({ transaction, className, role, ...props }: ComponentProps<"form"> & Props) {
   const [isPendingTransaction, setIsPendingTransaction] = useState(!transaction.executedAt)
+
   const submit = useSubmit()
+  // const { accountsMap: accounts } = use(AccountsContext)
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -128,7 +132,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
         {...props}
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <div className="col-span-2 flex gap-2 justify-end">
+        <div className="col-span-2 flex gap-2">
           {
             role === "update" && (
               <Tooltip>
@@ -143,6 +147,35 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               </Tooltip>
             )
           }
+          <span className="flex-grow contents-[' ']" />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant={"secondary"}
+                onClick={() => {
+                  const kind = form.getValues("kind")
+                  const sourceId = form.getValues("sourceId")
+                  const sourceAmount = form.getValues("sourceAmount")
+                  const targetId = form.getValues("targetId")
+                  const targetAmount = form.getValues("targetAmount")
+
+                  if (kind === "expense") form.setValue("kind", "income")
+                  if (kind === "income") form.setValue("kind", "expense")
+
+                  form.setValue("sourceId", targetId)
+                  form.setValue("sourceAmount", targetAmount)
+                  form.setValue("targetId", sourceId)
+                  form.setValue("targetAmount", sourceAmount)
+                }}
+              >
+                <ArrowLeftRight />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {"Switch Transaction Direction"}
+            </TooltipContent>
+          </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button type="submit" size={"icon"}>
@@ -158,6 +191,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
             </TooltipContent>
           </Tooltip>
         </div>
+
         <FormField
           control={form.control}
           name="sourceId"
@@ -231,12 +265,31 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           <Label htmlFor="is-pending-transaction">This transaction has no effective date, yet</Label>
         </div>
 
-        <div className="rounded-lg bg-zinc-700">
-          Source amount
-        </div>
-        <div className="rounded-lg bg-zinc-700">
-          Target amount
-        </div>
+        <FormField
+          control={form.control}
+          name="sourceAmount"
+          render={({ field }) => (
+            <FormItem>
+              <div className="rounded-lg border p-3">
+                {field.value}
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="targetAmount"
+          render={({ field }) => (
+            <FormItem>
+              <div className="rounded-lg border p-3">
+                {field.value}
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="rounded-lg border col-span-2">
           Notes
