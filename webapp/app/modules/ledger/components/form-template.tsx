@@ -48,8 +48,6 @@ type Props = {
   role: "create" | "update"
 }
 
-// [ ] TODO: build logic for currency change.
-
 export function FormTemplate({ transaction, className, role, ...props }: ComponentProps<"form"> & Props) {
   const [isPendingTransaction, setIsPendingTransaction] = useState(!transaction.executedAt)
 

@@ -9,6 +9,7 @@ import { Kind } from "~/modules/ledger/types/transactions";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/modules/shared/components/ui/card";
 import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-context";
+import { Currency } from "~/modules/shared/types/currency";
 import { Route } from "./+types/new";
 
 export function clientLoader({ }: Route.ClientLoaderArgs) {
@@ -148,7 +149,13 @@ export default function New({ matches }: Route.ComponentProps) {
                   targetAmount: 0,
                   issuedAt: new Date(),
                   executedAt: null,
-                  currency: "EUR",
+                  currency: accountsMap.get(state.sourceId)!.currency === "MULTI"
+                    // This value is going to be a Currency because is not possible to create a transaction between
+                    // Accounts with MULTI currency
+                    ? accountsMap.get(state.targetId)!.currency as Currency
+                    // This value is going to be a Currency because is not possible to create a transaction between
+                    // Accounts with MULTI currency
+                    : accountsMap.get(state.sourceId)!.currency as Currency,
                   kind: state.kind
                 }}
                 role="create"
