@@ -219,7 +219,7 @@ function CreateForm({ kind, defaultCurrency, defaultIcon, submitting, onSubmitAc
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Currency</FormLabel>
-                <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} />
+                <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} value={field.value} />
                 <FormDescription>
                   The currency this account will operate in with
                 </FormDescription>
