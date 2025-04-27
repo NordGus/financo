@@ -58,9 +58,8 @@ function capitalizeKind(kind: Kind): string {
   return `${kind.at(0)!.toLocaleUpperCase()}${kind.slice(1)}`
 }
 
-function isWithConversionRate(source: Account, target: Account, transactionCurrency: Currency, kind: Kind): boolean {
+function isWithConversionRate(source: Account, target: Account, transactionCurrency: Currency): boolean {
   switch (true) {
-    case kind === "transfer":
     case source.currency !== "MULTI" && target.currency !== "MULTI":
       return source.currency !== target.currency
     default:
@@ -80,8 +79,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   const [withConversionRate, setWithConversionRate] = useState<boolean>(isWithConversionRate(
     accounts.get(transaction.sourceId)!,
     accounts.get(transaction.targetId)!,
-    transaction.currency,
-    transaction.kind
+    transaction.currency
   ))
 
   const submit = useSubmit()
@@ -116,8 +114,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     setWithConversionRate(isWithConversionRate(
       accounts.get(transaction.sourceId)!,
       accounts.get(transaction.targetId)!,
-      transaction.currency,
-      transaction.kind
+      transaction.currency
     ))
   }, [transaction])
 
@@ -125,14 +122,12 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     setWithConversionRate(isWithConversionRate(
       accounts.get(form.getValues("sourceId"))!,
       accounts.get(form.getValues("targetId"))!,
-      form.getValues("currency"),
-      form.getValues("kind")
+      form.getValues("currency")
     ))
   }, [
     form.getValues("sourceId"),
     form.getValues("targetId"),
     form.getValues("currency"),
-    form.getValues("kind"),
     accounts
   ])
 
@@ -225,18 +220,31 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                 variant={"secondary"}
                 onClick={() => {
                   const kind = form.getValues("kind")
-                  const sourceId = form.getValues("sourceId")
+                  const source = accounts.get(form.getValues("sourceId"))!
                   const sourceAmount = form.getValues("sourceAmount")
-                  const targetId = form.getValues("targetId")
+                  const target = accounts.get(form.getValues("targetId"))!
                   const targetAmount = form.getValues("targetAmount")
 
+                  // An expense transaction becomes an income transaction when switching direction.
                   if (kind === "expense") form.setValue("kind", "income")
+                  // An income transaction becomes an expense transaction when switching direction.
                   if (kind === "income") form.setValue("kind", "expense")
-                  if (kind === "transfer") form.setValue("currency", accounts.get(sourceId)!.currency as Currency)
+                  // A transfer transaction does not change its kind because it maintains its behavior
 
-                  form.setValue("sourceId", targetId)
+                  // When the transaction does not contain a MULTI currency account aka. category, the transaction
+                  // stores the target's currency, so it needs to the change the currency to that one of the
+                  // future target aka the current source.
+                  //
+                  // This change is ignored for transactions which contain a MULTI currency account aka. category,
+                  // because the currency is user defined or is simply inherited from the non-MULTI currency account
+                  // aka. account in the transaction.
+                  if (source.currency !== "MULTI" && target.currency !== "MULTI") {
+                    form.setValue("currency", source.currency)
+                  }
+
+                  form.setValue("sourceId", target.id)
                   form.setValue("sourceAmount", targetAmount)
-                  form.setValue("targetId", sourceId)
+                  form.setValue("targetId", source.id)
                   form.setValue("targetAmount", sourceAmount)
                 }}
               >
@@ -352,7 +360,15 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           name="currency"
           render={({ field }) => (
             <FormItem className="col-span-2">
-              <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} value={field.value} />
+              <CurrencyInput
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                value={field.value}
+                disabled={
+                  accounts.get(form.getValues("sourceId"))!.currency !== "MULTI" &&
+                  accounts.get(form.getValues("targetId"))!.currency !== "MULTI"
+                }
+              />
               <FormMessage />
             </FormItem>
           )}
