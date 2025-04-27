@@ -149,6 +149,7 @@ export default function New({ matches }: Route.ComponentProps) {
                   targetAmount: 0,
                   issuedAt: new Date(),
                   executedAt: null,
+                  notes: null,
                   currency: accountsMap.get(state.sourceId)!.currency === "MULTI"
                     // This value is going to be a Currency because is not possible to create a transaction between
                     // Accounts with MULTI currency

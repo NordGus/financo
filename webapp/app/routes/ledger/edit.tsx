@@ -40,6 +40,7 @@ export default function Edit({ loaderData: { transaction }, matches }: Route.Com
               targetAmount: transaction.targetAmount,
               issuedAt: new Date(transaction.issuedAt),
               executedAt: transaction.executedAt ? new Date(transaction.executedAt) : null,
+              notes: transaction.notes,
               currency: transaction.currency,
               kind: transaction.metadata.kind
             }}

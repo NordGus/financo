@@ -8,14 +8,17 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
-import { Form, FormField, FormItem, FormMessage } from "~/modules/shared/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from "~/modules/shared/components/ui/form";
 import { Label } from "~/modules/shared/components/ui/label";
 import { Switch } from "~/modules/shared/components/ui/switch";
+import { Textarea } from "~/modules/shared/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
 import { CURRENCIES, Currency } from "~/modules/shared/types/currency";
 import { DATE_FORMAT, Kind, KINDS } from "../types/transactions";
 import { ExecutedAt, IssuedAt } from "./form/transaction-date-selectors";
 import { TransactionSource, TransactionTarget } from "./form/transaction-source-target";
+
+const NOTES_MAX_LENGTH = 400
 
 const schema = z.object({
   sourceId: z.number().positive(),
@@ -24,6 +27,7 @@ const schema = z.object({
   targetAmount: z.number(),
   issuedAt: z.date(),
   executedAt: z.date().nullish(),
+  notes: z.string().max(NOTES_MAX_LENGTH).nullish(),
   currency: z.nativeEnum(CURRENCIES),
   kind: z.nativeEnum(KINDS)
 })
@@ -35,6 +39,7 @@ type Transaction = {
   targetAmount: number
   issuedAt: Date
   executedAt: Date | null | undefined
+  notes: string | null | undefined,
   currency: Currency,
   kind: Kind
 }
@@ -63,6 +68,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       targetAmount: transaction.targetAmount,
       issuedAt: transaction.issuedAt,
       executedAt: transaction.executedAt,
+      notes: transaction.notes,
       currency: transaction.currency,
       kind: transaction.kind,
     }
@@ -77,6 +83,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     form.setValue("executedAt", transaction.executedAt)
     form.setValue("currency", transaction.currency)
     form.setValue("kind", transaction.kind)
+    form.setValue("notes", transaction.notes)
 
     setIsPendingTransaction(!transaction.executedAt)
   }, [transaction])
@@ -86,6 +93,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       ...values,
       issuedAt: format(values.issuedAt, DATE_FORMAT),
       executedAt: values.executedAt ? format(values.executedAt, DATE_FORMAT) : null,
+      notes: values.notes ?? null,
       intent: role
     }, { method: "post", encType: "application/json" })
 
@@ -110,6 +118,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       ...transaction,
       issuedAt: format(transaction.issuedAt, DATE_FORMAT),
       executedAt: transaction.executedAt ? format(transaction.executedAt, DATE_FORMAT) : null,
+      notes: transaction.notes ?? null,
       intent: "destroy"
     }, { method: "post", encType: "application/json" })
 
@@ -126,11 +135,11 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   return (
     <Form {...form}>
       <form
-        className={cn("grid grid-cols-2 grid-rows-[min-content_0.75fr_min-content_min-content_1fr_0.75fr_min-content] h-full max-h-full gap-2 overflow-y-auto no-scrollbar", className)}
+        className={cn("grid grid-cols-2 grid-rows-[min-content_0.75fr_min-content_1fr_1fr_min-content] h-full max-h-full gap-2 overflow-y-auto no-scrollbar", className)}
         {...props}
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <div className="col-span-2 flex gap-2">
+        <div className="col-span-2 flex gap-2 items-center">
           {
             role === "update" && (
               <Tooltip>
@@ -145,6 +154,21 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               </Tooltip>
             )
           }
+          <span className="flex-grow contents-[' ']" />
+          <div className="col-span-2 flex gap-2 items-center *:cursor-pointer">
+            <Switch
+              id="is-pending-transaction"
+              checked={isPendingTransaction}
+              onCheckedChange={checked => {
+                console.log("switch ran")
+                if (checked) form.setValue("executedAt", null)
+                else form.setValue("executedAt", form.getValues("issuedAt"))
+
+                setIsPendingTransaction(checked)
+              }}
+            />
+            <Label htmlFor="is-pending-transaction">This transaction has no effective date, yet</Label>
+          </div>
           <span className="flex-grow contents-[' ']" />
           <Tooltip>
             <TooltipTrigger asChild>
@@ -248,21 +272,6 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           )}
         />
 
-        <div className="col-span-2 flex gap-2 items-center *:cursor-pointer">
-          <Switch
-            id="is-pending-transaction"
-            checked={isPendingTransaction}
-            onCheckedChange={checked => {
-              console.log("switch ran")
-              if (checked) form.setValue("executedAt", null)
-              else form.setValue("executedAt", form.getValues("issuedAt"))
-
-              setIsPendingTransaction(checked)
-            }}
-          />
-          <Label htmlFor="is-pending-transaction">This transaction has no effective date, yet</Label>
-        </div>
-
         <FormField
           control={form.control}
           name="sourceAmount"
@@ -289,9 +298,26 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           )}
         />
 
-        <div className="rounded-lg border col-span-2">
-          Notes
-        </div>
+        <FormField
+          control={form.control}
+          name="notes"
+          render={({ field }) => (
+            <FormItem className="col-span-2 flex flex-col">
+              <FormControl className="flex-grow">
+                <Textarea
+                  {...field}
+                  value={field.value ?? undefined}
+                  className="resize-none"
+                  placeholder="Notes about the transaction..."
+                />
+              </FormControl>
+              <FormDescription className="text-right">
+                {field.value?.length ?? 0} / {NOTES_MAX_LENGTH}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="grid col-span-2 grid-cols-5 grid-rows-4 gap-2 mx-auto w-full max-w-[45dvh]">
           <div className="rounded-lg border aspect-square">div</div>
