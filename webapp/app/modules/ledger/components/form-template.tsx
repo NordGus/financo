@@ -7,6 +7,7 @@ import { useSubmit } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { cn } from "~/lib/utils";
+import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from "~/modules/shared/components/ui/form";
 import { Label } from "~/modules/shared/components/ui/label";
@@ -18,7 +19,7 @@ import { DATE_FORMAT, Kind, KINDS } from "../types/transactions";
 import { ExecutedAt, IssuedAt } from "./form/transaction-date-selectors";
 import { TransactionSource, TransactionTarget } from "./form/transaction-source-target";
 
-const NOTES_MAX_LENGTH = 400
+const NOTES_MAX_LENGTH = 1000
 
 const schema = z.object({
   sourceId: z.number().positive(),
@@ -135,7 +136,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   return (
     <Form {...form}>
       <form
-        className={cn("grid grid-cols-2 grid-rows-[min-content_0.75fr_min-content_1fr_1fr_min-content] h-full max-h-full gap-2 overflow-y-auto no-scrollbar", className)}
+        className={cn("grid grid-cols-2 grid-rows-[min-content_0.5fr_min-content_0.25fr_min-content_1fr] h-full max-h-full gap-2 overflow-y-auto no-scrollbar", className)}
         {...props}
         onSubmit={form.handleSubmit(onSubmit)}
       >
@@ -300,6 +301,17 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
 
         <FormField
           control={form.control}
+          name="currency"
+          render={({ field }) => (
+            <FormItem className="col-span-2">
+              <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} value={field.value} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="notes"
           render={({ field }) => (
             <FormItem className="col-span-2 flex flex-col">
@@ -319,7 +331,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           )}
         />
 
-        <div className="grid col-span-2 grid-cols-5 grid-rows-4 gap-2 mx-auto w-full max-w-[45dvh]">
+        {/* <div className="grid col-span-2 grid-cols-5 grid-rows-4 gap-2 mx-auto w-full max-w-[45dvh]">
           <div className="rounded-lg border aspect-square">div</div>
           <div className="rounded-lg border aspect-square">7</div>
           <div className="rounded-lg border aspect-square">8</div>
@@ -339,7 +351,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           <div className="rounded-lg border aspect-square">curr</div>
           <div className="rounded-lg border aspect-square">0</div>
           <div className="rounded-lg border aspect-square">info</div>
-        </div>
+        </div> */}
       </form>
     </Form>
   )
