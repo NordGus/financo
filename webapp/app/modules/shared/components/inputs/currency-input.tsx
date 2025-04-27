@@ -18,7 +18,7 @@ export function CurrencyInput({ value, onValueChange, defaultValue, disabled = f
   return (
     <Select onValueChange={onValueChange} defaultValue={defaultValue} value={value}>
       <FormControl>
-        <SelectTrigger className="w-full" disabled={disabled}>
+        <SelectTrigger className="w-full cursor-pointer" disabled={disabled}>
           <SelectValue placeholder={"Select a currency"} />
         </SelectTrigger>
       </FormControl>
