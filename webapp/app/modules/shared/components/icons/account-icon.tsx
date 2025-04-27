@@ -35,7 +35,7 @@ export function AccountListingIcon({
     >
       <DynamicIcon name={icon} color={colorContrast(color)} />
       {
-        main && <span className="absolute -top-1.5 -right-1.5 p-0.5 bg-primary rounded-full">
+        main && <span className="absolute -top-2 -right-2 p-0.5 bg-primary rounded-full border-accent border-[1px]">
           <StarIcon className="!size-4 text-primary-foreground" />
         </span>
       }
