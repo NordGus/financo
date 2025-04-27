@@ -9,15 +9,16 @@ interface Props {
   value: Currency
   defaultValue?: Currency
   onValueChange: (value: Currency) => void
+  disabled?: boolean
 }
 
-export function CurrencyInput({ value, onValueChange, defaultValue }: Props) {
+export function CurrencyInput({ value, onValueChange, defaultValue, disabled = false }: Props) {
   const { currencies } = use(CurrenciesContext)
 
   return (
     <Select onValueChange={onValueChange} defaultValue={defaultValue} value={value}>
       <FormControl>
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full" disabled={disabled}>
           <SelectValue placeholder={"Select a currency"} />
         </SelectTrigger>
       </FormControl>
