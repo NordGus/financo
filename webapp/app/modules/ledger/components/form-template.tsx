@@ -136,7 +136,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   return (
     <Form {...form}>
       <form
-        className={cn("grid grid-cols-2 grid-rows-[min-content_0.5fr_min-content_0.25fr_min-content_1fr] h-full max-h-full gap-2 overflow-y-auto no-scrollbar", className)}
+        className={cn("grid grid-cols-2 px-1 grid-rows-[min-content_0.5fr_min-content_0.25fr_min-content_1fr] h-full max-h-full gap-2 overflow-y-auto no-scrollbar", className)}
         {...props}
         onSubmit={form.handleSubmit(onSubmit)}
       >
@@ -313,22 +313,30 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
         <FormField
           control={form.control}
           name="notes"
-          render={({ field }) => (
-            <FormItem className="col-span-2 flex flex-col">
-              <FormControl className="flex-grow">
-                <Textarea
-                  {...field}
-                  value={field.value ?? undefined}
-                  className="resize-none"
-                  placeholder="Notes about the transaction..."
-                />
-              </FormControl>
-              <FormDescription className="text-right">
-                {field.value?.length ?? 0} / {NOTES_MAX_LENGTH}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({ field }) => {
+            const charCount = field.value?.length ?? 0
+            const isApproachingLimit = charCount >= NOTES_MAX_LENGTH * 0.9
+
+            return (
+              <FormItem className="col-span-2 flex flex-col">
+                <FormControl className="flex-grow">
+                  <Textarea
+                    {...field}
+                    value={field.value ?? undefined}
+                    className={cn(
+                      "resize-none",
+                      isApproachingLimit && "border-yellow-500 focus-visible:ring-yellow-500"
+                    )}
+                    placeholder="Notes about the transaction..."
+                  />
+                </FormControl>
+                <FormDescription className="text-right">
+                  {charCount} / {NOTES_MAX_LENGTH}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )
+          }}
         />
 
         {/* <div className="grid col-span-2 grid-cols-5 grid-rows-4 gap-2 mx-auto w-full max-w-[45dvh]">
