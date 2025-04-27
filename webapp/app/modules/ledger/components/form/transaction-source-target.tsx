@@ -42,7 +42,7 @@ export function TransactionSource({ id }: Props) {
       <span className="text-xs opacity-50">
         From {label(account)}
       </span>
-      <div className="flex items-center">
+      <span className="flex items-center">
         <AccountListingIcon
           kind={account.kind}
           icon={account.icon}
@@ -51,7 +51,10 @@ export function TransactionSource({ id }: Props) {
           className="p-2 inline-flex mr-3"
         />
         {accountName(account, parent)}
-      </div>
+      </span>
+      <span className="block text-xs opacity-75">
+        {account.description}
+      </span>
     </div>
   )
 }
