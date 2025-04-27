@@ -6,15 +6,16 @@ import { FormControl } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 interface Props {
+  value: Currency
   defaultValue?: Currency
   onValueChange: (value: Currency) => void
 }
 
-export function CurrencyInput({ onValueChange, defaultValue }: Props) {
+export function CurrencyInput({ value, onValueChange, defaultValue }: Props) {
   const { currencies } = use(CurrenciesContext)
 
   return (
-    <Select onValueChange={onValueChange} defaultValue={defaultValue}>
+    <Select onValueChange={onValueChange} defaultValue={defaultValue} value={value}>
       <FormControl>
         <SelectTrigger className="w-full">
           <SelectValue placeholder={"Select a currency"} />
