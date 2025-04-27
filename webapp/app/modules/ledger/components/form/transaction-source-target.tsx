@@ -30,13 +30,14 @@ export function TransactionSource({ id }: Props) {
 
   const account = useMemo(() => accountsMap.get(id)!, [id])
   const parent = useMemo(() => accountsMap.get(account.parentId ?? -1), [account.parentId])
+  const contrast = colorContrast(account.color)
 
   return (
     <div
       className="rounded-lg p-3 flex flex-col gap-2 cursor-pointer"
       style={{
         backgroundColor: account.color,
-        color: colorContrast(account.color)
+        color: contrast
       }}
     >
       <span className="text-xs opacity-50">
@@ -46,7 +47,7 @@ export function TransactionSource({ id }: Props) {
         <AccountListingIcon
           kind={account.kind}
           icon={account.icon}
-          color={colorContrast(account.color)}
+          color={colorContrast(contrast)}
           main={account.main}
           className="p-2 inline-flex mr-3"
         />
@@ -64,13 +65,14 @@ export function TransactionTarget({ id }: Props) {
 
   const account = useMemo(() => accountsMap.get(id)!, [id])
   const parent = useMemo(() => accountsMap.get(account.parentId ?? -1), [account.parentId])
+  const contrast = colorContrast(account.color)
 
   return (
     <div
       className="rounded-lg p-3 flex flex-col gap-2 cursor-pointer"
       style={{
         backgroundColor: account.color,
-        color: colorContrast(account.color)
+        color: contrast
       }}
     >
       <span className="text-xs opacity-50">
@@ -80,7 +82,7 @@ export function TransactionTarget({ id }: Props) {
         <AccountListingIcon
           kind={account.kind}
           icon={account.icon}
-          color={colorContrast(account.color)}
+          color={colorContrast(contrast)}
           main={account.main}
           className="p-2 inline-flex mr-3"
         />
