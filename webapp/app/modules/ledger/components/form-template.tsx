@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { ArrowLeftRight, Save, Trash } from "lucide-react";
-import { ComponentProps, useEffect, useState } from "react";
+import { ComponentProps, use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useSubmit } from "react-router";
 import { toast } from "sonner";
@@ -9,12 +9,21 @@ import { z } from "zod";
 import { cn } from "~/lib/utils";
 import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input";
 import { Button } from "~/modules/shared/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormMessage } from "~/modules/shared/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormMessage
+} from "~/modules/shared/components/ui/form";
 import { Label } from "~/modules/shared/components/ui/label";
 import { Switch } from "~/modules/shared/components/ui/switch";
 import { Textarea } from "~/modules/shared/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
 import { CURRENCIES, Currency } from "~/modules/shared/types/currency";
+import { AccountsContext } from "../contexts/accounts-context";
+import { Account } from "../types/accounts";
 import { DATE_FORMAT, Kind, KINDS } from "../types/transactions";
 import { ExecutedAt, IssuedAt } from "./form/transaction-date-selectors";
 import { TransactionSource, TransactionTarget } from "./form/transaction-source-target";
@@ -49,16 +58,33 @@ function capitalizeKind(kind: Kind): string {
   return `${kind.at(0)!.toLocaleUpperCase()}${kind.slice(1)}`
 }
 
+function isWithConversionRate(source: Account, target: Account, transactionCurrency: Currency, kind: Kind): boolean {
+  switch (true) {
+    case kind === "transfer":
+    case source.currency !== "MULTI" && target.currency !== "MULTI":
+      return source.currency !== target.currency
+    default:
+      return (source.currency === "MULTI" ? target.currency : source.currency) !== transactionCurrency
+  }
+}
+
 type Props = {
   transaction: Transaction
   role: "create" | "update"
 }
 
 export function FormTemplate({ transaction, className, role, ...props }: ComponentProps<"form"> & Props) {
+  const { accountsMap: accounts } = use(AccountsContext)
+
   const [isPendingTransaction, setIsPendingTransaction] = useState(!transaction.executedAt)
+  const [withConversionRate, setWithConversionRate] = useState<boolean>(isWithConversionRate(
+    accounts.get(transaction.sourceId)!,
+    accounts.get(transaction.targetId)!,
+    transaction.currency,
+    transaction.kind
+  ))
 
   const submit = useSubmit()
-  // const { accountsMap: accounts } = use(AccountsContext)
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -87,7 +113,28 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     form.setValue("notes", transaction.notes)
 
     setIsPendingTransaction(!transaction.executedAt)
+    setWithConversionRate(isWithConversionRate(
+      accounts.get(transaction.sourceId)!,
+      accounts.get(transaction.targetId)!,
+      transaction.currency,
+      transaction.kind
+    ))
   }, [transaction])
+
+  useEffect(() => {
+    setWithConversionRate(isWithConversionRate(
+      accounts.get(form.getValues("sourceId"))!,
+      accounts.get(form.getValues("targetId"))!,
+      form.getValues("currency"),
+      form.getValues("kind")
+    ))
+  }, [
+    form.getValues("sourceId"),
+    form.getValues("targetId"),
+    form.getValues("currency"),
+    form.getValues("kind"),
+    accounts
+  ])
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     const promise = submit({
@@ -185,6 +232,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
 
                   if (kind === "expense") form.setValue("kind", "income")
                   if (kind === "income") form.setValue("kind", "expense")
+                  if (kind === "transfer") form.setValue("currency", accounts.get(sourceId)!.currency as Currency)
 
                   form.setValue("sourceId", targetId)
                   form.setValue("sourceAmount", targetAmount)
@@ -277,7 +325,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           control={form.control}
           name="sourceAmount"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className={cn(!withConversionRate && "col-span-2")}>
               <div className="rounded-lg border p-3">
                 {field.value}
               </div>
@@ -290,7 +338,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           control={form.control}
           name="targetAmount"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className={cn(!withConversionRate && "hidden")}>
               <div className="rounded-lg border p-3">
                 {field.value}
               </div>
