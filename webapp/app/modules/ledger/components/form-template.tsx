@@ -178,7 +178,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   return (
     <Form {...form}>
       <form
-        className={cn("grid grid-cols-2 px-1 grid-rows-[min-content_0.5fr_min-content_0.25fr_min-content_1fr] h-full max-h-full gap-2 overflow-y-auto no-scrollbar", className)}
+        className={cn("grid grid-cols-2 px-1 grid-rows-[min-content_0.5fr_min-content_min-content_0.25fr_1fr] h-full max-h-full gap-2 overflow-y-auto no-scrollbar", className)}
         {...props}
         onSubmit={form.handleSubmit(onSubmit)}
       >
@@ -331,6 +331,25 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
 
         <FormField
           control={form.control}
+          name="currency"
+          render={({ field }) => (
+            <FormItem className="col-span-2">
+              <CurrencyInput
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                value={field.value}
+                disabled={
+                  accounts.get(form.getValues("sourceId"))!.currency !== "MULTI" &&
+                  accounts.get(form.getValues("targetId"))!.currency !== "MULTI"
+                }
+              />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="sourceAmount"
           render={({ field }) => (
             <FormItem className={cn(!withConversionRate && "col-span-2")}>
@@ -350,25 +369,6 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               <div className="rounded-lg border p-3">
                 {field.value}
               </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="currency"
-          render={({ field }) => (
-            <FormItem className="col-span-2">
-              <CurrencyInput
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                value={field.value}
-                disabled={
-                  accounts.get(form.getValues("sourceId"))!.currency !== "MULTI" &&
-                  accounts.get(form.getValues("targetId"))!.currency !== "MULTI"
-                }
-              />
               <FormMessage />
             </FormItem>
           )}
