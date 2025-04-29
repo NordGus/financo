@@ -395,7 +395,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                   />
                 </FormControl>
                 <FormDescription className="text-right">
-                  {charCount} / {NOTES_MAX_LENGTH}
+                  {NOTES_MAX_LENGTH - charCount} characters remaining
                 </FormDescription>
                 <FormMessage />
               </FormItem>
