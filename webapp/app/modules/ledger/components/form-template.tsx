@@ -403,26 +403,24 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           }}
         />
 
-        {/* <div className="grid col-span-2 grid-cols-5 grid-rows-4 gap-2 mx-auto w-full max-w-[45dvh]">
-          <div className="rounded-lg border aspect-square">div</div>
+        {/* <div className="grid col-span-2 grid-cols-5 grid-rows-4 gap-2 mx-auto w-full max-w-[45dvh] *:flex *:items-center *:justify-center *:text-2xl">
+          <div className="rounded-lg border aspect-square"><Divide /></div>
           <div className="rounded-lg border aspect-square">7</div>
           <div className="rounded-lg border aspect-square">8</div>
           <div className="rounded-lg border aspect-square">9</div>
-          <div className="rounded-lg border aspect-square">back</div>
-          <div className="rounded-lg border aspect-square">by</div>
+          <div className="rounded-lg border aspect-square"><Delete /></div>
+          <div className="rounded-lg border aspect-square"><X /></div>
           <div className="rounded-lg border aspect-square">4</div>
           <div className="rounded-lg border aspect-square">5</div>
           <div className="rounded-lg border aspect-square">6</div>
-          <div className="rounded-lg border aspect-square">date</div>
-          <div className="rounded-lg border aspect-square">minus</div>
+          <div className="rounded-lg border row-span-3"><Check /></div>
+          <div className="rounded-lg border aspect-square"><Minus /></div>
           <div className="rounded-lg border aspect-square">1</div>
           <div className="rounded-lg border aspect-square">2</div>
           <div className="rounded-lg border aspect-square">3</div>
-          <div className="rounded-lg border row-span-2">done</div>
-          <div className="rounded-lg border aspect-square">plus</div>
-          <div className="rounded-lg border aspect-square">curr</div>
-          <div className="rounded-lg border aspect-square">0</div>
-          <div className="rounded-lg border aspect-square">info</div>
+          <div className="rounded-lg border aspect-square"><Plus /></div>
+          <div className="rounded-lg border col-span-2">0</div>
+          <div className="rounded-lg border aspect-square"><Info /></div>
         </div> */}
       </form>
     </Form>
