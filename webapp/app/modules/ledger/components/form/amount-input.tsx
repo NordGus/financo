@@ -28,7 +28,7 @@ import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-
 import { Currency } from "~/modules/shared/types/currency";
 import { Kind } from "../../types/transactions";
 
-interface Props extends ComponentProps<"div"> {
+interface Props extends ComponentProps<typeof DialogTrigger> {
   value: number
   currency: Currency
   kind: Kind
@@ -208,7 +208,8 @@ function init({ initialValue }: InitialState): State {
 }
 
 export function AmountInput({
-  value, currency, kind, className, onValueChange, dialogTitle, dialogDescription, ...props
+  value, currency, kind, className, onValueChange, dialogTitle, dialogDescription,
+  disabled, ...props
 }: Props) {
   const [state, dispatch] = useReducer(reducer, { initialValue: value }, init)
 
@@ -398,19 +399,20 @@ export function AmountInput({
 
   return (
     <Dialog open={state.open} onOpenChange={(open) => dispatch({ type: "OPEN_CHANGED", open })}>
-      <DialogTrigger asChild>
-        <div
-          {...props}
-          className={cn(
-            "rounded-lg border p-3 flex flex-col gap-4 justify-center items-center cursor-pointer",
-            currencyAmountColor(kind === "expense" ? -value : value),
-            className
-          )}
-        >
-          <span className="text-2xl font-bold">
-            {currencyAmountToHuman(value, currency, { withSign: true })}
-          </span>
-        </div>
+      <DialogTrigger
+        {...props}
+        className={cn(
+          "rounded-lg border p-3 flex flex-col gap-4 justify-center items-center cursor-pointer",
+          currencyAmountColor(kind === "expense" ? -value : value),
+          disabled && "cursor-not-allowed opacity-50",
+          className
+        )}
+        disabled={disabled}
+        asChild={false}
+      >
+        <span className="text-2xl font-bold">
+          {currencyAmountToHuman(value, currency, { withSign: true })}
+        </span>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

@@ -93,6 +93,10 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   const { accountsMap: accounts } = use(AccountsContext)
 
   const [isPendingTransaction, setIsPendingTransaction] = useState(!transaction.executedAt)
+  const [isHistoryTransaction, setIsHistoryTransaction] = useState(
+    accounts.get(transaction.sourceId)!.kind === "history" ||
+    accounts.get(transaction.targetId)!.kind === "history"
+  )
   const [withConversionRate, setWithConversionRate] = useState<boolean>(isWithConversionRate(
     accounts.get(transaction.sourceId)!,
     accounts.get(transaction.targetId)!,
@@ -133,6 +137,10 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       accounts.get(transaction.targetId)!,
       transaction.currency
     ))
+    setIsHistoryTransaction(
+      accounts.get(transaction.sourceId)!.kind === "history" ||
+      accounts.get(transaction.targetId)!.kind === "history"
+    )
   }, [transaction])
 
   useEffect(() => {
@@ -141,6 +149,11 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       accounts.get(form.getValues("targetId"))!,
       form.getValues("currency")
     ))
+
+    setIsHistoryTransaction(
+      accounts.get(form.getValues("sourceId"))!.kind === "history" ||
+      accounts.get(form.getValues("targetId"))!.kind === "history"
+    )
   }, [
     form.getValues("sourceId"),
     form.getValues("targetId"),
@@ -149,6 +162,14 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   ])
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
+    if (
+      accounts.get(values.sourceId)!.kind === "history" ||
+      accounts.get(values.targetId)!.kind === "history"
+    ) {
+      toast.error("You cannot register or modify history transactions")
+      return
+    }
+
     const promise = submit({
       ...values,
       issuedAt: format(values.issuedAt, DATE_FORMAT),
@@ -174,6 +195,11 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   }
 
   const onDestroy = async () => {
+    if (isHistoryTransaction) {
+      toast.error("You delete history transactions")
+      return
+    }
+
     const promise = submit({
       ...transaction,
       issuedAt: format(transaction.issuedAt, DATE_FORMAT),
@@ -204,7 +230,13 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
             role === "update" && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button type="button" variant="destructive" size={"icon"} onClick={onDestroy}>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size={"icon"}
+                    onClick={onDestroy}
+                    disabled={isHistoryTransaction}
+                  >
                     <Trash />
                   </Button>
                 </TooltipTrigger>
@@ -225,6 +257,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
 
                 setIsPendingTransaction(checked)
               }}
+              disabled={isHistoryTransaction}
             />
             <Label htmlFor="is-pending-transaction">This transaction has no effective date, yet</Label>
           </div>
@@ -262,6 +295,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                   form.setValue("targetId", source.id)
                   form.setValue("targetAmount", sourceAmount)
                 }}
+                disabled={isHistoryTransaction}
               >
                 <ArrowLeftRight />
               </Button>
@@ -272,7 +306,11 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           </Tooltip>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button type="submit" size={"icon"}>
+              <Button
+                type="submit"
+                size={"icon"}
+                disabled={isHistoryTransaction}
+              >
                 <Save />
               </Button>
             </TooltipTrigger>
@@ -294,6 +332,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               <TransactionSource
                 id={field.value}
                 onChange={field.onChange}
+                disabled={isHistoryTransaction}
               />
               <FormMessage />
             </FormItem>
@@ -307,6 +346,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               <TransactionTarget
                 id={field.value}
                 onChange={field.onChange}
+                disabled={isHistoryTransaction}
               />
               <FormMessage />
             </FormItem>
@@ -321,6 +361,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               <IssuedAt
                 value={field.value}
                 onChange={field.onChange}
+                disabled={isHistoryTransaction}
               />
               <FormMessage />
             </FormItem>
@@ -338,6 +379,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                   setIsPendingTransaction(!date)
                   field.onChange(date)
                 }}
+                disabled={isHistoryTransaction}
               />
               <FormMessage />
             </FormItem>
@@ -362,8 +404,10 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                 defaultValue={field.value}
                 value={field.value}
                 disabled={
-                  accounts.get(form.getValues("sourceId"))!.currency !== "MULTI" &&
-                  accounts.get(form.getValues("targetId"))!.currency !== "MULTI"
+                  isHistoryTransaction || (
+                    accounts.get(form.getValues("sourceId"))!.currency !== "MULTI" &&
+                    accounts.get(form.getValues("targetId"))!.currency !== "MULTI"
+                  )
                 }
               />
               <FormMessage />
@@ -392,6 +436,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                 dialogTitle="Source amount"
                 dialogDescription="Enter the amount removed form the source account"
                 style={{ borderColor: accounts.get(form.getValues("sourceId"))!.color }}
+                disabled={isHistoryTransaction}
               />
               <FormMessage />
             </FormItem>
@@ -415,6 +460,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                 dialogTitle="Target amount"
                 dialogDescription="Enter the amount added to the target account"
                 style={{ borderColor: accounts.get(form.getValues("targetId"))!.color }}
+                disabled={isHistoryTransaction}
               />
               <FormMessage />
             </FormItem>
@@ -439,6 +485,8 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       isApproachingLimit && "border-yellow-500 focus-visible:ring-yellow-500"
                     )}
                     placeholder="Notes about the transaction..."
+                    disabled={isHistoryTransaction}
+                    maxLength={NOTES_MAX_LENGTH}
                   />
                 </FormControl>
                 <FormDescription className="text-right">

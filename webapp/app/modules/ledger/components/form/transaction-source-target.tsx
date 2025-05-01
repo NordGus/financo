@@ -1,4 +1,5 @@
 import { use, useMemo } from "react"
+import { cn } from "~/lib/utils"
 import { AccountListingIcon } from "~/modules/shared/components/icons/account-icon"
 import { colorContrast } from "~/modules/shared/helpers/color-contrast"
 import { AccountsContext } from "../../contexts/accounts-context"
@@ -7,6 +8,7 @@ import { Account } from "../../types/accounts"
 type Props = {
   id: number
   onChange: (id: number) => void
+  disabled?: boolean
 }
 
 function label({ kind }: Account): string {
@@ -25,7 +27,7 @@ function accountName(account: Account, parent: Account | undefined): string {
   return `${parent.name} (${account.name})`
 }
 
-export function TransactionSource({ id }: Props) {
+export function TransactionSource({ id, disabled }: Props) {
   const { accountsMap } = use(AccountsContext)
 
   const account = useMemo(() => accountsMap.get(id)!, [id])
@@ -34,7 +36,10 @@ export function TransactionSource({ id }: Props) {
 
   return (
     <div
-      className="rounded-lg p-3 flex flex-col gap-2 cursor-pointer"
+      className={cn(
+        "rounded-lg p-3 flex flex-col gap-2 cursor-pointer",
+        disabled && "cursor-not-allowed"
+      )}
       style={{
         backgroundColor: account.color,
         color: contrast
@@ -60,7 +65,7 @@ export function TransactionSource({ id }: Props) {
   )
 }
 
-export function TransactionTarget({ id }: Props) {
+export function TransactionTarget({ id, disabled }: Props) {
   const { accountsMap } = use(AccountsContext)
 
   const account = useMemo(() => accountsMap.get(id)!, [id])
@@ -69,7 +74,10 @@ export function TransactionTarget({ id }: Props) {
 
   return (
     <div
-      className="rounded-lg p-3 flex flex-col gap-2 cursor-pointer"
+      className={cn(
+        "rounded-lg p-3 flex flex-col gap-2 cursor-pointer",
+        disabled && "cursor-not-allowed"
+      )}
       style={{
         backgroundColor: account.color,
         color: contrast

@@ -17,9 +17,10 @@ import {
 type IssuedAtProps = {
   value: Date
   onChange: (date: Date) => void
+  disabled?: boolean
 }
 
-export function IssuedAt({ value, onChange }: IssuedAtProps) {
+export function IssuedAt({ value, onChange, disabled }: IssuedAtProps) {
   const [date, setDate] = useState<Date | undefined>(value)
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export function IssuedAt({ value, onChange }: IssuedAtProps) {
   return (
     <Dialog onOpenChange={() => setDate(value)}>
       <Button asChild>
-        <DialogTrigger>
+        <DialogTrigger disabled={disabled}>
           Issued {format(value, "PPP")}
         </DialogTrigger>
       </Button>
@@ -69,9 +70,10 @@ type ExecutedAtProps = {
   value: Date | null | undefined
   issuedAt: Date
   onChange: (date: Date | null | undefined) => void
+  disabled?: boolean
 }
 
-export function ExecutedAt({ value, issuedAt, onChange }: ExecutedAtProps) {
+export function ExecutedAt({ value, issuedAt, onChange, disabled }: ExecutedAtProps) {
   const [date, setDate] = useState<Date | undefined>(value ?? issuedAt)
 
   useEffect(() => {
@@ -81,7 +83,7 @@ export function ExecutedAt({ value, issuedAt, onChange }: ExecutedAtProps) {
   return (
     <Dialog onOpenChange={() => setDate(value ?? issuedAt)}>
       <Button asChild>
-        <DialogTrigger>
+        <DialogTrigger disabled={disabled}>
           {
             value
               ? `Effective ${format(value, "PPP")}`
