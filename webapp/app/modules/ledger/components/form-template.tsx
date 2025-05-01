@@ -25,19 +25,36 @@ import { CURRENCIES, Currency } from "~/modules/shared/types/currency";
 import { AccountsContext } from "../contexts/accounts-context";
 import { Account } from "../types/accounts";
 import { DATE_FORMAT, Kind, KINDS } from "../types/transactions";
+import { AmountInput } from "./form/amount-input";
 import { ExecutedAt, IssuedAt } from "./form/transaction-date-selectors";
 import { TransactionSource, TransactionTarget } from "./form/transaction-source-target";
 
 const NOTES_MAX_LENGTH = 1000
 
 const schema = z.object({
-  sourceId: z.number().positive(),
-  targetId: z.number().positive(),
-  sourceAmount: z.number(),
-  targetAmount: z.number(),
-  issuedAt: z.date(),
+  sourceId: z.number({
+    required_error: "Source account is required",
+  }).positive(),
+  targetId: z.number({
+    required_error: "Target account is required",
+  }).positive(),
+  sourceAmount: z.number({
+    required_error: "Amount is required",
+  }).refine(val => val !== 0, {
+    message: "Amount must be greater than 0",
+  }),
+  targetAmount: z.number({
+    required_error: "Amount is required",
+  }).refine(val => val !== 0, {
+    message: "Amount must be greater than 0",
+  }),
+  issuedAt: z.date({
+    required_error: "Issued date is required",
+  }),
   executedAt: z.date().nullish(),
-  notes: z.string().max(NOTES_MAX_LENGTH).nullish(),
+  notes: z.string().max(NOTES_MAX_LENGTH, {
+    message: "Notes is too long"
+  }).nullish(),
   currency: z.nativeEnum(CURRENCIES),
   kind: z.nativeEnum(KINDS)
 })
@@ -335,7 +352,15 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           render={({ field }) => (
             <FormItem className="col-span-2">
               <CurrencyInput
-                onValueChange={field.onChange}
+                onValueChange={(currency) => {
+                  setWithConversionRate(isWithConversionRate(
+                    accounts.get(form.getValues("sourceId"))!,
+                    accounts.get(form.getValues("targetId"))!,
+                    currency
+                  ))
+
+                  field.onChange(currency)
+                }}
                 defaultValue={field.value}
                 value={field.value}
                 disabled={
@@ -353,9 +378,23 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           name="sourceAmount"
           render={({ field }) => (
             <FormItem className={cn(!withConversionRate && "col-span-2")}>
-              <div className="rounded-lg border p-3">
-                {field.value}
-              </div>
+              <AmountInput
+                value={field.value}
+                kind={form.getValues("kind")}
+                currency={
+                  accounts.get(form.getValues("sourceId"))!.currency === "MULTI"
+                    ? form.getValues("currency")
+                    : accounts.get(form.getValues("sourceId"))!.currency as Currency
+                }
+                onValueChange={(value) => {
+                  if (!withConversionRate) form.setValue("targetAmount", value)
+
+                  field.onChange(value)
+                }}
+                dialogTitle="Source amount"
+                dialogDescription="Enter the amount removed form the source account"
+                style={{ borderColor: accounts.get(form.getValues("sourceId"))!.color }}
+              />
               <FormMessage />
             </FormItem>
           )}
@@ -366,9 +405,19 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           name="targetAmount"
           render={({ field }) => (
             <FormItem className={cn(!withConversionRate && "hidden")}>
-              <div className="rounded-lg border p-3">
-                {field.value}
-              </div>
+              <AmountInput
+                value={field.value}
+                kind={form.getValues("kind")}
+                currency={
+                  accounts.get(form.getValues("targetId"))!.currency === "MULTI"
+                    ? form.getValues("currency")
+                    : accounts.get(form.getValues("targetId"))!.currency as Currency
+                }
+                onValueChange={field.onChange}
+                dialogTitle="Target amount"
+                dialogDescription="Enter the amount added to the target account"
+                style={{ borderColor: accounts.get(form.getValues("targetId"))!.color }}
+              />
               <FormMessage />
             </FormItem>
           )}
@@ -402,26 +451,6 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
             )
           }}
         />
-
-        {/* <div className="grid col-span-2 grid-cols-5 grid-rows-4 gap-2 mx-auto w-full max-w-[45dvh] *:flex *:items-center *:justify-center *:text-2xl">
-          <div className="rounded-lg border aspect-square"><Divide /></div>
-          <div className="rounded-lg border aspect-square">7</div>
-          <div className="rounded-lg border aspect-square">8</div>
-          <div className="rounded-lg border aspect-square">9</div>
-          <div className="rounded-lg border aspect-square"><Delete /></div>
-          <div className="rounded-lg border aspect-square"><X /></div>
-          <div className="rounded-lg border aspect-square">4</div>
-          <div className="rounded-lg border aspect-square">5</div>
-          <div className="rounded-lg border aspect-square">6</div>
-          <div className="rounded-lg border row-span-3"><Check /></div>
-          <div className="rounded-lg border aspect-square"><Minus /></div>
-          <div className="rounded-lg border aspect-square">1</div>
-          <div className="rounded-lg border aspect-square">2</div>
-          <div className="rounded-lg border aspect-square">3</div>
-          <div className="rounded-lg border aspect-square"><Plus /></div>
-          <div className="rounded-lg border col-span-2">0</div>
-          <div className="rounded-lg border aspect-square"><Info /></div>
-        </div> */}
       </form>
     </Form>
   )
