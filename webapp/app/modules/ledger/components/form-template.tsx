@@ -220,7 +220,6 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               id="is-pending-transaction"
               checked={isPendingTransaction}
               onCheckedChange={checked => {
-                console.log("switch ran")
                 if (checked) form.setValue("executedAt", null)
                 else form.setValue("executedAt", form.getValues("issuedAt"))
 
