@@ -438,7 +438,7 @@ export function AmountInput({
             {currencyAmountToHuman(runCalcStack(state.value, state.calc), currency)}
           </p>
         </div>
-        <div className="grid grid-cols-5 grid-rows-4 gap-2 mx-auto h-auto w-full max-w-[30dvh] *:flex *:items-center *:justify-center *:text-2xl">
+        <div className="grid grid-cols-5 grid-rows-4 gap-1 mx-auto h-auto w-full max-w-[30dvh] *:flex *:items-center *:justify-center *:text-2xl">
           {buttons.map((button, idx) => {
             const key = `${button.type}.${idx}`
             const baseClassNames = "flex [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-6 shrink-0 [&_svg]:shrink-0"
