@@ -228,7 +228,6 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
             />
             <Label htmlFor="is-pending-transaction">This transaction has no effective date, yet</Label>
           </div>
-          <span className="flex-grow contents-[' ']" />
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
