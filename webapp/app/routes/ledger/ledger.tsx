@@ -8,7 +8,9 @@ import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import { Route } from "./+types/ledger";
 
 export async function clientLoader({ request }: Route.LoaderArgs) {
-  const executedTransactions = mapToExecutedTransactions(await listTransactionsQuery(getFilters(request)))
+  const transactions = await listTransactionsQuery(getFilters(request))
+
+  const executedTransactions = mapToExecutedTransactions(transactions)
 
   return {
     breadcrumb: "Ledger",
