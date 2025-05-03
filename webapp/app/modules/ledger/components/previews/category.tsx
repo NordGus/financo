@@ -6,10 +6,11 @@ import { SelectedAccountBadge } from "../badges/selected-account"
 
 interface Props {
   account: Account
+  parent?: Account
   selected: boolean
 }
 
-export function PreviewCategory({ account, selected, className, ...props }: ComponentProps<"div"> & Props) {
+export function PreviewCategory({ account, parent, selected, className, ...props }: ComponentProps<"div"> & Props) {
   return (
     <div
       className={cn("flex flex-col justify-center items-center gap-2 cursor-pointer", className)}
@@ -24,7 +25,11 @@ export function PreviewCategory({ account, selected, className, ...props }: Comp
         />
         {selected && <SelectedAccountBadge className="translate-x-2/4 translate-y-3/4" />}
       </div>
-      <p className="text-xs text-center">{account.name}</p>
+      {
+        parent
+          ? <p className="text-xs text-center">{parent.name} ({account.name})</p>
+          : <p className="text-xs text-center">{account.name}</p>
+      }
     </div>
   )
 }

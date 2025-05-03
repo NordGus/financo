@@ -1,4 +1,4 @@
-import { use, useMemo, useState } from "react"
+import { Fragment, use, useMemo, useState } from "react"
 import {
   Tabs,
   TabsContent,
@@ -61,7 +61,7 @@ function isTransfer(account: Account) {
 export function TransactionTargetPicker({ selected, onSelected }: Props) {
   const [tab, setTab] = useState<Kind>("income")
 
-  const { accounts } = use(AccountsContext)
+  const { accounts, accountsChildren } = use(AccountsContext)
 
   const sections = useMemo<Sections>(() => {
     const entries = Array.from(accounts.values())
@@ -95,14 +95,31 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
       <TabsContent value="income" className="no-scrollbar">
         <div className="grid grid-cols-4 gap-2 items-start">
           {
-            sections.income.filter(({ kind }) => kind === "income").map((account) => (
-              <PreviewCategory
-                key={`target.account.income.${account.id}`}
-                account={account}
-                onClick={() => onClick(account.id)}
-                selected={selected === account.id}
-              />
-            ))
+            sections.income.filter(({ kind }) => kind === "income").map((account) => {
+              const children = accountsChildren.get(account.id)
+
+              return (
+                <Fragment key={`target.account.income.${account.id}.group`}>
+                  <PreviewCategory
+                    key={`target.account.income.${account.id}`}
+                    account={account}
+                    onClick={() => onClick(account.id)}
+                    selected={selected === account.id}
+                  />
+                  {
+                    children?.map((child) => (
+                      <PreviewCategory
+                        key={`target.account.income.${child.id}`}
+                        account={child}
+                        parent={account}
+                        onClick={() => onClick(child.id)}
+                        selected={selected === child.id}
+                      />
+                    ))
+                  }
+                </Fragment>
+              )
+            })
           }
           {
             sections.income.filter(({ kind }) => kind !== "income").map((account) => (
@@ -119,14 +136,31 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
       <TabsContent value="expense" className="no-scrollbar">
         <div className="grid grid-cols-4 gap-2 items-start">
           {
-            sections.expense.filter(({ kind }) => kind === "expense").map((account) => (
-              <PreviewCategory
-                key={`target.account.expense.${account.id}`}
-                account={account}
-                onClick={() => onClick(account.id)}
-                selected={selected === account.id}
-              />
-            ))
+            sections.expense.filter(({ kind }) => kind === "expense").map((account) => {
+              const children = accountsChildren.get(account.id)
+
+              return (
+                <Fragment key={`target.account.expense.${account.id}.group`}>
+                  <PreviewCategory
+                    key={`target.account.expense.${account.id}`}
+                    account={account}
+                    onClick={() => onClick(account.id)}
+                    selected={selected === account.id}
+                  />
+                  {
+                    children?.map((child) => (
+                      <PreviewCategory
+                        key={`target.account.expense.${child.id}`}
+                        account={child}
+                        parent={account}
+                        onClick={() => onClick(child.id)}
+                        selected={selected === child.id}
+                      />
+                    ))
+                  }
+                </Fragment>
+              )
+            })
           }
           {
             sections.expense.filter(({ kind }) => kind !== "expense").map((account) => (
