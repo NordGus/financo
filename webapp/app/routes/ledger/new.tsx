@@ -1,6 +1,7 @@
 import { useReducer } from "react";
-import { useLocation, useNavigation } from "react-router";
+import { createSearchParams, redirect, useLocation, useNavigation } from "react-router";
 import { cn } from "~/lib/utils";
+import { create as createTransaction } from "~/modules/ledger/api/commands/create";
 import { FormTemplate } from "~/modules/ledger/components/form-template";
 import { TransactionSourcePicker } from "~/modules/ledger/components/transaction-source-picker";
 import { TransactionTargetPicker } from "~/modules/ledger/components/transaction-target-picker";
@@ -16,7 +17,44 @@ export function clientLoader({ }: Route.ClientLoaderArgs) {
   return { breadcrumb: "New Transaction" }
 }
 
-export function clientAction({ }: Route.ClientActionArgs) { }
+type CreateTransaction = {
+  sourceId: number
+  targetId: number
+  sourceAmount: number
+  targetAmount: number
+  issuedAt: string
+  executedAt: string | null
+  notes: string | null
+  currency: Currency
+  kind: Kind
+  intent: "create" | "update" | "destroy"
+}
+
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  const CREATED = 201
+
+  const data = await request.json() as CreateTransaction
+  const searchParams = new URL(request.url).searchParams
+
+  if (data.intent !== "create")
+    throw new Error("Invalid intent", { cause: `invalid intent '${data.intent}' expected: create` })
+
+  const { sourceId, targetId, sourceAmount, targetAmount, issuedAt, executedAt, notes, currency, kind } = data
+
+  const response = await createTransaction({
+    sourceId,
+    targetId,
+    sourceAmount,
+    targetAmount,
+    issuedAt,
+    executedAt,
+    notes,
+    currency,
+    kind
+  })
+
+  return redirect(`/ledger/${response.id}?${createSearchParams(searchParams)}`, CREATED)
+}
 
 const DEFAULT_KIND: Kind = "income"
 const DEFAULT_TARGET: number = -1
