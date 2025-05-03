@@ -8,18 +8,18 @@ import (
 )
 
 type Create struct {
-	IssuedAt     time.Time                `json:"issuedAt"`
-	ExecutedAt   nullable.Type[time.Time] `json:"executedAt"`
-	Notes        nullable.Type[string]    `json:"notes"`
-	Currency     currency.Type            `json:"currency"`
-	SourceID     int64                    `json:"sourceId"`
-	TargetID     int64                    `json:"targetId"`
-	SourceAmount int64                    `json:"sourceAmount"`
-	TargetAmount int64                    `json:"targetAmount"`
-	Kind         transaction.Kind         `json:"kind"`
+	IssuedAt     string                `json:"issuedAt"`
+	ExecutedAt   nullable.Type[string] `json:"executedAt"`
+	Notes        nullable.Type[string] `json:"notes"`
+	Currency     currency.Type         `json:"currency"`
+	SourceID     int64                 `json:"sourceId"`
+	TargetID     int64                 `json:"targetId"`
+	SourceAmount int64                 `json:"sourceAmount"`
+	TargetAmount int64                 `json:"targetAmount"`
+	Kind         transaction.Kind      `json:"kind"`
 }
 
-func (r Create) ToTransactionRecord(timestamp time.Time) transaction.Record {
+func (r Create) ToTransactionRecord(timestamp time.Time) (transaction.Record, error) {
 	record := transaction.Record{
 		ID:           -1,
 		SourceID:     r.SourceID,
@@ -28,18 +28,27 @@ func (r Create) ToTransactionRecord(timestamp time.Time) transaction.Record {
 		TargetAmount: r.TargetAmount,
 		Notes:        r.Notes,
 		Currency:     r.Currency,
-		IssuedAt:     r.IssuedAt.UTC(),
-		ExecutedAt:   r.ExecutedAt,
 		DeletedAt:    nullable.Type[time.Time]{},
 		CreatedAt:    timestamp,
 		UpdatedAt:    timestamp,
 	}
 
-	if record.ExecutedAt.Valid {
-		record.ExecutedAt = nullable.New(record.ExecutedAt.Val.UTC())
+	issuedAt, err := time.Parse(time.DateOnly, r.IssuedAt)
+	if err != nil {
+		return record, err
+	}
+	record.IssuedAt = issuedAt.UTC()
+
+	if r.ExecutedAt.Valid {
+		executed, err := time.Parse(time.DateOnly, r.ExecutedAt.Val)
+		if err != nil {
+			return record, err
+		}
+
+		record.ExecutedAt = nullable.New(executed.UTC())
 	}
 
 	record.Metadata.Kind = r.Kind
 
-	return record
+	return record, nil
 }

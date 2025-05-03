@@ -2,6 +2,7 @@ package transactions
 
 import (
 	"financo/cmd/web/api/json/handlers/transactions/accounts_handler"
+	"financo/cmd/web/api/json/handlers/transactions/create_handler"
 	"financo/cmd/web/api/json/handlers/transactions/executed_handler"
 	"financo/cmd/web/api/json/handlers/transactions/show_handler"
 
@@ -10,6 +11,7 @@ import (
 
 func Routes(r chi.Router) {
 	r.Get("/", executed_handler.HandlerFunc)
+	r.Post("/", create_handler.HandlerFunc)
 	r.Get("/accounts", accounts_handler.HandlerFunc)
 
 	r.Route("/{id}", func(r chi.Router) {
