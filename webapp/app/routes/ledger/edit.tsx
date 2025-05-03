@@ -1,16 +1,68 @@
-import { useLocation, useNavigation } from "react-router";
+import {
+  createSearchParams,
+  redirect,
+  useLocation,
+  useNavigation
+} from "react-router";
 import { cn } from "~/lib/utils";
+import { update as updateTransaction } from "~/modules/ledger/api/commands/update";
 import { get as getTransactionQuery } from "~/modules/ledger/api/queries/transactions/get";
 import { FormTemplate } from "~/modules/ledger/components/form-template";
 import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
+import { Kind } from "~/modules/ledger/types/transactions";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-context";
+import { Currency } from "~/modules/shared/types/currency";
 import { Route } from "./+types/edit";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const transaction = await getTransactionQuery(Number(params.id))
 
   return { breadcrumb: "Edit Transaction", transaction }
+}
+
+type OperateOnTransaction = {
+  sourceId: number
+  targetId: number
+  sourceAmount: number
+  targetAmount: number
+  issuedAt: string
+  executedAt: string | null
+  notes: string | null
+  currency: Currency
+  kind: Kind
+  intent: "create" | "update" | "destroy"
+}
+
+export async function clientAction({ request, params }: Route.ClientActionArgs) {
+  const id = Number(params.id)
+  const data = await request.json() as OperateOnTransaction
+  const searchParams = new URL(request.url).searchParams
+
+  const { sourceId, targetId, sourceAmount, targetAmount, issuedAt, executedAt, notes, currency, kind } = data
+
+  switch (data.intent) {
+    case "destroy":
+      // TODO: implement delete transaction
+
+      return redirect(`/ledger?${createSearchParams(searchParams)}`)
+    case "update":
+      await updateTransaction(id, {
+        sourceId,
+        targetId,
+        sourceAmount,
+        targetAmount,
+        issuedAt,
+        executedAt,
+        notes,
+        currency,
+        kind
+      })
+
+      return redirect(`/ledger/${id}?${createSearchParams(searchParams)}`)
+    default:
+      throw new Error("Invalid intent", { cause: `invalid intent '${data.intent}' expected: update or destroy` })
+  }
 }
 
 export default function Edit({ loaderData: { transaction }, matches }: Route.ComponentProps) {
