@@ -336,6 +336,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                 }}
                 disabled={isHistoryTransaction}
                 kind={form.getValues("kind")}
+                targetId={form.getValues("targetId")}
               />
               <FormMessage />
             </FormItem>
@@ -353,6 +354,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                 }}
                 disabled={isHistoryTransaction}
                 kind={form.getValues("kind")}
+                targetId={form.getValues("sourceId")}
               />
               <FormMessage />
             </FormItem>

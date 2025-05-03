@@ -1,4 +1,4 @@
-import { Fragment, use, useMemo, useState } from "react"
+import { Fragment, use, useEffect, useMemo, useState } from "react"
 import {
   Tabs,
   TabsContent,
@@ -14,6 +14,7 @@ import { PreviewCategory } from "./previews/category"
 interface Props {
   selected: number | null
   onSelected: (kind: Kind, id: number) => void
+  kind?: Kind
 }
 
 interface Sections {
@@ -58,8 +59,8 @@ function isTransfer(account: Account) {
   }
 }
 
-export function TransactionTargetPicker({ selected, onSelected }: Props) {
-  const [tab, setTab] = useState<Kind>("income")
+export function TransactionTargetPicker({ selected, onSelected, kind = "income" }: Props) {
+  const [tab, setTab] = useState<Kind>(kind)
 
   const { accounts, accountsChildren } = use(AccountsContext)
 
@@ -76,6 +77,8 @@ export function TransactionTargetPicker({ selected, onSelected }: Props) {
   }, [accounts])
 
   const onClick = (id: number) => onSelected(tab, id)
+
+  useEffect(() => { setTab(kind) }, [kind])
 
   return (
     <Tabs

@@ -12,10 +12,13 @@ import { colorContrast } from "~/modules/shared/helpers/color-contrast"
 import { AccountsContext } from "../../contexts/accounts-context"
 import { Account } from "../../types/accounts"
 import { Kind } from "../../types/transactions"
+import { TransactionSourcePicker } from "../transaction-source-picker"
+import { TransactionTargetPicker } from "../transaction-target-picker"
 
 type Props = {
   id: number
   kind: Kind
+  targetId: number
   onChange: (kind: Kind, id: number) => void
   disabled?: boolean
 }
@@ -36,7 +39,7 @@ function accountName(account: Account, parent: Account | undefined): string {
   return `${parent.name} (${account.name})`
 }
 
-export function TransactionSource({ id, disabled }: Props) {
+export function TransactionSource({ id, kind, onChange, targetId, disabled }: Props) {
   const [open, setOpen] = useState(false)
 
   const { accountsMap } = use(AccountsContext)
@@ -64,14 +67,38 @@ export function TransactionSource({ id, disabled }: Props) {
               {"Select a Source Account for this Transaction"}
             </DialogDescription>
           </DialogHeader>
-          Selector goes here
+          <div className="flex flex-col h-[50dvh] overflow-hidden">
+            {
+              kind === "income"
+                ? (
+                  <TransactionTargetPicker
+                    selected={id}
+                    onSelected={(newKind, id) => {
+                      setOpen(false)
+                      onChange(newKind, id)
+                    }}
+                    kind={kind}
+                  />
+                )
+                : (
+                  <TransactionSourcePicker
+                    selected={id}
+                    target={targetId}
+                    onSelected={(id) => {
+                      setOpen(false)
+                      onChange(kind, id)
+                    }}
+                  />
+                )
+            }
+          </div>
         </DialogContent>
       </Dialog>
     </>
   )
 }
 
-export function TransactionTarget({ id, disabled }: Props) {
+export function TransactionTarget({ id, kind, onChange, targetId, disabled }: Props) {
   const [open, setOpen] = useState(false)
   const { accountsMap } = use(AccountsContext)
 
@@ -98,7 +125,31 @@ export function TransactionTarget({ id, disabled }: Props) {
               {"Select a Target Account for this Transaction"}
             </DialogDescription>
           </DialogHeader>
-          Selector goes here
+          <div className="flex flex-col h-[50dvh] overflow-hidden">
+            {
+              kind === "income"
+                ? (
+                  <TransactionSourcePicker
+                    selected={id}
+                    target={targetId}
+                    onSelected={(id) => {
+                      setOpen(false)
+                      onChange(kind, id)
+                    }}
+                  />
+                )
+                : (
+                  <TransactionTargetPicker
+                    selected={id}
+                    onSelected={(newKind, id) => {
+                      setOpen(false)
+                      onChange(newKind, id)
+                    }}
+                    kind={kind}
+                  />
+                )
+            }
+          </div>
         </DialogContent>
       </Dialog>
     </>
