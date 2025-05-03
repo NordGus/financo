@@ -31,8 +31,6 @@ type CreateTransaction = {
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
-  const CREATED = 201
-
   const data = await request.json() as CreateTransaction
   const searchParams = new URL(request.url).searchParams
 
@@ -53,7 +51,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     kind
   })
 
-  return redirect(`/ledger/${response.id}?${createSearchParams(searchParams)}`, CREATED)
+  return redirect(`/ledger/${response.id}?${createSearchParams(searchParams)}`)
 }
 
 const DEFAULT_KIND: Kind = "income"

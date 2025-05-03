@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { ArrowLeftRight, Save, Trash } from "lucide-react";
 import { ComponentProps, use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useSubmit } from "react-router";
+import { useFetcher } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { cn } from "~/lib/utils";
@@ -103,7 +103,8 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     transaction.currency
   ))
 
-  const submit = useSubmit()
+  // NOTE: Fetchers allow action redirects to happen.
+  const fetcher = useFetcher()
 
   const form = useForm({
     resolver: zodResolver(schema),
@@ -170,7 +171,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       return
     }
 
-    const promise = submit({
+    const promise = fetcher.submit({
       ...values,
       issuedAt: format(values.issuedAt, DATE_FORMAT),
       executedAt: values.executedAt ? format(values.executedAt, DATE_FORMAT) : null,
@@ -200,7 +201,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       return
     }
 
-    const promise = submit({
+    const promise = fetcher.submit({
       ...transaction,
       issuedAt: format(transaction.issuedAt, DATE_FORMAT),
       executedAt: transaction.executedAt ? format(transaction.executedAt, DATE_FORMAT) : null,
