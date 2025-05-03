@@ -219,66 +219,66 @@ export function AmountInput({
   const onStartCalc = (op: CalcOp) => dispatch({ type: "START_CALC", op })
   const onRevertValue = () => dispatch({ type: "REVERT_VALUE" })
 
-  const onKeyDown = (ev: globalThis.KeyboardEvent) => {
-    const disableCalc = state.calc.length === 0 ? state.value === 0 : state.calc[state.calc.length - 1].value === 0
-
-    switch (ev.key.toLocaleLowerCase()) {
-      case "0":
-        ev.preventDefault()
-        return onModifyValue(0)
-      case "1":
-        ev.preventDefault()
-        return onModifyValue(1)
-      case "2":
-        ev.preventDefault()
-        return onModifyValue(2)
-      case "3":
-        ev.preventDefault()
-        return onModifyValue(3)
-      case "4":
-        ev.preventDefault()
-        return onModifyValue(4)
-      case "5":
-        ev.preventDefault()
-        return onModifyValue(5)
-      case "6":
-        ev.preventDefault()
-        return onModifyValue(6)
-      case "7":
-        ev.preventDefault()
-        return onModifyValue(7)
-      case "8":
-        ev.preventDefault()
-        return onModifyValue(8)
-      case "9":
-        ev.preventDefault()
-        return onModifyValue(9)
-      case "/":
-        ev.preventDefault()
-        return !disableCalc && onStartCalc(CalcOp.Division)
-      case "*":
-        ev.preventDefault()
-        return !disableCalc && onStartCalc(CalcOp.Multiplication)
-      case "+":
-        ev.preventDefault()
-        return !disableCalc && onStartCalc(CalcOp.Sum)
-      case "-":
-        ev.preventDefault()
-        return !disableCalc && onStartCalc(CalcOp.Subtraction)
-      case "enter":
-        ev.preventDefault()
-        return onExecuteCalc()
-      case "backspace":
-        ev.preventDefault()
-        return onRevertValue()
-    }
-  }
-
   useEffect(() => {
-    document.addEventListener("keydown", onKeyDown)
+    const listener = (ev: globalThis.KeyboardEvent) => {
+      const disableCalc = state.calc.length === 0 ? state.value === 0 : state.calc[state.calc.length - 1].value === 0
 
-    return () => document.removeEventListener("keydown", onKeyDown)
-  }, [dispatch])
+      switch (ev.key.toLocaleLowerCase()) {
+        case "0":
+          ev.preventDefault()
+          return onModifyValue(0)
+        case "1":
+          ev.preventDefault()
+          return onModifyValue(1)
+        case "2":
+          ev.preventDefault()
+          return onModifyValue(2)
+        case "3":
+          ev.preventDefault()
+          return onModifyValue(3)
+        case "4":
+          ev.preventDefault()
+          return onModifyValue(4)
+        case "5":
+          ev.preventDefault()
+          return onModifyValue(5)
+        case "6":
+          ev.preventDefault()
+          return onModifyValue(6)
+        case "7":
+          ev.preventDefault()
+          return onModifyValue(7)
+        case "8":
+          ev.preventDefault()
+          return onModifyValue(8)
+        case "9":
+          ev.preventDefault()
+          return onModifyValue(9)
+        case "/":
+          ev.preventDefault()
+          return !disableCalc && onStartCalc(CalcOp.Division)
+        case "*":
+          ev.preventDefault()
+          return !disableCalc && onStartCalc(CalcOp.Multiplication)
+        case "+":
+          ev.preventDefault()
+          return !disableCalc && onStartCalc(CalcOp.Sum)
+        case "-":
+          ev.preventDefault()
+          return !disableCalc && onStartCalc(CalcOp.Subtraction)
+        case "enter":
+          ev.preventDefault()
+          return onExecuteCalc()
+        case "backspace":
+          ev.preventDefault()
+          return onRevertValue()
+      }
+    }
+
+    if (state.open) document.addEventListener("keydown", listener)
+
+    return () => document.removeEventListener("keydown", listener)
+  }, [dispatch, state.open])
 
   useEffect(() => {
     dispatch({ type: "VALUE_CHANGED", value })
