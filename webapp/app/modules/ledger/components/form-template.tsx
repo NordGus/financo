@@ -331,7 +331,9 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
             <FormItem>
               <TransactionSource
                 id={field.value}
-                onChange={field.onChange}
+                onChange={(__kind, id) => {
+                  field.onChange(id)
+                }}
                 disabled={isHistoryTransaction}
               />
               <FormMessage />
@@ -345,7 +347,9 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
             <FormItem>
               <TransactionTarget
                 id={field.value}
-                onChange={field.onChange}
+                onChange={(__kind, id) => {
+                  field.onChange(id)
+                }}
                 disabled={isHistoryTransaction}
               />
               <FormMessage />

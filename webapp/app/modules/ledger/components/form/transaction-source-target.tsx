@@ -11,10 +11,11 @@ import {
 import { colorContrast } from "~/modules/shared/helpers/color-contrast"
 import { AccountsContext } from "../../contexts/accounts-context"
 import { Account } from "../../types/accounts"
+import { Kind } from "../../types/transactions"
 
 type Props = {
   id: number
-  onChange: (id: number) => void
+  onChange: (kind: Kind, id: number) => void
   disabled?: boolean
 }
 
