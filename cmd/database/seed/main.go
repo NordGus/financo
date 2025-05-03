@@ -7,6 +7,7 @@ import (
 	"financo/cmd/database/seed/categories"
 	"financo/cmd/database/seed/savings_goals"
 	"financo/cmd/database/seed/transactions"
+	"financo/lib/currency"
 	"financo/services/message_buses"
 	"financo/services/postgresql_database"
 	"financo/services/shutdown"
@@ -44,11 +45,20 @@ func main() {
 		shutdown.Exit(3)
 	}
 
-	for key, id := range cat {
-		acc[key] = id
+	ids := make(map[string]int64, len(acc)+len(cat))
+	curr := make(map[string]currency.Type, len(acc)+len(cat))
+
+	for key, val := range acc {
+		ids[key] = val.ID
+		curr[key] = val.Currency
 	}
 
-	err = transactions.SeedTransactions(ctx, acc, start.UTC())
+	for key, val := range cat {
+		ids[key] = val.ID
+		curr[key] = val.Currency
+	}
+
+	err = transactions.SeedTransactions(ctx, ids, curr, start.UTC())
 	if err != nil {
 		log.Println("failed to seed transactions, reason:", err.Error())
 		shutdown.Exit(4)

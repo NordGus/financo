@@ -4,6 +4,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 :root {
   --background: hsl(0 0% 100%);
   --foreground: hsl(240 10% 3.9%);
@@ -87,7 +92,7 @@
 
   --transition-property-height: height;
 
-  --grid-template-rows-layout: 1fr fit-content(20dvw);
+  --grid-template-columns-layout: 15dvw 1fr;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -181,5 +186,18 @@
   }
   body {
     @apply h-body overflow-hidden bg-background text-foreground;
+  }
+}
+
+/*
+  ---break---
+*/
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

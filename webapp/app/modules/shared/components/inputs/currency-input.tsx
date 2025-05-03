@@ -1,22 +1,24 @@
-import { useCurrenciesStore } from "~/modules/shared/hooks/use-currencies-store";
+import { use } from "react";
 import { Currency } from "~/modules/shared/types/currency";
+import { CurrenciesContext } from "../../contexts/currencies-context";
 import { Throbber } from "../throbber";
 import { FormControl } from "../ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 interface Props {
+  value: Currency
   defaultValue?: Currency
   onValueChange: (value: Currency) => void
+  disabled?: boolean
 }
 
-// TODO: refactor to use drawer instead of select
-export function CurrencyInput({ onValueChange, defaultValue }: Props) {
-  const currencies = useCurrenciesStore((state) => state.currencies)
+export function CurrencyInput({ value, onValueChange, defaultValue, disabled = false }: Props) {
+  const { currencies } = use(CurrenciesContext)
 
   return (
-    <Select onValueChange={onValueChange} defaultValue={defaultValue}>
+    <Select onValueChange={onValueChange} defaultValue={defaultValue} value={value}>
       <FormControl>
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full cursor-pointer" disabled={disabled}>
           <SelectValue placeholder={"Select a currency"} />
         </SelectTrigger>
       </FormControl>

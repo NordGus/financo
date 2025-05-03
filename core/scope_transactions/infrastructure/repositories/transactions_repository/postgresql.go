@@ -27,7 +27,9 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 	var (
 		out   = make([]transaction.Record, 0, 50)
 		args  = make([]any, 0, 4)
-		count = 3
+		count = 1
+		from  = filters.DateToLimit(f.From.OrElse(filters.FromDefault()), true)
+		to    = filters.DateToLimit(f.To.OrElse(filters.ToDefault()), false)
 	)
 
 	conn, err := r.db.Conn(ctx)
@@ -35,12 +37,6 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 		return out, err
 	}
 	defer conn.Close()
-
-	args = append(
-		args,
-		filters.DateToLimit(f.From.OrElse(filters.FromDefault()), true),
-		filters.DateToLimit(f.To.OrElse(filters.ToDefault()), false),
-	)
 
 	query := `
 	SELECT
@@ -52,17 +48,17 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 		tr.source_amount,
 		tr.target_amount,
 		tr.notes,
+		tr.currency,
+		tr.deleted_at,
 		tr.created_at,
 		tr.updated_at,
-		tr.deleted_at
+		tr.metadata
 	FROM
 		transactions tr
 		INNER JOIN accounts src ON src.id = tr.source_id
 		INNER JOIN accounts trg ON trg.id = tr.target_id
 	WHERE
 		tr.deleted_at IS NULL
-		AND tr.executed_at IS NOT NULL
-		AND (tr.executed_at BETWEEN $1 AND $2)
 	`
 
 	if len(f.AccountIDs) > 0 {
@@ -73,7 +69,8 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 
 	if len(f.CategoryIDs) > 0 {
 		query += fmt.Sprintf(
-			" AND (src.id = ANY ($%d) OR src.parent_id = ANY ($%d) OR trg.id = ANY ($%d)) OR trg.parent_id = ANY ($%d)", count,
+			" AND (src.id = ANY ($%d) OR src.parent_id = ANY ($%d) OR trg.id = ANY ($%d) OR trg.parent_id = ANY ($%d))",
+			count,
 			count,
 			count,
 			count,
@@ -81,6 +78,9 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 		args = append(args, f.CategoryIDs)
 		count++
 	}
+
+	query += fmt.Sprintf(" AND (tr.executed_at BETWEEN $%d AND $%d) AND tr.executed_at IS NOT NULL", count, count+1)
+	args = append(args, from, to)
 
 	rows, err := conn.QueryContext(ctx, query, args...)
 
@@ -102,9 +102,11 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 			&r.SourceAmount,
 			&r.TargetAmount,
 			&r.Notes,
+			&r.Currency,
+			&r.DeletedAt,
 			&r.CreatedAt,
 			&r.UpdatedAt,
-			&r.DeletedAt,
+			&r.Metadata,
 		)
 		if err != nil {
 			return out, err

@@ -79,7 +79,7 @@ func stringToIcon(s string) (Type, error) {
 	switch strings.ToLower(s) {
 	default:
 		return FireExtinguisher, fmt.Errorf("icon: invalid value \"%s\"", s)
-	case "credit_card":
+	case "credit-card":
 		return CreditCard, nil
 	case "landmark":
 		return Landmark, nil
@@ -87,17 +87,17 @@ func stringToIcon(s string) (Type, error) {
 		return Vault, nil
 	case "banknote":
 		return Banknote, nil
-	case "hand_coins":
+	case "hand-coins":
 		return HandCoins, nil
-	case "piggy_bank":
+	case "piggy-bank":
 		return PiggyBank, nil
-	case "wallet_card":
-		return WalletCard, nil
-	case "wallet_minimal":
+	case "wallet-cards":
+		return WalletCards, nil
+	case "wallet-minimal":
 		return WalletMinimal, nil
-	case "car_front":
+	case "car-front":
 		return CarFront, nil
-	case "car_taxi_front":
+	case "car-taxi-front":
 		return CarTaxiFront, nil
 	case "ambulance":
 		return Ambulance, nil
@@ -107,13 +107,13 @@ func stringToIcon(s string) (Type, error) {
 		return Hospital, nil
 	case "bandage":
 		return Bandage, nil
-	case "heart_pulse":
+	case "heart-pulse":
 		return HeartPulse, nil
 	case "bone":
 		return Bone, nil
 	case "brain":
 		return Brain, nil
-	case "graduation_cap":
+	case "graduation-cap":
 		return GraduationCap, nil
 	case "dices":
 		return Dices, nil
@@ -127,7 +127,7 @@ func stringToIcon(s string) (Type, error) {
 		return Trophy, nil
 	case "book":
 		return Book, nil
-	case "book_open":
+	case "book-open":
 		return BookOpen, nil
 	case "bookmark":
 		return Bookmark, nil
@@ -141,13 +141,13 @@ func stringToIcon(s string) (Type, error) {
 		return Tickets, nil
 	case "fence":
 		return Fence, nil
-	case "train_front":
+	case "train-front":
 		return TrainFront, nil
 	case "tv":
 		return Tv, nil
 	case "cigarette":
 		return Cigarette, nil
-	case "circle_parking":
+	case "circle-parking":
 		return CircleParking, nil
 	case "container":
 		return Container, nil
@@ -169,9 +169,9 @@ func stringToIcon(s string) (Type, error) {
 		return Popcorn, nil
 	case "dumbbell":
 		return Dumbbell, nil
-	case "biceps_flexed":
+	case "biceps-flexed":
 		return BicepsFlexed, nil
-	case "mic_vocal":
+	case "mic-vocal":
 		return MicVocal, nil
 	case "piano":
 		return Piano, nil
@@ -187,7 +187,7 @@ func stringToIcon(s string) (Type, error) {
 		return Cpu, nil
 	case "laptop":
 		return Laptop, nil
-	case "pc_case":
+	case "pc-case":
 		return PcCase, nil
 	case "router":
 		return Router, nil
@@ -197,11 +197,11 @@ func stringToIcon(s string) (Type, error) {
 		return Smartphone, nil
 	case "stethoscope":
 		return Stethoscope, nil
-	case "utility_pole":
+	case "utility-pole":
 		return UtilityPole, nil
 	case "megaphone":
 		return Megaphone, nil
-	case "ethernet_port":
+	case "ethernet-port":
 		return EthernetPort, nil
 	case "earth":
 		return Earth, nil
@@ -221,29 +221,29 @@ func stringToIcon(s string) (Type, error) {
 		return Drum, nil
 	case "theater":
 		return Theater, nil
-	case "shopping_bag":
+	case "shopping-bag":
 		return ShoppingBag, nil
-	case "shopping_basket":
+	case "shopping-basket":
 		return ShoppingBasket, nil
-	case "shopping_cart":
+	case "shopping-cart":
 		return ShoppingCart, nil
 	case "barcode":
 		return Barcode, nil
 	case "shirt":
 		return Shirt, nil
-	case "tent_tree":
+	case "tent-tree":
 		return TentTree, nil
 	case "utensils":
 		return Utensils, nil
-	case "shower_head":
+	case "shower-head":
 		return ShowerHead, nil
-	case "washing_machine":
+	case "washing-machine":
 		return WashingMachine, nil
-	case "bed_single":
+	case "bed-single":
 		return BedSingle, nil
-	case "bed_double":
+	case "bed-double":
 		return BedDouble, nil
-	case "bus_front":
+	case "bus-front":
 		return BusFront, nil
 	case "pill":
 		return Pill, nil
@@ -257,11 +257,11 @@ func stringToIcon(s string) (Type, error) {
 		return Zap, nil
 	case "heater":
 		return Heater, nil
-	case "battery_charging":
+	case "battery-charging":
 		return BatteryCharging, nil
 	case "user":
 		return User, nil
-	case "venetian_mask":
+	case "venetian-mask":
 		return VenetianMask, nil
 	case "house":
 		return House, nil
@@ -269,11 +269,11 @@ func stringToIcon(s string) (Type, error) {
 		return Hammer, nil
 	case "microwave":
 		return Microwave, nil
-	case "paint_roller":
+	case "paint-roller":
 		return PaintRoller, nil
-	case "paintbrush_vertical":
+	case "paintbrush-vertical":
 		return PaintbrushVertical, nil
-	case "tv_minimal_play":
+	case "tv-minimal-play":
 		return TvMinimalPlay, nil
 	case "wine":
 		return Wine, nil
@@ -283,19 +283,19 @@ func stringToIcon(s string) (Type, error) {
 		return Crown, nil
 	case "milk":
 		return Milk, nil
-	case "glass_water":
+	case "glass-water":
 		return GlassWater, nil
 	case "droplet":
 		return Droplet, nil
-	case "hand_platter":
+	case "hand-platter":
 		return HandPlatter, nil
-	case "fire_extinguisher":
+	case "fire-extinguisher":
 		return FireExtinguisher, nil
 	case "package":
 		return Package, nil
 	case "armchair":
 		return Armchair, nil
-	case "at_sign":
+	case "at-sign":
 		return AtSign, nil
 	case "cake":
 		return Cake, nil
@@ -303,7 +303,7 @@ func stringToIcon(s string) (Type, error) {
 		return Building, nil
 	case "cog":
 		return Cog, nil
-	case "id_card":
+	case "id-card":
 		return IdCard, nil
 	case "mail":
 		return Mail, nil
@@ -311,7 +311,7 @@ func stringToIcon(s string) (Type, error) {
 		return Search, nil
 	case "binoculars":
 		return Binoculars, nil
-	case "tree_palm":
+	case "tree-palm":
 		return TreePalm, nil
 	case "trees":
 		return Trees, nil
@@ -319,7 +319,7 @@ func stringToIcon(s string) (Type, error) {
 		return Flower, nil
 	case "dog":
 		return Dog, nil
-	case "paw_print":
+	case "paw-print":
 		return PawPrint, nil
 	case "cat":
 		return Cat, nil
@@ -327,7 +327,7 @@ func stringToIcon(s string) (Type, error) {
 		return Fish, nil
 	case "bird":
 		return Bird, nil
-	case "ice_cream_cone":
+	case "ice-cream-cone":
 		return IceCreamCone, nil
 	case "beef":
 		return Beef, nil
@@ -353,17 +353,17 @@ func stringToIcon(s string) (Type, error) {
 		return Skull, nil
 	case "sword":
 		return Sword, nil
-	case "bell_electric":
+	case "bell-electric":
 		return BellElectric, nil
 	case "heart":
 		return Heart, nil
 	case "clover":
 		return Clover, nil
-	case "monitor_play":
+	case "monitor-play":
 		return MonitorPlay, nil
 	case "glasses":
 		return Glasses, nil
-	case "key_round":
+	case "key-round":
 		return KeyRound, nil
 	case "candy":
 		return Candy, nil
@@ -377,7 +377,7 @@ func iconToString(t Type) (string, error) {
 	default:
 		return "", fmt.Errorf("icon: invalid value \"%s\"", string(t))
 	case CreditCard:
-		return "credit_card", nil
+		return "credit-card", nil
 	case Landmark:
 		return "landmark", nil
 	case Vault:
@@ -385,17 +385,17 @@ func iconToString(t Type) (string, error) {
 	case Banknote:
 		return "banknote", nil
 	case HandCoins:
-		return "hand_coins", nil
+		return "hand-coins", nil
 	case PiggyBank:
-		return "piggy_bank", nil
-	case WalletCard:
-		return "wallet_card", nil
+		return "piggy-bank", nil
+	case WalletCards:
+		return "wallet-cards", nil
 	case WalletMinimal:
-		return "wallet_minimal", nil
+		return "wallet-minimal", nil
 	case CarFront:
-		return "car_front", nil
+		return "car-front", nil
 	case CarTaxiFront:
-		return "car_taxi_front", nil
+		return "car-taxi-front", nil
 	case Ambulance:
 		return "ambulance", nil
 	case Cross:
@@ -405,13 +405,13 @@ func iconToString(t Type) (string, error) {
 	case Bandage:
 		return "bandage", nil
 	case HeartPulse:
-		return "heart_pulse", nil
+		return "heart-pulse", nil
 	case Bone:
 		return "bone", nil
 	case Brain:
 		return "brain", nil
 	case GraduationCap:
-		return "graduation_cap", nil
+		return "graduation-cap", nil
 	case Dices:
 		return "dices", nil
 	case School:
@@ -425,7 +425,7 @@ func iconToString(t Type) (string, error) {
 	case Book:
 		return "book", nil
 	case BookOpen:
-		return "book_open", nil
+		return "book-open", nil
 	case Bookmark:
 		return "bookmark", nil
 	case Notebook:
@@ -439,13 +439,13 @@ func iconToString(t Type) (string, error) {
 	case Fence:
 		return "fence", nil
 	case TrainFront:
-		return "train_front", nil
+		return "train-front", nil
 	case Tv:
 		return "tv", nil
 	case Cigarette:
 		return "cigarette", nil
 	case CircleParking:
-		return "circle_parking", nil
+		return "circle-parking", nil
 	case Container:
 		return "container", nil
 	case Fuel:
@@ -467,9 +467,9 @@ func iconToString(t Type) (string, error) {
 	case Dumbbell:
 		return "dumbbell", nil
 	case BicepsFlexed:
-		return "biceps_flexed", nil
+		return "biceps-flexed", nil
 	case MicVocal:
-		return "mic_vocal", nil
+		return "mic-vocal", nil
 	case Piano:
 		return "piano", nil
 	case Headphones:
@@ -485,7 +485,7 @@ func iconToString(t Type) (string, error) {
 	case Laptop:
 		return "laptop", nil
 	case PcCase:
-		return "pc_case", nil
+		return "pc-case", nil
 	case Router:
 		return "router", nil
 	case Phone:
@@ -495,11 +495,11 @@ func iconToString(t Type) (string, error) {
 	case Stethoscope:
 		return "stethoscope", nil
 	case UtilityPole:
-		return "utility_pole", nil
+		return "utility-pole", nil
 	case Megaphone:
 		return "megaphone", nil
 	case EthernetPort:
-		return "ethernet_port", nil
+		return "ethernet-port", nil
 	case Earth:
 		return "earth", nil
 	case Globe:
@@ -519,29 +519,29 @@ func iconToString(t Type) (string, error) {
 	case Theater:
 		return "theater", nil
 	case ShoppingBag:
-		return "shopping_bag", nil
+		return "shopping-bag", nil
 	case ShoppingBasket:
-		return "shopping_basket", nil
+		return "shopping-basket", nil
 	case ShoppingCart:
-		return "shopping_cart", nil
+		return "shopping-cart", nil
 	case Barcode:
 		return "barcode", nil
 	case Shirt:
 		return "shirt", nil
 	case TentTree:
-		return "tent_tree", nil
+		return "tent-tree", nil
 	case Utensils:
 		return "utensils", nil
 	case ShowerHead:
-		return "shower_head", nil
+		return "shower-head", nil
 	case WashingMachine:
-		return "washing_machine", nil
+		return "washing-machine", nil
 	case BedSingle:
-		return "bed_single", nil
+		return "bed-single", nil
 	case BedDouble:
-		return "bed_double", nil
+		return "bed-double", nil
 	case BusFront:
-		return "bus_front", nil
+		return "bus-front", nil
 	case Pill:
 		return "pill", nil
 	case Syringe:
@@ -555,11 +555,11 @@ func iconToString(t Type) (string, error) {
 	case Heater:
 		return "heater", nil
 	case BatteryCharging:
-		return "battery_charging", nil
+		return "battery-charging", nil
 	case User:
 		return "user", nil
 	case VenetianMask:
-		return "venetian_mask", nil
+		return "venetian-mask", nil
 	case House:
 		return "house", nil
 	case Hammer:
@@ -567,11 +567,11 @@ func iconToString(t Type) (string, error) {
 	case Microwave:
 		return "microwave", nil
 	case PaintRoller:
-		return "paint_roller", nil
+		return "paint-roller", nil
 	case PaintbrushVertical:
-		return "paintbrush_vertical", nil
+		return "paintbrush-vertical", nil
 	case TvMinimalPlay:
-		return "tv_minimal_play", nil
+		return "tv-minimal-play", nil
 	case Wine:
 		return "wine", nil
 	case Medal:
@@ -581,19 +581,19 @@ func iconToString(t Type) (string, error) {
 	case Milk:
 		return "milk", nil
 	case GlassWater:
-		return "glass_water", nil
+		return "glass-water", nil
 	case Droplet:
 		return "droplet", nil
 	case HandPlatter:
-		return "hand_platter", nil
+		return "hand-platter", nil
 	case FireExtinguisher:
-		return "fire_extinguisher", nil
+		return "fire-extinguisher", nil
 	case Package:
 		return "package", nil
 	case Armchair:
 		return "armchair", nil
 	case AtSign:
-		return "at_sign", nil
+		return "at-sign", nil
 	case Cake:
 		return "cake", nil
 	case Building:
@@ -601,7 +601,7 @@ func iconToString(t Type) (string, error) {
 	case Cog:
 		return "cog", nil
 	case IdCard:
-		return "id_card", nil
+		return "id-card", nil
 	case Mail:
 		return "mail", nil
 	case Search:
@@ -609,7 +609,7 @@ func iconToString(t Type) (string, error) {
 	case Binoculars:
 		return "binoculars", nil
 	case TreePalm:
-		return "tree_palm", nil
+		return "tree-palm", nil
 	case Trees:
 		return "trees", nil
 	case Flower:
@@ -617,7 +617,7 @@ func iconToString(t Type) (string, error) {
 	case Dog:
 		return "dog", nil
 	case PawPrint:
-		return "paw_print", nil
+		return "paw-print", nil
 	case Cat:
 		return "cat", nil
 	case Fish:
@@ -625,7 +625,7 @@ func iconToString(t Type) (string, error) {
 	case Bird:
 		return "bird", nil
 	case IceCreamCone:
-		return "ice_cream_cone", nil
+		return "ice-cream-cone", nil
 	case Beef:
 		return "beef", nil
 	case Pizza:
@@ -651,17 +651,17 @@ func iconToString(t Type) (string, error) {
 	case Sword:
 		return "sword", nil
 	case BellElectric:
-		return "bell_electric", nil
+		return "bell-electric", nil
 	case Heart:
 		return "heart", nil
 	case Clover:
 		return "clover", nil
 	case MonitorPlay:
-		return "monitor_play", nil
+		return "monitor-play", nil
 	case Glasses:
 		return "glasses", nil
 	case KeyRound:
-		return "key_round", nil
+		return "key-round", nil
 	case Candy:
 		return "candy", nil
 	case Baby:

@@ -54,10 +54,12 @@ func update(ctx context.Context, tx *sql.Tx, record transaction.Record) error {
 			source_amount = $3,
 			target_amount = $4,
 			notes = $5,
-			issued_at = $6,
-			executed_at = $7,
-			updated_at = $8
-		WHERE deleted_at IS NULL AND id = $9
+			currency = $6,
+			issued_at = $7,
+			executed_at = $8,
+			updated_at = $9,
+			metadata = $10
+		WHERE deleted_at IS NULL AND id = $11
 		RETURNING id
 		`,
 		record.SourceID,
@@ -65,9 +67,11 @@ func update(ctx context.Context, tx *sql.Tx, record transaction.Record) error {
 		record.SourceAmount,
 		record.TargetAmount,
 		record.Notes,
+		record.Currency,
 		record.IssuedAt,
 		record.ExecutedAt,
 		record.UpdatedAt,
+		record.Metadata,
 		record.ID,
 	).Scan(&record.ID)
 }

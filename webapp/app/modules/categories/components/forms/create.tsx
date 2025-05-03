@@ -3,7 +3,6 @@ import { PlusIcon } from "lucide-react";
 import { useReducer } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input";
 import { IconInput } from "~/modules/shared/components/inputs/icon-input";
 import { Throbber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
@@ -27,7 +26,6 @@ import {
 import { Input } from "~/modules/shared/components/ui/input";
 import { Textarea } from "~/modules/shared/components/ui/textarea";
 import { accountKindToHuman as kindToHuman } from "~/modules/shared/helpers/account-kind-to-human";
-import { Currency } from "~/modules/shared/types/currency";
 import { Icon } from "~/modules/shared/types/icon";
 import { schema } from "../../schemas/create";
 import { ModuleKind } from "../../types/category";
@@ -40,12 +38,11 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   kind: ModuleKind
-  defaultCurrency: Currency
   onSubmitAction: OnSubmitCreateAction
   submitting: boolean
 }
 
-export function CreateCategory({ open, onOpenChange, defaultCurrency, kind, submitting, onSubmitAction }: Props) {
+export function CreateCategory({ open, onOpenChange, kind, submitting, onSubmitAction }: Props) {
   return (
     <Drawer modal open={open} onOpenChange={onOpenChange}>
       <DrawerContent className="overflow-clip">
@@ -56,7 +53,6 @@ export function CreateCategory({ open, onOpenChange, defaultCurrency, kind, subm
         </DrawerHeader>
         <CreateForm
           kind={kind}
-          defaultCurrency={defaultCurrency}
           onSubmitAction={onSubmitAction}
           submitting={submitting}
         />
@@ -67,7 +63,6 @@ export function CreateCategory({ open, onOpenChange, defaultCurrency, kind, subm
 
 interface FormProps {
   kind: ModuleKind
-  defaultCurrency: Currency
   onSubmitAction: OnSubmitCreateAction
   submitting: boolean
 }
@@ -156,7 +151,7 @@ function initChildForm({ name = "", description, icon }: ChildInitialState): Chi
   }
 }
 
-function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormProps) {
+function CreateForm({ kind, onSubmitAction, submitting }: FormProps) {
   const [child, childDispatch] = useReducer(reducer, { icon: defaultIcons[kind] }, initChildForm)
 
   const form = useForm<z.infer<typeof schema>>({
@@ -167,7 +162,6 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
         expense: "#db002b",
         income: "#0ef23f"
       }[kind],
-      currency: defaultCurrency,
       icon: defaultIcons[kind],
     }
   })
@@ -273,20 +267,6 @@ function CreateForm({ kind, defaultCurrency, onSubmitAction, submitting }: FormP
                   </FormControl>
                   <FormDescription>
                     You can leave this empty
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="currency"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Currency</FormLabel>
-                  <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} />
-                  <FormDescription>
-                    The currency this category will operate in with
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

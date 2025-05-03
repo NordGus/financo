@@ -2,7 +2,7 @@ import { Category } from "../../types/category";
 import { Update } from "../../types/update";
 
 export async function update(data: Update): Promise<Category> {
-  const response = await fetch(`/api/categories/${data.id}`, {
+  const response = await fetch(`${import.meta.env.VITE_API_HOST}/api/categories/${data.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json; charset=UTF-8" },
     body: JSON.stringify(data)

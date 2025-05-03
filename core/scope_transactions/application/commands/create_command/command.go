@@ -2,10 +2,11 @@ package create_command
 
 import (
 	"context"
+	"errors"
 	"financo/core/domain/commands"
 	core_repos "financo/core/domain/repositories"
 	"financo/core/scope_transactions/domain/brokers"
-	"financo/core/scope_transactions/domain/errors"
+	errs "financo/core/scope_transactions/domain/errors"
 	"financo/core/scope_transactions/domain/messages"
 	"financo/core/scope_transactions/domain/repositories"
 	"financo/core/scope_transactions/domain/requests"
@@ -38,18 +39,26 @@ func New(
 func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	var (
 		timestamp = time.Now().UTC()
-		record    = c.req.ToTransactionRecord(timestamp)
 
 		source account.Record
 		target account.Record
 		res    responses.Detailed
 	)
 
-	if record.SourceID == record.TargetID {
-		return res, errors.ErrCircularTransaction
+	record, err := c.req.ToTransactionRecord(timestamp)
+	if err != nil {
+		return res, errors.Join(errors.New("create_command: failed to parse request"), err)
 	}
 
-	source, err := c.accounts.Find(ctx, record.SourceID)
+	if record.SourceID == record.TargetID {
+		return res, errs.ErrCircularTransaction
+	}
+
+	if len(record.Notes.Val) > 1_000 {
+		return res, errs.ErrTransactionNotesTooLong
+	}
+
+	source, err = c.accounts.Find(ctx, record.SourceID)
 	if err != nil {
 		return res, err
 	}

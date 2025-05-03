@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"financo/lib/currency"
 	"financo/lib/nullable"
 	"time"
 )
@@ -12,9 +13,11 @@ type Record struct {
 	SourceAmount int64
 	TargetAmount int64
 	Notes        nullable.Type[string]
+	Currency     currency.Type
 	IssuedAt     time.Time
 	ExecutedAt   nullable.Type[time.Time]
 	DeletedAt    nullable.Type[time.Time]
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+	Metadata     Metadata
 }

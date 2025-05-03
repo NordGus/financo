@@ -1,5 +1,5 @@
+import { DynamicIcon } from "lucide-react/dynamic"
 import { cn } from "~/lib/utils"
-import { icons } from "~/modules/shared/components/ui/icon"
 import { colorContrast } from "~/modules/shared/helpers/color-contrast"
 import { Icon } from "~/modules/shared/types/icon"
 
@@ -28,7 +28,7 @@ export function AccountSelectOption({ name, icon, color, selected, onClick, asCa
 
       onClick={onClick}
     >
-      <span className="[&_svg]:size-6">{icons[icon]}</span> {name}
+      <DynamicIcon name={icon} className="size-6" /> {name}
     </div>
   )
 }

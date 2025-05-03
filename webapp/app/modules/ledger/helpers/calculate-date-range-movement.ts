@@ -11,8 +11,6 @@ export enum Movement {
   Backwards
 }
 
-export function calculateDateRangeMovement(direction: Movement.Forwards, from: Date, to: Date, period: Period): Range
-export function calculateDateRangeMovement(direction: Movement.Backwards, to: Date, from: Date, period: Period): Range
 export function calculateDateRangeMovement(direction: Movement, from: Date, to: Date, period: Period): Range {
   const operation = direction === Movement.Forwards ? add : sub
   let start = new Date(from.toISOString())

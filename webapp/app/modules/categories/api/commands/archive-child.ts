@@ -1,7 +1,7 @@
 import { Child as ChildCategory } from "../../types/category";
 
 export async function archiveChild(parentId: number, id: number): Promise<ChildCategory> {
-  const response = await fetch(`/api/categories/${parentId}/children/${id}/archive`, {
+  const response = await fetch(`${import.meta.env.VITE_API_HOST}/api/categories/${parentId}/children/${id}/archive`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json; charset=UTF-8" },
     body: JSON.stringify({ id, parentId })

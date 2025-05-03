@@ -4,20 +4,20 @@ import { cn } from "~/lib/utils";
 
 interface Props {
   date: string
-  isFirst: boolean
+  isLast: boolean
 }
 
-export function DateGroup({ date, isFirst, children }: PropsWithChildren<Props>) {
+export function DateGroup({ date, isLast, children }: PropsWithChildren<Props>) {
   return (
-    <div className="flex flex-col gap-2">
-      <div className={cn("flex items-center justify-between border-b py-2 px-4", !isFirst && "border-t")}>
+    <>
+      <div className="sticky top-0 flex items-center justify-between border-b bg-background z-10 py-1.5 px-2 text-lg">
         <p className="text-muted-foreground">
           {format(date, "PPP")}
         </p>
       </div>
-      <div className="flex flex-col px-4">
+      <div className={cn("flex flex-col gap-1.5", !isLast && "border-b")}>
         {children}
       </div>
-    </div>
+    </>
   )
 }

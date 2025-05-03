@@ -1,39 +1,17 @@
 import { endOfMonth, endOfWeek, endOfYear, format, startOfMonth, startOfWeek, startOfYear } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { PropsWithChildren, useMemo } from "react"
+import { useMemo } from "react"
 import { Button } from "~/modules/shared/components/ui/button"
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle
-} from "~/modules/shared/components/ui/drawer"
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip"
 import { Period } from "../../types/transactions"
-import { PeriodIcon } from "../period-icon"
 
 interface Props {
-  open: boolean
-  onOpenChange: (open: boolean) => void
   onOpenRangePicker: (open: boolean) => void
   onOpenDayPicker: (open: boolean) => void
   onFilterChange: (from: Date | undefined, to: Date | undefined, period: Period) => void
   submitting: boolean
 }
 
-function DatePreview({ children }: PropsWithChildren) {
-  return (
-    <span className="block text-muted-foreground text-xs">
-      {children}
-    </span>
-  )
-}
-
 export function PeriodShortcuts({
-  open,
-  onOpenChange,
   onOpenRangePicker,
   onOpenDayPicker,
   onFilterChange,
@@ -42,108 +20,112 @@ export function PeriodShortcuts({
   const today = useMemo(() => new Date(), [open])
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
-        <DrawerHeader>
-          <DrawerTitle>Period</DrawerTitle>
-          <DrawerDescription className="hidden" data-hidden>
-            Select which period you want preview
-          </DrawerDescription>
-        </DrawerHeader>
-        <div className="grid grid-cols-2 gap-1 px-4">
+    <>
+      <Tooltip>
+        <TooltipTrigger asChild>
           <Button
+            className="cursor-pointer"
             variant={"secondary"}
-            size={"xl"}
-            className="col-span-2 rounded-t-2xl"
             onClick={() => onOpenRangePicker(true)}
             disabled={submitting}
           >
-            <PeriodIcon period="custom" />
-            Select Range
+            Pick a Date Range
           </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {"Transactions by a custom date range, you have to pick the date range"}
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
           <Button
+            className="cursor-pointer"
             variant={"secondary"}
-            size={"xl"}
-            onClick={() => onFilterChange(undefined, undefined, "unlimited")}
-            disabled={submitting}
-          >
-            <PeriodIcon period="unlimited" /> Entire Ledger
-          </Button>
-          <Button
-            variant={"secondary"}
-            size={"xl"}
             onClick={() => onOpenDayPicker(true)}
             disabled={submitting}
           >
-            <CalendarIcon /> Select Day
+            Pick a Day
           </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {"Transactions by calendar day, you have to pick the date"}
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
           <Button
+            className="cursor-pointer"
             variant={"secondary"}
-            size={"xl"}
-            onClick={() => onFilterChange(startOfWeek(today), endOfWeek(today), "weekly")}
-            disabled={submitting}
-          >
-            <PeriodIcon period="weekly" />
-            <span>
-              Week
-              <DatePreview>
-                {format(startOfWeek(today), "MMM do")} - {format(endOfWeek(today), "MMM do")}
-              </DatePreview>
-            </span>
-          </Button>
-          <Button
-            variant={"secondary"}
-            size={"xl"}
             onClick={() => onFilterChange(today, today, "daily")}
             disabled={submitting}
           >
-            <PeriodIcon period="daily" />
-            <span>
-              Today
-              <DatePreview>
-                {format(today, "MMM do")}
-              </DatePreview>
-            </span>
+            Today
           </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {`Transactions by calendar day, starting at today ${format(today, "PPP")}`}
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
           <Button
+            className="cursor-pointer"
             variant={"secondary"}
-            size={"xl"}
-            className="rounded-bl-2xl"
-            onClick={() => onFilterChange(startOfYear(today), endOfYear(today), "yearly")}
+            onClick={() => onFilterChange(startOfWeek(today), endOfWeek(today), "weekly")}
             disabled={submitting}
           >
-            <PeriodIcon period="yearly" from={today} />
-            <span>
-              Year
-              <DatePreview>
-                {format(today, "yyyy")}
-              </DatePreview>
-            </span>
+            Week
           </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {`Transactions by calendar week, starting at the current week between ${format(startOfWeek(today), "PPP")} and ${format(endOfWeek(today), "PPP")}`}
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
           <Button
+            className="cursor-pointer"
             variant={"secondary"}
-            size={"xl"}
-            className="rounded-br-2xl"
             onClick={() => onFilterChange(startOfMonth(today), endOfMonth(today), "monthly")}
             disabled={submitting}
           >
-            <PeriodIcon period="monthly" from={today} />
-            <span>
-              Month
-              <DatePreview>
-                {format(today, "MMMM yyyy")}
-              </DatePreview>
-            </span>
+            Month
           </Button>
-        </div>
-        <DrawerFooter>
-          <DrawerClose asChild>
-            <Button variant={"outline"} disabled={submitting}>
-              Cancel
-            </Button>
-          </DrawerClose>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+        </TooltipTrigger>
+        <TooltipContent>
+          {`Transaction by calendar month, staring at the current month of ${format(today, "MMMM, yyyy")}`}
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            className="cursor-pointer"
+            variant={"secondary"}
+            onClick={() => onFilterChange(startOfYear(today), endOfYear(today), "yearly")}
+            disabled={submitting}
+          >
+            Year
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {`Transaction by calendar year, staring at the current year of ${format(today, "yyyy")}`}
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            className="cursor-pointer"
+            variant={"secondary"}
+            onClick={() => onFilterChange(undefined, undefined, "unlimited")}
+            disabled={submitting}
+          >
+            Entire Ledger
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {"All the Transactions in the ledger"}
+        </TooltipContent>
+      </Tooltip>
+    </>
   )
 }

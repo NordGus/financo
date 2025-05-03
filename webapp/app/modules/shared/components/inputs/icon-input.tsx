@@ -1,3 +1,4 @@
+import { DynamicIcon } from "lucide-react/dynamic";
 import { useMemo } from "react";
 import { Icon, ICONS } from "~/modules/shared/types/icon";
 import { Button } from "../ui/button";
@@ -12,7 +13,6 @@ import {
   DrawerTrigger
 } from "../ui/drawer";
 import { FormControl } from "../ui/form";
-import { icons } from "../ui/icon";
 
 type Entity = "category" | "account"
 
@@ -31,8 +31,7 @@ function entityToHuman(entity: Entity): string {
   }
 }
 
-export function IconInput({ value,
-  onChange, entity = "account" }: Props) {
+export function IconInput({ value, onChange, entity = "account" }: Props) {
   const selectables = useMemo(() => Object.values(ICONS), [])
 
   return (
@@ -43,7 +42,7 @@ export function IconInput({ value,
             variant="outline"
             className={"w-full px-3 text-left font-normal"}
           >
-            {icons[value]}
+            <DynamicIcon name={value} />
           </Button>
         </FormControl>
       </DrawerTrigger>
@@ -54,17 +53,17 @@ export function IconInput({ value,
             Please select an Icon to identify your {entityToHuman(entity)}
           </DrawerDescription>
         </DrawerHeader>
-        <div className="grid grid-cols-6 justify-center items-center gap-2 max-h-[70dvh] p-4 overflow-y-auto">
+        <div className="grid grid-cols-5 justify-center items-center gap-2 max-h-[70dvh] p-4 overflow-y-auto">
           {selectables.map((icon) => (
             <DrawerClose key={icon} asChild>
               <Button
                 variant={value === icon ? "secondary" : "ghost"}
-                className="[&_svg]:size-8 h-fit w-fit p-2"
+                className="size-15 justify-center items-center m-auto"
                 size={"icon"}
                 onClick={() => onChange(icon)}
                 type="button"
               >
-                {icons[icon]}
+                <DynamicIcon name={icon} className="size-10" />
               </Button>
             </DrawerClose>
           ))}

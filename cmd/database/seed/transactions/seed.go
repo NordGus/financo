@@ -11,13 +11,20 @@ import (
 	"financo/core/scope_transactions/infrastructure/repositories/delete_repository"
 	"financo/core/scope_transactions/infrastructure/repositories/transaction_repository"
 	"financo/core/scope_transactions/infrastructure/services/message_broker"
+	"financo/lib/currency"
+	"financo/lib/nullable"
 	"financo/services/postgresql_database"
 	"fmt"
 	"log"
 	"time"
 )
 
-func SeedTransactions(ctx context.Context, seeds map[string]int64, timestamp time.Time) error {
+func SeedTransactions(
+	ctx context.Context,
+	ids map[string]int64,
+	currencies map[string]currency.Type,
+	timestamp time.Time,
+) error {
 	var (
 		db       = postgresql_database.New()
 		accounts = account_repository.NewPostgreSQL(db)
@@ -35,18 +42,29 @@ func SeedTransactions(ctx context.Context, seeds map[string]int64, timestamp tim
 	for i := 0; i < len(transactions); i++ {
 		var (
 			data   = transactions[i]
-			source = seeds[data.Source]
-			target = seeds[data.Target]
+			source = ids[data.Source]
+			target = ids[data.Target]
+			curr   = currencies[data.CurrencySource]
+			kind   = data.Kind
+
+			issuedAt   = data.IssuedAt(ts).Format(time.DateOnly)
+			executedAt nullable.Type[string]
 		)
 
+		if data.ExecutedAt(ts).Valid {
+			executedAt = nullable.New(data.ExecutedAt(ts).Val.Format(time.DateOnly))
+		}
+
 		req := requests.Create{
-			IssuedAt:     data.IssuedAt(ts),
-			ExecutedAt:   data.ExecutedAt(ts),
+			IssuedAt:     issuedAt,
+			ExecutedAt:   executedAt,
 			Notes:        data.Notes,
+			Currency:     curr,
 			SourceID:     source,
 			TargetID:     target,
 			SourceAmount: data.SourceAmount,
 			TargetAmount: data.TargetAmount,
+			Kind:         kind,
 		}
 
 		res, err := create_command.New(req, accounts, create, broker.Created()).Run(ctx)

@@ -203,11 +203,13 @@ func (p *postgresql) findTransaction(
 			source_amount,
 			target_amount,
 			notes,
+			currency,
 			issued_at,
 			executed_at,
 			deleted_at,
 			created_at,
-			updated_at
+			updated_at,
+			metadata
 		FROM transactions
 		WHERE
 			(source_id = $1 AND target_id = $2)
@@ -222,11 +224,13 @@ func (p *postgresql) findTransaction(
 		&r.SourceAmount,
 		&r.TargetAmount,
 		&r.Notes,
+		&r.Currency,
 		&r.IssuedAt,
 		&r.ExecutedAt,
 		&r.DeletedAt,
 		&r.CreatedAt,
 		&r.UpdatedAt,
+		&r.Metadata,
 	)
 
 	return r, err
@@ -268,8 +272,18 @@ func (p *postgresql) persistTransaction(ctx context.Context, tx *sql.Tx, r trans
 		`
 		UPDATE transactions
 		SET
-			source_id = $2, target_id = $3, source_amount = $4, target_amount = $5, notes = $6, issued_at = $7,
-			executed_at = $8, deleted_at = $9, created_at = $10, updated_at = $11
+			source_id = $2,
+			target_id = $3,
+			source_amount = $4,
+			target_amount = $5,
+			notes = $6,
+			issued_at = $7,
+			executed_at = $8,
+			deleted_at = $9,
+			created_at = $10,
+			updated_at = $11,
+			currency = $12,
+			metadata = $13
 		WHERE id = $1
 		RETURNING id
 		`,
@@ -284,6 +298,8 @@ func (p *postgresql) persistTransaction(ctx context.Context, tx *sql.Tx, r trans
 		&r.DeletedAt,
 		&r.CreatedAt,
 		&r.UpdatedAt,
+		&r.Currency,
+		&r.Metadata,
 	).Scan(&r.ID)
 
 	return err

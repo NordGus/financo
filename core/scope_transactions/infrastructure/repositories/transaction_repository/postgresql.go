@@ -48,11 +48,13 @@ func find(ctx context.Context, conn *sql.Conn, id int64) (transaction.Record, er
 			source_amount,
 			target_amount,
 			notes,
+			currency,
 			issued_at,
 			executed_at,
 			deleted_at,
 			created_at,
-			updated_at
+			updated_at,
+			metadata
 		FROM transactions
 		WHERE deleted_at IS NULL
 			AND id = $1
@@ -65,11 +67,13 @@ func find(ctx context.Context, conn *sql.Conn, id int64) (transaction.Record, er
 		&record.SourceAmount,
 		&record.TargetAmount,
 		&record.Notes,
+		&record.Currency,
 		&record.IssuedAt,
 		&record.ExecutedAt,
 		&record.DeletedAt,
 		&record.CreatedAt,
 		&record.UpdatedAt,
+		&record.Metadata,
 	)
 
 	return record, err

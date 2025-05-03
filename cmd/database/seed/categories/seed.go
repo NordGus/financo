@@ -13,6 +13,7 @@ import (
 	"financo/core/scope_categories/infrastructure/repositories/categories_repository"
 	"financo/core/scope_categories/infrastructure/repositories/create_repository"
 	"financo/core/scope_categories/infrastructure/services/message_broker"
+	"financo/lib/currency"
 	"financo/models/account"
 	"financo/services/postgresql_database"
 	"fmt"
@@ -21,11 +22,17 @@ import (
 )
 
 type childID struct {
-	ID   int64
-	Name string
+	ID       int64
+	Name     string
+	Currency currency.Type
 }
 
-func SeedCategories(ctx context.Context, timestamp time.Time) (map[string]int64, error) {
+type seeded struct {
+	ID       int64
+	Currency currency.Type
+}
+
+func SeedCategories(ctx context.Context, timestamp time.Time) (map[string]seeded, error) {
 	var (
 		db         = postgresql_database.New()
 		repo       = create_repository.NewPostgreSQL(db)
@@ -33,7 +40,7 @@ func SeedCategories(ctx context.Context, timestamp time.Time) (map[string]int64,
 		archival   = archival_repository.NewPostgreSQL(db)
 		broker     = message_broker.New()
 
-		out     = make(map[string]int64, 10)
+		out     = make(map[string]seeded, 10)
 		summary = make(map[account.Kind]uint, 8)
 	)
 
@@ -56,7 +63,7 @@ func SeedCategories(ctx context.Context, timestamp time.Time) (map[string]int64,
 			return out, errors.Join(fmt.Errorf("categories: failed to seed category %s", req.Name), err)
 		}
 
-		out[helpers.CategoryMapKey(key)] = res.ID
+		out[helpers.CategoryMapKey(key)] = seeded{ID: res.ID, Currency: res.Currency}
 
 		c, err := getChildrenCategories(ctx, db, res.ID)
 		if err != nil {
@@ -69,7 +76,7 @@ func SeedCategories(ctx context.Context, timestamp time.Time) (map[string]int64,
 					continue
 				}
 
-				out[helpers.ChildCategoryMapKey(key, children[j].key)] = c[i].ID
+				out[helpers.ChildCategoryMapKey(key, children[j].key)] = seeded{ID: c[i].ID, Currency: c[i].Currency}
 
 				if children[j].archived {
 					r := requests.ArchiveChild{ID: c[i].ID, ParentID: res.ID}
@@ -119,7 +126,7 @@ func getChildrenCategories(ctx context.Context, db services.SQLDatabaseService, 
 	rows, err := conn.QueryContext(
 		ctx,
 		`
-		SELECT id, name
+		SELECT id, name, currency
 		FROM accounts
 		WHERE
 			parent_id = $1
@@ -137,7 +144,7 @@ func getChildrenCategories(ctx context.Context, db services.SQLDatabaseService, 
 	for rows.Next() {
 		var child childID
 
-		err = rows.Scan(&child.ID, &child.Name)
+		err = rows.Scan(&child.ID, &child.Name, &child.Currency)
 		if err != nil {
 			_ = rows.Close()
 			return children, err

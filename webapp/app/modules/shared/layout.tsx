@@ -1,88 +1,38 @@
-import {
-  BookMarkedIcon,
-  BookmarkIcon,
-  CoffeeIcon,
-  MenuIcon,
-  NotebookTabsIcon,
-  RouteIcon,
-  SettingsIcon,
-  TrophyIcon,
-  VaultIcon
-} from "lucide-react";
-import { useEffect, useState } from "react";
-import { Outlet, useLocation } from "react-router";
-import { Breadcrumbs } from "./components/breadcrumbs";
-import { NavItem } from "./components/nav-item";
-import { Button } from "./components/ui/button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle
-} from "./components/ui/drawer";
+import { Outlet, useLocation, useNavigation } from "react-router";
+import { cn } from "~/lib/utils";
+import { Route } from "./+types/layout";
+import { list as listCurrenciesQuery } from "./api/queries/list-currencies";
+import { AppSidebar } from "./components/app-sidebar";
+import { FullScreenThrobber } from "./components/throbber";
+import { SidebarProvider } from "./components/ui/sidebar";
 import { Toaster } from "./components/ui/sonner";
 
-export default function Layout() {
-  const location = useLocation()
-  const [openNav, setOpenNav] = useState(false)
+export async function clientLoader({ }: Route.ClientLoaderArgs) {
+  const currencies = await listCurrenciesQuery()
 
-  useEffect(() => setOpenNav(false), [location.pathname])
+  return {
+    breadcrumb: "financo",
+    currencies
+  }
+}
+
+export default function Layout({ }: Route.ComponentProps) {
+  const { pathname } = useLocation() // current location
+  const { state: navigationState, location } = useNavigation() // navigation location
 
   return (
-    <>
-      <div
-        className="h-full w-full overflow-hidden grid grid-rows-layout items-stretch"
-      >
-        <main className="grow h-full overflow-hidden">
-          <Outlet />
-          <Toaster position="top-center" closeButton richColors />
-        </main>
-        <div className="flex justify-between items-center bg-transparent border-t">
-          <div className="px-4 grow">
-            <Breadcrumbs />
-          </div>
-          <Button onClick={() => setOpenNav(true)} variant={"link"} className="p-4 h-auto">
-            <MenuIcon /> <span className="hidden md:inline-block">Menu</span>
-          </Button>
-        </div>
-      </div>
-
-      <Drawer open={openNav} onOpenChange={setOpenNav}>
-        <DrawerContent>
-          <DrawerHeader className="hidden" data-hidden>
-            <DrawerTitle>Navigation Menu</DrawerTitle>
-            <DrawerDescription>Navigate through financo</DrawerDescription>
-          </DrawerHeader>
-          <nav className="grid grid-cols-2 gap-2 p-4">
-            <NavItem to="/morning-brew">
-              <CoffeeIcon /> Morning Brew
-            </NavItem>
-            <NavItem to="/accounts">
-              <VaultIcon /> Accounts
-            </NavItem>
-            <NavItem to="/categories">
-              <BookmarkIcon /> Categories
-            </NavItem>
-            <NavItem to="/ledger">
-              <BookMarkedIcon /> Ledger
-            </NavItem>
-            <NavItem to="/budgets">
-              <NotebookTabsIcon /> Budgets
-            </NavItem>
-            <NavItem to="/payment-plans">
-              <RouteIcon /> Payment plans
-            </NavItem>
-            <span className="grow contents-[''] h-10 col-span-2" />
-            <NavItem to="/achievements">
-              <TrophyIcon /> Achievements
-            </NavItem>
-            <NavItem to="/settings">
-              <SettingsIcon /> Settings
-            </NavItem>
-          </nav>
-        </DrawerContent>
-      </Drawer>
-    </>
+    <SidebarProvider className="min-h-body items-stretch" defaultOpen={true}>
+      <AppSidebar className="h-dvh" />
+      <main className="flex flex-col grow h-dvh overflow-hidden relative">
+        <FullScreenThrobber
+          className={cn(
+            "absolute inset-0 z-50",
+            (navigationState === "idle" || location?.pathname === pathname) && "hidden"
+          )}
+        />
+        <Outlet />
+      </main>
+      <Toaster position="top-center" closeButton richColors />
+    </SidebarProvider >
   )
 }

@@ -2,7 +2,6 @@ package categories
 
 import (
 	"financo/core/scope_categories/domain/requests"
-	"financo/lib/currency"
 	"financo/lib/icon"
 	"financo/lib/nullable"
 	"financo/models/account"
@@ -28,7 +27,6 @@ var (
 				Kind:        account.Income,
 				Name:        "Paycheck",
 				Description: nullable.New("Where the bread comes from"),
-				Currency:    currency.EUR,
 				Color:       "#eb8934",
 				Icon:        icon.Banknote,
 				Children:    make([]requests.CreateChild, 0, 10),
@@ -69,7 +67,6 @@ var (
 			req: requests.Create{
 				Kind:     account.Income,
 				Name:     "Allowance",
-				Currency: currency.EUR,
 				Color:    "#eb8934",
 				Icon:     icon.Coins,
 				Children: make([]requests.CreateChild, 0, 10),
@@ -83,7 +80,6 @@ var (
 				Kind:        account.Expense,
 				Name:        "Market",
 				Description: nullable.New("I need to survive"),
-				Currency:    currency.EUR,
 				Color:       "#34ebae",
 				Icon:        icon.ShoppingBasket,
 				Children:    make([]requests.CreateChild, 0, 10),
@@ -123,7 +119,6 @@ var (
 			req: requests.Create{
 				Kind:     account.Expense,
 				Name:     "Transport",
-				Currency: currency.EUR,
 				Color:    "#e5eb34",
 				Icon:     icon.BusFront,
 				Children: make([]requests.CreateChild, 0, 10),

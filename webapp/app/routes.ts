@@ -14,8 +14,12 @@ export default [
     route("accounts", "routes/accounts/index.tsx"),
     route("categories", "routes/categories/index.tsx"),
 
-    ...prefix("ledger", [
-      index("routes/ledger/index.tsx")
+    layout("routes/ledger/_layout.tsx", [
+      route("ledger", "routes/ledger/ledger.tsx", [
+        index("routes/ledger/index.tsx"),
+        route("new", "routes/ledger/new.tsx"),
+        route(":id", "routes/ledger/edit.tsx")
+      ])
     ]),
 
     ...prefix("payment-plans", [
