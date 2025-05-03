@@ -166,7 +166,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       accounts.get(values.sourceId)!.kind === "history" ||
       accounts.get(values.targetId)!.kind === "history"
     ) {
-      toast.error("You cannot register or modify history transactions")
+      toast.error("You cannot register nor modify history transactions")
       return
     }
 
@@ -181,7 +181,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     toast.promise(
       promise,
       {
-        loading: "Creating...",
+        loading: role === "create" ? "Creating..." : "Updating...",
         success: () => {
           if (values.executedAt) {
             return `${capitalizeKind(values.kind)} registered at ${format(values.executedAt, "PPP")}`
