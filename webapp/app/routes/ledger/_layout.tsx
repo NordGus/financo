@@ -7,7 +7,7 @@ import { AccountsFilter } from "~/modules/ledger/components/dialogs/accounts-fil
 import { CategoriesFilter } from "~/modules/ledger/components/dialogs/categories-filter";
 import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
 import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-contenxt";
-import { Accounts } from "~/modules/ledger/types/accounts";
+import { Account, AccountChildren, Accounts } from "~/modules/ledger/types/accounts";
 import { noFiltersApplied, updateURLSearchParams } from "~/modules/ledger/types/filters";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
 import { ToolBar } from "~/modules/shared/components/tool-bar";
@@ -27,15 +27,27 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   const accountsData = await listAccountsQuery()
   const accountsMap: Accounts = new Map(accountsData.map((account) => ([account.id, account])))
   const accounts = accountsData.filter(account => !account.parentId)
+  const accountsChildren: AccountChildren = accountsData.filter(account => !!account.parentId)
+    .reduce((acc, account) => {
+      if (!acc.has(account.parentId!)) acc.set(account.parentId!, [])
+
+      acc.get(account.parentId!)!.push(account)
+
+      return acc
+    }, new Map<number, Account[]>())
+
 
   return {
     accounts,
     accountsMap,
+    accountsChildren,
     filters
   }
 }
 
-export default function Layout({ loaderData: { filters, accounts, accountsMap } }: Route.ComponentProps) {
+export default function Layout({
+  loaderData: { filters, accounts, accountsMap, accountsChildren }
+}: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams()
   const { pathname: newPathname } = useResolvedPath("ledger/new", { relative: "path" })
   const { pathname, search, hash } = useLocation()
@@ -65,7 +77,7 @@ export default function Layout({ loaderData: { filters, accounts, accountsMap } 
   }
 
   return (
-    <AccountsContextProvider accounts={accounts} accountsMap={accountsMap}>
+    <AccountsContextProvider accounts={accounts} accountsMap={accountsMap} accountsChildren={accountsChildren}>
       <FiltersContextProvider filters={filters}>
         <ToolBar>
           {

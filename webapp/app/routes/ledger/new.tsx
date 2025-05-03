@@ -74,7 +74,7 @@ export default function New({ matches }: Route.ComponentProps) {
   // extracting data from webapp/app/modules/shared/layout.tsx's loader.
   const { data: { currencies } } = matches[1]
   // extracting data from webapp/app/routes/ledger/_layout.tsx's loader.
-  const { data: { accounts, accountsMap } } = matches[2]
+  const { data: { accounts, accountsMap, accountsChildren } } = matches[2]
 
   const { pathname } = useLocation() // current location
   const { state: navigationState, location } = useNavigation() // navigation location
@@ -84,7 +84,7 @@ export default function New({ matches }: Route.ComponentProps) {
 
   return (
     <CurrenciesContextProvider currencies={currencies}>
-      <AccountsContextProvider accounts={accounts} accountsMap={accountsMap}>
+      <AccountsContextProvider accounts={accounts} accountsMap={accountsMap} accountsChildren={accountsChildren}>
         <section className="flex flex-col h-full max-h-full py-4 overflow-hidden relative">
           <FullScreenThrobber
             className={cn(

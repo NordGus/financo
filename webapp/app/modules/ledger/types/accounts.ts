@@ -3,9 +3,11 @@ import { SystemCurrency } from "~/modules/shared/types/currency"
 import { Icon } from "~/modules/shared/types/icon"
 
 export { isAccount, isArchived, isCategory, isDebt }
-export type { Account, Accounts }
+export type { Account, AccountChildren, Accounts }
 
 type Accounts = Map<number, Account>
+
+type AccountChildren = Map<number, Account[]>
 
 type Account = {
   id: number
