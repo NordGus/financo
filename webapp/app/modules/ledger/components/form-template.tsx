@@ -331,8 +331,25 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
             <FormItem>
               <TransactionSource
                 id={field.value}
-                onChange={(__kind, id) => {
-                  field.onChange(id)
+                onChange={(newKind, id) => {
+                  const currentKind = form.getValues("kind")
+                  const currentTarget = accounts.get(form.getValues("targetId"))!
+
+                  if (newKind === currentKind) {
+                    // the new kind is the same as the current one, we simply need to update the source id and do
+                    // nothing more.
+                    field.onChange(id)
+                  } else if (newKind === "expense" || newKind === "transfer") {
+                    // when the new kind is an expense, we flip the direction of the transaction because previously it
+                    // was an income transaction. So the source is the the previous target and the target is the one
+                    // passed in this callback.
+                    form.setValue("targetId", id)
+                    field.onChange(currentTarget.id)
+                  }
+
+
+                  // any change done to the kind of the transaction, should be updated
+                  if (currentKind !== newKind) form.setValue("kind", newKind)
                 }}
                 disabled={isHistoryTransaction}
                 kind={form.getValues("kind")}
@@ -349,8 +366,23 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
             <FormItem>
               <TransactionTarget
                 id={field.value}
-                onChange={(__kind, id) => {
-                  field.onChange(id)
+                onChange={(newKind, id) => {
+                  const currentKind = form.getValues("kind")
+                  const currentSource = form.getValues("sourceId")
+
+                  if (newKind === "expense" || newKind === "transfer") {
+                    // when the new kind is an expense or transfer, the source stays the same while the target is the
+                    // one passed in this callback. Because the direction change was handled by the source selection.
+                    field.onChange(id)
+                  } else {
+                    // when the kind is income, the source is the one passed in this callback and the target is the one
+                    // passed in the source selection. Because the direction change was handled by the target selection.
+                    form.setValue("sourceId", id)
+                    field.onChange(currentSource)
+                  }
+
+                  // any change done to the kind of the transaction, should be updated
+                  if (currentKind !== newKind) form.setValue("kind", newKind)
                 }}
                 disabled={isHistoryTransaction}
                 kind={form.getValues("kind")}
@@ -427,7 +459,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           control={form.control}
           name="sourceAmount"
           render={({ field }) => (
-            <FormItem className={cn(!withConversionRate && "col-span-2")}>
+            <FormItem className={cn("relative", !withConversionRate && "col-span-2")}>
               <AmountInput
                 value={field.value}
                 kind={form.getValues("kind")}
@@ -446,7 +478,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                 style={{ borderColor: accounts.get(form.getValues("sourceId"))!.color }}
                 disabled={isHistoryTransaction}
               />
-              <FormMessage />
+              <FormMessage className="absolute right-0 bottom-0 py-1 px-2" />
             </FormItem>
           )}
         />
@@ -455,7 +487,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           control={form.control}
           name="targetAmount"
           render={({ field }) => (
-            <FormItem className={cn(!withConversionRate && "hidden")}>
+            <FormItem className={cn("relative", !withConversionRate && "hidden")}>
               <AmountInput
                 value={field.value}
                 kind={form.getValues("kind")}
@@ -470,7 +502,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                 style={{ borderColor: accounts.get(form.getValues("targetId"))!.color }}
                 disabled={isHistoryTransaction}
               />
-              <FormMessage />
+              <FormMessage className="absolute right-0 bottom-0 py-1 px-2" />
             </FormItem>
           )}
         />
