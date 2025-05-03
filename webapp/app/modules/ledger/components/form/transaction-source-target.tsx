@@ -15,6 +15,7 @@ import { Kind } from "../../types/transactions"
 
 type Props = {
   id: number
+  kind: Kind
   onChange: (kind: Kind, id: number) => void
   disabled?: boolean
 }
