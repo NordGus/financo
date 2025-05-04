@@ -102,8 +102,8 @@ export function TransactionTargetPicker({ selected, onSelected, ignore, kind = "
           {
             sections.income.filter(({ kind }) => kind === "income").map((account) => {
               const children = accountsChildren.get(account.id)?.
-                filter(({ archivedAt }) => !archivedAt)?.
-                filter(({ id }) => id !== ignore)
+                filter(({ id, archivedAt }) => !archivedAt || id === selected)?.
+                filter(({ id }) => id !== ignore || id === selected)
 
               return (
                 <Fragment key={`target.account.income.${account.id}.group`}>
@@ -145,8 +145,8 @@ export function TransactionTargetPicker({ selected, onSelected, ignore, kind = "
           {
             sections.expense.filter(({ kind }) => kind === "expense").map((account) => {
               const children = accountsChildren.get(account.id)?.
-                filter(({ archivedAt }) => !archivedAt)?.
-                filter(({ id }) => id !== ignore)
+                filter(({ id, archivedAt }) => !archivedAt || id === selected)?.
+                filter(({ id }) => id !== ignore || id === selected)
 
               return (
                 <Fragment key={`target.account.expense.${account.id}.group`}>
