@@ -351,9 +351,18 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     const sourceAmount = form.getValues("sourceAmount")
                     const targetAmount = form.getValues("targetAmount")
 
+                    let currency = form.getValues("currency")
+
                     // When new kind is the same as the current one, we simply need to update the source id and do
                     // nothing more.
                     if (newKind === currentKind) {
+                      // This happens when we are operating with income transactions
+                      if (source.currency !== "MULTI" && target.currency !== "MULTI") {
+                        form.setValue("currency", target.currency as Currency)
+                        currency = target.currency as Currency
+                      }
+
+                      setWithConversionRate(isWithConversionRate(source, target, currency))
                       field.onChange(id)
                       return
                     }
@@ -368,8 +377,12 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       // If the new source is a non-MULTI currency account aka. account, we need to set the currency to
                       // its currency. If it is a MULTI currency account aka. category, the user should use the currency
                       // input to set the currency.
-                      if (source.currency !== "MULTI") form.setValue("currency", source.currency)
+                      if (source.currency !== "MULTI") {
+                        form.setValue("currency", source.currency)
+                        currency = source.currency
+                      }
 
+                      setWithConversionRate(isWithConversionRate(target, source, currency))
                       form.setValue("kind", newKind)
                       form.setValue("sourceAmount", targetAmount)
                       form.setValue("targetAmount", sourceAmount)
@@ -386,7 +399,9 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     if (newKind === "transfer") {
                       // We need to set the currency to the target's because it is the currency of the transaction.
                       form.setValue("currency", target.currency as Currency)
+                      currency = target.currency as Currency
 
+                      setWithConversionRate(isWithConversionRate(source, target, currency))
                       form.setValue("kind", newKind)
                       field.onChange(id)
                     }
@@ -400,8 +415,12 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     // If the new source is a non-MULTI currency account aka. account, we need to set the currency to
                     // target's currency. If it is a MULTI currency account aka. category, the user should use the
                     // currency input to set the currency.
-                    if (source.currency !== "MULTI") form.setValue("currency", target.currency as Currency)
+                    if (source.currency !== "MULTI") {
+                      form.setValue("currency", target.currency as Currency)
+                      currency = target.currency as Currency
+                    }
 
+                    setWithConversionRate(isWithConversionRate(source, target, currency))
                     form.setValue("kind", newKind)
                     field.onChange(id)
                   }}
@@ -427,9 +446,18 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     const sourceAmount = form.getValues("sourceAmount")
                     const targetAmount = form.getValues("targetAmount")
 
+                    let currency = form.getValues("currency")
+
                     // when new kind is the same as the current one, we simply need to update the source id and do
                     // nothing more.
                     if (newKind === currentKind) {
+                      // This happens when we are operating with expense or transfer transactions
+                      if (source.currency !== "MULTI" && target.currency !== "MULTI") {
+                        form.setValue("currency", target.currency as Currency)
+                        currency = target.currency as Currency
+                      }
+
+                      setWithConversionRate(isWithConversionRate(source, target, currency))
                       field.onChange(id)
                       return
                     }
@@ -443,8 +471,12 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       // if the new target is a non-MULTI currency account aka. account, we need to set the currency to
                       // its currency. If it is a MULTI currency account aka. category, the user should use the currency
                       // input to set the currency.
-                      if (target.currency !== "MULTI") form.setValue("currency", target.currency)
+                      if (target.currency !== "MULTI") {
+                        form.setValue("currency", target.currency)
+                        currency = target.currency
+                      }
 
+                      setWithConversionRate(isWithConversionRate(target, source, currency))
                       form.setValue("kind", newKind)
                       field.onChange(target.id)
                       return
@@ -458,7 +490,9 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     if (newKind === "transfer") {
                       // We need to set the currency to the target's because it is the currency of the transaction.
                       form.setValue("currency", target.currency as Currency)
+                      currency = target.currency as Currency
 
+                      setWithConversionRate(isWithConversionRate(source, target, currency))
                       form.setValue("kind", newKind)
                       field.onChange(id)
                     }
@@ -472,8 +506,12 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     // if the new target is a non-MULTI currency account aka. account, we need to set the currency to
                     // its currency. If it is a MULTI currency account aka. category, the user should use the currency
                     // input to set the currency.
-                    if (target.currency !== "MULTI") form.setValue("currency", source.currency as Currency)
+                    if (target.currency !== "MULTI") {
+                      form.setValue("currency", source.currency as Currency)
+                      currency = source.currency as Currency
+                    }
 
+                    setWithConversionRate(isWithConversionRate(target, source, currency))
                     form.setValue("kind", newKind)
                     form.setValue("sourceAmount", targetAmount)
                     form.setValue("targetAmount", sourceAmount)
