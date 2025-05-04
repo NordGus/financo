@@ -5,6 +5,7 @@ import (
 	"financo/cmd/web/api/json/handlers/transactions/create_handler"
 	"financo/cmd/web/api/json/handlers/transactions/executed_handler"
 	"financo/cmd/web/api/json/handlers/transactions/show_handler"
+	"financo/cmd/web/api/json/handlers/transactions/update_handler"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -16,5 +17,6 @@ func Routes(r chi.Router) {
 
 	r.Route("/{id}", func(r chi.Router) {
 		r.Get("/", show_handler.HandlerFunc)
+		r.Put("/", update_handler.HandlerFunc)
 	})
 }
