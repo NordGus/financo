@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { cn } from "~/lib/utils";
 import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input";
-import { FullScreenThrobber } from "~/modules/shared/components/throbber";
+import { FullScreenThrobber, Throbber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
 import {
   Form,
@@ -320,7 +320,11 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                   size={"icon"}
                   disabled={isHistoryTransaction}
                 >
-                  <Save />
+                  {
+                    fetcher.state === "submitting"
+                      ? <Throbber />
+                      : <Save />
+                  }
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -342,23 +346,64 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                   id={field.value}
                   onChange={(newKind, id) => {
                     const currentKind = form.getValues("kind")
-                    const currentTarget = accounts.get(form.getValues("targetId"))!
+                    const source = accounts.get(id)!
+                    const target = accounts.get(form.getValues("targetId"))!
+                    const sourceAmount = form.getValues("sourceAmount")
+                    const targetAmount = form.getValues("targetAmount")
 
+                    // When new kind is the same as the current one, we simply need to update the source id and do
+                    // nothing more.
                     if (newKind === currentKind) {
-                      // the new kind is the same as the current one, we simply need to update the source id and do
-                      // nothing more.
                       field.onChange(id)
-                    } else if (newKind === "expense" || newKind === "transfer") {
-                      // when the new kind is an expense, we flip the direction of the transaction because previously it
-                      // was an income transaction. So the source is the the previous target and the target is the one
-                      // passed in this callback.
-                      form.setValue("targetId", id)
-                      field.onChange(currentTarget.id)
+                      return
                     }
 
 
-                    // any change done to the kind of the transaction, should be updated
-                    if (currentKind !== newKind) form.setValue("kind", newKind)
+                    // When the new kind is expense, we flip the direction of the transaction because expenses
+                    // accounts are always target.
+                    //
+                    // It also means that the target is a non-MULTI currency account aka. account, so we need to worry
+                    // about more details.
+                    if (newKind === "expense") {
+                      // If the new source is a non-MULTI currency account aka. account, we need to set the currency to
+                      // its currency. If it is a MULTI currency account aka. category, the user should use the currency
+                      // input to set the currency.
+                      if (source.currency !== "MULTI") form.setValue("currency", source.currency)
+
+                      form.setValue("kind", newKind)
+                      form.setValue("sourceAmount", targetAmount)
+                      form.setValue("targetAmount", sourceAmount)
+                      form.setValue("targetId", id)
+                      field.onChange(target.id)
+                      return
+                    }
+
+                    // When new kind is transfer, we don't need change direction because the transaction is already
+                    // at the right direction.
+                    //
+                    // It also means that the target is a non-MULTI currency account aka. account, and the source is
+                    // also a non-MULTI currency account aka. account.
+                    if (newKind === "transfer") {
+                      // We need to set the currency to the target's because it is the currency of the transaction.
+                      form.setValue("currency", target.currency as Currency)
+
+                      form.setValue("kind", newKind)
+                      field.onChange(id)
+                    }
+
+                    // When the new kind is income, we don't need change direction because the transaction is already
+                    // at the right direction.
+                    //
+                    // It also means that the target is a non-MULTI currency account aka. account, so we need to worry
+                    // about more details.
+
+                    // If the new source is a non-MULTI currency account aka. account, we need to set the currency to
+                    // target's currency. If it is a MULTI currency account aka. category, the user should use the
+                    // currency input to set the currency.
+                    if (source.currency !== "MULTI") form.setValue("currency", target.currency as Currency)
+
+                    form.setValue("kind", newKind)
+                    field.onChange(id)
                   }}
                   disabled={isHistoryTransaction}
                   kind={form.getValues("kind")}
@@ -377,21 +422,63 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                   id={field.value}
                   onChange={(newKind, id) => {
                     const currentKind = form.getValues("kind")
-                    const currentSource = form.getValues("sourceId")
+                    const source = accounts.get(form.getValues("sourceId"))!
+                    const target = accounts.get(id)!
+                    const sourceAmount = form.getValues("sourceAmount")
+                    const targetAmount = form.getValues("targetAmount")
 
-                    if (newKind === "expense" || newKind === "transfer") {
-                      // when the new kind is an expense or transfer, the source stays the same while the target is the
-                      // one passed in this callback. Because the direction change was handled by the source selection.
+                    // when new kind is the same as the current one, we simply need to update the source id and do
+                    // nothing more.
+                    if (newKind === currentKind) {
                       field.onChange(id)
-                    } else {
-                      // when the kind is income, the source is the one passed in this callback and the target is the one
-                      // passed in the source selection. Because the direction change was handled by the target selection.
-                      form.setValue("sourceId", id)
-                      field.onChange(currentSource)
+                      return
                     }
 
-                    // any change done to the kind of the transaction, should be updated
-                    if (currentKind !== newKind) form.setValue("kind", newKind)
+                    // when the new kind is expense, we don't need change direction because the transaction is already
+                    // at the right direction.
+                    //
+                    // It also means that the source is a non-MULTI currency account aka. account, so we need to worry
+                    // about more details.
+                    if (newKind === "expense") {
+                      // if the new target is a non-MULTI currency account aka. account, we need to set the currency to
+                      // its currency. If it is a MULTI currency account aka. category, the user should use the currency
+                      // input to set the currency.
+                      if (target.currency !== "MULTI") form.setValue("currency", target.currency)
+
+                      form.setValue("kind", newKind)
+                      field.onChange(target.id)
+                      return
+                    }
+
+                    // When new kind is transfer, we don't need change direction because the transaction is already
+                    // at the right direction.
+                    //
+                    // It also means that the source is a non-MULTI currency account aka. account, and the target is
+                    // also a non-MULTI currency account aka. account.
+                    if (newKind === "transfer") {
+                      // We need to set the currency to the target's because it is the currency of the transaction.
+                      form.setValue("currency", target.currency as Currency)
+
+                      form.setValue("kind", newKind)
+                      field.onChange(id)
+                    }
+
+                    // When the new kind is expense, we flip the direction of the transaction because income
+                    // accounts are always source.
+                    //
+                    // It also means that the source is a non-MULTI currency account aka. account, so we need to worry
+                    // about more details.
+
+                    // if the new target is a non-MULTI currency account aka. account, we need to set the currency to
+                    // its currency. If it is a MULTI currency account aka. category, the user should use the currency
+                    // input to set the currency.
+                    if (target.currency !== "MULTI") form.setValue("currency", source.currency as Currency)
+
+                    form.setValue("kind", newKind)
+                    form.setValue("sourceAmount", targetAmount)
+                    form.setValue("targetAmount", sourceAmount)
+                    form.setValue("targetId", id)
+                    field.onChange(source.id)
                   }}
                   disabled={isHistoryTransaction}
                   kind={form.getValues("kind")}
@@ -478,9 +565,29 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       : accounts.get(form.getValues("sourceId"))!.currency as Currency
                   }
                   onValueChange={(value) => {
-                    if (!withConversionRate) form.setValue("targetAmount", value)
+                    const newValue = Math.abs(value)
+                    const targetAmount = form.getValues("targetAmount")
+                    const sourceId = form.getValues("sourceId")
+                    const targetId = form.getValues("targetId")
+                    const kind = form.getValues("kind")
 
-                    field.onChange(value)
+                    if (value < 0) {
+                      form.setValue("targetAmount", newValue)
+
+                      form.setValue("sourceId", targetId)
+                      form.setValue("targetId", sourceId)
+
+                      if (kind === "income") form.setValue("kind", "expense")
+                      else if (kind === "expense") form.setValue("kind", "income")
+
+                      field.onChange(targetAmount)
+
+                      return
+                    }
+
+                    if (!withConversionRate) form.setValue("targetAmount", newValue)
+
+                    field.onChange(newValue)
                   }}
                   dialogTitle="Source amount"
                   dialogDescription="Enter the amount removed form the source account"
@@ -505,7 +612,29 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       ? form.getValues("currency")
                       : accounts.get(form.getValues("targetId"))!.currency as Currency
                   }
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => {
+                    const newValue = Math.abs(value)
+                    const targetAmount = form.getValues("targetAmount")
+                    const sourceId = form.getValues("sourceId")
+                    const targetId = form.getValues("targetId")
+                    const kind = form.getValues("kind")
+
+                    if (value < 0) {
+                      form.setValue("targetAmount", newValue)
+
+                      form.setValue("sourceId", targetId)
+                      form.setValue("targetId", sourceId)
+
+                      if (kind === "income") form.setValue("kind", "expense")
+                      else if (kind === "expense") form.setValue("kind", "income")
+
+                      field.onChange(targetAmount)
+
+                      return
+                    }
+
+                    field.onChange(newValue)
+                  }}
                   dialogTitle="Target amount"
                   dialogDescription="Enter the amount added to the target account"
                   style={{ borderColor: accounts.get(form.getValues("targetId"))!.color }}
