@@ -40,7 +40,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 
 	res, err := create_command.New(req, accounts, create, broker.Created()).Run(r.Context())
 	if err != nil {
-		log.Println("query failed", err)
+		log.Println("command failed", err)
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
