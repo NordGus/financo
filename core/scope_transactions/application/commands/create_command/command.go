@@ -60,6 +60,10 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		return res, errs.ErrTransactionNotesTooLong
 	}
 
+	if record.SourceAmount == 0 || record.TargetAmount == 0 {
+		return res, errs.ErrTransactionAmountZero
+	}
+
 	source, err = c.accounts.Find(ctx, record.SourceID)
 	if err != nil {
 		return res, err
