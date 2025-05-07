@@ -651,27 +651,61 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       : accounts.get(form.getValues("targetId"))!.currency as Currency
                   }
                   onValueChange={(value) => {
-                    const newValue = Math.abs(value)
-                    const targetAmount = form.getValues("targetAmount")
-                    const sourceId = form.getValues("sourceId")
-                    const targetId = form.getValues("targetId")
-                    const kind = form.getValues("kind")
-
-                    if (value < 0) {
-                      form.setValue("targetAmount", newValue)
-
-                      form.setValue("sourceId", targetId)
-                      form.setValue("targetId", sourceId)
-
-                      if (kind === "income") form.setValue("kind", "expense")
-                      else if (kind === "expense") form.setValue("kind", "income")
-
-                      field.onChange(targetAmount)
-
+                    // When the value is positive, just update the current value and let the form validate it.
+                    if (value >= 0) {
+                      field.onChange(value)
                       return
                     }
 
-                    field.onChange(newValue)
+                    // When the value is negative, flip the transaction's direction.
+
+                    const newValue = Math.abs(value) // make the value positive.
+                    const sourceAmount = form.getValues("sourceAmount")
+                    const source = accounts.get(form.getValues("sourceId"))!
+                    const target = accounts.get(form.getValues("targetId"))!
+                    const kind = form.getValues("kind")
+
+                    let currency = form.getValues("currency")
+
+                    if (kind === "expense") { // it becomes an income transaction
+                      // When the current target is a non-MULTI currency account, update the currency to the source's
+                      if (target.currency !== "MULTI") currency = source.currency as Currency
+
+                      setWithConversionRate(isWithConversionRate(target, source, currency))
+                      form.setValue("kind", "income")
+                      form.setValue("currency", currency)
+                      form.setValue("sourceId", target.id)
+                      form.setValue("targetId", source.id)
+                      form.setValue("sourceAmount", newValue)
+                      field.onChange(sourceAmount) // targetAmount
+                      return
+                    }
+
+                    if (kind === "income") { // it becomes an expense transaction
+                      // When the current source is a non-MULTI currency account, update the currency to the source's
+                      if (source.currency !== "MULTI") currency = source.currency
+
+                      setWithConversionRate(isWithConversionRate(target, source, currency))
+                      form.setValue("kind", "expense")
+                      form.setValue("currency", currency)
+                      form.setValue("sourceId", target.id)
+                      form.setValue("targetId", source.id)
+                      form.setValue("sourceAmount", newValue)
+                      field.onChange(sourceAmount) // targetAmount
+                      return
+                    }
+
+                    // transfer transaction remains the same kind.
+
+                    // We need to change the the currency to the source's because that's the currency it stores.
+                    currency = source.currency as Currency
+
+                    setWithConversionRate(isWithConversionRate(target, source, currency))
+                    form.setValue("currency", currency)
+                    form.setValue("sourceId", target.id)
+                    form.setValue("targetId", source.id)
+                    form.setValue("sourceAmount", newValue)
+                    field.onChange(sourceAmount) // targetAmount
                   }}
                   dialogTitle="Target amount"
                   dialogDescription="Enter the amount added to the target account"
