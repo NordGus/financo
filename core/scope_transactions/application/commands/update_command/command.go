@@ -11,7 +11,6 @@ import (
 	"financo/core/scope_transactions/domain/repositories"
 	"financo/core/scope_transactions/domain/requests"
 	"financo/core/scope_transactions/domain/responses"
-	"financo/lib/matematiko"
 	"financo/models/account"
 	"financo/models/transaction"
 	"time"
@@ -90,25 +89,6 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 
 	if target.Currency == source.Currency {
 		record.TargetAmount = record.SourceAmount
-	}
-
-	// Flip the transaction if the any of the amounts are negative
-	if record.SourceAmount < 0 || record.TargetAmount < 0 {
-		targetAmount := matematiko.Abs(record.TargetAmount)
-		sourceAmount := matematiko.Abs(record.SourceAmount)
-
-		record.SourceAmount = targetAmount
-		record.TargetAmount = sourceAmount
-
-		record.SourceID, record.TargetID = record.TargetID, record.SourceID
-		record.SourceAmount, record.TargetAmount = record.TargetAmount, record.SourceAmount
-
-		switch record.Metadata.Kind {
-		case transaction.Expense:
-			record.Metadata.Kind = transaction.Income
-		case transaction.Income:
-			record.Metadata.Kind = transaction.Expense
-		}
 	}
 
 	err = c.update.Save(ctx, record)
