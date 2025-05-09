@@ -285,9 +285,15 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     const targetAmount = form.getValues("targetAmount")
 
                     // An expense transaction becomes an income transaction when switching direction.
-                    if (kind === "expense") form.setValue("kind", "income")
+                    if (kind === "expense") {
+                      form.setValue("kind", "income")
+                      setKind("income")
+                    }
                     // An income transaction becomes an expense transaction when switching direction.
-                    if (kind === "income") form.setValue("kind", "expense")
+                    if (kind === "income") {
+                      form.setValue("kind", "expense")
+                      setKind("expense")
+                    }
                     // A transfer transaction does not change its kind because it maintains its behavior
 
                     // When the transaction does not contain a MULTI currency account aka. category, the transaction
@@ -604,7 +610,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               <FormItem className={cn("relative", !withConversionRate && "col-span-2")}>
                 <AmountInput
                   value={field.value}
-                  kind={form.getValues("kind")}
+                  kind={kind}
                   currency={
                     accounts.get(form.getValues("sourceId"))!.currency === "MULTI"
                       ? form.getValues("currency")
