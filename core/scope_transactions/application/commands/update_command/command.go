@@ -2,10 +2,11 @@ package update_command
 
 import (
 	"context"
+	"errors"
 	"financo/core/domain/commands"
 	core_repos "financo/core/domain/repositories"
 	"financo/core/scope_transactions/domain/brokers"
-	"financo/core/scope_transactions/domain/errors"
+	errs "financo/core/scope_transactions/domain/errors"
 	"financo/core/scope_transactions/domain/messages"
 	"financo/core/scope_transactions/domain/repositories"
 	"financo/core/scope_transactions/domain/requests"
@@ -42,7 +43,6 @@ func New(
 func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	var (
 		timestamp = time.Now().UTC()
-		record    = c.req.ToTransactionRecord(timestamp)
 
 		previous transaction.Record
 		source   account.Record
@@ -50,11 +50,24 @@ func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 		res      responses.Detailed
 	)
 
-	if record.SourceID == record.TargetID {
-		return res, errors.ErrCircularTransaction
+	record, err := c.req.ToTransactionRecord(timestamp)
+	if err != nil {
+		return res, errors.Join(errors.New("update_command: failed to parse request"), err)
 	}
 
-	previous, err := c.transactions.Find(ctx, record.ID)
+	if record.SourceID == record.TargetID {
+		return res, errs.ErrCircularTransaction
+	}
+
+	if len(record.Notes.Val) > 1_000 {
+		return res, errs.ErrTransactionNotesTooLong
+	}
+
+	if record.SourceAmount == 0 || record.TargetAmount == 0 {
+		return res, errs.ErrTransactionAmountZero
+	}
+
+	previous, err = c.transactions.Find(ctx, record.ID)
 	if err != nil {
 		return res, err
 	}

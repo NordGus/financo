@@ -15,6 +15,7 @@ interface Props {
   selected: number | null
   onSelected: (kind: Kind, id: number) => void
   kind?: Kind
+  ignore?: number
 }
 
 interface Sections {
@@ -59,7 +60,7 @@ function isTransfer(account: Account) {
   }
 }
 
-export function TransactionTargetPicker({ selected, onSelected, kind = "income" }: Props) {
+export function TransactionTargetPicker({ selected, onSelected, ignore, kind = "income" }: Props) {
   const [tab, setTab] = useState<Kind>(kind)
 
   const { accounts, accountsChildren } = use(AccountsContext)
@@ -68,6 +69,7 @@ export function TransactionTargetPicker({ selected, onSelected, kind = "income" 
     const entries = Array.from(accounts.values())
       .filter(({ parentId }) => !parentId)
       .filter(({ archivedAt }) => !archivedAt)
+      .filter(({ id }) => ignore !== id)
 
     return {
       income: entries.filter(isIncome),
@@ -99,7 +101,9 @@ export function TransactionTargetPicker({ selected, onSelected, kind = "income" 
         <div className="grid grid-cols-4 gap-2 items-start">
           {
             sections.income.filter(({ kind }) => kind === "income").map((account) => {
-              const children = accountsChildren.get(account.id)
+              const children = accountsChildren.get(account.id)?.
+                filter(({ id, archivedAt }) => !archivedAt || id === selected)?.
+                filter(({ id }) => id !== ignore || id === selected)
 
               return (
                 <Fragment key={`target.account.income.${account.id}.group`}>
@@ -140,7 +144,9 @@ export function TransactionTargetPicker({ selected, onSelected, kind = "income" 
         <div className="grid grid-cols-4 gap-2 items-start">
           {
             sections.expense.filter(({ kind }) => kind === "expense").map((account) => {
-              const children = accountsChildren.get(account.id)
+              const children = accountsChildren.get(account.id)?.
+                filter(({ id, archivedAt }) => !archivedAt || id === selected)?.
+                filter(({ id }) => id !== ignore || id === selected)
 
               return (
                 <Fragment key={`target.account.expense.${account.id}.group`}>
@@ -178,48 +184,56 @@ export function TransactionTargetPicker({ selected, onSelected, kind = "income" 
         </div>
       </TabsContent>
       <TabsContent value="transfer" className="no-scrollbar">
-        <p className="text-xl mb-2">Capital</p>
         {
-          sections.transfer.filter(({ kind }) => kind === "capital").map((account) => (
-            <PreviewAccount
-              key={`target.account.transfer.${account.id}`}
-              account={account}
-              onClick={() => onClick(account.id)}
-              selected={selected === account.id}
-            />
+          sections.transfer.filter(({ kind }) => kind === "capital").map((account, idx) => (
+            <>
+              {idx === 0 && <p className="text-xl mb-2">Capital</p>}
+              <PreviewAccount
+                key={`target.account.transfer.${account.id}`}
+                account={account}
+                onClick={() => onClick(account.id)}
+                selected={selected === account.id}
+              />
+            </>
           ))
         }
-        <p className="text-xl mb-2">Savings</p>
         {
-          sections.transfer.filter(({ kind }) => kind === "savings").map((account) => (
-            <PreviewAccount
-              key={`target.account.transfer.${account.id}`}
-              account={account}
-              onClick={() => onClick(account.id)}
-              selected={selected === account.id}
-            />
+          sections.transfer.filter(({ kind }) => kind === "savings").map((account, idx) => (
+            <>
+              {idx === 0 && <p className="text-xl mb-2">Savings</p>}
+              <PreviewAccount
+                key={`target.account.transfer.${account.id}`}
+                account={account}
+                onClick={() => onClick(account.id)}
+                selected={selected === account.id}
+              />
+            </>
           ))
         }
-        <p className="text-xl mb-2">Debts</p>
         {
-          sections.transfer.filter(({ kind }) => kind === "debt").map((account) => (
-            <PreviewAccount
-              key={`target.account.transfer.${account.id}`}
-              account={account}
-              onClick={() => onClick(account.id)}
-              selected={selected === account.id}
-            />
+          sections.transfer.filter(({ kind }) => kind === "debt").map((account, idx) => (
+            <>
+              {idx === 0 && <p className="text-xl mb-2">Debts</p>}
+              <PreviewAccount
+                key={`target.account.transfer.${account.id}`}
+                account={account}
+                onClick={() => onClick(account.id)}
+                selected={selected === account.id}
+              />
+            </>
           ))
         }
-        <p className="text-xl mb-2">Credit</p>
         {
-          sections.transfer.filter(({ kind }) => kind === "credit").map((account) => (
-            <PreviewAccount
-              key={`target.account.transfer.${account.id}`}
-              account={account}
-              onClick={() => onClick(account.id)}
-              selected={selected === account.id}
-            />
+          sections.transfer.filter(({ kind }) => kind === "credit").map((account, idx) => (
+            <>
+              {idx === 0 && <p className="text-xl mb-2">Credit</p>}
+              <PreviewAccount
+                key={`target.account.transfer.${account.id}`}
+                account={account}
+                onClick={() => onClick(account.id)}
+                selected={selected === account.id}
+              />
+            </>
           ))
         }
       </TabsContent>

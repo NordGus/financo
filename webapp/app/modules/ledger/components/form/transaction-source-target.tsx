@@ -78,6 +78,7 @@ export function TransactionSource({ id, kind, onChange, targetId, disabled }: Pr
                       onChange(newKind, id)
                     }}
                     kind={kind}
+                    ignore={targetId}
                   />
                 )
                 : (
@@ -146,6 +147,7 @@ export function TransactionTarget({ id, kind, onChange, targetId, disabled }: Pr
                       onChange(newKind, id)
                     }}
                     kind={kind}
+                    ignore={targetId}
                   />
                 )
             }
