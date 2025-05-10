@@ -6,6 +6,7 @@ import { cn } from "~/lib/utils";
 import { AccountListingIcon } from "~/modules/shared/components/icons/account-icon";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
+import { Currency } from "~/modules/shared/types/currency";
 import { Account } from "../types/accounts";
 import { Transaction } from "../types/transactions";
 
@@ -59,9 +60,6 @@ export function Entry({
     : start.parentId === targetParent?.id
       ? targetParent
       : null
-  const amount = dest.id === transaction.sourceId
-    ? transaction.sourceAmount
-    : transaction.targetAmount
   const destParent = dest.parentId === sourceParent?.id
     ? sourceParent
     : dest.parentId === targetParent?.id
@@ -88,7 +86,9 @@ export function Entry({
         className="size-8 [&_svg]:size-6 z-0"
       />
       <div>
-        <span className="mb-1.5 leading-none">{accountName(start, startParent)}</span>
+        <span className="mb-1.5 leading-none">
+          {accountName(start, startParent)}
+        </span>
         <div className="flex gap-1 items-center text-xs [&_svg]:size-4 text-muted-foreground">
           <span className="leading-none">
             <DynamicIcon name={dest.icon} />
@@ -98,9 +98,18 @@ export function Entry({
           </span>
         </div>
       </div>
-      <span className={cn("text-right leading-none", currencyAmountColor(amountColorCode(transaction)))}>
-        {currencyAmountToHuman(amount, transaction.currency)}
-      </span>
+      <div className="flex flex-col justify-between">
+        <span className={cn("text-right leading-none", currencyAmountColor(amountColorCode(transaction)))}>
+          {currencyAmountToHuman(transaction.targetAmount, transaction.currency)}
+        </span>
+        {
+          transaction.currency !== dest.currency && (
+            <span className={cn("text-right text-xs leading-none", currencyAmountColor(amountColorCode(transaction)))}>
+              {currencyAmountToHuman(transaction.sourceAmount, dest.currency as Currency)}
+            </span>
+          )
+        }
+      </div>
     </Link>
   )
 }

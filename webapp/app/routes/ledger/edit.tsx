@@ -5,6 +5,7 @@ import {
   useNavigation
 } from "react-router";
 import { cn } from "~/lib/utils";
+import { destroy as destroyTransaction } from "~/modules/ledger/api/commands/destroy";
 import { update as updateTransaction } from "~/modules/ledger/api/commands/update";
 import { get as getTransactionQuery } from "~/modules/ledger/api/queries/transactions/get";
 import { FormTemplate } from "~/modules/ledger/components/form-template";
@@ -43,7 +44,7 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 
   switch (data.intent) {
     case "destroy":
-      // TODO: implement delete transaction
+      await destroyTransaction(id)
 
       return redirect(`/ledger?${createSearchParams(searchParams)}`)
     case "update":
