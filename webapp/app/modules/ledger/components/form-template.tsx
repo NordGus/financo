@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { ArrowLeftRight, Save, Trash } from "lucide-react";
+import { ArrowLeftRight, Save, Trash, X } from "lucide-react";
 import { ComponentProps, use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useFetcher } from "react-router";
@@ -10,6 +10,7 @@ import { cn } from "~/lib/utils";
 import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input";
 import { FullScreenThrobber, Throbber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "~/modules/shared/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -239,22 +240,42 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
           <div className="col-span-2 flex gap-2 items-center">
             {
               role === "update" && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size={"icon"}
-                      onClick={onDestroy}
-                      disabled={isHistoryTransaction}
-                    >
-                      <Trash />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {"Delete Transaction"}
-                  </TooltipContent>
-                </Tooltip>
+                <Dialog>
+                  <Tooltip>
+                    <DialogTrigger asChild disabled={isHistoryTransaction}>
+                      <TooltipTrigger asChild>
+                        <Button type="button" variant="destructive" size={"icon"}>
+                          <Trash />
+                        </Button>
+                      </TooltipTrigger>
+                    </DialogTrigger>
+                    <TooltipContent>
+                      {"Delete Transaction"}
+                    </TooltipContent>
+                  </Tooltip>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {`Do you want to delete this transaction?`}
+                      </DialogTitle>
+                      <DialogDescription>
+                        {`This action is irreversible.`}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant={"outline"} type="button">
+                          <X /> Cancel
+                        </Button>
+                      </DialogClose>
+                      <DialogClose asChild>
+                        <Button onClick={onDestroy} variant={"destructive"} type="button">
+                          <Trash /> Delete
+                        </Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               )
             }
             <span className="flex-grow contents-[' ']" />
