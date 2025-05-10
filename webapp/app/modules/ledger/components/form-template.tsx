@@ -133,7 +133,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     form.setValue("executedAt", transaction.executedAt)
     form.setValue("currency", transaction.currency)
     form.setValue("kind", transaction.kind)
-    form.setValue("notes", transaction.notes)
+    form.setValue("notes", transaction.notes ?? "")
 
     setIsPendingTransaction(!transaction.executedAt)
     setWithConversionRate(isWithConversionRate(
