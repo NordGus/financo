@@ -5,6 +5,7 @@ import (
 	"financo/cmd/web/api/json/handlers/transactions/create_handler"
 	"financo/cmd/web/api/json/handlers/transactions/destroy_handler"
 	"financo/cmd/web/api/json/handlers/transactions/executed_handler"
+	"financo/cmd/web/api/json/handlers/transactions/pending_handler"
 	"financo/cmd/web/api/json/handlers/transactions/show_handler"
 	"financo/cmd/web/api/json/handlers/transactions/update_handler"
 
@@ -15,6 +16,7 @@ func Routes(r chi.Router) {
 	r.Get("/", executed_handler.HandlerFunc)
 	r.Post("/", create_handler.HandlerFunc)
 	r.Get("/accounts", accounts_handler.HandlerFunc)
+	r.Get("/pending", pending_handler.HandlerFunc)
 
 	r.Route("/{id}", func(transaction chi.Router) {
 		transaction.Get("/", show_handler.HandlerFunc)
