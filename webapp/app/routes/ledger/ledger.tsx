@@ -34,7 +34,7 @@ export default function Index({ loaderData: { executedTransactions }, matches }:
           )}
         />
         <div className="my-4 grow border rounded-lg overflow-clip">
-          <TransactionsSearchResults transactions={executedTransactions} accounts={accountsMap} />
+          <TransactionsSearchResults transactions={executedTransactions} accounts={accountsMap} futureEnable />
         </div>
       </section>
       <Outlet />
