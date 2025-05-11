@@ -5,6 +5,7 @@ import (
 	"financo/core/domain/databases"
 	"financo/core/scope_transactions/domain/filters"
 	"financo/core/scope_transactions/domain/repositories"
+	"financo/models/account"
 	"financo/models/transaction"
 	"fmt"
 )
@@ -173,6 +174,8 @@ func (r *repository) PendingWhere(ctx context.Context, f filters.Pending) ([]tra
 		count++
 	}
 
+	query += fmt.Sprintf(" AND src.kind != $%d AND trg.kind != $%d", count, count)
+	args = append(args, account.History)
 	rows, err := conn.QueryContext(ctx, query, args...)
 
 	if err != nil {
