@@ -10,12 +10,12 @@ import (
 )
 
 type query struct {
-	req          requests.Executed
+	req          requests.Pending
 	transactions repositories.TransactionsRepository
 }
 
 func New(
-	req requests.Executed,
+	req requests.Pending,
 	transactions repositories.TransactionsRepository,
 ) queries.Query[[]responses.Detailed] {
 	return &query{
