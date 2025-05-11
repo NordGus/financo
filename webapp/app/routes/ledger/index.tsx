@@ -1,7 +1,7 @@
 import { Info } from "lucide-react";
 import { useLocation, useNavigation } from "react-router";
 import { cn } from "~/lib/utils";
-import { list as listTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list-pending";
+import { list as listPendingTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list-pending";
 import { TransactionsSearchResults } from "~/modules/ledger/components/transactions-search-results";
 import { mapToPendingTransactions } from "~/modules/ledger/types/transactions";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
@@ -12,7 +12,7 @@ import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-
 import { Route } from "./+types/index";
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
-  const transactions = await listTransactionsQuery(getFilters(request))
+  const transactions = await listPendingTransactionsQuery(getFilters(request))
 
   const pendingTransactions = mapToPendingTransactions(transactions)
 
