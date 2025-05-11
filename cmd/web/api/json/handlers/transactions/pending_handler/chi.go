@@ -1,17 +1,15 @@
-package executed_handler
+package pending_handler
 
 import (
 	"encoding/json"
-	"financo/core/scope_transactions/application/queries/executed_query"
+	"financo/core/scope_transactions/application/queries/pending_query"
 	"financo/core/scope_transactions/domain/requests"
 	"financo/core/scope_transactions/infrastructure/repositories/transactions_repository"
-	"financo/lib/nullable"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func HandlerFunc(w http.ResponseWriter, r *http.Request) {
@@ -19,31 +17,9 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 		db           = postgresql_database.New()
 		transactions = transactions_repository.NewPostgreSQL(db)
 
-		req requests.Executed
+		req requests.Pending
 		err error
 	)
-
-	req.From, err = parseDate(r, "from")
-	if err != nil {
-		log.Println("failed to parsed from", err)
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
-
-	req.To, err = parseDate(r, "to")
-	if err != nil {
-		log.Println("failed to parsed to", err)
-		http.Error(
-			w,
-			http.StatusText(http.StatusInternalServerError),
-			http.StatusInternalServerError,
-		)
-		return
-	}
 
 	req.AccountIDs, err = parseIds(r, "accounts")
 	if err != nil {
@@ -67,7 +43,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := executed_query.New(req, transactions).Find(r.Context())
+	res, err := pending_query.New(req, transactions).Find(r.Context())
 	if err != nil {
 		log.Println("query failed", err)
 		http.Error(
@@ -100,18 +76,6 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Add("Content-Type", "application/json")
-}
-
-func parseDate(r *http.Request, param string) (nullable.Type[time.Time], error) {
-	var out nullable.Type[time.Time]
-
-	if !r.URL.Query().Has(param) {
-		return out, nil
-	}
-
-	raw, err := time.Parse(time.DateOnly, r.URL.Query().Get(param))
-
-	return nullable.New(raw), err
 }
 
 func parseIds(r *http.Request, param string) ([]int64, error) {

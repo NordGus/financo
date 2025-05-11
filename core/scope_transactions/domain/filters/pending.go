@@ -1,14 +1,6 @@
-package requests
+package filters
 
-import (
-	"financo/lib/nullable"
-	"time"
-)
-
-type Executed struct {
-	From nullable.Type[time.Time]
-	To   nullable.Type[time.Time]
-
+type Pending struct {
 	// AccountIDs are the ids for the account.Records that are accounts for the
 	// user and don't represent income or expense categories. Debt Accounts
 	// overlap with categories.

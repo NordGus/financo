@@ -73,11 +73,13 @@ export function Entry({
   return (
     <Link
       to={{ pathname, search, hash }}
-      className={cn(
-        "grid grid-cols-[min-content_1fr_1fr] items-top gap-2 p-2 hover:bg-muted cursor-pointer",
-        futureEnable && inTheFuture && "relative before:absolute before:inset-0 before:bg-background/50",
-      )}
+      className="grid grid-cols-[min-content_1fr_1fr] items-top gap-2 p-2 hover:bg-muted cursor-pointer relative"
     >
+      {
+        futureEnable && inTheFuture && (
+          <span className="absolute inset-0 bg-background/50 z-10" />
+        )
+      }
       <AccountListingIcon
         kind={start.kind}
         icon={start.icon}

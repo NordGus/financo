@@ -40,10 +40,15 @@ export interface ExecutedTransaction extends Transaction {
   executedAt: string
 }
 
+export interface PendingTransaction extends Transaction {
+  executedAt: null
+}
+
 export type Period = "unlimited" | "daily" | "weekly" | "monthly" | "yearly" | "custom"
 
 export type Transactions = [string, Transaction[]][]
 export type ExecutedTransactions = [string, ExecutedTransaction[]][]
+export type PendingTransactions = [string, PendingTransaction[]][]
 
 export type SearchAction = (
   filter: Filters,
@@ -65,4 +70,19 @@ export function mapToExecutedTransactions(transactions: Transaction[]): Executed
         return acc
       }, {}))
     .sort((a, b) => Date.parse(b[0]) - Date.parse(a[0]))
+}
+
+export function mapToPendingTransactions(transactions: Transaction[]): PendingTransactions {
+  return Object.entries(
+    transactions.filter(({ executedAt }) => executedAt === null)
+      .reduce<Record<string, PendingTransaction[]>>((acc, transaction) => {
+        const pending = transaction as PendingTransaction
+        const key = pending.issuedAt
+
+        if (!acc[key]) acc[key] = [{ ...pending }]
+        else acc[key].push({ ...pending })
+
+        return acc
+      }, {}))
+    .sort((a, b) => Date.parse(a[0]) - Date.parse(b[0]))
 }
