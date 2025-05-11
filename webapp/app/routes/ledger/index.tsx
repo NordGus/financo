@@ -47,7 +47,7 @@ export default function Index({ loaderData: { pendingTransactions }, matches }: 
               <div className="flex gap-4 items-center">
                 <Heading3>Pending Transactions</Heading3>
                 <Tooltip>
-                  <TooltipTrigger className="[&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground">
+                  <TooltipTrigger className="[&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground cursor-pointer">
                     <Info />
                   </TooltipTrigger>
                   <TooltipContent>
