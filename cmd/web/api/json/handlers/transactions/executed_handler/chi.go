@@ -58,7 +58,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 
 	req.CategoryIDs, err = parseIds(r, "categories")
 	if err != nil {
-		log.Println("failed to parsed id", err)
+		log.Println("failed to parsed categories", err)
 		http.Error(
 			w,
 			http.StatusText(http.StatusInternalServerError),
