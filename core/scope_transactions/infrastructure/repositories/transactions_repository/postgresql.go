@@ -117,3 +117,94 @@ func (r *repository) Where(ctx context.Context, f filters.List) ([]transaction.R
 
 	return out, nil
 }
+
+func (r *repository) PendingWhere(ctx context.Context, f filters.Pending) ([]transaction.Record, error) {
+	var (
+		out   = make([]transaction.Record, 0, 50)
+		args  = make([]any, 0, 2)
+		count = 1
+	)
+
+	conn, err := r.db.Conn(ctx)
+	if err != nil {
+		return out, err
+	}
+	defer conn.Close()
+
+	query := `
+	SELECT
+		tr.id,
+		tr.source_id,
+		tr.target_id,
+		tr.issued_at,
+		tr.executed_at,
+		tr.source_amount,
+		tr.target_amount,
+		tr.notes,
+		tr.currency,
+		tr.deleted_at,
+		tr.created_at,
+		tr.updated_at,
+		tr.metadata
+	FROM
+		transactions tr
+		INNER JOIN accounts src ON src.id = tr.source_id
+		INNER JOIN accounts trg ON trg.id = tr.target_id
+	WHERE
+		tr.deleted_at IS NULL
+		AND tr.executed_at IS NULL
+	`
+
+	if len(f.AccountIDs) > 0 {
+		query += fmt.Sprintf(" AND (src.id = ANY ($%d) OR trg.id = ANY ($%d))", count, count)
+		args = append(args, f.AccountIDs)
+		count++
+	}
+
+	if len(f.CategoryIDs) > 0 {
+		query += fmt.Sprintf(
+			" AND (src.id = ANY ($%d) OR src.parent_id = ANY ($%d) OR trg.id = ANY ($%d) OR trg.parent_id = ANY ($%d))",
+			count,
+			count,
+			count,
+			count,
+		)
+		args = append(args, f.CategoryIDs)
+		count++
+	}
+
+	rows, err := conn.QueryContext(ctx, query, args...)
+
+	if err != nil {
+		return out, err
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var r transaction.Record
+
+		err = rows.Scan(
+			&r.ID,
+			&r.SourceID,
+			&r.TargetID,
+			&r.IssuedAt,
+			&r.ExecutedAt,
+			&r.SourceAmount,
+			&r.TargetAmount,
+			&r.Notes,
+			&r.Currency,
+			&r.DeletedAt,
+			&r.CreatedAt,
+			&r.UpdatedAt,
+			&r.Metadata,
+		)
+		if err != nil {
+			return out, err
+		}
+
+		out = append(out, r)
+	}
+
+	return out, nil
+}

@@ -8,4 +8,5 @@ import (
 
 type TransactionsRepository interface {
 	Where(ctx context.Context, f filters.List) ([]transaction.Record, error)
+	PendingWhere(ctx context.Context, f filters.Pending) ([]transaction.Record, error)
 }
