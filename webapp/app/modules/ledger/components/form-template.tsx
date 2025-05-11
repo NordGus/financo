@@ -602,12 +602,16 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               <FormItem className="col-span-2">
                 <CurrencyInput
                   onValueChange={(currency) => {
-                    setWithConversionRate(isWithConversionRate(
-                      accounts.get(form.getValues("sourceId"))!,
-                      accounts.get(form.getValues("targetId"))!,
-                      currency
-                    ))
+                    const source = accounts.get(form.getValues("sourceId"))!
+                    const target = accounts.get(form.getValues("targetId"))!
+                    const sourceAmount = form.getValues("sourceAmount")
 
+                    if (
+                      (source.currency === "MULTI" || target.currency === "MULTI") &&
+                      (source.currency === currency || target.currency === currency)
+                    ) form.setValue("targetAmount", sourceAmount)
+
+                    setWithConversionRate(isWithConversionRate(source, target, currency))
                     field.onChange(currency)
                   }}
                   defaultValue={field.value}
