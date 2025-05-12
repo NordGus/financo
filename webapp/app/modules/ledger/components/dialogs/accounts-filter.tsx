@@ -114,10 +114,17 @@ export function AccountsFilter({
           <DialogTrigger asChild>
             <Button
               variant={"outline"}
-              className={cn("cursor-pointer", className)}
+              className={cn("cursor-pointer relative", className)}
               {...props}
             >
               <Funnel /> Accounts
+              {
+                state.ids.length > 0 && (
+                  <span className="bg-foreground rounded-full size-4 text-xs text-accent absolute -top-1 -right-1">
+                    {state.ids.length}
+                  </span>
+                )
+              }
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
@@ -129,7 +136,7 @@ export function AccountsFilter({
         <DialogHeader>
           <DialogTitle>Filter By Accounts</DialogTitle>
           <DialogDescription>
-            {"Select which Accounts you to filter the ledger's transaction"}
+            {"Select which Accounts you to filter transactions by"}
           </DialogDescription>
         </DialogHeader>
         <div className="min-h-[40dvh]">

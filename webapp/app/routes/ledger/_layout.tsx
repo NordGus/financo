@@ -1,7 +1,6 @@
 import { FunnelX, Plus } from "lucide-react";
 import { Link, Outlet, useLocation, useResolvedPath, useSearchParams } from "react-router";
 import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts/list";
-import { AccountsFilterBar } from "~/modules/ledger/components/accounts-filter-bar";
 import { DateFilter } from "~/modules/ledger/components/date-filter";
 import { AccountsFilter } from "~/modules/ledger/components/dialogs/accounts-filter";
 import { CategoriesFilter } from "~/modules/ledger/components/dialogs/categories-filter";
@@ -62,20 +61,6 @@ export default function Layout({
     { ...filters, categories: [...ids] }
   ))
 
-  const onAccountFilterClicked = (id: number) => {
-    setSearchParams(prev => updateURLSearchParams(
-      prev,
-      { ...filters, accounts: filters.accounts.filter(selected => selected !== id) }
-    ))
-  }
-
-  const onCategoryFilterClicked = (id: number) => {
-    setSearchParams(prev => updateURLSearchParams(
-      prev,
-      { ...filters, categories: filters.categories.filter(selected => selected !== id) }
-    ))
-  }
-
   return (
     <AccountsContextProvider accounts={accounts} accountsMap={accountsMap} accountsChildren={accountsChildren}>
       <FiltersContextProvider filters={filters}>
@@ -112,8 +97,6 @@ export default function Layout({
             </TooltipContent>
           </Tooltip>
         </ToolBar>
-        <AccountsFilterBar selected={filters.accounts} onSelectedClick={onAccountFilterClicked} />
-        <AccountsFilterBar selected={filters.categories} onSelectedClick={onCategoryFilterClicked} />
         <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 justify-stretch items-stretch gap-4 px-4">
           <Outlet />
         </div>
