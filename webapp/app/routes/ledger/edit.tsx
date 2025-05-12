@@ -78,7 +78,7 @@ export default function Edit({ loaderData: { transaction }, matches }: Route.Com
   return (
     <CurrenciesContextProvider currencies={currencies}>
       <AccountsContextProvider accounts={accounts} accountsMap={accountsMap} accountsChildren={accountsChildren}>
-        <section className="flex flex-col h-full max-h-full py-4 overflow-hidden relative">
+        <section className="flex flex-col py-2 overflow-hidden relative">
           <FullScreenThrobber
             className={cn(
               "absolute inset-0 z-50",
