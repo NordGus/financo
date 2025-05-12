@@ -32,7 +32,7 @@ export function PeriodShortcuts({
             Pick a Date Range
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="max-w-[15dvw]" side="right">
           {"Transactions by a custom date range, you have to pick the date range"}
         </TooltipContent>
       </Tooltip>
@@ -47,7 +47,7 @@ export function PeriodShortcuts({
             Pick a Day
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="max-w-[15dvw]" side="right">
           {"Transactions by calendar day, you have to pick the date"}
         </TooltipContent>
       </Tooltip>
@@ -62,7 +62,7 @@ export function PeriodShortcuts({
             Today
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="max-w-[15dvw]" side="right">
           {`Transactions by calendar day, starting at today ${format(today, "PPP")}`}
         </TooltipContent>
       </Tooltip>
@@ -77,7 +77,7 @@ export function PeriodShortcuts({
             Week
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="max-w-[15dvw]" side="right">
           {`Transactions by calendar week, starting at the current week between ${format(startOfWeek(today), "PPP")} and ${format(endOfWeek(today), "PPP")}`}
         </TooltipContent>
       </Tooltip>
@@ -92,7 +92,7 @@ export function PeriodShortcuts({
             Month
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="max-w-[15dvw]" side="right">
           {`Transaction by calendar month, staring at the current month of ${format(today, "MMMM, yyyy")}`}
         </TooltipContent>
       </Tooltip>
@@ -107,7 +107,7 @@ export function PeriodShortcuts({
             Year
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="max-w-[15dvw]" side="right">
           {`Transaction by calendar year, staring at the current year of ${format(today, "yyyy")}`}
         </TooltipContent>
       </Tooltip>
@@ -122,7 +122,7 @@ export function PeriodShortcuts({
             Entire Ledger
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="max-w-[15dvw]" side="right">
           {"All the Transactions in the ledger"}
         </TooltipContent>
       </Tooltip>
