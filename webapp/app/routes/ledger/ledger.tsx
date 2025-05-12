@@ -52,7 +52,7 @@ export default function Index({
         {
           pendingTransactions.length > 0 && (
             <Accordion
-              className="max-h-[45dvh] flex flex-col justify-stretch"
+              className="max-h-[35dvh] flex flex-col justify-stretch"
               type="single"
               collapsible
             >
