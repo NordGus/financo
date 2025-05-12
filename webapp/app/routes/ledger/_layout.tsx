@@ -114,7 +114,7 @@ export default function Layout({
         </ToolBar>
         <AccountsFilterBar selected={filters.accounts} onSelectedClick={onAccountFilterClicked} />
         <AccountsFilterBar selected={filters.categories} onSelectedClick={onCategoryFilterClicked} />
-        <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 gap-4 px-4">
+        <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 justify-stretch items-stretch gap-4 px-4">
           <Outlet />
         </div>
       </FiltersContextProvider>
