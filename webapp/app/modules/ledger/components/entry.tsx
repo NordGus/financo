@@ -1,9 +1,11 @@
 import { isFuture } from "date-fns";
+import { NotepadText } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useMemo } from "react";
 import { Link, useLocation, useResolvedPath } from "react-router";
 import { cn } from "~/lib/utils";
 import { AccountListingIcon } from "~/modules/shared/components/icons/account-icon";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
 import { Currency } from "~/modules/shared/types/currency";
@@ -88,8 +90,24 @@ export function Entry({
         className="size-8 [&_svg]:size-6 z-0"
       />
       <div>
-        <span className="mb-1.5 leading-none">
-          {accountName(start, startParent)}
+        <span className="mb-1.5 flex gap-2 items-center">
+          <span className="leading-none">
+            {accountName(start, startParent)}
+          </span>
+          {
+            transaction.notes !== null && transaction.notes.length > 0 && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="[&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground cursor-pointer">
+                    <NotepadText />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-[25dvw]">
+                  {transaction.notes}
+                </TooltipContent>
+              </Tooltip>
+            )
+          }
         </span>
         <div className="flex gap-1 items-center text-xs [&_svg]:size-4 text-muted-foreground">
           <span className="leading-none">
