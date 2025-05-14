@@ -13,6 +13,7 @@ type Props = {
   transactions: ExecutedTransaction[]
   accounts: Accounts
   title: string
+  currency: Currency
 }
 
 type ChartEntry = {
@@ -22,8 +23,7 @@ type ChartEntry = {
   fill: string
 }
 
-export function TransactionsByCategory({ transactions, accounts, title }: Props) {
-  const currency = "EUR"
+export function TransactionsByCategory({ transactions, accounts, title, currency }: Props) {
   const baseConfig = {
     amount: {
       label: "Amount"
