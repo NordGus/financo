@@ -35,7 +35,7 @@ type Currency =
   Currencies["GBP"];
 
 type Entry = {
-  code: SystemCurrency
+  code: Currency
   name: string
 };
 
