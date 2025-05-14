@@ -1,6 +1,7 @@
 import { useLocation, useNavigation } from "react-router";
 import { cn } from "~/lib/utils";
 import { list as listTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list";
+import { TransactionsByCategory } from "~/modules/ledger/components/graphs/transactions-by-category";
 import { ExecutedTransaction } from "~/modules/ledger/types/transactions";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
@@ -32,7 +33,7 @@ export default function Index({
   // extracting data from webapp/app/modules/shared/layout.tsx's loader.
   const { data: { currencies } } = matches[1]
   // extracting data from webapp/app/routes/ledger/_layout.tsx's loader.
-  // const { data: { accountsMap, accountsChildren } } = matches[2]
+  const { data: { accountsMap } } = matches[2]
 
   const { search } = useLocation() // current location
   const { state: navigationState, location } = useNavigation() // navigation location
@@ -48,11 +49,19 @@ export default function Index({
         />
         <Heading2>Expenses</Heading2>
         <div className="flex-1">
-          Expense transactions filtered {expenseTransactions.length}
+          <TransactionsByCategory
+            transactions={expenseTransactions}
+            accounts={accountsMap}
+            title="Expenses"
+          />
         </div>
         <Heading2>Income</Heading2>
         <div className="flex-1">
-          Income transactions filtered {incomeTransactions.length}
+          <TransactionsByCategory
+            transactions={incomeTransactions}
+            accounts={accountsMap}
+            title="Income"
+          />
         </div>
       </section>
     </CurrenciesContextProvider>
