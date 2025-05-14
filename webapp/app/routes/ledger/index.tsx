@@ -5,21 +5,46 @@ import { list as listTransactionsQuery } from "~/modules/ledger/api/queries/tran
 import { TransactionsByCategory } from "~/modules/ledger/components/graphs/transactions-by-category";
 import { ExecutedTransaction } from "~/modules/ledger/types/transactions";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
+import { list as listCurrenciesQuery } from "~/modules/shared/api/queries/list-currencies";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/modules/shared/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "~/modules/shared/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "~/modules/shared/components/ui/tabs";
-import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-context";
+import { Currency } from "~/modules/shared/types/currency";
 import { Route } from "./+types/index";
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
-  const transactions = await listTransactionsQuery(getFilters(request))
+  const [transactions, currencies] = await Promise.allSettled([
+    listTransactionsQuery(getFilters(request)),
+    listCurrenciesQuery()
+  ])
 
-  const executed = transactions.filter(({ executedAt }) => executedAt !== null) as ExecutedTransaction[]
+  if (transactions.status === "rejected") throw transactions.reason
+  if (currencies.status === "rejected") throw currencies.reason
+
+  const executed = transactions.value.filter(({ executedAt }) => executedAt !== null) as ExecutedTransaction[]
 
   const incomeTransactions = executed.filter(({ metadata: { kind } }) => kind === "income")
   const expenseTransactions = executed.filter(({ metadata: { kind } }) => kind === "expense")
 
+  const incomeCurrencies = incomeTransactions.reduce(
+    (accumulator, transaction) => accumulator.add(transaction.currency),
+    new Set<Currency>
+  )
+
+  const expenseCurrencies = expenseTransactions.reduce(
+    (accumulator, transaction) => accumulator.add(transaction.currency),
+    new Set<Currency>
+  )
+
   return {
+    incomeCurrencies: currencies.value.filter(entry => incomeCurrencies.has(entry.code)),
+    expenseCurrencies: currencies.value.filter(entry => expenseCurrencies.has(entry.code)),
     incomeTransactions,
     expenseTransactions
   }
@@ -32,8 +57,6 @@ export default function Index({
   },
   matches
 }: Route.ComponentProps) {
-  // extracting data from webapp/app/modules/shared/layout.tsx's loader.
-  const { data: { currencies } } = matches[1]
   // extracting data from webapp/app/routes/ledger/_layout.tsx's loader.
   const { data: { accountsMap } } = matches[2]
 
@@ -43,42 +66,40 @@ export default function Index({
   const [summaryFor, setSummaryFor] = useState<"expense" | "income">("expense")
 
   return (
-    <CurrenciesContextProvider currencies={currencies}>
-      <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar relative my-2">
-        <FullScreenThrobber
-          className={cn(
-            "absolute inset-0 z-50",
-            (navigationState === "idle" || location?.search === search) && "hidden"
-          )}
-        />
-        <Card>
-          <CardHeader>
-            <CardTitle>Summary</CardTitle>
-            <CardDescription>
-              {"Executed Transactions by parent category for the period"}
-            </CardDescription>
-            <div className="flex justify-between items-center mt-4">
-              <Tabs value={summaryFor} onValueChange={(value) => setSummaryFor(value === "expense" ? value : "income")}>
-                <TabsList>
-                  <TabsTrigger value="expense">
-                    Expenses
-                  </TabsTrigger>
-                  <TabsTrigger value="income">
-                    Income
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <TransactionsByCategory
-              transactions={summaryFor === "expense" ? expenseTransactions : incomeTransactions}
-              accounts={accountsMap}
-              title={summaryFor === "expense" ? "Expenses" : "Income"}
-            />
-          </CardContent>
-        </Card>
-      </section>
-    </CurrenciesContextProvider>
+    <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar relative my-2">
+      <FullScreenThrobber
+        className={cn(
+          "absolute inset-0 z-50",
+          (navigationState === "idle" || location?.search === search) && "hidden"
+        )}
+      />
+      <Card>
+        <CardHeader>
+          <CardTitle>Summary</CardTitle>
+          <CardDescription>
+            {"Executed Transactions by parent category for the period"}
+          </CardDescription>
+          <div className="flex justify-between items-center mt-4">
+            <Tabs value={summaryFor} onValueChange={(value) => setSummaryFor(value === "expense" ? value : "income")}>
+              <TabsList>
+                <TabsTrigger value="expense" disabled={expenseTransactions.length <= 0}>
+                  Expenses
+                </TabsTrigger>
+                <TabsTrigger value="income" disabled={incomeTransactions.length <= 0}>
+                  Income
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <TransactionsByCategory
+            transactions={summaryFor === "expense" ? expenseTransactions : incomeTransactions}
+            accounts={accountsMap}
+            title={summaryFor === "expense" ? "Expenses" : "Income"}
+          />
+        </CardContent>
+      </Card>
+    </section>
   )
 }
