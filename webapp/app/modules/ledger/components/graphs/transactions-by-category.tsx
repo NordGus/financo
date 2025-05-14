@@ -91,27 +91,27 @@ export function TransactionsByCategory({ transactions, accounts, title }: Props)
                 const account = accounts.get(Number(name))!
 
                 return (
-                  <span className="flex flex-col gap-1">
+                  <span
+                    className="flex items-center gap-2 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0"
+                  >
                     <span
-                      className="flex items-center gap-1 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0"
+                      className={cn(
+                        "flex justify-center items-center size-5 rounded-md",
+                        (account.kind === "expense" || account.kind === "income") && "rounded-full"
+                      )}
+                      style={{
+                        backgroundColor: account.color,
+                        color: colorContrast(account.color)
+                      }}
                     >
-                      <span
-                        className={cn(
-                          "flex justify-center items-center size-5 rounded-md",
-                          (account.kind === "expense" || account.kind === "income") && "rounded-full"
-                        )}
-                        style={{
-                          backgroundColor: account.color,
-                          color: colorContrast(account.color)
-                        }}
-                      >
-                        <DynamicIcon name={account.icon} />
-                      </span>
-                      <span className="">
-                        {account.name}
-                      </span>
+                      <DynamicIcon name={account.icon} />
                     </span>
-                    {currencyAmountToHuman(value as number, currency)}
+                    <span className="">
+                      {account.name}
+                    </span>
+                    <span className="text-right">
+                      {currencyAmountToHuman(value as number, currency)}
+                    </span>
                   </span>
                 )
               }}
