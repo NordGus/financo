@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLocation, useNavigation } from "react-router";
 import { cn } from "~/lib/utils";
 import { list as listTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list";
@@ -5,7 +6,8 @@ import { TransactionsByCategory } from "~/modules/ledger/components/graphs/trans
 import { ExecutedTransaction } from "~/modules/ledger/types/transactions";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
-import { Heading2 } from "~/modules/shared/components/ui/headings";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/modules/shared/components/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "~/modules/shared/components/ui/tabs";
 import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-context";
 import { Route } from "./+types/index";
 
@@ -38,6 +40,8 @@ export default function Index({
   const { search } = useLocation() // current location
   const { state: navigationState, location } = useNavigation() // navigation location
 
+  const [summaryFor, setSummaryFor] = useState<"expense" | "income">("expense")
+
   return (
     <CurrenciesContextProvider currencies={currencies}>
       <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar relative my-2">
@@ -47,22 +51,33 @@ export default function Index({
             (navigationState === "idle" || location?.search === search) && "hidden"
           )}
         />
-        <Heading2>Expenses</Heading2>
-        <div className="flex-1">
-          <TransactionsByCategory
-            transactions={expenseTransactions}
-            accounts={accountsMap}
-            title="Expenses"
-          />
-        </div>
-        <Heading2>Income</Heading2>
-        <div className="flex-1">
-          <TransactionsByCategory
-            transactions={incomeTransactions}
-            accounts={accountsMap}
-            title="Income"
-          />
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Summary</CardTitle>
+            <CardDescription>
+              {"Executed Transactions by parent category for the period"}
+            </CardDescription>
+            <div className="flex justify-between items-center mt-4">
+              <Tabs value={summaryFor} onValueChange={(value) => setSummaryFor(value === "expense" ? value : "income")}>
+                <TabsList>
+                  <TabsTrigger value="expense">
+                    Expenses
+                  </TabsTrigger>
+                  <TabsTrigger value="income">
+                    Income
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <TransactionsByCategory
+              transactions={summaryFor === "expense" ? expenseTransactions : incomeTransactions}
+              accounts={accountsMap}
+              title={summaryFor === "expense" ? "Expenses" : "Income"}
+            />
+          </CardContent>
+        </Card>
       </section>
     </CurrenciesContextProvider>
   )
