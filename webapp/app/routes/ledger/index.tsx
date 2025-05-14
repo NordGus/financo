@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useLocation, useNavigation } from "react-router";
 import { cn } from "~/lib/utils";
 import { list as listTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list";
@@ -14,7 +13,6 @@ import {
   CardHeader,
   CardTitle
 } from "~/modules/shared/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "~/modules/shared/components/ui/tabs";
 import { Currency } from "~/modules/shared/types/currency";
 import { Route } from "./+types/index";
 
@@ -63,8 +61,6 @@ export default function Index({
   const { search } = useLocation() // current location
   const { state: navigationState, location } = useNavigation() // navigation location
 
-  const [summaryFor, setSummaryFor] = useState<"expense" | "income">("expense")
-
   return (
     <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar relative my-2">
       <FullScreenThrobber
@@ -73,33 +69,40 @@ export default function Index({
           (navigationState === "idle" || location?.search === search) && "hidden"
         )}
       />
-      <Card>
-        <CardHeader>
-          <CardTitle>Summary</CardTitle>
-          <CardDescription>
-            {"Executed Transactions by parent category for the period"}
-          </CardDescription>
-          <div className="flex justify-between items-center mt-4">
-            <Tabs value={summaryFor} onValueChange={(value) => setSummaryFor(value === "expense" ? value : "income")}>
-              <TabsList>
-                <TabsTrigger value="expense">
-                  Expenses
-                </TabsTrigger>
-                <TabsTrigger value="income">
-                  Income
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <TransactionsByCategory
-            transactions={summaryFor === "expense" ? expenseTransactions : incomeTransactions}
-            accounts={accountsMap}
-            title={summaryFor === "expense" ? "Expenses" : "Income"}
-          />
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-2 gap-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Expenses Summary</CardTitle>
+            <CardDescription>
+              {"Expense Transactions by category for the period"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TransactionsByCategory
+              transactions={expenseTransactions}
+              accounts={accountsMap}
+              title={"Expenses"}
+              currency="EUR"
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Income Summary</CardTitle>
+            <CardDescription>
+              {"Income Transactions by category for the period"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TransactionsByCategory
+              transactions={incomeTransactions}
+              accounts={accountsMap}
+              title={"Income"}
+              currency="EUR"
+            />
+          </CardContent>
+        </Card>
+      </div>
     </section>
   )
 }
