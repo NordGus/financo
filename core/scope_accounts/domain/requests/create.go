@@ -128,8 +128,11 @@ func (req *Create) HistoryTransaction(timestamp time.Time) transaction.Record {
 		Currency:     req.Currency,
 		IssuedAt:     req.History.At.OrElse(timestamp).UTC(),
 		ExecutedAt:   req.History.At,
-		UpdatedAt:    timestamp,
-		CreatedAt:    timestamp,
+		Metadata: transaction.Metadata{
+			Kind: transaction.Transfer,
+		},
+		UpdatedAt: timestamp,
+		CreatedAt: timestamp,
 	}
 
 	// Sets the ExecutedAt value for the transaction if the request History At
@@ -144,12 +147,6 @@ func (req *Create) HistoryTransaction(timestamp time.Time) transaction.Record {
 	// is created for the case the user changes this later.
 	if !req.History.At.Valid {
 		record.DeletedAt = nullable.New(timestamp)
-	}
-
-	if req.History.Balance.OrElse(0) < 0 {
-		record.Metadata.Kind = transaction.Expense
-	} else {
-		record.Metadata.Kind = transaction.Income
 	}
 
 	return record

@@ -119,11 +119,7 @@ func (req *Update) HistoryTransaction(t transaction.Record, timestamp time.Time)
 	// Change the date into UTC
 	t.ExecutedAt.Val = t.ExecutedAt.Val.UTC()
 
-	if req.History.Balance.OrElse(0) < 0 {
-		t.Metadata.Kind = transaction.Expense
-	} else {
-		t.Metadata.Kind = transaction.Income
-	}
+	t.Metadata.Kind = transaction.Transfer
 
 	return t
 }
