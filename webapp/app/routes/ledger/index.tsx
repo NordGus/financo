@@ -82,10 +82,10 @@ export default function Index({
           <div className="flex justify-between items-center mt-4">
             <Tabs value={summaryFor} onValueChange={(value) => setSummaryFor(value === "expense" ? value : "income")}>
               <TabsList>
-                <TabsTrigger value="expense" disabled={expenseTransactions.length <= 0}>
+                <TabsTrigger value="expense">
                   Expenses
                 </TabsTrigger>
-                <TabsTrigger value="income" disabled={incomeTransactions.length <= 0}>
+                <TabsTrigger value="income">
                   Income
                 </TabsTrigger>
               </TabsList>
