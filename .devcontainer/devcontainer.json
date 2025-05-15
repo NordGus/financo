@@ -85,6 +85,11 @@
           "source.fixAll.eslint": "explicit",
           "source.organizeImports": "explicit"
         },
+        "typescript.preferences.autoImportSpecifierExcludeRegexes": [
+          "@radix-ui",
+          "radix-ui",
+          "^lucide-react/dist/lucide-react.suffixed$"
+        ],
         "[javascript]": {
           "editor.tabSize": 2
         },
