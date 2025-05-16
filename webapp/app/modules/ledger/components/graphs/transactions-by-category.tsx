@@ -78,7 +78,7 @@ export function TransactionsByCategory({ transactions, accounts, title, currency
   return (
     <ChartContainer
       config={chartConfig}
-      className="mx-auto aspect-square max-h-[300px]"
+      className="mx-auto aspect-square max-h-[250px]"
     >
       <PieChart>
         <ChartTooltip
@@ -118,7 +118,7 @@ export function TransactionsByCategory({ transactions, accounts, title, currency
             />
           }
         />
-        <Pie data={data} dataKey="amount" nameKey="category" innerRadius={100} strokeWidth={2} paddingAngle={0.5}>
+        <Pie data={data} dataKey="amount" nameKey="category" innerRadius={85} outerRadius={100} strokeWidth={2} paddingAngle={0.5}>
           <Label
             content={({ viewBox }) => {
               if (viewBox && "cx" in viewBox && "cy" in viewBox) {
