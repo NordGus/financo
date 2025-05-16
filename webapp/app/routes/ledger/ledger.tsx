@@ -9,7 +9,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
 import { Route } from "./+types/ledger";
 
-
 export async function clientLoader({ request }: Route.LoaderArgs) {
   const [executed, pending] = await Promise.allSettled([
     listTransactionsQuery(getFilters(request)),
