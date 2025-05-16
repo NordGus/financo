@@ -1,5 +1,5 @@
 import { isFuture } from "date-fns";
-import { NotepadText } from "lucide-react";
+import { ArrowDown, ArrowLeftRight, ArrowUp, NotepadText } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useMemo } from "react";
 import { Link, useLocation, useResolvedPath } from "react-router";
@@ -72,14 +72,43 @@ export function Entry({
     return transaction.executedAt && isFuture(transaction.executedAt)
   }, [transaction?.executedAt])
 
+  const amountColor = currencyAmountColor(amountColorCode(transaction))
+
+  const kindIcon = useMemo(() => {
+    switch (transaction.metadata.kind) {
+      case "expense":
+        return <ArrowDown />
+      case "income":
+        return <ArrowUp />
+      case "transfer":
+        return <ArrowLeftRight />
+    }
+  }, [transaction.metadata.kind])
+
   return (
     <Link
       to={{ pathname, search, hash }}
       className={cn(
-        "grid grid-cols-[min-content_1fr_1fr] items-top gap-2 p-2 hover:bg-muted cursor-pointer relative",
+        "grid grid-cols-[min-content_min-content_1fr_1fr] items-top gap-2 p-2 hover:bg-muted cursor-pointer relative",
         futureEnable && inTheFuture && "opacity-75"
       )}
     >
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={cn("size-8 [&_svg]:size-5 z-0 flex items-center justify-center", amountColor)}>
+            {kindIcon}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>
+          {
+            {
+              expense: "Expense",
+              income: "Income",
+              transfer: "Transfer"
+            }[transaction.metadata.kind]
+          }
+        </TooltipContent>
+      </Tooltip>
       <AccountListingIcon
         kind={start.kind}
         icon={start.icon}
@@ -117,12 +146,12 @@ export function Entry({
         </div>
       </div>
       <div className="flex flex-col justify-between">
-        <span className={cn("text-right leading-none", currencyAmountColor(amountColorCode(transaction)))}>
+        <span className={cn("text-right leading-none", amountColor)}>
           {currencyAmountToHuman(transaction.targetAmount, transaction.currency)}
         </span>
         {
           transaction.currency !== dest.currency && (
-            <span className={cn("text-right text-xs leading-none", currencyAmountColor(amountColorCode(transaction)))}>
+            <span className={cn("text-right text-xs leading-none", amountColor)}>
               {currencyAmountToHuman(transaction.sourceAmount, dest.currency as Currency)}
             </span>
           )
