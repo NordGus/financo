@@ -114,6 +114,13 @@ export default function Index({
                 {entry.name}
               </SelectItem>
             ))}
+            {
+              currencies.length === 0 && (
+                <SelectItem value={currency}>
+                  {"No Currencies Available"}
+                </SelectItem>
+              )
+            }
           </SelectContent>
         </Select>
       </div>
@@ -136,8 +143,8 @@ export default function Index({
                     currency={currency}
                   />
                 ) : (
-                  <div className="h-[250px] w-full flex flex-col justify-center items-center gap-4">
-                    <p className="text-lg">
+                  <div className="h-[250px] w-full flex flex-col justify-center items-center gap-6">
+                    <p className="text-center">
                       {"Sorry there are no Expense Transactions for the given currency and filters"}
                     </p>
                     <Button asChild>
@@ -168,8 +175,8 @@ export default function Index({
                     currency={currency}
                   />
                 ) : (
-                  <div className="h-[250px] w-full flex flex-col justify-center items-center gap-4">
-                    <p className="text-lg">
+                  <div className="h-[250px] w-full flex flex-col justify-center items-center gap-6">
+                    <p className="text-center">
                       {"Sorry there are no Income Transactions for the given currency and filters"}
                     </p>
                     <Button asChild>
