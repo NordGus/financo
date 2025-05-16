@@ -1,12 +1,10 @@
 import { Info } from "lucide-react";
-import { Outlet, useLocation, useNavigation } from "react-router";
-import { cn } from "~/lib/utils";
+import { Outlet } from "react-router";
 import { list as listTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list";
 import { list as listPendingTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list-pending";
 import { TransactionsSearchResults } from "~/modules/ledger/components/transactions-search-results";
 import { mapToExecutedTransactions, mapToPendingTransactions } from "~/modules/ledger/types/transactions";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
-import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/modules/shared/components/ui/accordion";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
 import { Route } from "./+types/ledger";
@@ -37,18 +35,9 @@ export default function Index({
 }: Route.ComponentProps) {
   const { data: { accountsMap } } = matches[2] // extracting data from webapp/app/routes/ledger/_layout.tsx's loader.
 
-  const { search } = useLocation() // current location
-  const { state: navigationState, location } = useNavigation() // navigation location
-
   return (
     <>
       <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar relative my-2">
-        <FullScreenThrobber
-          className={cn(
-            "absolute inset-0 z-50",
-            (navigationState === "idle" || location?.search === search) && "hidden"
-          )}
-        />
         {
           pendingTransactions.length > 0 && (
             <Accordion
