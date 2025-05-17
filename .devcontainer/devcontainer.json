@@ -36,7 +36,8 @@
         "GitHub.github-vscode-theme",
         "ms-azuretools.vscode-docker",
         "GitHub.copilot-chat",
-        "GitHub.copilot"
+        "GitHub.copilot",
+        "GitHub.vscode-pull-request-github"
       ],
       "settings": {
         "go.useLanguageServer": true,
