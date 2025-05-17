@@ -20,7 +20,6 @@ updates:
     labels:
       - "maintenance"
       - "ui"
-    open-pull-requests-limit: 15
   - package-ecosystem: "gomod" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
