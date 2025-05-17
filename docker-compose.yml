@@ -9,7 +9,7 @@ services:
       - valkey-data:/data
 
   postgres:
-    image: postgres:16.1
+    image: postgres:17.5
     restart: always
     environment:
       POSTGRES_USER: "financo"
