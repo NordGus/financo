@@ -1,0 +1,75 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-type: "all"
+    ignore:
+      - dependency-name: "react-day-picker"
+        versions: ["9.x", "10.x"]
+    commit-message:
+      prefix: "npm"
+      include: "scope"
+    label:
+      - "maintenance"
+      - "ui"
+    open-pull-requests-limit: 15
+  - package-ecosystem: "gomod" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-type: "all"
+    commit-message:
+      prefix: "go"
+      include: "scope"
+    label:
+      - "maintenance"
+      - "systems"
+    open-pull-requests-limit: 15
+  - package-ecosystem: "docker" # See documentation for possible values
+    directory: "/.devcontainer" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-type: "all"
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+    label:
+      - "maintenance"
+      - "dev environment"
+    open-pull-requests-limit: 15
+  - package-ecosystem: "devcontainers" # See documentation for possible values
+    directory: "/.devcontainer" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-type: "all"
+    commit-message:
+      prefix: "devcontainers"
+      include: "scope"
+    label:
+      - "maintenance"
+      - "dev environment"
+    open-pull-requests-limit: 15
+  - package-ecosystem: "docker-compose" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-type: "all"
+    commit-message:
+      prefix: "docker-compose"
+      include: "scope"
+    label:
+      - "maintenance"
+      - "dev environment"
+    open-pull-requests-limit: 15
