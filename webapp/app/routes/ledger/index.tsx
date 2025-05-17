@@ -88,10 +88,9 @@ export default function Index({
 
   return (
     <section className="flex flex-col justify-center gap-2 overflow-y-hidden no-scrollbar my-2">
-      <div className="flex gap-2">
-        <span className="flex-1 contents-[' ']" />
+      <div className="grid grid-cols-2 gap-2 justify-stretch items-stretch">
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger className="flex-1 flex justify-end">
             <Label>
               Currency
             </Label>
@@ -105,7 +104,7 @@ export default function Index({
           onValueChange={(value) => setCurrency(value as Currency)}
           disabled={currencies.length <= 0}
         >
-          <SelectTrigger className="flex-1 cursor-pointer" disabled={currencies.length <= 0}>
+          <SelectTrigger className="w-full cursor-pointer" disabled={currencies.length <= 0}>
             <SelectValue placeholder="No Currencies Available" />
           </SelectTrigger>
           <SelectContent>
