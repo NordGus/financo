@@ -1,5 +1,5 @@
 import { Funnel, FunnelPlus, Trash } from "lucide-react";
-import { ComponentProps, use, useEffect, useReducer } from "react";
+import { ComponentProps, use, useEffect, useMemo, useReducer } from "react";
 import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
 import {
@@ -25,12 +25,12 @@ interface Props {
 type State = {
   ids: number[]
   open: boolean
+  fromAction: boolean
 }
 
 const _actions = {
   OPEN_CHANGED: "OPEN_CHANGED",
   SELECTED_CHANGED: "SELECTED_CHANGED",
-  OPEN_CHANGED_WITHOUT_APPLY: "OPEN_CHANGED_WITHOUT_APPLY",
   ADDED: "ADDED",
   REMOVED: "REMOVE",
   CLEARED: "CLEARED"
@@ -39,9 +39,8 @@ const _actions = {
 type Actions = typeof _actions
 
 type Action =
-  { type: Actions["OPEN_CHANGED"], open: boolean } |
+  { type: Actions["OPEN_CHANGED"], fromAction: boolean, open: boolean, ids?: number[] } |
   { type: Actions["SELECTED_CHANGED"], ids: number[] } |
-  { type: Actions["OPEN_CHANGED_WITHOUT_APPLY"], open: boolean, ids: number[] } |
   { type: Actions["ADDED"], id: number } |
   { type: Actions["REMOVED"], id: number } |
   { type: Actions["CLEARED"] }
@@ -49,15 +48,22 @@ type Action =
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case _actions.OPEN_CHANGED:
-      return { ...state, open: action.open }
+      return {
+        ...state,
+        open: action.open,
+        fromAction: action.fromAction,
+        ids: state.fromAction
+          ? state.ids :
+          action.ids ?? []
+      }
     case _actions.SELECTED_CHANGED:
       return { ...state, ids: action.ids }
-    case _actions.OPEN_CHANGED_WITHOUT_APPLY:
-      return { ...state, open: action.open, ids: action.ids }
     case _actions.ADDED:
       return {
         ...state,
-        ids: state.ids.includes(action.id) ? [...state.ids] : [...state.ids, action.id]
+        ids: state.ids.includes(action.id)
+          ? [...state.ids]
+          : [...state.ids, action.id]
       }
     case _actions.REMOVED:
       return {
@@ -65,14 +71,15 @@ function reducer(state: State, action: Action): State {
         ids: state.ids.filter(id => id !== action.id)
       }
     case _actions.CLEARED:
-      return { open: false, ids: [] }
+      return { open: false, fromAction: true, ids: [] }
   }
 }
 
 function init(ids: number[]): State {
   return {
     ids,
-    open: false
+    open: false,
+    fromAction: false
   }
 }
 
@@ -85,17 +92,42 @@ export function AccountsFilter({
   const [state, setState] = useReducer(reducer, selected, init)
   const { accounts } = use(AccountsContext)
 
-  const activeAccounts = accounts.filter(account => isAccount(account) && !isArchived(account))
-  const archivedAccounts = accounts.filter(account => isAccount(account) && isArchived(account))
+  const activeAccounts = useMemo(
+    () => {
+      const filteredAccounts = accounts.filter(account => isAccount(account) && !isArchived(account))
+
+      return {
+        capital: filteredAccounts.filter(account => account.kind === "capital"),
+        savings: filteredAccounts.filter(account => account.kind === "savings"),
+        debts: filteredAccounts.filter(account => account.kind === "debt"),
+        credit: filteredAccounts.filter(account => account.kind === "credit"),
+      }
+    },
+    [accounts]
+  )
+
+  const archivedAccounts = useMemo(
+    () => {
+      const filteredAccounts = accounts.filter(account => isAccount(account) && isArchived(account))
+
+      return {
+        capital: filteredAccounts.filter(account => account.kind === "capital"),
+        savings: filteredAccounts.filter(account => account.kind === "savings"),
+        debts: filteredAccounts.filter(account => account.kind === "debt"),
+        credit: filteredAccounts.filter(account => account.kind === "credit"),
+      }
+    },
+    [accounts]
+  )
 
   const onOpenChange = (open: boolean) =>
-    setState({ type: _actions.OPEN_CHANGED_WITHOUT_APPLY, open, ids: selected })
+    setState({ type: _actions.OPEN_CHANGED, open, fromAction: false, ids: selected })
   const onAdd = (id: number) =>
     setState({ type: _actions.ADDED, id })
   const onRemove = (id: number) =>
     setState({ type: _actions.REMOVED, id })
   const onApply = () => {
-    setState({ type: _actions.OPEN_CHANGED, open: false })
+    setState({ type: _actions.OPEN_CHANGED, open: false, fromAction: true, ids: state.ids })
     onApplyFilters(state.ids)
   }
   const onReset = () => {
@@ -147,28 +179,28 @@ export function AccountsFilter({
             </TabsList>
             <TabsContent value={"active"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto no-scrollbar">
               <Section
-                accounts={activeAccounts.filter(({ kind }) => kind === "capital")}
+                accounts={activeAccounts.capital}
                 title="Capital"
                 selected={state.ids}
                 onAdd={onAdd}
                 onRemove={onRemove}
               />
               <Section
-                accounts={activeAccounts.filter(({ kind }) => kind === "savings")}
+                accounts={activeAccounts.savings}
                 title="Savings"
                 selected={state.ids}
                 onAdd={onAdd}
                 onRemove={onRemove}
               />
               <Section
-                accounts={activeAccounts.filter(({ kind }) => kind === "debt")}
+                accounts={activeAccounts.debts}
                 title="Debts"
                 selected={state.ids}
                 onAdd={onAdd}
                 onRemove={onRemove}
               />
               <Section
-                accounts={activeAccounts.filter(({ kind }) => kind === "credit")}
+                accounts={activeAccounts.credit}
                 title="Credit"
                 selected={state.ids}
                 onAdd={onAdd}
@@ -177,28 +209,28 @@ export function AccountsFilter({
             </TabsContent>
             <TabsContent value={"archived"} className="flex flex-wrap gap-2 max-h-[75dvh] overflow-y-auto no-scrollbar">
               <Section
-                accounts={archivedAccounts.filter(({ kind }) => kind === "capital")}
+                accounts={archivedAccounts.capital}
                 title="Capital"
                 selected={state.ids}
                 onAdd={onAdd}
                 onRemove={onRemove}
               />
               <Section
-                accounts={archivedAccounts.filter(({ kind }) => kind === "savings")}
+                accounts={archivedAccounts.savings}
                 title="Savings"
                 selected={state.ids}
                 onAdd={onAdd}
                 onRemove={onRemove}
               />
               <Section
-                accounts={archivedAccounts.filter(({ kind }) => kind === "debt")}
+                accounts={archivedAccounts.debts}
                 title="Debts"
                 selected={state.ids}
                 onAdd={onAdd}
                 onRemove={onRemove}
               />
               <Section
-                accounts={archivedAccounts.filter(({ kind }) => kind === "credit")}
+                accounts={archivedAccounts.credit}
                 title="Credit"
                 selected={state.ids}
                 onAdd={onAdd}
