@@ -48,7 +48,7 @@ updates:
       - "dev environment"
     open-pull-requests-limit: 15
   - package-ecosystem: "devcontainers" # See documentation for possible values
-    directory: "/.devcontainer" # Location of package manifests
+    directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
     allow:
