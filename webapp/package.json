@@ -48,7 +48,7 @@
     "@types/node": "^22",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.5",
-    "eslint": "^9.25.1",
+    "eslint": "^9.27.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.1.0",
     "shadcn": "^2.5.0",
