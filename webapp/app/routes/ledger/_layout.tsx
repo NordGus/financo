@@ -5,7 +5,7 @@ import { DateFilter } from "~/modules/ledger/components/date-filter";
 import { AccountsFilter } from "~/modules/ledger/components/dialogs/accounts-filter";
 import { CategoriesFilter } from "~/modules/ledger/components/dialogs/categories-filter";
 import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
-import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-contenxt";
+import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-context";
 import { Account, AccountChildren, Accounts } from "~/modules/ledger/types/accounts";
 import { noFiltersApplied, updateURLSearchParams } from "~/modules/ledger/types/filters";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
