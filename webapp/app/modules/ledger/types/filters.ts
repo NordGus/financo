@@ -17,7 +17,14 @@ import {
 } from "date-fns"
 import { URLSearchParamsInit } from "react-router"
 
-export { FiltersSearchParamsKeys, fromURLSearchParams, noFiltersApplied, toURLSearchParams, updateURLSearchParams }
+export {
+  defaultValues,
+  FiltersSearchParamsKeys,
+  fromURLSearchParams,
+  noFiltersApplied,
+  toURLSearchParams,
+  updateURLSearchParams
+}
 export type { Filters, Period }
 
 /**
