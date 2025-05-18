@@ -1,9 +1,9 @@
 import { FunnelX, Plus } from "lucide-react";
 import { Link, Outlet, useLocation, useResolvedPath, useSearchParams } from "react-router";
 import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts/list";
-import { DateFilter } from "~/modules/ledger/components/date-filter";
 import { AccountsFilter } from "~/modules/ledger/components/dialogs/accounts-filter";
 import { CategoriesFilter } from "~/modules/ledger/components/dialogs/categories-filter";
+import { TransactionsFilters } from "~/modules/ledger/components/dialogs/transactions-filters";
 import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
 import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-context";
 import { Account, AccountChildren, Accounts } from "~/modules/ledger/types/accounts";
@@ -81,7 +81,7 @@ export default function Layout({
               </Tooltip>
             )
           }
-          <DateFilter />
+          <TransactionsFilters />
           <AccountsFilter selected={filters.accounts} onApplyFilters={onApplyAccountsFilter} />
           <CategoriesFilter selected={filters.categories} onApplyFilters={onApplyCategoriesFilter} />
           <Tooltip>
