@@ -166,14 +166,15 @@ export function TransactionsFilters({ className }: ComponentProps<typeof Button>
             <Button
               variant={"outline"}
               type="button"
+              size={"icon"}
               className={cn("cursor-pointer", className)}
             >
-              <Funnel /> Filter
+              <Funnel />
             </Button>
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>
-          {"Filter Transactions by Date"}
+          {"Filter Transactions"}
         </TooltipContent>
       </Tooltip>
 
