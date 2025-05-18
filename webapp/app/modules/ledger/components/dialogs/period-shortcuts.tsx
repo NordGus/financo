@@ -20,19 +20,20 @@ export function PeriodShortcuts({
   const today = useMemo(() => new Date(), [open])
 
   return (
-    <>
+    <div className="grid grid-cols-2 gap-2">
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
-            className="cursor-pointer"
+            className="cursor-pointer col-span-2"
             variant={"secondary"}
+            size={"lg"}
             onClick={() => onOpenRangePicker(true)}
             disabled={submitting}
           >
             Pick a Date Range
           </Button>
         </TooltipTrigger>
-        <TooltipContent className="max-w-[15dvw]" side="right">
+        <TooltipContent className="max-w-[15dvw]" side="top">
           {"Transactions by a custom date range, you have to pick the date range"}
         </TooltipContent>
       </Tooltip>
@@ -41,13 +42,14 @@ export function PeriodShortcuts({
           <Button
             className="cursor-pointer"
             variant={"secondary"}
+            size={"lg"}
             onClick={() => onOpenDayPicker(true)}
             disabled={submitting}
           >
             Pick a Day
           </Button>
         </TooltipTrigger>
-        <TooltipContent className="max-w-[15dvw]" side="right">
+        <TooltipContent className="max-w-[15dvw]" side="left">
           {"Transactions by calendar day, you have to pick the date"}
         </TooltipContent>
       </Tooltip>
@@ -56,6 +58,7 @@ export function PeriodShortcuts({
           <Button
             className="cursor-pointer"
             variant={"secondary"}
+            size={"lg"}
             onClick={() => onFilterChange(today, today, "daily")}
             disabled={submitting}
           >
@@ -71,13 +74,14 @@ export function PeriodShortcuts({
           <Button
             className="cursor-pointer"
             variant={"secondary"}
+            size={"lg"}
             onClick={() => onFilterChange(startOfWeek(today), endOfWeek(today), "weekly")}
             disabled={submitting}
           >
             Week
           </Button>
         </TooltipTrigger>
-        <TooltipContent className="max-w-[15dvw]" side="right">
+        <TooltipContent className="max-w-[15dvw]" side="left">
           {`Transactions by calendar week, starting at the current week between ${format(startOfWeek(today), "PPP")} and ${format(endOfWeek(today), "PPP")}`}
         </TooltipContent>
       </Tooltip>
@@ -86,6 +90,7 @@ export function PeriodShortcuts({
           <Button
             className="cursor-pointer"
             variant={"secondary"}
+            size={"lg"}
             onClick={() => onFilterChange(startOfMonth(today), endOfMonth(today), "monthly")}
             disabled={submitting}
           >
@@ -101,13 +106,14 @@ export function PeriodShortcuts({
           <Button
             className="cursor-pointer"
             variant={"secondary"}
+            size={"lg"}
             onClick={() => onFilterChange(startOfYear(today), endOfYear(today), "yearly")}
             disabled={submitting}
           >
             Year
           </Button>
         </TooltipTrigger>
-        <TooltipContent className="max-w-[15dvw]" side="right">
+        <TooltipContent className="max-w-[15dvw]" side="left">
           {`Transaction by calendar year, staring at the current year of ${format(today, "yyyy")}`}
         </TooltipContent>
       </Tooltip>
@@ -116,6 +122,7 @@ export function PeriodShortcuts({
           <Button
             className="cursor-pointer"
             variant={"secondary"}
+            size={"lg"}
             onClick={() => onFilterChange(undefined, undefined, "unlimited")}
             disabled={submitting}
           >
@@ -126,6 +133,6 @@ export function PeriodShortcuts({
           {"All the Transactions in the ledger"}
         </TooltipContent>
       </Tooltip>
-    </>
+    </div>
   )
 }
