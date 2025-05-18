@@ -1,7 +1,9 @@
+import { format } from "date-fns";
 import { Info } from "lucide-react";
 import { Outlet } from "react-router";
 import { list as listTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list";
 import { list as listPendingTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list-pending";
+import { MoveDateRangeLink } from "~/modules/ledger/components/buttons/move-date-rage-link";
 import { TransactionsSearchResults } from "~/modules/ledger/components/transactions-search-results";
 import { mapToExecutedTransactions, mapToPendingTransactions } from "~/modules/ledger/types/transactions";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
@@ -9,10 +11,14 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
 import { Route } from "./+types/ledger";
 
+const DATE_FORMAT_STRING = "PPP"
+
 export async function clientLoader({ request }: Route.LoaderArgs) {
+  const filters = getFilters(request)
+
   const [executed, pending] = await Promise.allSettled([
-    listTransactionsQuery(getFilters(request)),
-    listPendingTransactionsQuery(getFilters(request))
+    listTransactionsQuery(filters),
+    listPendingTransactionsQuery(filters)
   ])
 
   if (executed.status === "rejected") throw executed.reason
@@ -20,6 +26,7 @@ export async function clientLoader({ request }: Route.LoaderArgs) {
 
   return {
     breadcrumb: "Ledger",
+    filters,
     executedTransactions: mapToExecutedTransactions(executed.value),
     pendingTransactions: mapToPendingTransactions(pending.value)
   }
@@ -27,6 +34,7 @@ export async function clientLoader({ request }: Route.LoaderArgs) {
 
 export default function Index({
   loaderData: {
+    filters,
     executedTransactions,
     pendingTransactions
   },
@@ -70,8 +78,46 @@ export default function Index({
             </Accordion>
           )
         }
-        <div className="flex-2 flex flex-col h-full overflow-y-auto no-scrollbar relative rounded-lg overflow-clip border">
-          <TransactionsSearchResults transactions={executedTransactions} accounts={accountsMap} futureEnable />
+        <div className="flex-2 flex flex-col h-full overflow-y-hidden rounded-lg overflow-clip border">
+          <div className="border-b flex justify-between">
+            <MoveDateRangeLink
+              direction="backwards"
+              variant={"outline"}
+              className="border-0 border-r rounded-none"
+            />
+            <span className="h-9 px-4 py-2 has-[>svg]:px-3 text-sm font-medium flex-1 inline-flex justify-center items-center">
+              {
+                filters.period === "unlimited"
+                  ? (<>{"Entire Ledger History"}</>)
+                  : filters.period === "daily"
+                    ? (
+                      <span className="font-bold">
+                        {format(filters.from!, DATE_FORMAT_STRING)}
+                      </span>
+                    )
+                    : (
+                      <span>
+                        {"From "}
+                        <span className="font-bold">
+                          {format(filters.from!, DATE_FORMAT_STRING)}
+                        </span>
+                        {" to "}
+                        <span className="font-bold">
+                          {format(filters.to!, DATE_FORMAT_STRING)}
+                        </span>
+                      </span>
+                    )
+              }
+            </span>
+            <MoveDateRangeLink
+              direction="forwards"
+              variant={"outline"}
+              className="border-0 border-l rounded-none"
+            />
+          </div>
+          <div className="flex-1 overflow-y-auto no-scrollbar relative">
+            <TransactionsSearchResults transactions={executedTransactions} accounts={accountsMap} futureEnable />
+          </div>
         </div>
       </section>
       <Outlet />
