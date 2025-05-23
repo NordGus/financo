@@ -41,7 +41,7 @@ import {
 const items = [
   {
     title: "Morning Brew",
-    url: "/",
+    url: "/morning-brew",
     icon: Coffee,
   },
   {
