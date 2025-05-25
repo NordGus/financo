@@ -5,7 +5,7 @@ import { cn } from "~/lib/utils";
 import { Period } from "../types/transactions";
 
 const iconVariants = cva(
-  "border-2 rounded-lg border-foreground p-0.5 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 font-semibold min-w-7",
+  "border-2 rounded-lg border-foreground p-0.5 [&_svg]:pointer-events-none [&_svg]:size-7 [&_svg]:shrink-0 font-semibold min-w-7 text-center",
   {
     variants: {
       size: {

@@ -11,7 +11,6 @@ export async function clientLoader({ }: Route.ClientLoaderArgs) {
   const currencies = await listCurrenciesQuery()
 
   return {
-    breadcrumb: "financo",
     currencies
   }
 }
@@ -22,7 +21,7 @@ export default function Layout({ }: Route.ComponentProps) {
 
   return (
     <SidebarProvider className="min-h-body items-stretch" defaultOpen={true}>
-      <AppSidebar className="h-dvh" />
+      <AppSidebar className="h-dvh" collapsible="icon" />
       <main className="flex flex-col grow h-dvh overflow-hidden relative">
         <FullScreenThrobber
           className={cn(

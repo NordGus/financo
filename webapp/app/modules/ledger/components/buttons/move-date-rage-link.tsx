@@ -5,7 +5,7 @@ import { createSearchParams, Link, useSearchParams } from "react-router"
 import { cn } from "~/lib/utils"
 import { Button } from "~/modules/shared/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip"
-import { FiltersContext } from "../../contexts/filters-contenxt"
+import { FiltersContext } from "../../contexts/filters-context"
 import { calculateDateRangeMovement, Movement } from "../../helpers/calculate-date-range-movement"
 import { updateURLSearchParams } from "../../types/filters"
 

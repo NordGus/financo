@@ -41,7 +41,7 @@ import {
 const items = [
   {
     title: "Morning Brew",
-    url: "/",
+    url: "/morning-brew",
     icon: Coffee,
   },
   {
@@ -115,6 +115,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
                 <SidebarMenuItem key={title}>
                   <SidebarMenuButton
                     isActive={isActive(url)}
+                    tooltip={title}
                     asChild
                   >
                     <NavLink to={url}>
@@ -136,6 +137,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
                 <SidebarMenuItem key={title}>
                   <SidebarMenuButton
                     isActive={isActive(url)}
+                    tooltip={title}
                     asChild
                   >
                     <NavLink to={url}>
@@ -155,7 +157,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild className="cursor-pointer">
-                <SidebarMenuButton>
+                <SidebarMenuButton tooltip={"User"}>
                   <User2 /> User
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>

@@ -1,17 +1,19 @@
-import { FunnelX, Plus } from "lucide-react";
-import { Link, Outlet, useLocation, useResolvedPath, useSearchParams } from "react-router";
+import { ChartNoAxesCombined, Plus } from "lucide-react";
+import { Link, Outlet, useLocation, useResolvedPath } from "react-router";
 import { list as listAccountsQuery } from "~/modules/ledger/api/queries/accounts/list";
-import { DateFilter } from "~/modules/ledger/components/date-filter";
-import { AccountsFilter } from "~/modules/ledger/components/dialogs/accounts-filter";
-import { CategoriesFilter } from "~/modules/ledger/components/dialogs/categories-filter";
+import { FiltersPanel } from "~/modules/ledger/components/filters";
 import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
-import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-contenxt";
+import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-context";
 import { Account, AccountChildren, Accounts } from "~/modules/ledger/types/accounts";
-import { noFiltersApplied, updateURLSearchParams } from "~/modules/ledger/types/filters";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
-import { ToolBar } from "~/modules/shared/components/tool-bar";
-import { Button } from "~/modules/shared/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
+import { ToolSidebar } from "~/modules/shared/components/tool-sidebar";
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem
+} from "~/modules/shared/components/ui/sidebar";
 import { Route } from "./+types/_layout";
 
 export function meta({ }: Route.MetaArgs) {
@@ -45,60 +47,49 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 }
 
 export default function Layout({
-  loaderData: { filters, accounts, accountsMap, accountsChildren }
+  loaderData: {
+    filters,
+    accounts,
+    accountsMap,
+    accountsChildren
+  }
 }: Route.ComponentProps) {
-  const [searchParams, setSearchParams] = useSearchParams()
   const { pathname: newPathname } = useResolvedPath("ledger/new", { relative: "path" })
+  const { pathname: summaryPath } = useResolvedPath("ledger", { relative: "path" })
   const { pathname, search, hash } = useLocation()
-
-  const onApplyAccountsFilter = (ids: number[]) => setSearchParams(prev => updateURLSearchParams(
-    prev,
-    { ...filters, accounts: [...ids] }
-  ))
-
-  const onApplyCategoriesFilter = (ids: number[]) => setSearchParams(prev => updateURLSearchParams(
-    prev,
-    { ...filters, categories: [...ids] }
-  ))
 
   return (
     <AccountsContextProvider accounts={accounts} accountsMap={accountsMap} accountsChildren={accountsChildren}>
       <FiltersContextProvider filters={filters}>
-        <ToolBar>
-          {
-            !noFiltersApplied(searchParams) && (
-              <Tooltip>
-                <TooltipTrigger>
-                  <Button asChild variant={"ghost"} size={"icon"}>
-                    <Link to={pathname}>
-                      <FunnelX />
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  Reset Ledger Filters
-                </TooltipContent>
-              </Tooltip>
-            )
-          }
-          <DateFilter />
-          <AccountsFilter selected={filters.accounts} onApplyFilters={onApplyAccountsFilter} />
-          <CategoriesFilter selected={filters.categories} onApplyFilters={onApplyCategoriesFilter} />
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button asChild size={"icon"}>
-                <Link to={{ pathname: newPathname, search, hash }}>
-                  <Plus />
-                </Link>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              Create New Transaction
-            </TooltipContent>
-          </Tooltip>
-        </ToolBar>
-        <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 justify-stretch items-stretch gap-4 px-4">
-          <Outlet />
+        <div className="flex grow h-dvh overflow-hidden">
+          <ToolSidebar
+            title="Ledger"
+          >
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={pathname === summaryPath}>
+                      <Link to={{ pathname: summaryPath, search, hash }}>
+                        <ChartNoAxesCombined /> Transactions Summary
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={pathname === newPathname}>
+                      <Link to={{ pathname: newPathname, search, hash }}>
+                        <Plus /> New Transaction
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+            <FiltersPanel />
+          </ToolSidebar>
+          <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 justify-stretch items-stretch gap-4 px-4">
+            <Outlet />
+          </div>
         </div>
       </FiltersContextProvider>
     </AccountsContextProvider>
