@@ -1,6 +1,7 @@
-import { endOfYear, startOfYear } from "date-fns"
+import { endOfMonth, endOfYear, startOfMonth, startOfYear } from "date-fns"
 import { Period } from "~/modules/ledger/types/filters"
 import { ByDay } from "./by-day"
+import { ByMonth } from "./by-month"
 import { ByRange } from "./by-range"
 import { ByWeek } from "./by-week"
 import { ByYear } from "./by-year"
@@ -23,7 +24,10 @@ export function ByDate({ from, to, period, onChange }: ByDateProps) {
       )
     case "monthly":
       return (
-        <span>To be Implemented</span>
+        <ByMonth
+          value={to}
+          onChange={(date) => onChange(startOfMonth(date), endOfMonth(date))}
+        />
       )
     case "weekly":
       return (
