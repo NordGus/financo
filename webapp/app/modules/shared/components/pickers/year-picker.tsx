@@ -60,8 +60,8 @@ export function YearPicker({ value, onChange, defaultYear = new Date().getFullYe
   }
 
   return (
-    <div className={cn("w-auto p-0", className)}>
-      <div className="flex items-center justify-between p-2 border-b">
+    <div className={cn("w-full p-0", className)}>
+      <div className="flex items-center justify-between py-2 mt-2">
         <Button variant="outline" size="icon" className="h-7 w-7" onClick={handlePrevious}>
           <ChevronLeft className="h-4 w-4" />
           <span className="sr-only">Previous years</span>
@@ -74,7 +74,7 @@ export function YearPicker({ value, onChange, defaultYear = new Date().getFullYe
           <span className="sr-only">Next years</span>
         </Button>
       </div>
-      <div className="grid grid-cols-3 gap-2 p-2">
+      <div className="grid grid-cols-3 gap-2 py-2">
         {yearRange.map((year) => (
           <Button
             key={year}

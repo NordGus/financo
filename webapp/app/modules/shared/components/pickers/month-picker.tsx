@@ -4,18 +4,18 @@ import { cn } from "~/lib/utils"
 import { Button } from "../ui/button"
 
 const MONTHS = [
-  { value: 1, name: "January" },
-  { value: 2, name: "February" },
-  { value: 3, name: "March" },
-  { value: 4, name: "April" },
+  { value: 1, name: "Jan" },
+  { value: 2, name: "Feb" },
+  { value: 3, name: "Mar" },
+  { value: 4, name: "Apr" },
   { value: 5, name: "May" },
-  { value: 6, name: "June" },
-  { value: 7, name: "July" },
-  { value: 8, name: "August" },
-  { value: 9, name: "September" },
-  { value: 10, name: "October" },
-  { value: 11, name: "November" },
-  { value: 12, name: "December" },
+  { value: 6, name: "Jun" },
+  { value: 7, name: "Jul" },
+  { value: 8, name: "Aug" },
+  { value: 9, name: "Sep" },
+  { value: 10, name: "Oct" },
+  { value: 11, name: "Nov" },
+  { value: 12, name: "Dec" },
 ]
 
 interface Props {
@@ -52,8 +52,8 @@ export function MonthPicker({
   const handleNextYear = () => setYear(prev => prev + 1)
 
   return (
-    <div className={cn("w-auto p-0", className)}>
-      <div className="flex items-center justify-between p-2 border-b">
+    <div className={cn("w-full p-0", className)}>
+      <div className="flex items-center justify-between py-2 mt-2">
         <Button variant="outline" size="icon" className="h-7 w-7" onClick={handlePreviousYear}>
           <ChevronLeft className="h-4 w-4" />
           <span className="sr-only">Previous year</span>
@@ -66,7 +66,7 @@ export function MonthPicker({
           <span className="sr-only">Next year</span>
         </Button>
       </div>
-      <div className="grid grid-cols-3 gap-2 p-2">
+      <div className="grid grid-cols-3 gap-2 py-2">
         {MONTHS.map((entry) => (
           <Button
             key={`${year}.${entry.value}`}
