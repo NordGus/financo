@@ -40,7 +40,7 @@ export function ToolSidebar({ title, children, ...props }: ComponentProps<typeof
         </Tooltip>
         <h1>{title}</h1>
       </SidebarHeader>
-      <SidebarContent className="gap-0">
+      <SidebarContent className="gap-0 no-scrollbar">
         {children}
       </SidebarContent>
     </Sidebar>
