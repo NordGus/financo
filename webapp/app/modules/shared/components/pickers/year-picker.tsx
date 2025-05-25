@@ -60,7 +60,7 @@ export function YearPicker({ value, onChange, defaultYear = new Date().getFullYe
   }
 
   return (
-    <div className={cn("w-full p-0", className)}>
+    <div className={cn("w-full min-w-[200px] p-0", className)}>
       <div className="flex items-center justify-between py-2 mt-2">
         <Button variant="outline" size="icon" className="h-7 w-7" onClick={handlePrevious}>
           <ChevronLeft className="h-4 w-4" />

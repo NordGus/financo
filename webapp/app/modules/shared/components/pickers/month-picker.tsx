@@ -4,18 +4,18 @@ import { cn } from "~/lib/utils"
 import { Button } from "../ui/button"
 
 const MONTHS = [
-  { value: 1, name: "Jan" },
-  { value: 2, name: "Feb" },
-  { value: 3, name: "Mar" },
-  { value: 4, name: "Apr" },
-  { value: 5, name: "May" },
-  { value: 6, name: "Jun" },
-  { value: 7, name: "Jul" },
-  { value: 8, name: "Aug" },
-  { value: 9, name: "Sep" },
-  { value: 10, name: "Oct" },
-  { value: 11, name: "Nov" },
-  { value: 12, name: "Dec" },
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ]
 
 interface Props {
@@ -36,7 +36,7 @@ export function MonthPicker({
 
   useEffect(() => {
     if (!value) return
-    if (value.getFullYear() === year && value.getMonth()) return
+    if (value.getFullYear() === year && value.getMonth() === month) return
 
     setYear(value.getFullYear())
     setMonth(value.getMonth())
@@ -52,7 +52,7 @@ export function MonthPicker({
   const handleNextYear = () => setYear(prev => prev + 1)
 
   return (
-    <div className={cn("w-full p-0", className)}>
+    <div className={cn("w-full min-w-[200px] p-0", className)}>
       <div className="flex items-center justify-between py-2 mt-2">
         <Button variant="outline" size="icon" className="h-7 w-7" onClick={handlePreviousYear}>
           <ChevronLeft className="h-4 w-4" />
@@ -67,14 +67,14 @@ export function MonthPicker({
         </Button>
       </div>
       <div className="grid grid-cols-3 gap-2 py-2">
-        {MONTHS.map((entry) => (
+        {MONTHS.map((entry, index) => (
           <Button
-            key={`${year}.${entry.value}`}
-            variant={month === entry.value ? "default" : "outline"}
+            key={`${year}.${index}`}
+            variant={month === index ? "default" : "outline"}
             className="h-8"
-            onClick={() => handleMonthSelect(entry.value)}
+            onClick={() => handleMonthSelect(index)}
           >
-            {entry.name}
+            {entry}
           </Button>
         ))}
       </div>
