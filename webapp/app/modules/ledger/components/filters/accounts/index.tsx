@@ -3,9 +3,24 @@ import { DynamicIcon } from "lucide-react/dynamic"
 import { use, useDeferredValue, useEffect, useMemo, useState } from "react"
 import { AccountsContext } from "~/modules/ledger/contexts/accounts-context"
 import { isAccount, isArchived } from "~/modules/ledger/types/accounts"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "~/modules/shared/components/ui/collapsible"
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub } from "~/modules/shared/components/ui/sidebar"
-import { Tabs, TabsList, TabsTrigger } from "~/modules/shared/components/ui/tabs"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from "~/modules/shared/components/ui/collapsible"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "~/modules/shared/components/ui/select"
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub
+} from "~/modules/shared/components/ui/sidebar"
 
 type Tab = "active" | "archived"
 
@@ -68,16 +83,15 @@ export function ByAccount({ value, onChange }: Props) {
     <>
       <SidebarMenu>
         <SidebarMenuItem className="py-1">
-          <Tabs value={tab} onValueChange={(value) => setTab(value as Tab)}>
-            <TabsList className="w-full">
-              <TabsTrigger value="active">
-                Active
-              </TabsTrigger>
-              <TabsTrigger value="archived">
-                Archived
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <Select value={tab} onValueChange={(value) => setTab(value as Tab)}>
+            <SelectTrigger className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="archived">Archived</SelectItem>
+            </SelectContent>
+          </Select>
         </SidebarMenuItem>
         {!!accountsToDisplay.capital.length && (
           <SidebarMenuItem>
