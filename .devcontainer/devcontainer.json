@@ -37,7 +37,8 @@
         "ms-azuretools.vscode-docker",
         "GitHub.copilot-chat",
         "GitHub.copilot",
-        "GitHub.vscode-pull-request-github"
+        "GitHub.vscode-pull-request-github",
+        "YoavBls.pretty-ts-errors"
       ],
       "settings": {
         "go.useLanguageServer": true,
