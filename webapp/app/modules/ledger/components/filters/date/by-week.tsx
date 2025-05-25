@@ -43,6 +43,7 @@ export function ByWeek({
       {...props}
       mode="range"
       selected={selected}
+      defaultMonth={value.to ?? defaultValue}
       modifiers={{ selected }}
       onDayClick={(day, modifiers) => {
         if (modifiers.selected) return;

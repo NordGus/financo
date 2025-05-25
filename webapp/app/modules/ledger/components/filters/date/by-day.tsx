@@ -5,14 +5,21 @@ import { Calendar } from "~/modules/shared/components/ui/calendar"
 interface ByDayProps {
   value?: Date
   onChange: (date: Date) => void
+  defaultValue?: Date
 }
 
-export function ByDay({ value, onChange, className, ...props }: ComponentProps<typeof Calendar> & ByDayProps) {
-  const [selected, setSelected] = useState(value ?? new Date)
+export function ByDay({
+  value,
+  onChange,
+  className,
+  defaultValue = new Date,
+  ...props
+}: ComponentProps<typeof Calendar> & ByDayProps) {
+  const [selected, setSelected] = useState(value ?? defaultValue)
   const deferredSelected = useDeferredValue(selected)
 
   useEffect(() => {
-    if (!value) setSelected(new Date)
+    if (!value) setSelected(defaultValue)
     else if (value.toDateString() !== selected.toDateString()) setSelected(value)
   }, [value?.toDateString()])
 
@@ -25,6 +32,7 @@ export function ByDay({ value, onChange, className, ...props }: ComponentProps<t
       {...props}
       mode="single"
       selected={selected}
+      defaultMonth={value ?? defaultValue}
       onSelect={(day) => setSelected(prev => day ?? prev)}
       className={cn(
         "[&_[role=gridcell].bg-accent]:bg-sidebar-primary [&_[role=gridcell].bg-accent]:text-sidebar-primary-foreground [&_[role=gridcell]]:w-[33px]",
