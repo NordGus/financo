@@ -53,6 +53,15 @@ export function ByAccount({ value, onChange }: Props) {
     onChange(deferredSelected)
   }, [deferredSelected])
 
+  useEffect(() => {
+    if (
+      value.length === selected.length &&
+      value.every(id => selected.includes(id))
+    ) return
+
+    setSelected(value)
+  }, [value])
+
   const accountsToDisplay = tab === "active" ? activeAccounts : archivedAccounts
 
   return (
