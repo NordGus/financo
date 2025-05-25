@@ -21,6 +21,7 @@ export {
   defaultValues,
   FiltersSearchParamsKeys,
   fromURLSearchParams,
+  isDefaultFilters,
   noFiltersApplied,
   toURLSearchParams,
   updateURLSearchParams
@@ -256,4 +257,19 @@ function noFiltersApplied(params: URLSearchParams): boolean {
     !params.get(FiltersSearchParamsKeys.ACCOUNTS) &&
     !params.get(FiltersSearchParamsKeys.CATEGORIES) &&
     !params.get(FiltersSearchParamsKeys.PERIOD)
+}
+
+
+function isDefaultFilters(filters: Filters): boolean {
+  const { from, to, period, accounts, categories } = defaultValues()
+
+  return (
+    filters.from?.toDateString() === from?.toDateString() &&
+    filters.to?.toDateString() === to?.toDateString() &&
+    filters.period === period &&
+    filters.accounts.length === accounts.length &&
+    filters.categories.length === categories.length &&
+    filters.accounts.every(id => accounts.includes(id)) &&
+    filters.categories.every(id => categories.includes(id))
+  )
 }
