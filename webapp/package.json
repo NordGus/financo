@@ -15,7 +15,7 @@
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@react-router/node": "^7.6.1",
-    "@react-router/serve": "^7.6.0",
+    "@react-router/serve": "^7.6.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "colorjs.io": "^0.5.2",
