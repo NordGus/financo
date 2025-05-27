@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { use, useState } from "react";
 import {
   Link,
   useLocation,
@@ -7,6 +7,7 @@ import {
 } from "react-router";
 import { list as listTransactionsQuery } from "~/modules/ledger/api/queries/transactions/list";
 import { TransactionsByCategory } from "~/modules/ledger/components/graphs/transactions-by-category";
+import { AccountsContext } from "~/modules/ledger/contexts/accounts-context";
 import { ExecutedTransaction } from "~/modules/ledger/types/transactions";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
 import { list as listCurrenciesQuery } from "~/modules/shared/api/queries/list-currencies";
@@ -74,15 +75,12 @@ export default function Index({
     expenseCurrencies,
     incomeTransactions,
     expenseTransactions
-  },
-  matches
+  }
 }: Route.ComponentProps) {
-  // extracting data from webapp/app/routes/ledger/_layout.tsx's loader.
-  const { data: { accountsMap } } = matches[2]
-
   const { search, hash } = useLocation() // current location
-
   const { pathname: newPathname } = useResolvedPath("new", { relative: "route" })
+
+  const { accountsMap } = use(AccountsContext)
 
   const [currency, setCurrency] = useState<Currency>(currencies.length > 0 ? currencies[0].code : "EUR")
 
