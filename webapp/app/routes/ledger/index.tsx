@@ -69,13 +69,7 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 }
 
 export default function Index({
-  loaderData: {
-    currencies,
-    incomeCurrencies,
-    expenseCurrencies,
-    incomeTransactions,
-    expenseTransactions
-  }
+  loaderData: { currencies, incomeCurrencies, expenseCurrencies, incomeTransactions, expenseTransactions }
 }: Route.ComponentProps) {
   const { search, hash } = useLocation() // current location
   const { pathname: newPathname } = useResolvedPath("new", { relative: "route" })
