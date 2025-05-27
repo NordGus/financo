@@ -3,6 +3,18 @@ import { Filters } from "./filters"
 
 export const DATE_FORMAT = "yyyy-MM-dd"
 
+export type TransactionRecord = {
+  sourceId: number
+  targetId: number
+  sourceAmount: number
+  targetAmount: number
+  issuedAt: Date
+  executedAt: Date | null | undefined
+  notes: string | null | undefined,
+  currency: Currency,
+  kind: Kind
+}
+
 export const KINDS = {
   expense: "expense",
   income: "income",

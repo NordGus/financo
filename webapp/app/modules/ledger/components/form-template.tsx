@@ -35,7 +35,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/compon
 import { CURRENCIES, Currency } from "~/modules/shared/types/currency";
 import { AccountsContext } from "../contexts/accounts-context";
 import { Account } from "../types/accounts";
-import { DATE_FORMAT, Kind, KINDS } from "../types/transactions";
+import { DATE_FORMAT, Kind, KINDS, TransactionRecord } from "../types/transactions";
 import { AmountInput } from "./form/amount-input";
 import { ExecutedAt, IssuedAt } from "./form/transaction-date-selectors";
 import { TransactionSource, TransactionTarget } from "./form/transaction-source-target";
@@ -70,18 +70,6 @@ const schema = z.object({
   kind: z.nativeEnum(KINDS)
 })
 
-type Transaction = {
-  sourceId: number
-  targetId: number
-  sourceAmount: number
-  targetAmount: number
-  issuedAt: Date
-  executedAt: Date | null | undefined
-  notes: string | null | undefined,
-  currency: Currency,
-  kind: Kind
-}
-
 function capitalizeKind(kind: Kind): string {
   return `${kind.at(0)!.toLocaleUpperCase()}${kind.slice(1)}`
 }
@@ -96,7 +84,7 @@ function isWithConversionRate(source: Account, target: Account, transactionCurre
 }
 
 type Props = {
-  transaction: Transaction
+  transaction: TransactionRecord
   role: "create" | "update"
 }
 
@@ -166,8 +154,8 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     transaction.targetId,
     transaction.sourceAmount,
     transaction.targetAmount,
-    transaction.issuedAt,
-    transaction.executedAt,
+    transaction.issuedAt.toDateString(),
+    transaction.executedAt?.toDateString(),
     transaction.currency,
     transaction.kind,
     transaction.notes
