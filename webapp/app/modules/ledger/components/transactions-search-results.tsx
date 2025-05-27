@@ -1,5 +1,5 @@
-import { useMemo } from "react"
-import { Accounts } from "../types/accounts"
+import { use, useMemo } from "react"
+import { AccountsContext } from "../contexts/accounts-context"
 import { Transaction, Transactions } from "../types/transactions"
 import { DateGroup } from "./date-group"
 import { Entry } from "./entry"
@@ -8,13 +8,14 @@ import { NoResults } from "./no-results"
 type OnTransactionClick = (transaction: Transaction) => void
 
 interface Props {
-  accounts: Accounts
   transactions: Transactions
   onTransactionClick?: OnTransactionClick
   futureEnable?: boolean
 }
 
-export function TransactionsSearchResults({ transactions, accounts, futureEnable = false }: Props) {
+export function TransactionsSearchResults({ transactions, futureEnable = false }: Props) {
+  const { accountsMap: accounts } = use(AccountsContext)
+
   const last = useMemo(() => transactions.length - 1, [transactions.length])
 
   if (transactions.length === 0) return <NoResults />
