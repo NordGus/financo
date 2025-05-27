@@ -110,17 +110,21 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   })
 
   const [isPendingTransaction, setIsPendingTransaction] = useState(!transaction.executedAt)
+
   const [isHistoryTransaction, setIsHistoryTransaction] = useState(
     accounts.get(transaction.sourceId)!.kind === "history" ||
     accounts.get(transaction.targetId)!.kind === "history"
   )
+
   const [withConversionRate, setWithConversionRate] = useState<boolean>(isWithConversionRate(
     accounts.get(transaction.sourceId)!,
     accounts.get(transaction.targetId)!,
     transaction.currency
   ))
-  const [kind, setKind] = useState<Kind>(form.getValues("kind"))
-  const [currency, setCurrency] = useState<Currency>(form.getValues("currency"))
+
+  const [kind, setKind] = useState<Kind>(transaction.kind)
+
+  const [currency, setCurrency] = useState<Currency>(transaction.currency)
 
   useEffect(() => {
     form.setValue("sourceId", transaction.sourceId)
