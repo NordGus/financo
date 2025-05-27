@@ -146,35 +146,31 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     form.setValue("notes", transaction.notes ?? "")
 
     setIsPendingTransaction(!transaction.executedAt)
+
     setWithConversionRate(isWithConversionRate(
       accounts.get(transaction.sourceId)!,
       accounts.get(transaction.targetId)!,
       transaction.currency
     ))
+
     setIsHistoryTransaction(
       accounts.get(transaction.sourceId)!.kind === "history" ||
       accounts.get(transaction.targetId)!.kind === "history"
     )
+
     setKind(transaction.kind)
+
     setCurrency(transaction.currency)
-  }, [transaction])
-
-  useEffect(() => {
-    setWithConversionRate(isWithConversionRate(
-      accounts.get(form.getValues("sourceId"))!,
-      accounts.get(form.getValues("targetId"))!,
-      form.getValues("currency")
-    ))
-
-    setIsHistoryTransaction(
-      accounts.get(form.getValues("sourceId"))!.kind === "history" ||
-      accounts.get(form.getValues("targetId"))!.kind === "history"
-    )
   }, [
-    form.getValues("sourceId"),
-    form.getValues("targetId"),
-    form.getValues("currency"),
-    accounts
+    transaction.sourceId,
+    transaction.targetId,
+    transaction.sourceAmount,
+    transaction.targetAmount,
+    transaction.issuedAt,
+    transaction.executedAt,
+    transaction.currency,
+    transaction.kind,
+    transaction.notes
   ])
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
