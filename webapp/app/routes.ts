@@ -11,7 +11,11 @@ export default [
     index("routes/home.tsx"),
 
     route("morning-brew", "routes/morning-brew/index.tsx"),
-    route("accounts", "routes/accounts/index.tsx"),
+
+    layout("routes/accounts/_layout.tsx", [
+      route("accounts", "routes/accounts/index.tsx"),
+    ]),
+
     route("categories", "routes/categories/index.tsx"),
 
     layout("routes/ledger/_layout.tsx", [
