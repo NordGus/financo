@@ -25,4 +25,3 @@ make webapp
 ## TODO
 
 - [ ] Refactor message consumers to be more centralized or implement a mutex.
-- [ ] Update dependencies correctly.
