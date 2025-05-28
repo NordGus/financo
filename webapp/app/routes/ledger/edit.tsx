@@ -9,17 +9,29 @@ import { destroy as destroyTransaction } from "~/modules/ledger/api/commands/des
 import { update as updateTransaction } from "~/modules/ledger/api/commands/update";
 import { get as getTransactionQuery } from "~/modules/ledger/api/queries/transactions/get";
 import { FormTemplate } from "~/modules/ledger/components/form-template";
-import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
-import { Kind } from "~/modules/ledger/types/transactions";
+import { Kind, TransactionRecord } from "~/modules/ledger/types/transactions";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
-import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-context";
 import { Currency } from "~/modules/shared/types/currency";
 import { Route } from "./+types/edit";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const transaction = await getTransactionQuery(Number(params.id))
+  const transactionData = await getTransactionQuery(Number(params.id))
 
-  return { breadcrumb: "Edit Transaction", transaction }
+  const transaction: TransactionRecord = {
+    sourceId: transactionData.sourceId,
+    targetId: transactionData.targetId,
+    sourceAmount: transactionData.sourceAmount,
+    targetAmount: transactionData.targetAmount,
+    issuedAt: new Date(transactionData.issuedAt),
+    executedAt: transactionData.executedAt ? new Date(transactionData.executedAt) : null,
+    notes: transactionData.notes,
+    currency: transactionData.currency,
+    kind: transactionData.metadata.kind
+  }
+
+  return {
+    transaction
+  }
 }
 
 type OperateOnTransaction = {
@@ -66,41 +78,19 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
   }
 }
 
-export default function Edit({ loaderData: { transaction }, matches }: Route.ComponentProps) {
-  // extracting data from webapp/app/modules/shared/layout.tsx's loader.
-  const { data: { currencies } } = matches[1]
-  // extracting data from webapp/app/routes/ledger/_layout.tsx's loader.
-  const { data: { accounts, accountsMap, accountsChildren } } = matches[2]
-
+export default function Edit({ loaderData: { transaction } }: Route.ComponentProps) {
   const { pathname } = useLocation() // current location
   const { state: navigationState, location } = useNavigation() // navigation location
 
   return (
-    <CurrenciesContextProvider currencies={currencies}>
-      <AccountsContextProvider accounts={accounts} accountsMap={accountsMap} accountsChildren={accountsChildren}>
-        <section className="flex flex-col py-2 overflow-hidden relative">
-          <FullScreenThrobber
-            className={cn(
-              "absolute inset-0 z-50",
-              (navigationState === "idle" || location.pathname === pathname) && "hidden"
-            )}
-          />
-          <FormTemplate
-            transaction={{
-              sourceId: transaction.sourceId,
-              targetId: transaction.targetId,
-              sourceAmount: transaction.sourceAmount,
-              targetAmount: transaction.targetAmount,
-              issuedAt: new Date(transaction.issuedAt),
-              executedAt: transaction.executedAt ? new Date(transaction.executedAt) : null,
-              notes: transaction.notes,
-              currency: transaction.currency,
-              kind: transaction.metadata.kind
-            }}
-            role="update"
-          />
-        </section>
-      </AccountsContextProvider>
-    </CurrenciesContextProvider>
+    <section className="flex flex-col py-2 overflow-hidden relative">
+      <FullScreenThrobber
+        className={cn(
+          "absolute inset-0 z-50",
+          (navigationState === "idle" || location.pathname === pathname) && "hidden"
+        )}
+      />
+      <FormTemplate transaction={transaction} role="update" />
+    </section>
   )
 }

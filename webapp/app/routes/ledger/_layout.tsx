@@ -6,6 +6,7 @@ import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-cont
 import { FiltersContextProvider } from "~/modules/ledger/contexts/filters-context";
 import { Account, AccountChildren, Accounts } from "~/modules/ledger/types/accounts";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
+import { list as listCurrenciesQuery } from "~/modules/shared/api/queries/list-currencies";
 import { ToolSidebar } from "~/modules/shared/components/tool-sidebar";
 import {
   SidebarGroup,
@@ -14,6 +15,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "~/modules/shared/components/ui/sidebar";
+import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-context";
 import { Route } from "./+types/_layout";
 
 export function meta({ }: Route.MetaArgs) {
@@ -25,10 +27,18 @@ export function meta({ }: Route.MetaArgs) {
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   const filters = getFilters(request)
-  const accountsData = await listAccountsQuery()
-  const accountsMap: Accounts = new Map(accountsData.map((account) => ([account.id, account])))
-  const accounts = accountsData.filter(account => !account.parentId)
-  const accountsChildren: AccountChildren = accountsData.filter(account => !!account.parentId)
+
+  const [accountsData, currencies] = await Promise.allSettled([
+    listAccountsQuery(),
+    listCurrenciesQuery()
+  ])
+
+  if (accountsData.status === "rejected") throw accountsData.reason
+  if (currencies.status === "rejected") throw currencies.reason
+
+  const accountsMap: Accounts = new Map(accountsData.value.map((account) => ([account.id, account])))
+  const accounts = accountsData.value.filter(account => !account.parentId)
+  const accountsChildren: AccountChildren = accountsData.value.filter(account => !!account.parentId)
     .reduce((acc, account) => {
       if (!acc.has(account.parentId!)) acc.set(account.parentId!, [])
 
@@ -42,56 +52,54 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
     accounts,
     accountsMap,
     accountsChildren,
-    filters
+    filters,
+    currencies: currencies.value
   }
 }
 
-export default function Layout({
-  loaderData: {
-    filters,
-    accounts,
-    accountsMap,
-    accountsChildren
-  }
-}: Route.ComponentProps) {
+export default function Layout({ loaderData }: Route.ComponentProps) {
+  const { filters, accounts, accountsMap, accountsChildren, currencies } = loaderData
+
   const { pathname: newPathname } = useResolvedPath("ledger/new", { relative: "path" })
   const { pathname: summaryPath } = useResolvedPath("ledger", { relative: "path" })
   const { pathname, search, hash } = useLocation()
 
   return (
-    <AccountsContextProvider accounts={accounts} accountsMap={accountsMap} accountsChildren={accountsChildren}>
-      <FiltersContextProvider filters={filters}>
-        <div className="flex grow h-dvh overflow-hidden">
-          <ToolSidebar
-            title="Ledger"
-          >
-            <SidebarGroup>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname === summaryPath}>
-                      <Link to={{ pathname: summaryPath, search, hash }}>
-                        <ChartNoAxesCombined /> Transactions Summary
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname === newPathname}>
-                      <Link to={{ pathname: newPathname, search, hash }}>
-                        <Plus /> New Transaction
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-            <FiltersPanel />
-          </ToolSidebar>
-          <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 justify-stretch items-stretch gap-4 px-4">
-            <Outlet />
+    <CurrenciesContextProvider currencies={currencies}>
+      <AccountsContextProvider accounts={accounts} accountsMap={accountsMap} accountsChildren={accountsChildren}>
+        <FiltersContextProvider filters={filters}>
+          <div className="flex grow h-dvh overflow-hidden">
+            <ToolSidebar title="Ledger">
+              <SidebarGroup>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={pathname === summaryPath}>
+                        <Link to={{ pathname: summaryPath, search, hash }}>
+                          <ChartNoAxesCombined /> Transactions Summary
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton asChild isActive={pathname === newPathname}>
+                        <Link to={{ pathname: newPathname, search, hash }}>
+                          <Plus /> New Transaction
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+              <FiltersPanel />
+            </ToolSidebar>
+            <div
+              className="grow overflow-hidden no-scrollbar grid grid-cols-2 justify-stretch items-stretch gap-4 px-4"
+            >
+              <Outlet />
+            </div>
           </div>
-        </div>
-      </FiltersContextProvider>
-    </AccountsContextProvider>
+        </FiltersContextProvider>
+      </AccountsContextProvider>
+    </CurrenciesContextProvider>
   )
 }

@@ -1,19 +1,12 @@
 import { Outlet, useLocation, useNavigation } from "react-router";
 import { cn } from "~/lib/utils";
 import { Route } from "./+types/layout";
-import { list as listCurrenciesQuery } from "./api/queries/list-currencies";
 import { AppSidebar } from "./components/app-sidebar";
 import { FullScreenThrobber } from "./components/throbber";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { Toaster } from "./components/ui/sonner";
 
-export async function clientLoader({ }: Route.ClientLoaderArgs) {
-  const currencies = await listCurrenciesQuery()
-
-  return {
-    currencies
-  }
-}
+export async function clientLoader({ }: Route.ClientLoaderArgs) { }
 
 export default function Layout({ }: Route.ComponentProps) {
   const { pathname } = useLocation() // current location
@@ -32,6 +25,6 @@ export default function Layout({ }: Route.ComponentProps) {
         <Outlet />
       </main>
       <Toaster position="top-center" closeButton richColors />
-    </SidebarProvider >
+    </SidebarProvider>
   )
 }

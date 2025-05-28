@@ -25,22 +25,14 @@ export async function clientLoader({ request }: Route.LoaderArgs) {
   if (pending.status === "rejected") throw pending.reason
 
   return {
-    breadcrumb: "Ledger",
     filters,
     executedTransactions: mapToExecutedTransactions(executed.value),
     pendingTransactions: mapToPendingTransactions(pending.value)
   }
 }
 
-export default function Index({
-  loaderData: {
-    filters,
-    executedTransactions,
-    pendingTransactions
-  },
-  matches
-}: Route.ComponentProps) {
-  const { data: { accountsMap } } = matches[2] // extracting data from webapp/app/routes/ledger/_layout.tsx's loader.
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const { filters, executedTransactions, pendingTransactions } = loaderData
 
   return (
     <>
@@ -69,10 +61,7 @@ export default function Index({
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="flex-1 flex flex-col h-full overflow-y-auto no-scrollbar relative">
-                  <TransactionsSearchResults
-                    transactions={pendingTransactions}
-                    accounts={accountsMap}
-                  />
+                  <TransactionsSearchResults transactions={pendingTransactions} />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -116,7 +105,7 @@ export default function Index({
             />
           </div>
           <div className="flex-1 overflow-y-auto no-scrollbar relative">
-            <TransactionsSearchResults transactions={executedTransactions} accounts={accountsMap} futureEnable />
+            <TransactionsSearchResults transactions={executedTransactions} futureEnable />
           </div>
         </div>
       </section>

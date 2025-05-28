@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { use, useReducer } from "react";
 import {
   createSearchParams,
   redirect,
@@ -10,7 +10,7 @@ import { create as createTransaction } from "~/modules/ledger/api/commands/creat
 import { FormTemplate } from "~/modules/ledger/components/form-template";
 import { TransactionSourcePicker } from "~/modules/ledger/components/transaction-source-picker";
 import { TransactionTargetPicker } from "~/modules/ledger/components/transaction-target-picker";
-import { AccountsContextProvider } from "~/modules/ledger/contexts/accounts-context";
+import { AccountsContext } from "~/modules/ledger/contexts/accounts-context";
 import { Kind } from "~/modules/ledger/types/transactions";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import {
@@ -20,13 +20,10 @@ import {
   CardHeader,
   CardTitle
 } from "~/modules/shared/components/ui/card";
-import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-context";
 import { Currency } from "~/modules/shared/types/currency";
 import { Route } from "./+types/new";
 
-export function clientLoader({ }: Route.ClientLoaderArgs) {
-  return { breadcrumb: "New Transaction" }
-}
+export function clientLoader({ }: Route.ClientLoaderArgs) { }
 
 type CreateTransaction = {
   sourceId: number
@@ -117,101 +114,93 @@ export function init(): State {
   }
 }
 
-export default function New({ matches }: Route.ComponentProps) {
-  // extracting data from webapp/app/modules/shared/layout.tsx's loader.
-  const { data: { currencies } } = matches[1]
-  // extracting data from webapp/app/routes/ledger/_layout.tsx's loader.
-  const { data: { accounts, accountsMap, accountsChildren } } = matches[2]
-
+export default function New({ }: Route.ComponentProps) {
   const { pathname } = useLocation() // current location
   const { state: navigationState, location } = useNavigation() // navigation location
 
+  const { accountsMap } = use(AccountsContext)
+
   const [state, setState] = useReducer(reducer, {}, init)
 
-
   return (
-    <CurrenciesContextProvider currencies={currencies}>
-      <AccountsContextProvider accounts={accounts} accountsMap={accountsMap} accountsChildren={accountsChildren}>
-        <section className="flex flex-col py-2 overflow-hidden relative">
-          <FullScreenThrobber
-            className={cn(
-              "absolute inset-0 z-50",
-              (navigationState === "idle" || location.pathname === pathname) && "hidden"
-            )}
-          />
-          {
-            state.stage === "target" && (
-              <Card className="flex-grow h-full max-h-full">
-                <CardHeader>
-                  <CardTitle>Register a Transaction</CardTitle>
-                  <CardDescription>
-                    {"What kind of transaction you want to register?"}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col grow overflow-hidden">
-                  <TransactionTargetPicker
-                    selected={null}
-                    onSelected={(kind, id) => setState({ type: _actions.TARGET_CHANGED, kind, id })}
-                  />
-                </CardContent>
-              </Card >
-            )
-          }
-          {
-            state.stage === "source" && (
-              <Card className="flex-grow h-full max-h-full">
-                <CardHeader>
-                  <CardTitle>
-                    {
-                      state.kind === "income"
-                        ? "To Account"
-                        : "From Account"
-                    }
-                  </CardTitle>
-                  <CardDescription>
-                    {
-                      state.kind === "income"
-                        ? "Select the Transaction's target Account"
-                        : "Select the Transaction's source Account"
-                    }
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col grow overflow-hidden">
-                  <TransactionSourcePicker
-                    selected={null}
-                    target={state.kind === "income" ? state.sourceId : state.targetId}
-                    onSelected={(id) => setState({ type: _actions.SOURCE_CHANGED, id })}
-                  />
-                </CardContent>
-              </Card >
-            )
-          }
-          {
-            state.stage === "form" && (
-              <FormTemplate
-                transaction={{
-                  sourceId: state.sourceId,
-                  targetId: state.targetId,
-                  sourceAmount: 0,
-                  targetAmount: 0,
-                  issuedAt: new Date(),
-                  executedAt: null,
-                  notes: null,
-                  currency: accountsMap.get(state.sourceId)!.currency === "MULTI"
-                    // This value is going to be a Currency because is not possible to create a transaction between
-                    // Accounts with MULTI currency
-                    ? accountsMap.get(state.targetId)!.currency as Currency
-                    // This value is going to be a Currency because is not possible to create a transaction between
-                    // Accounts with MULTI currency
-                    : accountsMap.get(state.sourceId)!.currency as Currency,
-                  kind: state.kind
-                }}
-                role="create"
+    <section className="flex flex-col py-2 overflow-hidden relative">
+      <FullScreenThrobber
+        className={cn(
+          "absolute inset-0 z-50",
+          (navigationState === "idle" || location.pathname === pathname) && "hidden"
+        )}
+      />
+      {
+        state.stage === "target" && (
+          <Card className="flex-grow h-full max-h-full">
+            <CardHeader>
+              <CardTitle>Register a Transaction</CardTitle>
+              <CardDescription>
+                {"What kind of transaction you want to register?"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col grow overflow-hidden">
+              <TransactionTargetPicker
+                selected={null}
+                onSelected={(kind, id) => setState({ type: _actions.TARGET_CHANGED, kind, id })}
               />
-            )
-          }
-        </section>
-      </AccountsContextProvider>
-    </CurrenciesContextProvider>
+            </CardContent>
+          </Card >
+        )
+      }
+      {
+        state.stage === "source" && (
+          <Card className="flex-grow h-full max-h-full">
+            <CardHeader>
+              <CardTitle>
+                {
+                  state.kind === "income"
+                    ? "To Account"
+                    : "From Account"
+                }
+              </CardTitle>
+              <CardDescription>
+                {
+                  state.kind === "income"
+                    ? "Select the Transaction's target Account"
+                    : "Select the Transaction's source Account"
+                }
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col grow overflow-hidden">
+              <TransactionSourcePicker
+                selected={null}
+                target={state.kind === "income" ? state.sourceId : state.targetId}
+                onSelected={(id) => setState({ type: _actions.SOURCE_CHANGED, id })}
+              />
+            </CardContent>
+          </Card >
+        )
+      }
+      {
+        state.stage === "form" && (
+          <FormTemplate
+            transaction={{
+              sourceId: state.sourceId,
+              targetId: state.targetId,
+              sourceAmount: 0,
+              targetAmount: 0,
+              issuedAt: new Date(),
+              executedAt: null,
+              notes: null,
+              currency: accountsMap.get(state.sourceId)!.currency === "MULTI"
+                // This value is going to be a Currency because is not possible to create a transaction between
+                // Accounts with MULTI currency
+                ? accountsMap.get(state.targetId)!.currency as Currency
+                // This value is going to be a Currency because is not possible to create a transaction between
+                // Accounts with MULTI currency
+                : accountsMap.get(state.sourceId)!.currency as Currency,
+              kind: state.kind
+            }}
+            role="create"
+          />
+        )
+      }
+    </section>
   )
 }

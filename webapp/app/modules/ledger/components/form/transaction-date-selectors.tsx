@@ -44,7 +44,7 @@ export function IssuedAt({ value, onChange, disabled }: IssuedAtProps) {
           </DialogDescription>
         </DialogHeader>
         <Calendar
-          numberOfMonths={3}
+          defaultMonth={date}
           mode="single"
           selected={date}
           onSelect={(day) => setDate(day)}
@@ -101,11 +101,10 @@ export function ExecutedAt({ value, issuedAt, onChange, disabled }: ExecutedAtPr
           </DialogDescription>
         </DialogHeader>
         <Calendar
-          numberOfMonths={3}
           mode="single"
           selected={date ?? undefined}
           onSelect={(day) => setDate(day)}
-          fromMonth={issuedAt}
+          defaultMonth={date ?? issuedAt}
           disabled={(date) => Date.parse(date.toDateString()) < Date.parse(issuedAt.toDateString())}
         />
         <DialogFooter>
