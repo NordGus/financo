@@ -122,10 +122,10 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     transaction.currency
   ))
 
+  const [sourceId, setSourceId] = useState(transaction.sourceId)
+  const [targetId, setTargetId] = useState(transaction.targetId)
   const [issuedAt, setIssuedAt] = useState(transaction.issuedAt)
-
   const [kind, setKind] = useState<Kind>(transaction.kind)
-
   const [currency, setCurrency] = useState<Currency>(transaction.currency)
 
   useEffect(() => {
@@ -152,10 +152,10 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       accounts.get(transaction.targetId)!.kind === "history"
     )
 
+    setSourceId(transaction.sourceId)
+    setTargetId(transaction.targetId)
     setIssuedAt(transaction.issuedAt)
-
     setKind(transaction.kind)
-
     setCurrency(transaction.currency)
   }, [
     transaction.sourceId,
@@ -333,8 +333,11 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     }
 
                     form.setValue("sourceId", target.id)
+                    setSourceId(target.id)
                     form.setValue("sourceAmount", targetAmount)
+
                     form.setValue("targetId", source.id)
+                    setTargetId(source.id)
                     form.setValue("targetAmount", sourceAmount)
                   }}
                   disabled={isHistoryTransaction}
@@ -397,6 +400,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
 
                       setCurrency(currency)
                       setWithConversionRate(isWithConversionRate(source, target, currency))
+                      setSourceId(id)
                       field.onChange(id)
                       return
                     }
@@ -422,7 +426,9 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       form.setValue("kind", newKind)
                       form.setValue("sourceAmount", targetAmount)
                       form.setValue("targetAmount", sourceAmount)
+                      setTargetId(id)
                       form.setValue("targetId", id)
+                      setTargetId(target.id)
                       field.onChange(target.id)
                       return
                     }
@@ -441,7 +447,9 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       setKind(newKind)
                       setCurrency(currency)
                       form.setValue("kind", newKind)
+                      setSourceId(id)
                       field.onChange(id)
+                      return
                     }
 
                     // When the new kind is income, we don't need change direction because the transaction is already
@@ -462,11 +470,12 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     setKind(newKind)
                     setCurrency(currency)
                     form.setValue("kind", newKind)
+                    setSourceId(id)
                     field.onChange(id)
                   }}
                   disabled={isHistoryTransaction}
                   kind={kind}
-                  targetId={form.getValues("targetId")}
+                  targetId={targetId}
                 />
                 <FormMessage />
               </FormItem>
@@ -499,6 +508,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
 
                       setWithConversionRate(isWithConversionRate(source, target, currency))
                       setCurrency(currency)
+                      setTargetId(id)
                       field.onChange(id)
                       return
                     }
@@ -521,7 +531,8 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       setKind(newKind)
                       setCurrency(currency)
                       form.setValue("kind", newKind)
-                      field.onChange(target.id)
+                      setTargetId(id)
+                      field.onChange(id)
                       return
                     }
 
@@ -539,7 +550,9 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       setKind(newKind)
                       setCurrency(currency)
                       form.setValue("kind", newKind)
+                      setTargetId(id)
                       field.onChange(id)
+                      return
                     }
 
                     // When the new kind is expense, we flip the direction of the transaction because income
@@ -562,12 +575,14 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     form.setValue("kind", newKind)
                     form.setValue("sourceAmount", targetAmount)
                     form.setValue("targetAmount", sourceAmount)
-                    form.setValue("targetId", id)
+                    form.setValue("sourceId", id)
+                    setSourceId(id)
+                    setTargetId(source.id)
                     field.onChange(source.id)
                   }}
                   disabled={isHistoryTransaction}
                   kind={kind}
-                  targetId={form.getValues("sourceId")}
+                  targetId={sourceId}
                 />
                 <FormMessage />
               </FormItem>
@@ -689,7 +704,9 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       form.setValue("kind", "income")
                       form.setValue("currency", currency)
                       form.setValue("sourceId", target.id)
+                      setSourceId(target.id)
                       form.setValue("targetId", source.id)
+                      setTargetId(source.id)
                       form.setValue("targetAmount", newValue)
                       field.onChange(withConversionRate ? targetAmount : newValue) // sourceAmount
                       return
@@ -704,7 +721,9 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       form.setValue("kind", "expense")
                       form.setValue("currency", currency)
                       form.setValue("sourceId", target.id)
+                      setSourceId(target.id)
                       form.setValue("targetId", source.id)
+                      setTargetId(source.id)
                       form.setValue("targetAmount", newValue)
                       field.onChange(withConversionRate ? targetAmount : newValue) // sourceAmount
                       return
@@ -718,7 +737,9 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     setCurrency(currency)
                     form.setValue("currency", currency)
                     form.setValue("sourceId", target.id)
+                    setSourceId(target.id)
                     form.setValue("targetId", source.id)
+                    setTargetId(source.id)
                     form.setValue("targetAmount", newValue)
                     field.onChange(withConversionRate ? targetAmount : newValue) // sourceAmount
                   }}
@@ -771,9 +792,11 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       form.setValue("kind", "income")
                       form.setValue("currency", currency)
                       form.setValue("sourceId", target.id)
+                      setSourceId(target.id)
                       form.setValue("targetId", source.id)
+                      setTargetId(source.id)
                       form.setValue("sourceAmount", newValue)
-                      field.onChange(sourceAmount) // targetAmount
+                      field.onChange(withConversionRate ? sourceAmount : newValue) // targetAmount
                       return
                     }
 
@@ -786,9 +809,11 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                       form.setValue("kind", "expense")
                       form.setValue("currency", currency)
                       form.setValue("sourceId", target.id)
+                      setSourceId(target.id)
                       form.setValue("targetId", source.id)
+                      setTargetId(source.id)
                       form.setValue("sourceAmount", newValue)
-                      field.onChange(sourceAmount) // targetAmount
+                      field.onChange(withConversionRate ? sourceAmount : newValue) // targetAmount
                       return
                     }
 
@@ -800,9 +825,11 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     setCurrency(currency)
                     form.setValue("currency", currency)
                     form.setValue("sourceId", target.id)
+                    setSourceId(target.id)
                     form.setValue("targetId", source.id)
+                    setTargetId(source.id)
                     form.setValue("sourceAmount", newValue)
-                    field.onChange(sourceAmount) // targetAmount
+                    field.onChange(withConversionRate ? sourceAmount : newValue) // targetAmount
                   }}
                   dialogTitle="Target amount"
                   dialogDescription="Enter the amount added to the target account"
