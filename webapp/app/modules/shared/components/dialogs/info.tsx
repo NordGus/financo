@@ -32,8 +32,10 @@ export function InfoDialog({ copy, className, variant = "link", size = "icon", w
           <DialogHeader>
             <DialogTitle>{copy.title}</DialogTitle>
           </DialogHeader>
-          <DialogDescription className="space-y-2 px-4 pb-4">
-            {copy.message}
+          <DialogDescription className="space-y-2" asChild>
+            <div>
+              {copy.message}
+            </div>
           </DialogDescription>
           <DialogFooter>
             <Button asChild variant={"outline"}>
