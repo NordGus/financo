@@ -122,6 +122,8 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     transaction.currency
   ))
 
+  const [issuedAt, setIssuedAt] = useState(transaction.issuedAt)
+
   const [kind, setKind] = useState<Kind>(transaction.kind)
 
   const [currency, setCurrency] = useState<Currency>(transaction.currency)
@@ -149,6 +151,8 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       accounts.get(transaction.sourceId)!.kind === "history" ||
       accounts.get(transaction.targetId)!.kind === "history"
     )
+
+    setIssuedAt(transaction.issuedAt)
 
     setKind(transaction.kind)
 
@@ -577,7 +581,15 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               <FormItem>
                 <IssuedAt
                   value={field.value}
-                  onChange={field.onChange}
+                  onChange={(newIssuedAt) => {
+                    const executedAt = form.getValues("executedAt")
+
+                    if (executedAt && executedAt !== null && newIssuedAt.getTime() > executedAt.getTime())
+                      form.setValue("executedAt", newIssuedAt)
+
+                    field.onChange(newIssuedAt)
+                    setIssuedAt(newIssuedAt)
+                  }}
                   disabled={isHistoryTransaction}
                 />
                 <FormMessage />
@@ -591,7 +603,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               <FormItem>
                 <ExecutedAt
                   value={field.value}
-                  issuedAt={form.getValues("issuedAt")}
+                  issuedAt={issuedAt}
                   onChange={(date) => {
                     setIsPendingTransaction(!date)
                     field.onChange(date)
