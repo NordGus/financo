@@ -28,7 +28,7 @@ export function InfoDialog({ copy, className, variant = "link", size = "icon", w
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="min-h-[50dvh]">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>{copy.title}</DialogTitle>
           </DialogHeader>
