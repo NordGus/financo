@@ -81,16 +81,18 @@ export default function Index({
   return (
     <section className="flex flex-col justify-center gap-2 overflow-y-hidden no-scrollbar my-2">
       <div className="grid grid-cols-2 gap-2 justify-stretch items-stretch">
-        <Tooltip>
-          <TooltipTrigger className="flex-1 flex justify-end">
-            <Label>
-              Currency
-            </Label>
-          </TooltipTrigger>
-          <TooltipContent>
-            {"Which currency you want to summarize you transactions by"}
-          </TooltipContent>
-        </Tooltip>
+        <span className="flex items-center justify-end">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Label>
+                Currency
+              </Label>
+            </TooltipTrigger>
+            <TooltipContent>
+              {"Which currency you want to summarize you transactions by"}
+            </TooltipContent>
+          </Tooltip>
+        </span>
         <Select
           value={currency}
           onValueChange={(value) => setCurrency(value as Currency)}
