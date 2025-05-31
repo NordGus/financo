@@ -1,8 +1,8 @@
 import { use, useCallback, useMemo } from "react"
-import { Kind as AccountKind } from "~/modules/shared/types/account"
+import { Preview as PreviewAccount } from "~/modules/shared/components/previews/accounts"
+import { AccountKind, AccountPreview as AccountPreviewRecord } from "~/modules/shared/types/account"
 import { AccountsContext } from "../contexts/accounts-context"
 import { Account } from "../types/accounts"
-import { PreviewAccount } from "./previews/account"
 
 interface Props {
   target: number
@@ -20,8 +20,8 @@ export function TransactionSourcePicker({ target, selected, onSelected }: Props)
       .filter(({ id }) => id !== target)
   }, [accounts, target])
 
-  const accountsFor = useCallback((kind: AccountKind): Account[] => {
-    return selectableAccounts.filter(({ kind: k }) => kind === k)
+  const accountsFor = useCallback((kind: AccountKind): AccountPreviewRecord[] => {
+    return selectableAccounts.filter(({ kind: k }) => kind === k) as AccountPreviewRecord[]
   }, [selectableAccounts])
 
   const capital = useMemo(() => accountsFor("capital"), [accountsFor])
