@@ -1,3 +1,25 @@
+import { Currency } from "./currency";
+import { Icon } from "./icon";
+
+export {
+  isCapital,
+  isCategory,
+  isCredit,
+  isExpense,
+  isIncome,
+  isLoan,
+  isPassive,
+  isSavings
+};
+
+export type {
+  Account,
+  AccountKind,
+  CategoryKind,
+  SystemKind as Kind,
+  Kinds,
+  SystemKind
+};
 
 export const KINDS = {
   history: "history",
@@ -11,7 +33,7 @@ export const KINDS = {
 
 type Kinds = typeof KINDS;
 
-type Kind = Kinds["history"] |
+type SystemKind = Kinds["history"] |
   Kinds["capital"] |
   Kinds["savings"] |
   Kinds["debt"] |
@@ -19,39 +41,72 @@ type Kind = Kinds["history"] |
   Kinds["income"] |
   Kinds["expense"];
 
-function isCapital(kind: Kind) {
+type AccountKind = Kinds["capital"] |
+  Kinds["savings"] |
+  Kinds["debt"] |
+  Kinds["credit"];
+
+type CategoryKind = Kinds["debt"] |
+  Kinds["credit"] |
+  Kinds["income"] |
+  Kinds["expense"];
+
+interface History {
+  at: string | null | undefined
+  balance: number | null | undefined
+}
+
+interface AdditionalData {
+  main: boolean
+  balance: number
+  history: History
+  transactions: number
+}
+
+interface Account {
+  id: number
+  kind: AccountKind
+  currency: Currency
+  name: string
+  description?: string | null
+  icon: Icon
+  color: string
+  capital: number
+  additionalData: AdditionalData
+  archivedAt: string | null | undefined
+  deletedAt: string | null | undefined
+  createdAt: string
+  updatedAt: string
+}
+
+function isCapital(kind: SystemKind) {
   return kind === KINDS.capital
 }
 
-function isSavings(kind: Kind) {
+function isSavings(kind: SystemKind) {
   return kind === KINDS.savings
 }
 
-function isPassive(kind: Kind) {
+function isPassive(kind: SystemKind) {
   return kind === KINDS.debt || kind === KINDS.credit
 }
 
-function isLoan(kind: Kind) {
+function isLoan(kind: SystemKind) {
   return kind === KINDS.debt
 }
 
-function isCredit(kind: Kind) {
+function isCredit(kind: SystemKind) {
   return kind === KINDS.credit
 }
 
-function isIncome(kind: Kind) {
+function isIncome(kind: SystemKind) {
   return kind === KINDS.income
 }
 
-function isExpense(kind: Kind) {
+function isExpense(kind: SystemKind) {
   return kind === KINDS.expense
 }
 
-function isCategory(kind: Kind) {
+function isCategory(kind: SystemKind) {
   return kind === KINDS.expense || kind === KINDS.income
 }
-
-export { isCapital, isCategory, isCredit, isExpense, isIncome, isLoan, isPassive, isSavings };
-
-export type { Kind, Kinds };
-
