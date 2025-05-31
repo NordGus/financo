@@ -1,4 +1,4 @@
-import { ArrowDownUpIcon, BanknoteIcon, BookTextIcon, PlusIcon } from "lucide-react";
+import { ArrowDownUpIcon, BanknoteIcon, PlusIcon } from "lucide-react";
 import { useReducer } from "react";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/modules/shared/components/ui/tabs";
@@ -15,7 +15,6 @@ import { DeleteAccountAction } from "../types/delete";
 import { UnarchiveAccountAction } from "../types/unarchive";
 import { Update, UpdateAccountAction } from "../types/update";
 import { Screen as ActivesScreen } from "./root/actives";
-import { Screen as FinancesScreen } from "./root/finances";
 import { Screen as PassivesScreen } from "./root/passives";
 
 interface Props {
@@ -29,14 +28,12 @@ interface Props {
   onDeleteAccountAction: DeleteAccountAction
 }
 
-type View = "actives" | "passives" | "finances"
+type View = "actives" | "passives"
 
 function withView(view?: string | string[] | null): View {
   switch (view) {
     case "passives":
       return "passives"
-    case "finances":
-      return "finances"
     case "actives":
     default:
       return "actives"
@@ -259,18 +256,12 @@ export function Screen({
                 <TabsTrigger value="passives">
                   <ArrowDownUpIcon className="size-4" /> Passives
                 </TabsTrigger>
-                <TabsTrigger value="finances">
-                  <BookTextIcon className="size-4" /> My Finances
-                </TabsTrigger>
               </TabsList>
               <TabsContent value="actives">
                 <ActivesScreen onAccountClick={onAccountChange} />
               </TabsContent>
               <TabsContent value="passives">
                 <PassivesScreen onAccountClick={onAccountChange} />
-              </TabsContent>
-              <TabsContent value="finances">
-                <FinancesScreen />
               </TabsContent>
             </Tabs>
             <span className="content-[''] h-9" />

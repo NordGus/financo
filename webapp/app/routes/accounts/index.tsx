@@ -1,153 +1,197 @@
-import { useCallback, useEffect } from "react";
-import { URLSearchParamsInit, useSearchParams } from "react-router";
-import { toast } from "sonner";
-import { Screen } from "~/modules/accounts/screens";
-import { useAccountsStore } from "~/modules/accounts/stores/accounts";
-import { Create } from "~/modules/accounts/types/create";
-import { Update } from "~/modules/accounts/types/update";
+import { Plus } from "lucide-react";
+import { use, useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useResolvedPath } from "react-router";
+import { list as listAccountsQuery } from "~/modules/accounts/api/queries/list";
+import { InfoTooltipIcon } from "~/modules/shared/components/tooltips/info/icon";
+import { Button } from "~/modules/shared/components/ui/button";
+import { Heading3 } from "~/modules/shared/components/ui/headings";
+import { Label } from "~/modules/shared/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "~/modules/shared/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "~/modules/shared/components/ui/table";
+import { CurrenciesContext } from "~/modules/shared/contexts/currencies-context";
+import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
+import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
+import { Currency } from "~/modules/shared/types/currency";
 import { Route } from "./+types/index";
 
-export async function clientLoader({ }: Route.ClientLoaderArgs) {
-  return { breadcrumb: "Accounts" }
+type Summary = {
+  capital: number
+  savings: number
+  debt: number
+  credit: number
 }
 
-export default function Index() {
-  const accounts = useAccountsStore((state) => state.accounts)
+type Summaries = Record<Currency, Summary>
 
-  const listQuery = useAccountsStore((state) => state.list)
+export async function clientLoader({ }: Route.ClientLoaderArgs) {
+  const accounts = await listAccountsQuery()
 
-  const createAction = useAccountsStore((state) => state.create)
-  const updateAction = useAccountsStore((state) => state.update)
-  const archiveAction = useAccountsStore((state) => state.archive)
-  const unarchiveAction = useAccountsStore((state) => state.unarchive)
-  const destroyAction = useAccountsStore((state) => state.destroy)
+  const summaries = Object.fromEntries(accounts.filter(({ deletedAt }) => !deletedAt).reduce(
+    (map, account) => {
+      const summary = map.get(account.currency) ?? { capital: 0, savings: 0, debt: 0, credit: 0 }
 
-  const [searchParams, setSearchParams] = useSearchParams()
+      switch (account.kind) {
+        case "capital":
+          return map.set(
+            account.currency,
+            { ...summary, capital: summary.capital + account.additionalData.balance }
+          )
+        case "savings":
+          return map.set(
+            account.currency,
+            { ...summary, savings: summary.savings + account.additionalData.balance }
+          )
+        case "debt":
+          return map.set(
+            account.currency,
+            { ...summary, debt: summary.debt + account.additionalData.balance + account.capital }
+          )
+        case "credit":
+          return map.set(
+            account.currency,
+            { ...summary, credit: summary.credit + account.additionalData.balance + account.capital }
+          )
+        default:
+          return map
+      }
+    },
+    new Map<Currency, Summary>
+  ).entries()) as Summaries
 
-  const onSearchParamsChange = (params: URLSearchParamsInit) => setSearchParams(params)
+  const currencies = Object.keys(summaries).sort() as Currency[]
 
-  const create = useCallback(async (data: Create, success: () => void, failure: () => void) => {
-    try {
-      const res = createAction(data)
+  return {
+    summaries,
+    summaryCurrencies: currencies
+  }
+}
 
-      toast.promise(res, {
-        loading: "Creating...",
-        success: (data) => {
-          return `${data.name} created`
-        },
-        error: "Oops!. Something went wrong"
-      })
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const { summaries, summaryCurrencies } = loaderData
 
-      await res
+  const { currencies: systemCurrencies } = use(CurrenciesContext)
 
-      success()
-    } catch (error) {
-      failure()
+  const currencies = useMemo(
+    () => systemCurrencies.filter(({ code }) => summaryCurrencies.includes(code)),
+    [summaryCurrencies.join(".")]
+  )
 
-      throw error
-    }
-  }, [createAction])
+  const [currency, setCurrency] = useState<Currency | undefined>(currencies.at(0)?.code)
 
-  const update = useCallback(async (data: Update, success: () => void, failure: () => void) => {
-    try {
-      const res = updateAction(data)
+  useEffect(() => {
+    setCurrency(currencies.at(0)?.code)
+  }, [summaryCurrencies.join(".")])
 
-      toast.promise(res, {
-        loading: "Updating...",
-        success: (data) => {
-          return `${data.name} updated`
-        },
-        error: "Oops!. Something went wrong"
-      })
+  return (
+    <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar my-2">
+      <Heading3>Finances Summary</Heading3>
+      <div className="space-y-2">
+        <Label className="flex gap-2">
+          Currency
+          <InfoTooltipIcon>
+            {"Which currency you want to check your balance"}
+          </InfoTooltipIcon>
+        </Label>
+        <Select
+          value={currency}
+          onValueChange={(value) => setCurrency(value as Currency)}
+          disabled={currencies.length <= 1}
+        >
+          <SelectTrigger className="w-full cursor-pointer" disabled={currencies.length <= 0}>
+            <SelectValue placeholder="No Currency available" />
+          </SelectTrigger>
+          <SelectContent>
+            {
+              currencies.map(({ code, name }) => (
+                <SelectItem key={code} value={code}>
+                  {name}
+                </SelectItem>
+              ))
+            }
+          </SelectContent>
+        </Select>
+      </div>
+      <SummaryTable summaries={summaries} currency={currency} />
+    </section>
+  )
+}
 
-      await res
+function SummaryTable({ summaries, currency }: { summaries: Summaries, currency?: Currency }) {
+  const { search, hash } = useLocation() // current location
+  const { pathname: newPathname } = useResolvedPath("new", { relative: "route" })
 
-      success()
-    } catch (error) {
-      failure()
+  if (!currency) {
+    return (
+      <div className="flex flex-col flex-1 items-center justify-center gap-4">
+        <span className="text-destructive-foreground">
+          {"You don't have any Accounts registered yet!"}
+        </span>
+        <Button asChild>
+          <Link to={{ pathname: newPathname, search, hash }}>
+            <Plus /> Create a new Transaction
+          </Link>
+        </Button>
+      </div>
+    )
+  }
 
-      throw error
-    }
-  }, [updateAction])
+  const summary = summaries[currency]
 
-  const destroy = useCallback(async (id: number, success: () => void, failure: () => void) => {
-    try {
-      const res = destroyAction(id)
+  const total = summary.capital + summary.savings + summary.debt + summary.credit
 
-      toast.promise(res, {
-        loading: "Deleting...",
-        success: (data) => {
-          return `${data.name} deleted`
-        },
-        error: "Oops!. Something went wrong"
-      })
-
-      await res
-
-      success()
-    } catch (error) {
-      failure()
-
-      throw error
-    }
-  }, [destroyAction])
-
-  const archive = useCallback(async (id: number, success: () => void, failure: () => void) => {
-    try {
-      const res = archiveAction(id)
-
-      toast.promise(res, {
-        loading: "Archiving...",
-        success: (data) => {
-          return `${data.name} archived`
-        },
-        error: "Oops!. Something went wrong"
-      })
-
-      await res
-
-      success()
-    } catch (error) {
-      failure()
-
-      throw error
-    }
-  }, [archiveAction])
-
-  const unarchive = useCallback(async (id: number, success: () => void, failure: () => void) => {
-    try {
-      const res = unarchiveAction(id)
-
-      toast.promise(res, {
-        loading: "Unarchiving...",
-        success: (data) => {
-          return `${data.name} unarchived`
-        },
-        error: "Oops!. Something went wrong"
-      })
-
-      await res
-
-      success()
-    } catch (error) {
-      failure()
-
-      throw error
-    }
-  }, [unarchiveAction])
-
-  useEffect(() => { listQuery() }, [])
-
-  return <Screen
-    accounts={accounts}
-
-    searchParams={searchParams}
-    onSearchParamsChange={onSearchParamsChange}
-
-    onCreateAccountAction={create}
-    onUpdateAccountAction={update}
-    onArchiveAccountAction={archive}
-    onUnarchiveAccountAction={unarchive}
-    onDeleteAccountAction={destroy}
-  />
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead></TableHead>
+          <TableHead>Amount</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        <TableRow>
+          <TableHead className="w-[30%]">Capital</TableHead>
+          <TableCell className={currencyAmountColor(summary.capital)}>
+            {currencyAmountToHuman(summary.capital, currency as Currency)}
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableHead className="w-[30%]">Savings</TableHead>
+          <TableCell className={currencyAmountColor(summary.savings)}>
+            {currencyAmountToHuman(summary.savings, currency as Currency)}
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableHead>Debts</TableHead>
+          <TableCell className={currencyAmountColor(summary.debt)}>
+            {currencyAmountToHuman(summary.debt, currency as Currency)}
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableHead>Credit</TableHead>
+          <TableCell className={currencyAmountColor(summary.credit)}>
+            {currencyAmountToHuman(summary.credit, currency as Currency)}
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableHead>Total</TableHead>
+          <TableCell className={currencyAmountColor(total)}>
+            {currencyAmountToHuman(total, currency as Currency)}
+          </TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  )
 }
