@@ -2,7 +2,9 @@ import { Plus } from "lucide-react";
 import { use, useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useResolvedPath } from "react-router";
 import { list as listAccountsQuery } from "~/modules/accounts/api/queries/list";
+import { InfoTooltipIcon } from "~/modules/shared/components/tooltips/info/icon";
 import { Button } from "~/modules/shared/components/ui/button";
+import { Heading2 } from "~/modules/shared/components/ui/headings";
 import { Label } from "~/modules/shared/components/ui/label";
 import {
   Select,
@@ -19,7 +21,6 @@ import {
   TableHeader,
   TableRow
 } from "~/modules/shared/components/ui/table";
-import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
 import { CurrenciesContext } from "~/modules/shared/contexts/currencies-context";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
@@ -92,23 +93,18 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   useEffect(() => {
     setCurrency(currencies.at(0)?.code)
-  }, [currencies])
+  }, [summaryCurrencies.join(".")])
 
   return (
-    <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar my-2">
-      <div className="grid grid-cols-2 gap-2 justify-stretch items-stretch">
-        <span className="flex items-center justify-end">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Label>
-                Currency
-              </Label>
-            </TooltipTrigger>
-            <TooltipContent>
-              {"Which currency you want to summarize you balances"}
-            </TooltipContent>
-          </Tooltip>
-        </span>
+    <section className="flex flex-col gap-4 overflow-y-hidden no-scrollbar my-2">
+      <Heading2>My Finances</Heading2>
+      <div className="space-y-2">
+        <Label className="flex gap-2">
+          Currency
+          <InfoTooltipIcon>
+            {"Which currency you want to check your balance"}
+          </InfoTooltipIcon>
+        </Label>
         <Select
           value={currency}
           onValueChange={(value) => setCurrency(value as Currency)}
