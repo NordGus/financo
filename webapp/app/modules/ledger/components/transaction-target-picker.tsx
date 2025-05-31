@@ -1,14 +1,15 @@
 import { Fragment, use, useEffect, useMemo, useState } from "react"
+import { Preview as AccountPreview } from "~/modules/shared/components/previews/accounts"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger
 } from "~/modules/shared/components/ui/tabs"
+import { AccountPreview as AccountPreviewRecord } from "~/modules/shared/types/account"
 import { AccountsContext } from "../contexts/accounts-context"
 import { Account } from "../types/accounts"
 import { Kind } from "../types/transactions"
-import { PreviewAccount } from "./previews/account"
 import { PreviewCategory } from "./previews/category"
 
 interface Props {
@@ -188,9 +189,9 @@ export function TransactionTargetPicker({ selected, onSelected, ignore, kind = "
           sections.transfer.filter(({ kind }) => kind === "capital").map((account, idx) => (
             <>
               {idx === 0 && <p className="text-xl mb-2">Capital</p>}
-              <PreviewAccount
+              <AccountPreview
                 key={`target.account.transfer.${account.id}`}
-                account={account}
+                account={account as AccountPreviewRecord}
                 onClick={() => onClick(account.id)}
                 selected={selected === account.id}
               />
@@ -201,9 +202,9 @@ export function TransactionTargetPicker({ selected, onSelected, ignore, kind = "
           sections.transfer.filter(({ kind }) => kind === "savings").map((account, idx) => (
             <>
               {idx === 0 && <p className="text-xl mb-2">Savings</p>}
-              <PreviewAccount
+              <AccountPreview
                 key={`target.account.transfer.${account.id}`}
-                account={account}
+                account={account as AccountPreviewRecord}
                 onClick={() => onClick(account.id)}
                 selected={selected === account.id}
               />
@@ -214,9 +215,9 @@ export function TransactionTargetPicker({ selected, onSelected, ignore, kind = "
           sections.transfer.filter(({ kind }) => kind === "debt").map((account, idx) => (
             <>
               {idx === 0 && <p className="text-xl mb-2">Debts</p>}
-              <PreviewAccount
+              <AccountPreview
                 key={`target.account.transfer.${account.id}`}
-                account={account}
+                account={account as AccountPreviewRecord}
                 onClick={() => onClick(account.id)}
                 selected={selected === account.id}
               />
@@ -227,9 +228,9 @@ export function TransactionTargetPicker({ selected, onSelected, ignore, kind = "
           sections.transfer.filter(({ kind }) => kind === "credit").map((account, idx) => (
             <>
               {idx === 0 && <p className="text-xl mb-2">Credit</p>}
-              <PreviewAccount
+              <AccountPreview
                 key={`target.account.transfer.${account.id}`}
-                account={account}
+                account={account as AccountPreviewRecord}
                 onClick={() => onClick(account.id)}
                 selected={selected === account.id}
               />
