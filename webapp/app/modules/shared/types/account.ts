@@ -15,6 +15,7 @@ export {
 export type {
   Account,
   AccountKind,
+  AccountPreview,
   CategoryKind,
   SystemKind as Kind,
   Kinds,
@@ -75,6 +76,24 @@ interface Account {
   additionalData: AdditionalData
   archivedAt: string | null | undefined
   deletedAt: string | null | undefined
+  createdAt: string
+  updatedAt: string
+}
+
+interface AccountPreview {
+  id: number
+  parentId: number | null
+  kind: AccountKind
+  currency: Currency
+  name: string
+  description?: string | null
+  color: string
+  icon: Icon
+  capital: number
+  balance: number
+  main: boolean
+  archivedAt: string | null
+  deletedAt: string | null
   createdAt: string
   updatedAt: string
 }

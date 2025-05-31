@@ -1,23 +1,25 @@
+import { Check } from "lucide-react";
 import { ComponentProps } from "react";
 import { cn } from "~/lib/utils";
 import { currencyAmountColor } from "../../helpers/currency-amount-color";
 import { currencyAmountToHuman } from "../../helpers/currency-amount-to-human";
-import { Account } from "../../types/account";
+import { AccountPreview } from "../../types/account";
 import { AccountListingIcon } from "../icons/account-icon";
 
 interface Props {
-  account: Account
+  account: AccountPreview
+  selected?: boolean
 }
 
-export function Preview({ account, className, ...props }: ComponentProps<"span"> & Props) {
-  const debt = account.capital + account.additionalData.balance
+export function Preview({ account, className, selected = false, ...props }: ComponentProps<"span"> & Props) {
+  const debt = account.capital + account.balance
 
   return (
     <span
       className={
         cn(
-          "grid grid-cols-[min-content_1fr] gap-2 cursor-pointer hover:bg-foreground",
-          !!account.archivedAt && "relative before:absolute before:inset-0 before:bg-background/40 before:z-50",
+          "grid grid-cols-[min-content_1fr] gap-2 cursor-pointer hover:bg-foreground relative",
+          !!account.archivedAt && "before:absolute before:inset-0 before:bg-background/40 before:z-50",
           className
         )
       }
@@ -27,7 +29,7 @@ export function Preview({ account, className, ...props }: ComponentProps<"span">
         kind={account.kind}
         icon={account.icon}
         color={account.color}
-        main={account.additionalData.main}
+        main={account.main}
         className="row-span-2"
       />
       <span className="flex flex-col gap-1 [&_>*]:leading-none">
@@ -37,8 +39,8 @@ export function Preview({ account, className, ...props }: ComponentProps<"span">
       <span className="text-sm">
         {
           (account.kind === "capital" || account.kind === "savings") && (
-            <span className={currencyAmountColor(account.additionalData.balance)}>
-              {currencyAmountToHuman(account.additionalData.balance, account.currency)}
+            <span className={currencyAmountColor(account.balance)}>
+              {currencyAmountToHuman(account.balance, account.currency)}
             </span>
           )
         }
@@ -62,14 +64,26 @@ export function Preview({ account, className, ...props }: ComponentProps<"span">
                 {currencyAmountToHuman(debt, account.currency)}
               </span>{" "}
               <span>owed with</span>{" "}
-              <span className={currencyAmountColor(account.additionalData.balance)}>
-                {currencyAmountToHuman(account.additionalData.balance, account.currency)}
+              <span className={currencyAmountColor(account.balance)}>
+                {currencyAmountToHuman(account.balance, account.currency)}
               </span>{" "}
               <span>available</span>
             </>
           )
         }
       </span>
+      {selected && <SelectedAccountBadge />}
+    </span>
+  )
+}
+
+function SelectedAccountBadge({ className, ...props }: ComponentProps<"span">) {
+  return (
+    <span
+      className={cn("inline-flex p-1 [&_svg]:size-4 rounded-full aspect-square absolute top-0 right-0 bg-muted", className)}
+      {...props}
+    >
+      <Check />
     </span>
   )
 }
