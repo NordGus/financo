@@ -40,7 +40,7 @@ import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { mainAccountManual } from "../../manual/main-account-manual";
 import { schema, schemaWithCapital } from "../../schemas/update";
-import { Account } from "../../types/account";
+import { Account } from "../../types/accounts";
 import { OnSubmitUpdateAccountAction } from "../../types/update";
 
 interface Props {

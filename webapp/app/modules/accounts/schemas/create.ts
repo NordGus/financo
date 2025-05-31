@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { CURRENCIES } from "~/modules/shared/types/currency";
 import { ICONS } from "~/modules/shared/types/icon";
-import { ModuleKind } from "../types/account";
+import { Kind } from "../types/accounts";
 
-const KINDS: Record<ModuleKind, ModuleKind> = {
+const KINDS: Record<Kind, Kind> = {
   capital: "capital",
   savings: "savings",
   credit: "credit",

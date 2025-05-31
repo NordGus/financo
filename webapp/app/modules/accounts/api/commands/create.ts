@@ -1,4 +1,4 @@
-import { Account } from "../../types/account";
+import { Account } from "../../types/accounts";
 import { Create } from "../../types/create";
 
 export async function create(data: Create): Promise<Account> {

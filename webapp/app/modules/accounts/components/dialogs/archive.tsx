@@ -1,5 +1,5 @@
 import { ConfirmationDialog } from "~/modules/shared/components/dialogs/confirmation";
-import { Account } from "../../types/account";
+import { Account } from "../../types/accounts";
 import { OnSubmitArchiveAccountAction } from "../../types/archive";
 
 interface Props {

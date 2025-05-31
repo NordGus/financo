@@ -1,12 +1,12 @@
-import { Kinds } from "~/modules/shared/types/account";
+import { Kinds as SystemKinds } from "~/modules/shared/types/account";
 import { Currency } from "~/modules/shared/types/currency";
 import { Icon } from "~/modules/shared/types/icon";
 
-type ModuleKind =
-  Kinds["capital"] |
-  Kinds["savings"] |
-  Kinds["credit"] |
-  Kinds["debt"]
+type Kind =
+  SystemKinds["capital"] |
+  SystemKinds["savings"] |
+  SystemKinds["credit"] |
+  SystemKinds["debt"]
 
 interface History {
   at?: string | null
@@ -22,7 +22,7 @@ interface AdditionalData {
 
 interface Account {
   id: number
-  kind: ModuleKind
+  kind: Kind
   currency: Currency
   name: string
   description?: string | null
@@ -36,4 +36,4 @@ interface Account {
   updatedAt: string
 }
 
-export type { Account, ModuleKind };
+export type { Account, Kind };

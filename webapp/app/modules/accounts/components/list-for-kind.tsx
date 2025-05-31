@@ -1,11 +1,11 @@
 import { Card } from "~/modules/shared/components/ui/card";
 import { accountKindToHuman } from "~/modules/shared/helpers/account-kind-to-human";
-import { Account, ModuleKind } from "../types/account";
+import { Account, Kind } from "../types/accounts";
 import { PreviewCard } from "./preview-card";
 
 interface Props {
   accounts: Account[]
-  kind: ModuleKind
+  kind: Kind
   onSelectAccount: (account: Account) => void
   forArchived?: boolean
 }

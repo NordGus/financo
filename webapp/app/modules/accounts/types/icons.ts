@@ -1,7 +1,7 @@
 import { Icon } from "~/modules/shared/types/icon";
-import { ModuleKind } from "./account";
+import { Kind } from "./accounts";
 
-export const defaultIcons: Record<ModuleKind, Icon> = {
+export const defaultIcons: Record<Kind, Icon> = {
   capital: "landmark",
   savings: "piggy-bank",
   debt: "hand-coins",

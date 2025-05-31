@@ -4,10 +4,10 @@ import { currencyAmountColor as color } from "~/modules/shared/helpers/currency-
 import { currencyAmountToHuman as amount } from "~/modules/shared/helpers/currency-amount-to-human";
 import { isCredit, isPassive } from "~/modules/shared/types/account";
 import { Currency } from "~/modules/shared/types/currency";
-import { ModuleKind } from "../../types/account";
+import { Kind } from "../../types/accounts";
 
 interface Props {
-  kind: ModuleKind
+  kind: Kind
   capital: number
   balance: number
   currency: Currency

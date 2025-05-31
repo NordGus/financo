@@ -41,14 +41,14 @@ import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
 import { mainAccountManual } from "../../manual/main-account-manual";
 import { schema, schemaWithCapital } from "../../schemas/create";
-import { ModuleKind } from "../../types/account";
+import { Kind } from "../../types/accounts";
 import { OnSubmitCreateAccountAction } from "../../types/create";
 import { defaultIcons } from "../../types/icons";
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  kind: ModuleKind
+  kind: Kind
   defaultCurrency: Currency
   onSubmitAction: OnSubmitCreateAccountAction
   submitting: boolean
@@ -76,7 +76,7 @@ export function CreateAccount({ open, onOpenChange, defaultCurrency, kind, submi
 }
 
 interface FormProps {
-  kind: ModuleKind
+  kind: Kind
   defaultCurrency: Currency
   defaultIcon: Icon
   onSubmitAction: OnSubmitCreateAccountAction

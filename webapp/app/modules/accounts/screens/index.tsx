@@ -8,7 +8,7 @@ import { SelectAccountKindToCreate } from "../components/dialogs/select-account-
 import { UnarchiveAccount } from "../components/dialogs/unarchive";
 import { CreateAccount } from "../components/forms/create";
 import { UpdateAccount } from "../components/forms/update";
-import { Account, ModuleKind } from "../types/account";
+import { Account, Kind } from "../types/accounts";
 import { ArchiveAccountAction } from "../types/archive";
 import { Create, CreateAccountAction } from "../types/create";
 import { DeleteAccountAction } from "../types/delete";
@@ -63,7 +63,7 @@ type ScreenActions = typeof _screenActions
 type ScreenAction =
   { type: ScreenActions["VIEW_CHANGED"], view: View } |
   { type: ScreenActions["ACCOUNT_CHANGED"], account: Account } |
-  { type: ScreenActions["CREATE_KIND_CHANGED"], kind: ModuleKind } |
+  { type: ScreenActions["CREATE_KIND_CHANGED"], kind: Kind } |
   { type: ScreenActions["OPEN_SELECT_KIND_CHANGED"], open: boolean } |
   { type: ScreenActions["OPEN_ARCHIVE_CHANGED"], open: boolean } |
   { type: ScreenActions["OPEN_UNARCHIVE_CHANGED"], open: boolean } |
@@ -76,7 +76,7 @@ type ScreenAction =
 
 type ScreenState = {
   view: View
-  createKind: ModuleKind
+  createKind: Kind
   id: number
   open: Open
   dialog: Dialog
@@ -187,7 +187,7 @@ export function Screen({
     dispatch({ type: "ACTION_FAILED" })
   const onOpenCreateChange = (open: boolean) =>
     dispatch({ type: "OPEN_CREATE_CHANGED", open })
-  const onCreateKindChange = (kind: ModuleKind) =>
+  const onCreateKindChange = (kind: Kind) =>
     dispatch({ type: "CREATE_KIND_CHANGED", kind })
   const onOpenEditChange = (open: boolean) =>
     dispatch({ type: "OPEN_EDIT_CHANGED", open })

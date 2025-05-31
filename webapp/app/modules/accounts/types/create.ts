@@ -1,9 +1,9 @@
 import { Currency } from "~/modules/shared/types/currency";
 import { Icon } from "~/modules/shared/types/icon";
-import { ModuleKind } from "./account";
+import { Kind } from "./accounts";
 
 export type Create = {
-  kind: ModuleKind
+  kind: Kind
   name: string
   description?: string | null
   currency: Currency
