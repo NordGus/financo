@@ -4,7 +4,7 @@ import { Link, useLocation, useResolvedPath } from "react-router";
 import { list as listAccountsQuery } from "~/modules/accounts/api/queries/list";
 import { InfoTooltipIcon } from "~/modules/shared/components/tooltips/info/icon";
 import { Button } from "~/modules/shared/components/ui/button";
-import { Heading2 } from "~/modules/shared/components/ui/headings";
+import { Heading3 } from "~/modules/shared/components/ui/headings";
 import { Label } from "~/modules/shared/components/ui/label";
 import {
   Select,
@@ -96,8 +96,8 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   }, [summaryCurrencies.join(".")])
 
   return (
-    <section className="flex flex-col gap-4 overflow-y-hidden no-scrollbar my-2">
-      <Heading2>My Finances</Heading2>
+    <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar my-2">
+      <Heading3>Finances Summary</Heading3>
       <div className="space-y-2">
         <Label className="flex gap-2">
           Currency
