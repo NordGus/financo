@@ -6,7 +6,8 @@ import {
   TabsList,
   TabsTrigger
 } from "~/modules/shared/components/ui/tabs"
-import { AccountPreview as AccountPreviewRecord } from "~/modules/shared/types/account"
+import { AccountKind } from "~/modules/shared/types/account"
+import { Currency } from "~/modules/shared/types/currency"
 import { AccountsContext } from "../contexts/accounts-context"
 import { Account } from "../types/accounts"
 import { Kind } from "../types/transactions"
@@ -191,7 +192,16 @@ export function TransactionTargetPicker({ selected, onSelected, ignore, kind = "
               {idx === 0 && <p className="text-xl mb-2">Capital</p>}
               <AccountPreview
                 key={`target.account.transfer.${account.id}`}
-                account={account as AccountPreviewRecord}
+                kind={account.kind as AccountKind}
+                currency={account.currency as Currency}
+                name={account.name}
+                description={account.description}
+                color={account.color}
+                icon={account.icon}
+                capital={account.capital}
+                balance={account.balance}
+                main={account.main}
+                archivedAt={account.archivedAt}
                 onClick={() => onClick(account.id)}
                 selected={selected === account.id}
               />
@@ -204,7 +214,16 @@ export function TransactionTargetPicker({ selected, onSelected, ignore, kind = "
               {idx === 0 && <p className="text-xl mb-2">Savings</p>}
               <AccountPreview
                 key={`target.account.transfer.${account.id}`}
-                account={account as AccountPreviewRecord}
+                kind={account.kind as AccountKind}
+                currency={account.currency as Currency}
+                name={account.name}
+                description={account.description}
+                color={account.color}
+                icon={account.icon}
+                capital={account.capital}
+                balance={account.balance}
+                main={account.main}
+                archivedAt={account.archivedAt}
                 onClick={() => onClick(account.id)}
                 selected={selected === account.id}
               />
@@ -217,7 +236,16 @@ export function TransactionTargetPicker({ selected, onSelected, ignore, kind = "
               {idx === 0 && <p className="text-xl mb-2">Debts</p>}
               <AccountPreview
                 key={`target.account.transfer.${account.id}`}
-                account={account as AccountPreviewRecord}
+                kind={account.kind as AccountKind}
+                currency={account.currency as Currency}
+                name={account.name}
+                description={account.description}
+                color={account.color}
+                icon={account.icon}
+                capital={account.capital}
+                balance={account.balance}
+                main={account.main}
+                archivedAt={account.archivedAt}
                 onClick={() => onClick(account.id)}
                 selected={selected === account.id}
               />
@@ -230,7 +258,16 @@ export function TransactionTargetPicker({ selected, onSelected, ignore, kind = "
               {idx === 0 && <p className="text-xl mb-2">Credit</p>}
               <AccountPreview
                 key={`target.account.transfer.${account.id}`}
-                account={account as AccountPreviewRecord}
+                kind={account.kind as AccountKind}
+                currency={account.currency as Currency}
+                name={account.name}
+                description={account.description}
+                color={account.color}
+                icon={account.icon}
+                capital={account.capital}
+                balance={account.balance}
+                main={account.main}
+                archivedAt={account.archivedAt}
                 onClick={() => onClick(account.id)}
                 selected={selected === account.id}
               />

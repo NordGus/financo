@@ -1,6 +1,7 @@
 import { use, useCallback, useMemo } from "react"
 import { Preview as PreviewAccount } from "~/modules/shared/components/previews/accounts"
 import { AccountKind, AccountPreview as AccountPreviewRecord } from "~/modules/shared/types/account"
+import { Currency } from "~/modules/shared/types/currency"
 import { AccountsContext } from "../contexts/accounts-context"
 import { Account } from "../types/accounts"
 
@@ -41,7 +42,16 @@ export function TransactionSourcePicker({ target, selected, onSelected }: Props)
               capital.map((account) => (
                 <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
-                  account={account}
+                  kind={account.kind as AccountKind}
+                  currency={account.currency as Currency}
+                  name={account.name}
+                  description={account.description}
+                  color={account.color}
+                  icon={account.icon}
+                  capital={account.capital}
+                  balance={account.balance}
+                  main={account.main}
+                  archivedAt={account.archivedAt}
                   onClick={() => onClick(account.id)}
                   selected={selected === account.id}
                 />
@@ -58,7 +68,16 @@ export function TransactionSourcePicker({ target, selected, onSelected }: Props)
               savings.map((account) => (
                 <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
-                  account={account}
+                  kind={account.kind as AccountKind}
+                  currency={account.currency as Currency}
+                  name={account.name}
+                  description={account.description}
+                  color={account.color}
+                  icon={account.icon}
+                  capital={account.capital}
+                  balance={account.balance}
+                  main={account.main}
+                  archivedAt={account.archivedAt}
                   onClick={() => onClick(account.id)}
                   selected={selected === account.id}
                 />
@@ -75,7 +94,16 @@ export function TransactionSourcePicker({ target, selected, onSelected }: Props)
               debt.map((account) => (
                 <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
-                  account={account}
+                  kind={account.kind as AccountKind}
+                  currency={account.currency as Currency}
+                  name={account.name}
+                  description={account.description}
+                  color={account.color}
+                  icon={account.icon}
+                  capital={account.capital}
+                  balance={account.balance}
+                  main={account.main}
+                  archivedAt={account.archivedAt}
                   onClick={() => onClick(account.id)}
                   selected={selected === account.id}
                 />
@@ -92,7 +120,16 @@ export function TransactionSourcePicker({ target, selected, onSelected }: Props)
               credit.map((account) => (
                 <PreviewAccount
                   key={`target.account.transfer.${account.id}`}
-                  account={account}
+                  kind={account.kind as AccountKind}
+                  currency={account.currency as Currency}
+                  name={account.name}
+                  description={account.description}
+                  color={account.color}
+                  icon={account.icon}
+                  capital={account.capital}
+                  balance={account.balance}
+                  main={account.main}
+                  archivedAt={account.archivedAt}
                   onClick={() => onClick(account.id)}
                   selected={selected === account.id}
                 />
