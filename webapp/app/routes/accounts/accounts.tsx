@@ -1,6 +1,11 @@
 import { Outlet } from "react-router";
 import { list as listAccountsQuery } from "~/modules/accounts/api/queries/list";
+import { NoAccountsForKind } from "~/modules/accounts/components/no-accounts-for-kind";
+import { archivedAccountsManual } from "~/modules/accounts/manual/archived-accounts-manual";
 import { Account, Kind } from "~/modules/accounts/types/accounts";
+import { InfoDialog } from "~/modules/shared/components/dialogs/info";
+import { Preview } from "~/modules/shared/components/previews/accounts";
+import { Heading2 } from "~/modules/shared/components/ui/headings";
 import { Route } from "./+types/accounts";
 
 type AccountRecords = Record<Kind, Account[]>
@@ -8,13 +13,18 @@ type AccountRecords = Record<Kind, Account[]>
 export async function clientLoader({ }: Route.ClientLoaderArgs) {
   const accounts = await listAccountsQuery()
 
-  const records = Object.fromEntries(accounts.reduce(
-    (map, account) => {
-      const accounts = map.get(account.kind) ?? []
+  // Initializing the map that will convert in the records. This is done to prevent undefined access to an accounts
+  // array.
+  const map = new Map<Kind, Account[]>([
+    ["capital", []],
+    ["savings", []],
+    ["debt", []],
+    ["credit", []],
+  ])
 
-      return map.set(account.kind, [...accounts, account])
-    },
-    new Map<Kind, Account[]>
+  const records = Object.fromEntries(accounts.reduce(
+    (map, account) => map.set(account.kind, [...map.get(account.kind)!, account]),
+    map
   ).entries()) as AccountRecords
 
   return {
@@ -27,8 +37,100 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar my-2">
-        {Object.keys(accounts).join(", ")}
+      <section className="flex flex-col gap-2 overflow-y-hidden my-2 relative">
+        <InfoDialog
+          copy={archivedAccountsManual}
+          withTitleInButton
+          variant={"outline"}
+          size={"default"}
+          className="flex items-center justify-start w-full"
+        />
+        <div className="flex flex-col flex-1 overflow-y-hidden relative">
+          <span
+            className="absolute top-0 left-0 right-0 contents-[' '] h-2 bg-linear-to-b from-background to-transparent z-50"
+          />
+          <div className="flex flex-col flex-1 gap-2 py-2 overflow-y-scroll no-scrollbar">
+            <Heading2>Capital</Heading2>
+            {
+              accounts.capital.map((account) => (
+                <Preview
+                  key={`account.${account.id}`}
+                  kind={account.kind}
+                  currency={account.currency}
+                  name={account.name}
+                  description={account.description}
+                  color={account.color}
+                  icon={account.icon}
+                  capital={account.capital}
+                  balance={account.additionalData.balance}
+                  main={account.additionalData.main}
+                  archivedAt={account.archivedAt}
+                />
+              ))
+            }
+            {accounts.capital.length === 0 && (<NoAccountsForKind kind="capital" />)}
+            <Heading2>Savings</Heading2>
+            {
+              accounts.savings.map((account) => (
+                <Preview
+                  key={`account.${account.id}`}
+                  kind={account.kind}
+                  currency={account.currency}
+                  name={account.name}
+                  description={account.description}
+                  color={account.color}
+                  icon={account.icon}
+                  capital={account.capital}
+                  balance={account.additionalData.balance}
+                  main={account.additionalData.main}
+                  archivedAt={account.archivedAt}
+                />
+              ))
+            }
+            {accounts.savings.length === 0 && (<NoAccountsForKind kind="savings" />)}
+            <Heading2>Debts</Heading2>
+            {
+              accounts.debt.map((account) => (
+                <Preview
+                  key={`account.${account.id}`}
+                  kind={account.kind}
+                  currency={account.currency}
+                  name={account.name}
+                  description={account.description}
+                  color={account.color}
+                  icon={account.icon}
+                  capital={account.capital}
+                  balance={account.additionalData.balance}
+                  main={account.additionalData.main}
+                  archivedAt={account.archivedAt}
+                />
+              ))
+            }
+            {accounts.debt.length === 0 && (<NoAccountsForKind kind="debt" />)}
+            <Heading2>Credit</Heading2>
+            {
+              accounts.credit.map((account) => (
+                <Preview
+                  key={`account.${account.id}`}
+                  kind={account.kind}
+                  currency={account.currency}
+                  name={account.name}
+                  description={account.description}
+                  color={account.color}
+                  icon={account.icon}
+                  capital={account.capital}
+                  balance={account.additionalData.balance}
+                  main={account.additionalData.main}
+                  archivedAt={account.archivedAt}
+                />
+              ))
+            }
+            {accounts.credit.length === 0 && (<NoAccountsForKind kind="credit" />)}
+          </div>
+          <span
+            className="absolute bottom-0 left-0 right-0 contents-[' '] h-2 bg-linear-to-b from-transparent to-background z-50"
+          />
+        </div>
       </section>
       <Outlet />
     </>
