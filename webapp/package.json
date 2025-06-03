@@ -52,7 +52,7 @@
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.2.0",
     "shadcn": "^2.6.0",
-    "tailwindcss": "^4.1.7",
+    "tailwindcss": "^4.1.8",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.32.1",
     "vite": "^6.3.5",
