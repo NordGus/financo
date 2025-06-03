@@ -1,6 +1,5 @@
-FROM node:20-alpine3.21 AS js-tooling
-
-FROM golang:1.23-bookworm AS go-tooling
+FROM node:slim AS js-tooling
+FROM golang:1.24-bookworm AS go-tooling
 RUN apt-get update && \
     apt-get full-upgrade -y && \
     apt install git postgresql-client -y && \
