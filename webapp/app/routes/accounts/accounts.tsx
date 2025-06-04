@@ -3,6 +3,7 @@ import { list as listAccountsQuery } from "~/modules/accounts/api/queries/list";
 import { NoAccountsForKind } from "~/modules/accounts/components/no-accounts-for-kind";
 import { archivedAccountsManual } from "~/modules/accounts/manual/archived-accounts-manual";
 import { Account, Kind } from "~/modules/accounts/types/accounts";
+import { getListFilters } from "~/modules/accounts/utils/router-requests";
 import { InfoDialog } from "~/modules/shared/components/dialogs/info";
 import { Preview } from "~/modules/shared/components/previews/accounts";
 import { Heading2 } from "~/modules/shared/components/ui/headings";
@@ -10,8 +11,8 @@ import { Route } from "./+types/accounts";
 
 type AccountRecords = Record<Kind, Account[]>
 
-export async function clientLoader({ }: Route.ClientLoaderArgs) {
-  const accounts = await listAccountsQuery()
+export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+  const accounts = await listAccountsQuery(getListFilters(request))
 
   // Initializing the map that will convert in the records. This is done to prevent undefined access to an accounts
   // array.
