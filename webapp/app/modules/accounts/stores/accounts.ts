@@ -7,6 +7,7 @@ import { update } from "../api/commands/update";
 import { list } from "../api/queries/list";
 import { Account } from "../types/accounts";
 import { Create } from "../types/create";
+import { defaultListFilters } from "../types/filters";
 import { Update } from "../types/update";
 
 interface AccountsState {
@@ -24,7 +25,7 @@ interface AccountsState {
 const useAccountsStore = createStore<AccountsState>((set) => ({
   accounts: [],
   list: async () => {
-    const accounts = await list()
+    const accounts = await list(defaultListFilters())
 
     set({ accounts })
   },
