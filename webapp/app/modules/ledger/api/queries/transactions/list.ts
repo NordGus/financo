@@ -5,7 +5,7 @@ export async function list(filters: Filters): Promise<Transaction[]> {
   const query = new URLSearchParams(toURLSearchParams(filters))
 
   const response = await fetch(
-    `/api/transactions?${query.toString()}`,
+    `${import.meta.env.VITE_API_HOST}/api/transactions?${query.toString()}`,
     {
       headers: {
         "Content-Type": "application/json; charset=UTF-8"
