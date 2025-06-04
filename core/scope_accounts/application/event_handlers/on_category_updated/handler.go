@@ -6,6 +6,7 @@ import (
 	"financo/core/scope_accounts/domain/filters"
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_categories/domain/messages"
+	"financo/lib/currency"
 	"financo/models/account"
 	"time"
 )
@@ -30,17 +31,15 @@ func New(
 
 func (h *handler) Handle(event messages.Updated) error {
 	var (
-		ctx       = context.Background()
-		timestamp = time.Now().UTC()
+		ctx        = context.Background()
+		timestamp  = time.Now().UTC()
+		kinds      = make([]account.Kind, 0, 4)
+		currencies = make([]currency.Type, 0, 5)
 	)
 
 	records, err := h.accountsRepo.Where(ctx, filters.Accounts{
-		Kinds: []account.Kind{
-			account.Capital,
-			account.Savings,
-			account.Credit,
-			account.Debt,
-		},
+		Kinds:      filters.FilterAccountKinds(kinds),
+		Currencies: filters.FilterAccountCurrency(currencies),
 	})
 	if err != nil {
 		return err
@@ -48,7 +47,7 @@ func (h *handler) Handle(event messages.Updated) error {
 
 	ids := make([]int64, len(records))
 
-	for i := 0; i < len(records); i++ {
+	for i := range records {
 		ids[i] = records[i].ID
 	}
 
@@ -62,7 +61,7 @@ func (h *handler) Handle(event messages.Updated) error {
 		return err
 	}
 
-	for i := 0; i < len(records); i++ {
+	for i := range records {
 		records[i].UpdatedAt = timestamp
 		records[i].DynamicData.Balance = balances[records[i].ID]
 		records[i].DynamicData.Transactions = counts[records[i].ID]
