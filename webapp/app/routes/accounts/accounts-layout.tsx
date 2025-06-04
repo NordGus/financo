@@ -1,5 +1,7 @@
 import { BookTextIcon, Plus } from "lucide-react";
 import { Link, Outlet, useLocation, useResolvedPath } from "react-router";
+import { ListFiltersContextProvider } from "~/modules/accounts/contexts/list-filters-context";
+import { getListFilters } from "~/modules/accounts/utils/router-requests";
 import { ToolSidebar } from "~/modules/shared/components/tool-sidebar";
 import {
   SidebarGroup,
@@ -10,21 +12,23 @@ import {
 } from "~/modules/shared/components/ui/sidebar";
 import { Route } from "./+types/accounts-layout";
 
-// export async function clientLoader({ }: Route.ClientLoaderArgs) {
-//   const currencies = await listCurrenciesQuery()
+export async function clientLoader({ request }: Route.ClientLoaderArgs) {
+  const filters = getListFilters(request)
 
-//   return {
-//     currencies
-//   }
-// }
+  return {
+    filters
+  }
+}
 
-export default function Layout({ }: Route.ComponentProps) {
+export default function Layout({ loaderData }: Route.ComponentProps) {
+  const { filters } = loaderData
+
   const { pathname: newPathname } = useResolvedPath("accounts/new", { relative: "path" })
   const { pathname: summaryPath } = useResolvedPath("accounts", { relative: "path" })
   const { pathname, search, hash } = useLocation()
 
   return (
-    <>
+    <ListFiltersContextProvider filters={filters}>
       <ToolSidebar title="Accounts">
         <SidebarGroup>
           <SidebarGroupContent>
@@ -50,6 +54,6 @@ export default function Layout({ }: Route.ComponentProps) {
       <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 justify-stretch items-stretch gap-4 px-4">
         <Outlet />
       </div>
-    </>
+    </ListFiltersContextProvider>
   )
 }
