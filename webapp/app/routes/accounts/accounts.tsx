@@ -77,7 +77,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                 />
               ))
             }
-            {accounts.capital.length === 0 && (<NoAccountsForKind kind="capital" />)}
+            {accounts.capital.length === 0 && (<NoAccountsForKind kind="capital" archived={filters.archived} />)}
             <Heading2>Savings</Heading2>
             {
               accounts.savings.map((account) => (
@@ -96,7 +96,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                 />
               ))
             }
-            {accounts.savings.length === 0 && (<NoAccountsForKind kind="savings" />)}
+            {accounts.savings.length === 0 && (<NoAccountsForKind kind="savings" archived={filters.archived} />)}
             <Heading2>Debts</Heading2>
             {
               accounts.debt.map((account) => (
@@ -115,7 +115,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                 />
               ))
             }
-            {accounts.debt.length === 0 && (<NoAccountsForKind kind="debt" />)}
+            {accounts.debt.length === 0 && (<NoAccountsForKind kind="debt" archived={filters.archived} />)}
             <Heading2>Credit</Heading2>
             {
               accounts.credit.map((account) => (
@@ -134,7 +134,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                 />
               ))
             }
-            {accounts.credit.length === 0 && (<NoAccountsForKind kind="credit" />)}
+            {accounts.credit.length === 0 && (<NoAccountsForKind kind="credit" archived={filters.archived} />)}
           </div>
           <span
             className="absolute bottom-0 left-0 right-0 contents-[' '] h-2 bg-linear-to-b from-transparent to-background z-50"
