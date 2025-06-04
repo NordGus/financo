@@ -2,7 +2,11 @@ import { URLSearchParamsInit } from "react-router"
 import { Currency } from "~/modules/shared/types/currency"
 import { Kind } from "./accounts"
 
-export { listFiltersFromURLSearchParams, listFiltersToURLSearchParams }
+export {
+  defaultListFilters,
+  listFiltersFromURLSearchParams,
+  listFiltersToURLSearchParams
+}
 export type { ListFilters }
 
 const ListFiltersSearchParamsKeys = {
