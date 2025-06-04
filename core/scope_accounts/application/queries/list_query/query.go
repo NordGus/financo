@@ -7,7 +7,6 @@ import (
 	"financo/core/scope_accounts/domain/repositories"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/core/scope_accounts/domain/responses"
-	"financo/models/account"
 )
 
 type query struct {
@@ -26,12 +25,9 @@ func (q *query) Find(ctx context.Context) ([]responses.Listed, error) {
 	var res = make([]responses.Listed, 0, 10)
 
 	accounts, err := q.repo.Where(ctx, filters.Accounts{
-		Kinds: []account.Kind{
-			account.Capital,
-			account.Savings,
-			account.Credit,
-			account.Debt,
-		},
+		Kinds:      filters.FilterAccountKinds(q.req.Kinds),
+		Archived:   q.req.Archive,
+		Currencies: filters.FilterAccountCurrency(q.req.Currencies),
 	})
 	if err != nil {
 		return res, err
