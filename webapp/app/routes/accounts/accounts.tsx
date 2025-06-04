@@ -1,6 +1,8 @@
+import { use } from "react";
 import { Outlet } from "react-router";
 import { list as listAccountsQuery } from "~/modules/accounts/api/queries/list";
 import { NoAccountsForKind } from "~/modules/accounts/components/no-accounts-for-kind";
+import { ListFiltersContext } from "~/modules/accounts/contexts/list-filters-context";
 import { archivedAccountsManual } from "~/modules/accounts/manual/archived-accounts-manual";
 import { Account, Kind } from "~/modules/accounts/types/accounts";
 import { getListFilters } from "~/modules/accounts/utils/router-requests";
@@ -36,16 +38,22 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 export default function Index({ loaderData }: Route.ComponentProps) {
   const { accounts } = loaderData
 
+  const { filters } = use(ListFiltersContext)
+
   return (
     <>
       <section className="flex flex-col gap-2 overflow-y-hidden my-2 relative">
-        <InfoDialog
-          copy={archivedAccountsManual}
-          withTitleInButton
-          variant={"outline"}
-          size={"default"}
-          className="flex items-center justify-start w-full"
-        />
+        {
+          filters.archived && (
+            <InfoDialog
+              copy={archivedAccountsManual}
+              withTitleInButton
+              variant={"outline"}
+              size={"default"}
+              className="flex items-center justify-start w-full"
+            />
+          )
+        }
         <div className="flex flex-col flex-1 overflow-y-hidden relative">
           <span
             className="absolute top-0 left-0 right-0 contents-[' '] h-2 bg-linear-to-b from-background to-transparent z-50"
