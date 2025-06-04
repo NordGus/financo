@@ -123,7 +123,7 @@ func parseIds(r *http.Request, param string) ([]int64, error) {
 
 	raw := strings.Split(r.URL.Query().Get(param), ",")
 
-	for i := 0; i < len(raw); i++ {
+	for i := range raw {
 		if raw[i] == "" {
 			continue
 		}
