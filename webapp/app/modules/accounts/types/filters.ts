@@ -24,7 +24,7 @@ type ListFilters = {
 }
 
 function kindsToParam(values: Kind[]): string[] | undefined {
-  if (values.length) return undefined
+  if (values.length === 0) return undefined
 
   // I do not care about the type, a kind is a string in the end.
   return values as string[]
@@ -37,7 +37,7 @@ function archivedToParam(value: boolean | undefined): string | undefined {
 }
 
 function currenciesToParam(values: Currency[]): string[] | undefined {
-  if (values.length) return undefined
+  if (values.length === 0) return undefined
 
   // I do not care about the type, a kind is a string in the end.
   return values as string[]
