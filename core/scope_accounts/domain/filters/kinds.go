@@ -15,7 +15,7 @@ func FilterKinds(kinds []account.Kind) []account.Kind {
 		}
 	)
 
-	for i := 0; i < len(kinds); i++ {
+	for i := range kinds {
 		if accepted[kinds[i]] {
 			out = append(out, kinds[i])
 		}
