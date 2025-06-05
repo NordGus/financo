@@ -24,7 +24,7 @@ export function KindsFilters() {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>
-        Account Kind
+        Kind
       </SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
