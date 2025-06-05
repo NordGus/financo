@@ -43,9 +43,8 @@ export const Preview = memo(function Preview({
     <span
       className={
         cn(
-          "grid grid-cols-[min-content_1fr] gap-2 cursor-pointer hover:bg-muted-foreground/20 relative p-2 rounded-lg",
-          !!archivedAt &&
-          "before:absolute before:inset-0 before:bg-background/40 before:hover:bg-transparent before:z-50",
+          "grid grid-cols-[min-content_1fr] gap-2 cursor-pointer hover:bg-muted-foreground/20 p-2 rounded-lg",
+          !!archivedAt && "opacity-80",
           className
         )
       }
@@ -56,6 +55,7 @@ export const Preview = memo(function Preview({
         icon={icon}
         color={color}
         main={main}
+        archived={!!archivedAt}
         className="row-span-2"
       />
       <span className="flex flex-col gap-1 [&_>*]:leading-none">

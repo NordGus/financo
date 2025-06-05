@@ -1,16 +1,18 @@
-import { StarIcon } from "lucide-react";
+import { PackageIcon, StarIcon } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { ComponentProps } from "react";
 import { cn } from "~/lib/utils";
 import { colorContrast } from "../../helpers/color-contrast";
 import { Kind } from "../../types/account";
 import { Icon } from "../../types/icon";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 interface ListingProps {
   kind: Kind
   icon: Icon
   color: string
   main?: boolean
+  archived?: boolean
 }
 
 export function AccountListingIcon({
@@ -18,6 +20,7 @@ export function AccountListingIcon({
   icon,
   color,
   main = false,
+  archived = false,
   className,
   ...props
 }: ComponentProps<"span"> & ListingProps) {
@@ -38,6 +41,20 @@ export function AccountListingIcon({
         main && <span className="absolute -top-2 -right-2 p-0.5 bg-primary rounded-full border-accent border-[1px]">
           <StarIcon className="!size-4 text-primary-foreground" />
         </span>
+      }
+      {
+        archived && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="absolute -bottom-2 -left-2 p-0.5 bg-primary rounded-full border-accent border-[1px]">
+                <PackageIcon className="!size-4 text-primary-foreground" />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              This Account is archived
+            </TooltipContent>
+          </Tooltip>
+        )
       }
     </span>
   )
