@@ -4,7 +4,6 @@ import { list as listAccountsQuery } from "~/modules/accounts/api/queries/list";
 import { NoAccountsForKind } from "~/modules/accounts/components/no-accounts-for-kind";
 import { ListFiltersContext } from "~/modules/accounts/contexts/list-filters-context";
 import { accountKindsManual } from "~/modules/accounts/manual/account-kinds-manual";
-import { archivedAccountsManual } from "~/modules/accounts/manual/archived-accounts-manual";
 import { Account, Kind } from "~/modules/accounts/types/accounts";
 import { getListFilters } from "~/modules/accounts/utils/router-requests";
 import { InfoDialog } from "~/modules/shared/components/dialogs/info";
@@ -44,17 +43,6 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <section className="flex flex-col gap-2 overflow-y-hidden my-2 relative">
-        {
-          filters.archived && (
-            <InfoDialog
-              copy={archivedAccountsManual}
-              withTitleInButton
-              variant={"outline"}
-              size={"default"}
-              className="flex items-center justify-start w-full"
-            />
-          )
-        }
         <div className="flex flex-col flex-1 overflow-y-hidden relative">
           <span
             className="absolute top-0 left-0 right-0 contents-[' '] h-2 bg-linear-to-b from-background to-transparent z-50"
