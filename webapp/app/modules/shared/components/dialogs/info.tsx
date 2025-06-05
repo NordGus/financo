@@ -1,5 +1,5 @@
 import { InfoIcon, X } from "lucide-react";
-import { ComponentProps } from "react";
+import { ComponentProps, PropsWithChildren } from "react";
 import { Copy } from "~/modules/shared/types/copy";
 import { Button } from "../ui/button";
 import {
@@ -19,14 +19,31 @@ interface Props extends ComponentProps<typeof Button> {
   withTitleInButton?: boolean
 }
 
-export function InfoDialog({ copy, className, variant = "link", size = "icon", withTitleInButton = false }: Props) {
+export function InfoDialog({
+  copy,
+  className,
+  variant = "link",
+  size = "icon",
+  withTitleInButton = false,
+  children
+}: PropsWithChildren<Props>) {
   return (
     <Dialog>
-      <Button variant={variant} size={size} className={className} asChild>
-        <DialogTrigger>
-          <InfoIcon /> {withTitleInButton && <span>{copy.title}</span>}
-        </DialogTrigger>
-      </Button>
+      {
+        children
+          ? (
+            <DialogTrigger asChild>
+              {children}
+            </DialogTrigger>
+          )
+          : (
+            <Button variant={variant} size={size} className={className} asChild>
+              <DialogTrigger>
+                <InfoIcon /> {withTitleInButton && <span>{copy.title}</span>}
+              </DialogTrigger>
+            </Button>
+          )
+      }
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{copy.title}</DialogTitle>
