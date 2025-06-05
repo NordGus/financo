@@ -5,7 +5,7 @@ import { Preview } from "../../components/preview";
 import { accountKindsManual } from "../../manual/account-kinds-manual";
 import { archivedAccountsManual } from "../../manual/archived-accounts-manual";
 import { useAccountsStore } from "../../stores/accounts";
-import { Account } from "../../types/account";
+import { Account } from "../../types/accounts";
 
 interface ScreenSections {
   capital: Account[]

@@ -177,13 +177,18 @@ func (p *postgresql) Where(ctx context.Context, f filters.Accounts) ([]account.R
 		acc.deleted_at IS NULL
 		AND acc.parent_id IS NULL
 		AND acc.kind = ANY($1)
+		AND acc.currency = ANY($2)
 	`
 
-	rows, err := conn.QueryContext(
-		ctx,
-		query,
-		f.Kinds,
-	)
+	if f.Archived.Valid && f.Archived.Val {
+		query += " AND acc.archived_at IS NOT NULL"
+	}
+
+	if f.Archived.Valid && !f.Archived.Val {
+		query += " AND acc.archived_at IS NULL"
+	}
+
+	rows, err := conn.QueryContext(ctx, query, f.Kinds, f.Currencies)
 	if err != nil {
 		return res, err
 	}

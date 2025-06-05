@@ -3,7 +3,7 @@ import { cn } from "~/lib/utils";
 import { AccountListingIcon } from "~/modules/shared/components/icons/account-icon";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
-import { Account } from "../types/account";
+import { Account } from "../types/accounts";
 
 // TODO: Move to shared module and unify with all other implementations
 

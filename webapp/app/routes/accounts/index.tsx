@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { use, useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useResolvedPath } from "react-router";
 import { list as listAccountsQuery } from "~/modules/accounts/api/queries/list";
+import { defaultListFilters } from "~/modules/accounts/types/filters";
 import { InfoTooltipIcon } from "~/modules/shared/components/tooltips/info/icon";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Heading3 } from "~/modules/shared/components/ui/headings";
@@ -37,7 +38,7 @@ type Summary = {
 type Summaries = Record<Currency, Summary>
 
 export async function clientLoader({ }: Route.ClientLoaderArgs) {
-  const accounts = await listAccountsQuery()
+  const accounts = await listAccountsQuery(defaultListFilters())
 
   const summaries = Object.fromEntries(accounts.filter(({ deletedAt }) => !deletedAt).reduce(
     (map, account) => {

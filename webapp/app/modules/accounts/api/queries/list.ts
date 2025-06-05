@@ -1,7 +1,17 @@
-import { Account } from "../../types/account";
+import { Account } from "../../types/accounts";
+import { ListFilters, listFiltersToURLSearchParams } from "../../types/filters";
 
-async function list(): Promise<Account[]> {
-  const response = await fetch(`${import.meta.env.VITE_API_HOST}/api/accounts`, { headers: { "Content-Type": "application/json; charset=UTF-8" } })
+async function list(filters: ListFilters): Promise<Account[]> {
+  const query = new URLSearchParams(listFiltersToURLSearchParams(filters))
+
+  const response = await fetch(
+    `${import.meta.env.VITE_API_HOST}/api/accounts?${query.toString()}`,
+    {
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8"
+      }
+    }
+  )
 
   if (response.ok) return response.json()
 

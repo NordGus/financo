@@ -1,7 +1,7 @@
 import { Copy } from "~/modules/shared/types/copy";
-import { ModuleKind } from "../types/account";
+import { Kind } from "../types/accounts";
 
-export const accountKindsManual: Record<ModuleKind, Copy> = {
+export const accountKindsManual: Record<Kind, Copy> = {
   capital: {
     title: "What is a Capital Account?",
     message: <>

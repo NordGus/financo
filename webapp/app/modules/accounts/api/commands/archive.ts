@@ -1,4 +1,4 @@
-import { Account } from "../../types/account";
+import { Account } from "../../types/accounts";
 
 export async function archive(id: number): Promise<Account> {
   const response = await fetch(`${import.meta.env.VITE_API_HOST}/api/accounts/${id}/archive`, {

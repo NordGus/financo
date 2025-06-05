@@ -13,8 +13,10 @@ export default [
     route("morning-brew", "routes/morning-brew/index.tsx"),
 
     layout("routes/accounts/_layout.tsx", [
-      route("accounts", "routes/accounts/accounts.tsx", [
-        index("routes/accounts/index.tsx"),
+      route("/", "routes/accounts/accounts-layout.tsx", [
+        route("accounts", "routes/accounts/accounts.tsx", [
+          index("routes/accounts/index.tsx"),
+        ]),
       ]),
     ]),
 
