@@ -1,5 +1,6 @@
 import { BookTextIcon, Plus } from "lucide-react";
 import { Link, Outlet, useLocation, useResolvedPath } from "react-router";
+import { CurrenciesFilters } from "~/modules/accounts/components/filters/currencies";
 import { KindsFilters } from "~/modules/accounts/components/filters/kinds";
 import { StatusFilters } from "~/modules/accounts/components/filters/status";
 import { ListFiltersContextProvider } from "~/modules/accounts/contexts/list-filters-context";
@@ -54,6 +55,7 @@ export default function Layout({ loaderData }: Route.ComponentProps) {
         </SidebarGroup>
         <StatusFilters />
         <KindsFilters />
+        <CurrenciesFilters />
       </ToolSidebar>
       <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 justify-stretch items-stretch gap-4 px-4">
         <Outlet />
