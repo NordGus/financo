@@ -1,5 +1,6 @@
 import { BookTextIcon, Plus } from "lucide-react";
 import { Link, Outlet, useLocation, useResolvedPath } from "react-router";
+import { KindsFilters } from "~/modules/accounts/components/filters/kinds";
 import { ListFiltersContextProvider } from "~/modules/accounts/contexts/list-filters-context";
 import { getListFilters } from "~/modules/accounts/utils/router-requests";
 import { ToolSidebar } from "~/modules/shared/components/tool-sidebar";
@@ -50,6 +51,7 @@ export default function Layout({ loaderData }: Route.ComponentProps) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <KindsFilters />
       </ToolSidebar>
       <div className="grow overflow-hidden no-scrollbar grid grid-cols-2 justify-stretch items-stretch gap-4 px-4">
         <Outlet />
