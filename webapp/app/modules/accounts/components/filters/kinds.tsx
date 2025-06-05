@@ -24,7 +24,7 @@ export function KindsFilters() {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>
-        Kind
+        Filter by Kind
       </SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>

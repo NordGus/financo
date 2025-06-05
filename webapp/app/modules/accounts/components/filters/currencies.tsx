@@ -17,7 +17,7 @@ export function CurrenciesFilters() {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>
-        Currency
+        Filter by Currency
       </SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>

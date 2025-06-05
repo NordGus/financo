@@ -19,7 +19,7 @@ export function StatusFilters() {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>
-        Status
+        Filter by Status
       </SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
