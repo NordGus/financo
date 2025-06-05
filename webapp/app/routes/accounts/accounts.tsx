@@ -3,6 +3,7 @@ import { Outlet } from "react-router";
 import { list as listAccountsQuery } from "~/modules/accounts/api/queries/list";
 import { NoAccountsForKind } from "~/modules/accounts/components/no-accounts-for-kind";
 import { ListFiltersContext } from "~/modules/accounts/contexts/list-filters-context";
+import { accountKindsManual } from "~/modules/accounts/manual/account-kinds-manual";
 import { archivedAccountsManual } from "~/modules/accounts/manual/archived-accounts-manual";
 import { Account, Kind } from "~/modules/accounts/types/accounts";
 import { getListFilters } from "~/modules/accounts/utils/router-requests";
@@ -59,7 +60,9 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             className="absolute top-0 left-0 right-0 contents-[' '] h-2 bg-linear-to-b from-background to-transparent z-50"
           />
           <div className="flex flex-col flex-1 gap-2 py-2 overflow-y-scroll no-scrollbar">
-            <Heading2>Capital</Heading2>
+            <Heading2 className="flex items-center gap-2">
+              Capital <InfoDialog copy={accountKindsManual.capital} />
+            </Heading2>
             {
               accounts.capital.map((account) => (
                 <Preview
@@ -78,7 +81,9 @@ export default function Index({ loaderData }: Route.ComponentProps) {
               ))
             }
             {accounts.capital.length === 0 && (<NoAccountsForKind kind="capital" archived={filters.archived} />)}
-            <Heading2>Savings</Heading2>
+            <Heading2 className="flex items-center gap-2">
+              Savings <InfoDialog copy={accountKindsManual.savings} />
+            </Heading2>
             {
               accounts.savings.map((account) => (
                 <Preview
@@ -97,7 +102,9 @@ export default function Index({ loaderData }: Route.ComponentProps) {
               ))
             }
             {accounts.savings.length === 0 && (<NoAccountsForKind kind="savings" archived={filters.archived} />)}
-            <Heading2>Debts</Heading2>
+            <Heading2 className="flex items-center gap-2">
+              Debts <InfoDialog copy={accountKindsManual.debt} />
+            </Heading2>
             {
               accounts.debt.map((account) => (
                 <Preview
@@ -116,7 +123,9 @@ export default function Index({ loaderData }: Route.ComponentProps) {
               ))
             }
             {accounts.debt.length === 0 && (<NoAccountsForKind kind="debt" archived={filters.archived} />)}
-            <Heading2>Credit</Heading2>
+            <Heading2 className="flex items-center gap-2">
+              Credit <InfoDialog copy={accountKindsManual.credit} />
+            </Heading2>
             {
               accounts.credit.map((account) => (
                 <Preview
