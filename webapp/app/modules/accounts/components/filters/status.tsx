@@ -30,9 +30,9 @@ export function StatusFilters() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
-              isActive={filters.archived === true}
+              isActive={filters.archived === false}
               onClick={() => setFilters(prev => ({
-                ...prev, archived: prev.archived === true ? undefined : true
+                ...prev, archived: prev.archived === false ? undefined : false
               }))}
             >
               <PackageOpen /> Active
@@ -40,9 +40,9 @@ export function StatusFilters() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
-              isActive={filters.archived === false}
+              isActive={filters.archived === true}
               onClick={() => setFilters(prev => ({
-                ...prev, archived: prev.archived === false ? undefined : false
+                ...prev, archived: prev.archived === true ? undefined : true
               }))}
             >
               <Package /> Archived
