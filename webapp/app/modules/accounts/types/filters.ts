@@ -31,9 +31,14 @@ function kindsToParam(values: Kind[]): string[] | undefined {
 }
 
 function archivedToParam(value: boolean | undefined): string | undefined {
-  if (value) return "true"
-
-  return "false"
+  switch (value) {
+    case true:
+      return "true"
+    case false:
+      return "false"
+    default:
+      return undefined
+  }
 }
 
 function currenciesToParam(values: Currency[]): string[] | undefined {
@@ -72,7 +77,14 @@ function toKind(value: string | null | undefined): Kind | undefined {
 }
 
 function toArchived(value: string | null | undefined): boolean | undefined {
-  return value === "true"
+  switch (value) {
+    case "true":
+      return true
+    case "false":
+      return false
+    default:
+      return undefined
+  }
 }
 
 function toCurrencies(values: string[]): Currency[] {
@@ -96,7 +108,7 @@ function defaultListFilters(): ListFilters {
   return {
     kinds: [],
     kind: undefined,
-    archived: false,
+    archived: undefined,
     currencies: []
   }
 }
