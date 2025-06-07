@@ -16,6 +16,7 @@ export default [
       route("/", "routes/accounts/accounts-layout.tsx", [
         route("accounts", "routes/accounts/accounts.tsx", [
           index("routes/accounts/index.tsx"),
+          route("new", "routes/accounts/new.tsx")
         ]),
       ]),
     ]),
