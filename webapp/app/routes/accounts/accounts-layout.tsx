@@ -32,7 +32,7 @@ export default function Layout({ loaderData }: Route.ComponentProps) {
 
   return (
     <ListFiltersContextProvider filters={filters}>
-      <ToolSidebar title="Accounts">
+      <ToolSidebar title="Accounts" className="min-w-[250px]">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
