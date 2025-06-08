@@ -19,8 +19,8 @@ export function IconInput({ value, onChange, color }: Props) {
   return (
     <Tooltip>
       <Popover>
-        <PopoverTrigger asChild>
-          <TooltipTrigger asChild>
+        <TooltipTrigger asChild>
+          <PopoverTrigger asChild>
             <FormControl>
               <Button
                 size={"icon"}
@@ -29,12 +29,13 @@ export function IconInput({ value, onChange, color }: Props) {
                   backgroundColor: color ? colorContrast(color) : undefined,
                   color: color ? colorContrast(colorContrast(color)) : undefined
                 }}
+                type={"button"}
               >
                 <DynamicIcon name={value} className="size-6" />
               </Button>
             </FormControl>
-          </TooltipTrigger>
-        </PopoverTrigger>
+          </PopoverTrigger>
+        </TooltipTrigger>
         <TooltipContent>
           {"Pick an Icon"}
         </TooltipContent>
