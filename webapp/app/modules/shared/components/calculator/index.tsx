@@ -400,6 +400,7 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
               case "help":
                 return (
                   <InfoDialog
+                    key={key}
                     copy={calculatorManual}
                     variant={"ghost"}
                     size={"default"}
