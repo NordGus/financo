@@ -143,6 +143,7 @@ export function WithoutCapitalForm({
   const formKind = form.watch("kind")
   const formCurrency = form.watch("currency")
   const formHasHistory = form.watch("hasHistory")
+  const formColor = form.watch("color")
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     const promise = fetcher.submit({
@@ -169,7 +170,10 @@ export function WithoutCapitalForm({
         {...props}
         className={cn("overflow-auto flex flex-col gap-2 px-1", props.className)}
       >
-        <div className="grid grid-cols-[min-content_1fr] gap-2">
+        <div
+          className="flex justify-between items-end h-32 gap-2 rounded-lg shadow-xs p-4"
+          style={{ backgroundColor: formColor }}
+        >
           <FormField
             control={form.control}
             name="icon"
@@ -180,6 +184,7 @@ export function WithoutCapitalForm({
                     value={field.value}
                     onChange={field.onChange}
                     entity="account"
+                    color={formColor}
                   />
                 </FormControl>
                 <FormMessage />
