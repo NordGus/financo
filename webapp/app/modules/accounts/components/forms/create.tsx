@@ -155,13 +155,10 @@ function CreateForm({ kind, defaultCurrency, defaultIcon, submitting, onSubmitAc
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Icon</FormLabel>
-                  <FormControl>
-                    <IconInput
-                      value={field.value}
-                      onChange={field.onChange}
-                      entity="account"
-                    />
-                  </FormControl>
+                  <IconInput
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
