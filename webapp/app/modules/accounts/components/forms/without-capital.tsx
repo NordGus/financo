@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { z } from "zod"
 import { cn } from "~/lib/utils"
 import { InfoDialog } from "~/modules/shared/components/dialogs/info"
+import { ColorInput } from "~/modules/shared/components/inputs/color-input"
 import { CurrencyAmountInput } from "~/modules/shared/components/inputs/currency-amount-input"
 import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input"
 import { DateInput } from "~/modules/shared/components/inputs/date-input"
@@ -171,7 +172,7 @@ export function WithoutCapitalForm({
         className={cn("overflow-auto flex flex-col gap-2 px-1", props.className)}
       >
         <div
-          className="flex justify-between items-end h-32 gap-2 rounded-lg shadow-xs p-4"
+          className="flex justify-between items-end h-42 gap-2 rounded-lg shadow-xs p-4"
           style={{ backgroundColor: formColor }}
         >
           <FormField
@@ -179,14 +180,11 @@ export function WithoutCapitalForm({
             name="icon"
             render={({ field }) => (
               <FormItem>
-                <FormControl>
-                  <IconInput
-                    value={field.value}
-                    onChange={field.onChange}
-                    entity="account"
-                    color={formColor}
-                  />
-                </FormControl>
+                <IconInput
+                  value={field.value}
+                  onChange={field.onChange}
+                  color={formColor}
+                />
                 <FormMessage />
               </FormItem>
             )}
@@ -196,9 +194,7 @@ export function WithoutCapitalForm({
             name="color"
             render={({ field }) => (
               <FormItem>
-                <FormControl>
-                  <Input {...field} type={"color"} className="cursor-pointer" />
-                </FormControl>
+                <ColorInput value={field.value} onChange={field.onChange} />
                 <FormMessage />
               </FormItem>
             )}
