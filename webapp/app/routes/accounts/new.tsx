@@ -1,26 +1,28 @@
 import { CreditCard, HandCoins, Landmark, PiggyBank } from "lucide-react";
 import { use } from "react";
 import { createSearchParams, Link, useLocation } from "react-router";
+import { WithoutCapitalForm } from "~/modules/accounts/components/forms/without-capital";
 import { ListFiltersContext } from "~/modules/accounts/contexts/list-filters-context";
 import { accountKindsManual } from "~/modules/accounts/manual/account-kinds-manual";
 import { listFiltersToURLSearchParams } from "~/modules/accounts/types/filters";
-import { Heading2, Heading3 } from "~/modules/shared/components/ui/headings";
+import { Heading2 } from "~/modules/shared/components/ui/headings";
+import { CurrenciesContext } from "~/modules/shared/contexts/currencies-context";
 import { Route } from "./+types/new";
 
 export default function New({ }: Route.ComponentProps) {
   const { filters } = use(ListFiltersContext)
+  const { currencies } = use(CurrenciesContext)
   const { pathname, hash } = useLocation()
 
   return (
     <section className="flex flex-col gap-2 overflow-y-hidden my-2 relative">
       <div className="flex flex-col gap-2 overflow-y-auto flex-1">
-        <Heading2>New Account</Heading2>
         {
           !filters.kind && (
             <>
-              <Heading3>
+              <Heading2>
                 {"What kind of Account you want to create?"}
-              </Heading3>
+              </Heading2>
               <Link
                 className="grid grid-cols-[min-content_1fr] gap-3 border p-3 rounded-lg hover:bg-muted/50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-7 shrink-0 [&_svg]:shrink-0 shadow-xs"
                 to={{
@@ -86,6 +88,24 @@ export default function New({ }: Route.ComponentProps) {
                 </span>
               </Link>
             </>
+          )
+        }
+        {
+          (filters.kind === "capital" || filters.kind === "savings") && (
+            <WithoutCapitalForm
+              kind={filters.kind}
+              currency={currencies[0].code}
+              color={undefined}
+              icon={undefined}
+              name={undefined}
+              description={undefined}
+              capital={undefined}
+              main={undefined}
+              hasHistory={undefined}
+              historyAt={undefined}
+              historyBalance={undefined}
+              role={"create"}
+            />
           )
         }
       </div>
