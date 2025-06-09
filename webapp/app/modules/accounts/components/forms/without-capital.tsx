@@ -43,6 +43,21 @@ const NAME_MIN_LENGTH = 3
 const NAME_MAX_LENGTH = 250
 const DESCRIPTION_MAX_LENGTH = 1000
 
+const DEFAULT_ICONS: Record<Kinds["capital"] | Kinds["savings"], Icon> = {
+  capital: "landmark",
+  savings: "piggy-bank"
+}
+
+const DEFAULT_COLORS: Record<Kinds["capital"] | Kinds["savings"], string> = {
+  capital: "#31e2c2",
+  savings: "#0b8fe8"
+}
+
+const DEFAULT_NAMES: Record<Kinds["capital"] | Kinds["savings"], string> = {
+  capital: "New Capital Account",
+  savings: "New Savings Account"
+}
+
 const schema = z.object({
   kind: z.enum(["capital", "savings"]),
   currency: z.nativeEnum(CURRENCIES, { required_error: "required" }),
@@ -102,9 +117,9 @@ export function WithoutCapitalForm({
     defaultValues: {
       kind: kind,
       currency,
-      color: color ?? { capital: "#31e2c2", savings: "#0b8fe8" }[kind],
-      icon: icon ?? "landmark",
-      name: name ?? "New Capital Account",
+      color: color ?? DEFAULT_COLORS[kind],
+      icon: icon ?? DEFAULT_ICONS[kind],
+      name: name ?? DEFAULT_NAMES[kind],
       description,
       capital: capital ?? 0,
       main: main ?? false,
