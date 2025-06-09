@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Save, Trash, X } from "lucide-react"
+import { Package, PackageOpen, Save, Trash, X } from "lucide-react"
 import { ComponentProps, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useFetcher } from "react-router"
@@ -163,6 +163,7 @@ type Props = {
   hasHistory: boolean | undefined
   historyAt: Date | null | undefined
   historyBalance: number | null | undefined
+  archivedAt: Date | null | undefined
   transactions: number
   role: "create" | "update"
 }
@@ -179,6 +180,7 @@ export function FormTemplate({
   hasHistory,
   historyAt,
   historyBalance,
+  archivedAt,
   transactions,
   role,
   ...props
@@ -292,42 +294,93 @@ export function FormTemplate({
           <div className="flex gap-2 items-start">
             {
               role === "update" && (
-                <Dialog>
-                  <Tooltip>
-                    <DialogTrigger asChild>
-                      <TooltipTrigger asChild>
-                        <Button type="button" variant="destructive" size={"icon"} className="dark:bg-destructive">
-                          <Trash />
-                        </Button>
-                      </TooltipTrigger>
-                    </DialogTrigger>
-                    <TooltipContent>
-                      {"Delete Account"}
-                    </TooltipContent>
-                  </Tooltip>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
-                        {`Do you want to delete this Account?`}
-                      </DialogTitle>
-                      <DialogDescription>
-                        {`This action is irreversible. It will also delete ${transactions} transaction(s) related to this Account.`}
-                      </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button variant={"outline"} type="button">
-                          <X /> Cancel
-                        </Button>
-                      </DialogClose>
-                      <DialogClose asChild>
-                        <Button onClick={onDestroy} variant={"destructive"} type="button">
-                          <Trash /> Delete
-                        </Button>
-                      </DialogClose>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                <>
+                  <Dialog>
+                    <Tooltip>
+                      <DialogTrigger asChild>
+                        <TooltipTrigger asChild>
+                          <Button type="button" variant="destructive" size={"icon"} className="dark:bg-destructive">
+                            <Trash />
+                          </Button>
+                        </TooltipTrigger>
+                      </DialogTrigger>
+                      <TooltipContent>
+                        {"Delete Account"}
+                      </TooltipContent>
+                    </Tooltip>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>
+                          {`Do you want to delete this Account?`}
+                        </DialogTitle>
+                        <DialogDescription>
+                          {`This action is irreversible. It will also delete ${transactions} transaction(s) related to this Account.`}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button variant={"outline"} type="button">
+                            <X /> Cancel
+                          </Button>
+                        </DialogClose>
+                        <DialogClose asChild>
+                          <Button onClick={onDestroy} variant={"destructive"} type="button">
+                            <Trash /> Delete
+                          </Button>
+                        </DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                  <Dialog>
+                    <Tooltip>
+                      <DialogTrigger asChild>
+                        <TooltipTrigger asChild>
+                          <Button type="button" variant="secondary" size={"icon"}>
+                            {!archivedAt ? <Package /> : <PackageOpen />}
+                          </Button>
+                        </TooltipTrigger>
+                      </DialogTrigger>
+                      <TooltipContent>
+                        {!archivedAt ? "Archive Account" : "Unarchive Account"}
+                      </TooltipContent>
+                    </Tooltip>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>
+                          {
+                            !archivedAt
+                              ? `Do you want to archive this Account?`
+                              : `Do you want to unarchive this Account?`
+                          }
+                        </DialogTitle>
+                        <DialogDescription>
+                          {`This action can be reversed. It does not delete any of the ${transactions} transaction(s) related to this Account. `}
+                          {
+                            !archivedAt
+                              ? `It only makes this Account stop appearing as an option anywhere else in financo.`
+                              : `It only makes this Account appear as an option anywhere else in financo, again.`
+                          }
+                        </DialogDescription>
+                      </DialogHeader>
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button variant={"outline"} type="button">
+                            <X /> Cancel
+                          </Button>
+                        </DialogClose>
+                        <DialogClose asChild>
+                          <Button onClick={onDestroy} type="button">
+                            {
+                              !archivedAt
+                                ? <><Package /> Archive</>
+                                : <><PackageOpen /> Unarchive</>
+                            }
+                          </Button>
+                        </DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </>
               )
             }
             <span className="flex-1 contents-[' ']" />
