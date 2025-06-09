@@ -1,9 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Save } from "lucide-react"
 import { ComponentProps, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useFetcher } from "react-router"
 import { toast } from "sonner"
-import { z } from "zod/v4"
+import { z } from "zod"
 import { cn } from "~/lib/utils"
 import { InfoDialog } from "~/modules/shared/components/dialogs/info"
 import { ColorInput } from "~/modules/shared/components/inputs/color-input"
@@ -11,6 +12,8 @@ import { CurrencyAmountInput } from "~/modules/shared/components/inputs/currency
 import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input"
 import { DateInput } from "~/modules/shared/components/inputs/date-input"
 import { IconInput } from "~/modules/shared/components/inputs/icon-input"
+import { Throbber } from "~/modules/shared/components/throbber"
+import { Button } from "~/modules/shared/components/ui/button"
 import {
   Form,
   FormControl,
@@ -24,8 +27,11 @@ import { Input } from "~/modules/shared/components/ui/input"
 import { Label } from "~/modules/shared/components/ui/label"
 import { Switch } from "~/modules/shared/components/ui/switch"
 import { Textarea } from "~/modules/shared/components/ui/textarea"
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip"
 import {
   isCapital,
+  isCredit,
+  isDebt,
   Kinds
 } from "~/modules/shared/types/account"
 import {
@@ -39,49 +45,100 @@ import {
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual"
 import { mainAccountManual } from "../../manual/main-account-manual"
 
+type Kind = Kinds["capital"] | Kinds["savings"] | Kinds["debt"] | Kinds["credit"]
+
 const NAME_MIN_LENGTH = 3
 const NAME_MAX_LENGTH = 250
 const DESCRIPTION_MAX_LENGTH = 1000
 
-const DEFAULT_ICONS: Record<Kinds["capital"] | Kinds["savings"], Icon> = {
+const DEFAULT_ICONS: Record<Kind, Icon> = {
   capital: "landmark",
-  savings: "piggy-bank"
+  savings: "piggy-bank",
+  debt: "hand-coins",
+  credit: "credit-card"
 }
 
-const DEFAULT_COLORS: Record<Kinds["capital"] | Kinds["savings"], string> = {
+const DEFAULT_COLORS: Record<Kind, string> = {
   capital: "#31e2c2",
-  savings: "#0b8fe8"
+  savings: "#0b8fe8",
+  debt: "#fc004f",
+  credit: "#8d3abd"
 }
 
-const DEFAULT_NAMES: Record<Kinds["capital"] | Kinds["savings"], string> = {
+const DEFAULT_NAMES: Record<Kind, string> = {
   capital: "New Capital Account",
-  savings: "New Savings Account"
+  savings: "New Savings Account",
+  debt: "New Debt",
+  credit: "New Credit Line"
 }
 
-const schema = z.object({
-  kind: z.enum(["capital", "savings"]),
-  currency: z.enum(CURRENCIES, { error: "required" }),
-  color: z.string({ error: "required" })
+const capitalAndSavingsSchema = z.object({
+  kind: z.union([z.literal("capital"), z.literal("savings")]),
+  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
+  color: z.string({ required_error: "required" })
     .max(10, { message: "invalid" }),
-  icon: z.enum(ICONS, { error: "required" }),
-  name: z.string({ error: "required" })
+  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
+  name: z.string({ required_error: "required" })
     .max(NAME_MAX_LENGTH, { message: "too long" })
     .min(NAME_MIN_LENGTH, { message: "too short" }),
   description: z.string()
     .max(DESCRIPTION_MAX_LENGTH, { message: "too long" })
     .nullish(),
-  capital: z.number({ error: "required" })
+  capital: z.number({ required_error: "required" })
     .min(0, { message: "must be zero" })
     .max(0, { message: "must be zero" }),
-  main: z.boolean({ error: "required" }),
-  hasHistory: z.boolean({ error: "required" }),
+  main: z.boolean({ required_error: "required" }),
+  hasHistory: z.boolean({ required_error: "required" }),
   historyAt: z.date().nullish(),
   historyBalance: z.number().nullish(),
   role: z.enum(["create", "update"])
 })
 
+const debtSchema = z.object({
+  kind: z.literal("debt"),
+  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
+  color: z.string({ required_error: "required" })
+    .max(10, { message: "invalid" }),
+  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
+  name: z.string({ required_error: "required" })
+    .max(NAME_MAX_LENGTH, { message: "too long" })
+    .min(NAME_MIN_LENGTH, { message: "too short" }),
+  description: z.string()
+    .max(DESCRIPTION_MAX_LENGTH, { message: "too long" })
+    .nullish(),
+  capital: z.number({ required_error: "required" })
+    .refine((val) => val !== 0, { message: "required" }),
+  main: z.boolean({ required_error: "required" }),
+  hasHistory: z.boolean({ required_error: "required" }),
+  historyAt: z.date().nullish(),
+  historyBalance: z.number().nullish(),
+  role: z.enum(["create", "update"])
+})
+
+const creditSchema = z.object({
+  kind: z.literal("credit"),
+  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
+  color: z.string({ required_error: "required" })
+    .max(10, { message: "invalid" }),
+  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
+  name: z.string({ required_error: "required" })
+    .max(NAME_MAX_LENGTH, { message: "too long" })
+    .min(NAME_MIN_LENGTH, { message: "too short" }),
+  description: z.string()
+    .max(DESCRIPTION_MAX_LENGTH, { message: "too long" })
+    .nullish(),
+  capital: z.number({ required_error: "required" }).positive({ message: "must be positive" }),
+  main: z.boolean({ required_error: "required" }),
+  hasHistory: z.boolean({ required_error: "required" }),
+  historyAt: z.date().nullish(),
+  historyBalance: z.number().nullish(),
+  role: z.enum(["create", "update"])
+})
+
+const schema = z.union([capitalAndSavingsSchema, debtSchema, creditSchema])
+
 type Props = {
-  kind: Kinds["capital"] | Kinds["savings"]
+  kind: Kind
   currency: Currency | undefined
   color: string | undefined
   icon: Icon | undefined
@@ -95,7 +152,7 @@ type Props = {
   role: "create" | "update"
 }
 
-export function CapitalAndSavingsForm({
+export function FormTemplate({
   kind,
   currency,
   color,
@@ -132,15 +189,15 @@ export function CapitalAndSavingsForm({
 
   useEffect(() => {
     if (currency) form.setValue("currency", currency)
-    if (color) form.setValue("color", color)
-    if (icon) form.setValue("icon", icon)
-    if (name) form.setValue("name", name)
+    form.setValue("color", color ?? DEFAULT_COLORS[kind])
+    form.setValue("icon", icon ?? DEFAULT_ICONS[kind])
+    form.setValue("name", name ?? DEFAULT_NAMES[kind])
     form.setValue("description", description)
-    if (capital) form.setValue("capital", capital)
-    if (main) form.setValue("main", main)
+    form.setValue("capital", capital ?? 0)
+    form.setValue("main", main ?? false)
     form.setValue("hasHistory", !!hasHistory)
     form.setValue("historyAt", historyAt)
-    form.setValue("historyAt", historyAt)
+    form.setValue("historyBalance", historyBalance)
     form.setValue("role", role)
   }, [
     currency,
@@ -155,6 +212,12 @@ export function CapitalAndSavingsForm({
     historyBalance,
     role,
   ])
+
+  useEffect(() => {
+    if (Object.keys(form.formState.errors).length === 0) return
+
+    console.error(form.formState.errors)
+  }, [form.formState.errors])
 
   const formKind = form.watch("kind")
   const formCurrency = form.watch("currency")
@@ -185,35 +248,59 @@ export function CapitalAndSavingsForm({
         onSubmit={form.handleSubmit(onSubmit)}
         {...props}
         className={cn("overflow-auto flex flex-col gap-2 px-1", props.className)}
+        id="account-form"
       >
         <div
-          className="flex justify-between items-end h-42 gap-2 rounded-lg shadow-xs p-4"
+          className="grid grid-rows-2 h-42 gap-2 rounded-lg shadow-xs p-4"
           style={{ backgroundColor: formColor }}
         >
-          <FormField
-            control={form.control}
-            name="icon"
-            render={({ field }) => (
-              <FormItem>
-                <IconInput
-                  value={field.value}
-                  onChange={field.onChange}
-                  color={formColor}
-                />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="color"
-            render={({ field }) => (
-              <FormItem>
-                <ColorInput value={field.value} onChange={field.onChange} />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="flex gap-2 items-start">
+            <span className="flex-1 contents-[' ']" />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button type="submit" form="account-form" size={"icon"}>
+                  {
+                    fetcher.state !== "idle"
+                      ? <Throbber />
+                      : <Save />
+                  }
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {
+                  role === "update"
+                    ? "Update Account"
+                    : "Create Account"
+                }
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <div className="flex justify-between items-end gap-2">
+            <FormField
+              control={form.control}
+              name="icon"
+              render={({ field }) => (
+                <FormItem>
+                  <IconInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    color={formColor}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="color"
+              render={({ field }) => (
+                <FormItem>
+                  <ColorInput value={field.value} onChange={field.onChange} />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
         <FormField
           control={form.control}
@@ -222,7 +309,6 @@ export function CapitalAndSavingsForm({
             const charCount = field.value?.length ?? 0
             const isApproachingLimit = charCount >= NAME_MAX_LENGTH * 0.9
             const isAboveLimit = charCount > NAME_MAX_LENGTH
-            const isTooShort = charCount < NAME_MIN_LENGTH
 
             return (
               <FormItem>
@@ -235,14 +321,9 @@ export function CapitalAndSavingsForm({
                     )}
                   />
                 </FormControl>
-                <FormDescription className="text-right">
+                <FormDescription>
                   {NAME_MAX_LENGTH - charCount} characters remaining
                 </FormDescription>
-                {isTooShort && (
-                  <FormDescription className="text-right text-destructive">
-                    too short
-                  </FormDescription>
-                )}
                 <FormMessage />
               </FormItem>
             )
@@ -271,7 +352,7 @@ export function CapitalAndSavingsForm({
                     )}
                   />
                 </FormControl>
-                <FormDescription className="text-right">
+                <FormDescription>
                   {DESCRIPTION_MAX_LENGTH - charCount} characters remaining
                 </FormDescription>
                 <FormMessage />
@@ -286,12 +367,37 @@ export function CapitalAndSavingsForm({
             <FormItem>
               <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} value={field.value} />
               <FormDescription>
-                The currency this account will operate in with
+                The currency of your debt
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+        { // NOTE: Only credit an
+          (isDebt(formKind) || isCredit(formKind)) && (
+            <FormField
+              control={form.control}
+              name="capital"
+              render={({ field }) => (
+                <FormItem>
+                  <CurrencyAmountInput
+                    currency={formCurrency}
+                    value={field.value}
+                    onChange={field.onChange}
+                    name="Capital"
+                    placeholder="Capital"
+                    forDebts={true}
+                    fixedSign={true}
+                  />
+                  <FormDescription>
+                    {"The amount you allowed to get in debt with your creditor."}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )
+        }
         {
           isCapital(formKind) && (
             <FormField
@@ -359,7 +465,7 @@ export function CapitalAndSavingsForm({
                 placeholder="Starting Balance"
               />
               <FormDescription>
-                The balance of the account at the starting date
+                The balance of the credit line at the starting date
               </FormDescription>
               <FormMessage />
             </FormItem>
