@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Save } from "lucide-react"
+import { Save, Trash, X } from "lucide-react"
 import { ComponentProps, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useFetcher } from "react-router"
@@ -15,6 +15,16 @@ import { IconInput } from "~/modules/shared/components/inputs/icon-input"
 import { Throbber } from "~/modules/shared/components/throbber"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "~/modules/shared/components/ui/dialog"
+import {
   Form,
   FormControl,
   FormDescription,
@@ -27,7 +37,11 @@ import { Input } from "~/modules/shared/components/ui/input"
 import { Label } from "~/modules/shared/components/ui/label"
 import { Switch } from "~/modules/shared/components/ui/switch"
 import { Textarea } from "~/modules/shared/components/ui/textarea"
-import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from "~/modules/shared/components/ui/tooltip"
 import {
   isCapital,
   isCredit,
@@ -91,7 +105,7 @@ const capitalAndSavingsSchema = z.object({
   hasHistory: z.boolean({ required_error: "required" }),
   historyAt: z.date().nullish(),
   historyBalance: z.number().nullish(),
-  role: z.enum(["create", "update"])
+  intent: z.enum(["create", "update"])
 })
 
 const debtSchema = z.object({
@@ -112,7 +126,7 @@ const debtSchema = z.object({
   hasHistory: z.boolean({ required_error: "required" }),
   historyAt: z.date().nullish(),
   historyBalance: z.number().nullish(),
-  role: z.enum(["create", "update"])
+  intent: z.enum(["create", "update"])
 })
 
 const creditSchema = z.object({
@@ -132,7 +146,7 @@ const creditSchema = z.object({
   hasHistory: z.boolean({ required_error: "required" }),
   historyAt: z.date().nullish(),
   historyBalance: z.number().nullish(),
-  role: z.enum(["create", "update"])
+  intent: z.enum(["create", "update"])
 })
 
 const schema = z.union([capitalAndSavingsSchema, debtSchema, creditSchema])
@@ -149,6 +163,7 @@ type Props = {
   hasHistory: boolean | undefined
   historyAt: Date | null | undefined
   historyBalance: number | null | undefined
+  transactions: number
   role: "create" | "update"
 }
 
@@ -164,6 +179,7 @@ export function FormTemplate({
   hasHistory,
   historyAt,
   historyBalance,
+  transactions,
   role,
   ...props
 }: ComponentProps<"form"> & Props) {
@@ -183,7 +199,7 @@ export function FormTemplate({
       hasHistory: hasHistory ?? false,
       historyAt,
       historyBalance,
-      role
+      intent: role
     }
   })
 
@@ -198,7 +214,7 @@ export function FormTemplate({
     form.setValue("hasHistory", !!hasHistory)
     form.setValue("historyAt", historyAt)
     form.setValue("historyBalance", historyBalance)
-    form.setValue("role", role)
+    form.setValue("intent", role)
   }, [
     currency,
     color,
@@ -219,6 +235,7 @@ export function FormTemplate({
     console.error(form.formState.errors)
   }, [form.formState.errors])
 
+  const formName = form.watch("name")
   const formKind = form.watch("kind")
   const formCurrency = form.watch("currency")
   const formHasHistory = form.watch("hasHistory")
@@ -228,7 +245,7 @@ export function FormTemplate({
     const promise = fetcher.submit({
       ...values,
       historyAt: values.historyAt ? values.historyAt.toDateString() : null,
-    }, { method: "post", encType: "application/json" })
+    }, { method: "post" })
 
     toast.promise(
       promise,
@@ -238,6 +255,24 @@ export function FormTemplate({
           return `${values.name} account created!`
         },
         error: `Couldn't save ${values.name}, something went wrong`
+      }
+    )
+  }
+
+  const onDestroy = async () => {
+    if (role !== "update") {
+      toast.error("This account is not saved yet")
+      return
+    }
+
+    const promise = fetcher.submit({ intent: "destroy" }, { method: "post" })
+
+    toast.promise(
+      promise,
+      {
+        loading: "Deleting...",
+        success: () => `${formName} deleted!`,
+        error: `Couldn't delete ${formName}, something went wrong"`
       }
     )
   }
@@ -255,6 +290,46 @@ export function FormTemplate({
           style={{ backgroundColor: formColor }}
         >
           <div className="flex gap-2 items-start">
+            {
+              role === "update" && (
+                <Dialog>
+                  <Tooltip>
+                    <DialogTrigger asChild>
+                      <TooltipTrigger asChild>
+                        <Button type="button" variant="destructive" size={"icon"} className="dark:bg-destructive">
+                          <Trash />
+                        </Button>
+                      </TooltipTrigger>
+                    </DialogTrigger>
+                    <TooltipContent>
+                      {"Delete Account"}
+                    </TooltipContent>
+                  </Tooltip>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {`Do you want to delete this Account?`}
+                      </DialogTitle>
+                      <DialogDescription>
+                        {`This action is irreversible. It will also delete ${transactions} transaction(s) related to this Account.`}
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant={"outline"} type="button">
+                          <X /> Cancel
+                        </Button>
+                      </DialogClose>
+                      <DialogClose asChild>
+                        <Button onClick={onDestroy} variant={"destructive"} type="button">
+                          <Trash /> Delete
+                        </Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )
+            }
             <span className="flex-1 contents-[' ']" />
             <Tooltip>
               <TooltipTrigger asChild>
