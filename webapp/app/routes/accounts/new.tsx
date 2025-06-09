@@ -2,6 +2,7 @@ import { CreditCard, HandCoins, Landmark, PiggyBank } from "lucide-react";
 import { use } from "react";
 import { createSearchParams, Link, useLocation } from "react-router";
 import { CapitalAndSavingsForm } from "~/modules/accounts/components/forms/capital-and-savings";
+import { DebtForm } from "~/modules/accounts/components/forms/debt";
 import { ListFiltersContext } from "~/modules/accounts/contexts/list-filters-context";
 import { accountKindsManual } from "~/modules/accounts/manual/account-kinds-manual";
 import { listFiltersToURLSearchParams } from "~/modules/accounts/types/filters";
@@ -100,6 +101,24 @@ export default function New({ }: Route.ComponentProps) {
               name={undefined}
               description={undefined}
               capital={undefined}
+              main={undefined}
+              hasHistory={undefined}
+              historyAt={undefined}
+              historyBalance={undefined}
+              role={"create"}
+            />
+          )
+        }
+        {
+          filters.kind === "debt" && (
+            <DebtForm
+              kind={filters.kind}
+              currency={currencies[0].code}
+              color={undefined}
+              icon={undefined}
+              name={undefined}
+              description={undefined}
+              capital={0}
               main={undefined}
               hasHistory={undefined}
               historyAt={undefined}
