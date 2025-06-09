@@ -279,6 +279,27 @@ export function FormTemplate({
     )
   }
 
+  const onArchiveOrUnarchive = async () => {
+    if (role !== "update") {
+      toast.error("This account is not saved yet")
+      return
+    }
+
+    const archive = archivedAt?.toDateString()
+    const promise = fetcher.submit({ intent: !archive ? "archive" : "unarchive" }, { method: "post" })
+
+    toast.promise(
+      promise,
+      {
+        loading: !archive ? "Archiving..." : "Unarchiving...",
+        success: () => !archive ? `${formName} archived!` : `${formName} unarchived!`,
+        error: () => !archive
+          ? `Couldn't archive ${formName}, something went wrong`
+          : `Couldn't unarchive ${formName}, something went wrong`
+      }
+    )
+  }
+
   return (
     <Form {...form}>
       <form
@@ -369,7 +390,7 @@ export function FormTemplate({
                           </Button>
                         </DialogClose>
                         <DialogClose asChild>
-                          <Button onClick={onDestroy} type="button">
+                          <Button onClick={onArchiveOrUnarchive} type="button">
                             {
                               !archivedAt
                                 ? <><Package /> Archive</>

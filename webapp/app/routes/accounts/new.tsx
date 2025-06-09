@@ -104,6 +104,7 @@ export default function New({ }: Route.ComponentProps) {
               hasHistory={undefined}
               historyAt={undefined}
               historyBalance={undefined}
+              archivedAt={undefined}
               transactions={0}
               role={"create"}
             />
