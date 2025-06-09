@@ -13,7 +13,7 @@
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.1.0",
+    "@hookform/resolvers": "^5.1.1",
     "@react-router/node": "^7.6.1",
     "@react-router/serve": "^7.6.1",
     "class-variance-authority": "^0.7.1",
@@ -52,7 +52,7 @@
     "eslint": "^9.28.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.2.0",
-    "shadcn": "^2.6.0",
+    "shadcn": "^2.6.1",
     "tailwindcss": "^4.1.8",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.1",
