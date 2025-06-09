@@ -3,7 +3,7 @@ import { ComponentProps, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useFetcher } from "react-router"
 import { toast } from "sonner"
-import { z } from "zod"
+import { z } from "zod/v4"
 import { cn } from "~/lib/utils"
 import { InfoDialog } from "~/modules/shared/components/dialogs/info"
 import { ColorInput } from "~/modules/shared/components/inputs/color-input"
@@ -60,21 +60,21 @@ const DEFAULT_NAMES: Record<Kinds["capital"] | Kinds["savings"], string> = {
 
 const schema = z.object({
   kind: z.enum(["capital", "savings"]),
-  currency: z.nativeEnum(CURRENCIES, { required_error: "required" }),
-  color: z.string({ required_error: "required" })
+  currency: z.enum(CURRENCIES, { error: "required" }),
+  color: z.string({ error: "required" })
     .max(10, { message: "invalid" }),
-  icon: z.nativeEnum(ICONS, { required_error: "required" }),
-  name: z.string({ required_error: "required" })
+  icon: z.enum(ICONS, { error: "required" }),
+  name: z.string({ error: "required" })
     .max(NAME_MAX_LENGTH, { message: "too long" })
     .min(NAME_MIN_LENGTH, { message: "too short" }),
   description: z.string()
     .max(DESCRIPTION_MAX_LENGTH, { message: "too long" })
     .nullish(),
-  capital: z.number({ required_error: "required" })
+  capital: z.number({ error: "required" })
     .min(0, { message: "must be zero" })
     .max(0, { message: "must be zero" }),
-  main: z.boolean({ required_error: "required" }),
-  hasHistory: z.boolean({ required_error: "required" }),
+  main: z.boolean({ error: "required" }),
+  hasHistory: z.boolean({ error: "required" }),
   historyAt: z.date().nullish(),
   historyBalance: z.number().nullish(),
   role: z.enum(["create", "update"])
@@ -95,7 +95,7 @@ type Props = {
   role: "create" | "update"
 }
 
-export function WithoutCapitalForm({
+export function CapitalAndSavingsForm({
   kind,
   currency,
   color,

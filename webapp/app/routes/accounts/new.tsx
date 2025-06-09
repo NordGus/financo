@@ -1,7 +1,7 @@
 import { CreditCard, HandCoins, Landmark, PiggyBank } from "lucide-react";
 import { use } from "react";
 import { createSearchParams, Link, useLocation } from "react-router";
-import { WithoutCapitalForm } from "~/modules/accounts/components/forms/without-capital";
+import { CapitalAndSavingsForm } from "~/modules/accounts/components/forms/capital-and-savings";
 import { ListFiltersContext } from "~/modules/accounts/contexts/list-filters-context";
 import { accountKindsManual } from "~/modules/accounts/manual/account-kinds-manual";
 import { listFiltersToURLSearchParams } from "~/modules/accounts/types/filters";
@@ -92,7 +92,7 @@ export default function New({ }: Route.ComponentProps) {
         }
         {
           (filters.kind === "capital" || filters.kind === "savings") && (
-            <WithoutCapitalForm
+            <CapitalAndSavingsForm
               kind={filters.kind}
               currency={currencies[0].code}
               color={undefined}
