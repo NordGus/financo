@@ -1,4 +1,4 @@
-/* eslint-disable @stylistic/ts/indent */
+/* eslint-disable @stylistic/indent */
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
 
