@@ -6,9 +6,6 @@ ARG NODE_VERSION=22
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive && \
     apt-get install fonts-powerline postgresql-client nano git -y
 
-# giving access to /go/pkg to all users
-RUN chmod -R a+w /go/pkg
-
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8
 
