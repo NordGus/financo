@@ -15,13 +15,13 @@ db-setup: db-drop db-create db-migrate db-seed
 db-reset: db-migration-reset db-migrate db-seed
 db-migrate:
 	@echo "running migrations"
-	@goose up
+	@go tool goose up
 db-rollback:
 	@echo "rolling back last migration"
-	@goose down
+	@go tool goose down
 db-migration-reset:
 	@echo "reseting database"
-	@goose reset
+	@go tool goose reset
 db-seed:
 	@echo "running database seeds"
 	@go run ${SERVER_CMD}/database/seed/main.go
@@ -34,4 +34,4 @@ db-drop:
 
 # Server targets
 server:
-	@air
+	@go tool air
