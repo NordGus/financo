@@ -38,6 +38,6 @@ and wait for the `Go Extension` to install all its dependencies.
   make webapp
   ```
 
-## TODO
+## TODOs
 
 - [ ] Refactor message consumers to be more centralized or implement a mutex.
