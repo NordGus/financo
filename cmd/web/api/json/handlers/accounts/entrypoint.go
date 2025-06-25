@@ -5,6 +5,7 @@ import (
 	"financo/cmd/web/api/json/handlers/accounts/create_handler"
 	"financo/cmd/web/api/json/handlers/accounts/destroy_handler"
 	"financo/cmd/web/api/json/handlers/accounts/list_handler"
+	"financo/cmd/web/api/json/handlers/accounts/show_handler"
 	"financo/cmd/web/api/json/handlers/accounts/unarchive_handler"
 	"financo/cmd/web/api/json/handlers/accounts/update_handler"
 
@@ -16,6 +17,7 @@ func Routes(r chi.Router) {
 	r.Post("/", create_handler.HandlerFunc)
 
 	r.Route("/{id}", func(r chi.Router) {
+		r.Get("/", show_handler.HandlerFunc)
 		r.Delete("/", destroy_handler.HandlerFunc)
 		r.Put("/", update_handler.HandlerFunc)
 		r.Patch("/archive", archive_handler.HandlerFunc)
