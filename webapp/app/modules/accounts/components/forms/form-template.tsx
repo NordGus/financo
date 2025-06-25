@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Package, PackageOpen, Save, Trash, X } from "lucide-react"
+import { AlertCircle, Package, PackageOpen, Save, Trash, X } from "lucide-react"
 import { ComponentProps, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useFetcher } from "react-router"
@@ -13,6 +13,7 @@ import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input
 import { DateInput } from "~/modules/shared/components/inputs/date-input"
 import { IconInput } from "~/modules/shared/components/inputs/icon-input"
 import { Throbber } from "~/modules/shared/components/throbber"
+import { Alert, AlertDescription, AlertTitle } from "~/modules/shared/components/ui/alert"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Dialog,
@@ -56,10 +57,11 @@ import {
   Icon,
   ICONS
 } from "~/modules/shared/types/icon"
+import { archivedAccountsManual } from "../../manual/archived-accounts-manual"
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual"
 import { mainAccountManual } from "../../manual/main-account-manual"
 
-export type Kind = Kinds["capital"] | Kinds["savings"] | Kinds["debt"] | Kinds["credit"]
+type Kind = Kinds["capital"] | Kinds["savings"] | Kinds["debt"] | Kinds["credit"]
 
 const NAME_MIN_LENGTH = 3
 const NAME_MAX_LENGTH = 250
@@ -246,7 +248,7 @@ export function FormTemplate({
   const onSubmit = async (values: z.infer<typeof schema>) => {
     const promise = fetcher.submit({
       ...values,
-      historyAt: values.historyAt ? values.historyAt.toDateString() : null,
+      historyAt: values.historyAt ? values.historyAt.toISOString() : null,
     }, { method: "post", encType: "application/json" })
 
     toast.promise(
@@ -308,11 +310,14 @@ export function FormTemplate({
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         {...props}
-        className={cn("overflow-auto flex flex-col gap-2 px-1", props.className)}
+        className={cn(
+          "overflow-auto flex flex-col gap-2 px-1 no-scrollbar relative",
+          props.className
+        )}
         id="account-form"
       >
         <div
-          className="grid grid-rows-2 h-42 gap-2 rounded-lg shadow-xs p-4"
+          className="grid sticky top-0 grid-rows-2 min-h-42 h-42 gap-2 rounded-lg shadow-xs p-4 z-40"
           style={{ backgroundColor: formColor }}
         >
           <div className="flex gap-2 items-start">
@@ -454,6 +459,19 @@ export function FormTemplate({
             />
           </div>
         </div>
+        {
+          !!archivedAt && (
+            <Alert>
+              <AlertCircle className="size-4" />
+              <AlertTitle className="mb-2">
+                This Account is archived!
+              </AlertTitle>
+              <AlertDescription className="text-xs">
+                {archivedAccountsManual.message}
+              </AlertDescription>
+            </Alert>
+          )
+        }
         <FormField
           control={form.control}
           name="name"
