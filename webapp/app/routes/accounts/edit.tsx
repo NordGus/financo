@@ -1,6 +1,87 @@
+import { redirect } from "react-router";
+import { z } from "zod";
+import { archive as archiveAccountCommand } from "~/modules/accounts/api/commands/archive";
+import { destroy as destroyAccountCommand } from "~/modules/accounts/api/commands/destroy";
+import { unarchive as unarchiveAccountCommand } from "~/modules/accounts/api/commands/unarchive";
+import { update as updateAccountCommand } from "~/modules/accounts/api/commands/update";
 import { get as getAccountQuery } from "~/modules/accounts/api/queries/get";
 import { FormTemplate } from "~/modules/accounts/components/forms/form-template";
+import { CURRENCIES } from "~/modules/shared/types/currency";
+import { ICONS } from "~/modules/shared/types/icon";
 import { Route } from "./+types/edit";
+
+const updateActionSchema = z.object({
+  kind: z.enum(["capital", "savings", "debt", "credit"]),
+  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
+  color: z.string({ required_error: "required" }),
+  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
+  name: z.string({ required_error: "required" }),
+  description: z.string().nullish(),
+  capital: z.number({ required_error: "required" }),
+  main: z.boolean({ required_error: "required" }),
+  hasHistory: z.boolean({ required_error: "required" }),
+  historyAt: z.string().date().nullish(),
+  historyBalance: z.number().nullish(),
+  intent: z.literal("update")
+})
+
+const destroyActionSchema = z.object({
+  intent: z.literal("destroy")
+})
+
+const archiveActionSchema = z.object({
+  intent: z.literal("archive")
+})
+
+const unarchiveActionSchema = z.object({
+  intent: z.literal("unarchive")
+})
+
+const actionsSchema = z.union([
+  updateActionSchema,
+  destroyActionSchema,
+  archiveActionSchema,
+  unarchiveActionSchema
+])
+
+export async function clientAction({ request, params }: Route.ClientActionArgs) {
+  const id = Number(params.id)
+  const action = actionsSchema.safeParse(await request.json())
+
+  if (!action.success) throw action.error
+
+  switch (action.data.intent) {
+    case "destroy":
+      await destroyAccountCommand(id)
+
+      return redirect("/accounts")
+    case "archive":
+      await archiveAccountCommand(id)
+
+      return redirect(`/accounts/${id}`)
+    case "unarchive":
+      await unarchiveAccountCommand(id)
+
+      return redirect(`/accounts/${id}`)
+    case "update":
+      await updateAccountCommand({
+        id,
+        currency: action.data.currency,
+        color: action.data.color,
+        icon: action.data.icon,
+        name: action.data.name,
+        description: action.data.description,
+        capital: action.data.capital,
+        main: action.data.main,
+        history: {
+          at: action.data.historyAt,
+          balance: action.data.historyBalance
+        }
+      })
+
+      return redirect(`/accounts/${id}`)
+  }
+}
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const id = Number(params.id)
