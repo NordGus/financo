@@ -46,10 +46,7 @@ const actionsSchema = z.union([
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const id = Number(params.id)
-  const req = await request.json()
-  const action = actionsSchema.safeParse(req)
-
-  console.log({ req })
+  const action = actionsSchema.safeParse(await request.json())
 
   if (!action.success) throw action.error
 
