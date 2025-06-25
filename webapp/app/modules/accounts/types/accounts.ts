@@ -2,10 +2,6 @@ import { Kinds as SystemKinds } from "~/modules/shared/types/account";
 import { Currency } from "~/modules/shared/types/currency";
 import { Icon } from "~/modules/shared/types/icon";
 
-const NAME_MIN_LENGTH = 3
-const NAME_MAX_LENGTH = 250
-const DESCRIPTION_MAX_LENGTH = 1000
-
 type Kind =
   SystemKinds["capital"] |
   SystemKinds["savings"] |
@@ -55,6 +51,5 @@ type Create = {
   }
 }
 
-export { DESCRIPTION_MAX_LENGTH, NAME_MAX_LENGTH, NAME_MIN_LENGTH };
 export type { Account, Create, Kind };
 
