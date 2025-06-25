@@ -5,8 +5,7 @@ import { destroy } from "../api/commands/destroy";
 import { unarchive } from "../api/commands/unarchive";
 import { update } from "../api/commands/update";
 import { list } from "../api/queries/list";
-import { Account } from "../types/accounts";
-import { Create } from "../types/create";
+import { Account, Create } from "../types/accounts";
 import { defaultListFilters } from "../types/filters";
 import { Update } from "../types/update";
 
