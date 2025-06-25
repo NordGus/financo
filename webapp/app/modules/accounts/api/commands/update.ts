@@ -1,5 +1,4 @@
-import { Account } from "../../types/accounts";
-import { Update } from "../../types/update";
+import { Account, Update } from "../../types/accounts";
 
 export async function update(data: Update): Promise<Account> {
   const response = await fetch(`${import.meta.env.VITE_API_HOST}/api/accounts/${data.id}`, {

@@ -5,9 +5,8 @@ import { destroy } from "../api/commands/destroy";
 import { unarchive } from "../api/commands/unarchive";
 import { update } from "../api/commands/update";
 import { list } from "../api/queries/list";
-import { Account, Create } from "../types/accounts";
+import { Account, Create, Update } from "../types/accounts";
 import { defaultListFilters } from "../types/filters";
-import { Update } from "../types/update";
 
 interface AccountsState {
   accounts: Account[]
