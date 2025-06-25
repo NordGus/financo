@@ -20,7 +20,7 @@ const updateActionSchema = z.object({
   capital: z.number({ required_error: "required" }),
   main: z.boolean({ required_error: "required" }),
   hasHistory: z.boolean({ required_error: "required" }),
-  historyAt: z.string().date().nullish(),
+  historyAt: z.string().datetime().nullish(),
   historyBalance: z.number().nullish(),
   intent: z.literal("update")
 })
@@ -46,7 +46,10 @@ const actionsSchema = z.union([
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const id = Number(params.id)
-  const action = actionsSchema.safeParse(await request.json())
+  const req = await request.json()
+  const action = actionsSchema.safeParse(req)
+
+  console.log({ req })
 
   if (!action.success) throw action.error
 
