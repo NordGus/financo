@@ -1,13 +1,57 @@
 import { CreditCard, HandCoins, Landmark, PiggyBank } from "lucide-react";
 import { use } from "react";
-import { createSearchParams, Link, useLocation } from "react-router";
+import { createSearchParams, Link, redirect, useLocation } from "react-router";
+import { z } from "zod";
+import { create as createAccountCommand } from "~/modules/accounts/api/commands/create";
 import { FormTemplate } from "~/modules/accounts/components/forms/form-template";
 import { ListFiltersContext } from "~/modules/accounts/contexts/list-filters-context";
 import { accountKindsManual } from "~/modules/accounts/manual/account-kinds-manual";
 import { listFiltersToURLSearchParams } from "~/modules/accounts/types/filters";
 import { Heading2 } from "~/modules/shared/components/ui/headings";
 import { CurrenciesContext } from "~/modules/shared/contexts/currencies-context";
+import { CURRENCIES } from "~/modules/shared/types/currency";
+import { ICONS } from "~/modules/shared/types/icon";
 import { Route } from "./+types/new";
+
+const createActionSchema = z.object({
+  kind: z.enum(["capital", "savings", "debt", "credit"]),
+  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
+  color: z.string({ required_error: "required" }),
+  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
+  name: z.string({ required_error: "required" }),
+  description: z.string().nullish(),
+  capital: z.number({ required_error: "required" }),
+  main: z.boolean({ required_error: "required" }),
+  hasHistory: z.boolean({ required_error: "required" }),
+  historyAt: z.string().date().nullish(),
+  historyBalance: z.number().nullish(),
+  intent: z.literal("create")
+})
+
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  const action = createActionSchema.safeParse(await request.json())
+
+  if (!action.success) throw action.error
+
+  const { kind, currency, color, icon, name, description, capital, main, historyAt, historyBalance } = action.data
+
+  const res = await createAccountCommand({
+    kind,
+    currency,
+    color,
+    icon,
+    name,
+    description,
+    capital,
+    main,
+    history: {
+      at: historyAt,
+      balance: historyBalance
+    }
+  })
+
+  return redirect(`/accounts/${res.id}`)
+}
 
 export default function New({ }: Route.ComponentProps) {
   const { filters } = use(ListFiltersContext)
