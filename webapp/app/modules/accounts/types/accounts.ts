@@ -36,4 +36,20 @@ interface Account {
   updatedAt: string
 }
 
-export type { Account, Kind };
+type Create = {
+  kind: Kind
+  name: string
+  description?: string | null
+  currency: Currency
+  capital: number
+  color: string,
+  icon: Icon,
+  main: boolean,
+  history: {
+    at?: string | null,
+    balance?: number | null
+  }
+}
+
+export type { Account, Create, Kind };
+

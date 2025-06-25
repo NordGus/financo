@@ -59,7 +59,7 @@ import {
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual"
 import { mainAccountManual } from "../../manual/main-account-manual"
 
-type Kind = Kinds["capital"] | Kinds["savings"] | Kinds["debt"] | Kinds["credit"]
+export type Kind = Kinds["capital"] | Kinds["savings"] | Kinds["debt"] | Kinds["credit"]
 
 const NAME_MIN_LENGTH = 3
 const NAME_MAX_LENGTH = 250
@@ -247,7 +247,7 @@ export function FormTemplate({
     const promise = fetcher.submit({
       ...values,
       historyAt: values.historyAt ? values.historyAt.toDateString() : null,
-    }, { method: "post" })
+    }, { method: "post", encType: "application/json" })
 
     toast.promise(
       promise,
@@ -267,7 +267,7 @@ export function FormTemplate({
       return
     }
 
-    const promise = fetcher.submit({ intent: "destroy" }, { method: "post" })
+    const promise = fetcher.submit({ intent: "destroy" }, { method: "post", encType: "application/json" })
 
     toast.promise(
       promise,
@@ -286,7 +286,10 @@ export function FormTemplate({
     }
 
     const archive = archivedAt?.toDateString()
-    const promise = fetcher.submit({ intent: !archive ? "archive" : "unarchive" }, { method: "post" })
+    const promise = fetcher.submit(
+      { intent: !archive ? "archive" : "unarchive" },
+      { method: "post", encType: "application/json" }
+    )
 
     toast.promise(
       promise,

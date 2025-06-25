@@ -8,9 +8,9 @@ import { SelectAccountKindToCreate } from "../components/dialogs/select-account-
 import { UnarchiveAccount } from "../components/dialogs/unarchive";
 import { CreateAccount } from "../components/forms/create";
 import { UpdateAccount } from "../components/forms/update";
-import { Account, Kind } from "../types/accounts";
+import { Account, Create, Kind } from "../types/accounts";
 import { ArchiveAccountAction } from "../types/archive";
-import { Create, CreateAccountAction } from "../types/create";
+import { CreateAccountAction } from "../types/create";
 import { DeleteAccountAction } from "../types/delete";
 import { UnarchiveAccountAction } from "../types/unarchive";
 import { Update, UpdateAccountAction } from "../types/update";
