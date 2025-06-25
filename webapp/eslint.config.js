@@ -1,5 +1,5 @@
 import pluginJs from "@eslint/js";
-import stylisticTs from "@stylistic/eslint-plugin-ts";
+import stylistic from "@stylistic/eslint-plugin";
 import pluginReact from "eslint-plugin-react";
 import globals from "globals";
 import tseslint from "typescript-eslint";
@@ -23,7 +23,7 @@ export default [
   },
   {
     plugins: {
-      "@stylistic/ts": stylisticTs,
+      "@stylistic": stylistic,
     },
     rules: {
       "@typescript-eslint/no-unused-vars": [
@@ -38,8 +38,8 @@ export default [
           "ignoreRestSiblings": true
         }
       ],
-      "@stylistic/ts/indent": ["error", 2],
-      "@stylistic/ts/quotes": [
+      "@stylistic/indent": ["error", 2],
+      "@stylistic/quotes": [
         "error",
         "double",
         { "allowTemplateLiterals": true, "avoidEscape": true }

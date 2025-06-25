@@ -27,6 +27,7 @@
     "next-themes": "^0.4.6",
     "radix-ui": "^1.4.2",
     "react": "^19.1.0",
+    "react-colorful": "^5.6.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^19.1.0",
     "react-hook-form": "^7.58.1",
@@ -42,7 +43,7 @@
   "devDependencies": {
     "@eslint/js": "^9.29.0",
     "@react-router/dev": "^7.6.2",
-    "@stylistic/eslint-plugin-ts": "^4.4.1",
+    "@stylistic/eslint-plugin": "^4.4.1",
     "@tailwindcss/vite": "^4.1.10",
     "@types/dinero.js": "^1.9.4",
     "@types/node": "^24",

@@ -402,13 +402,10 @@ function UpdateForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Icon</FormLabel>
-                    <FormControl>
-                      <IconInput
-                        value={field.value}
-                        onChange={field.onChange}
-                        entity="category"
-                      />
-                    </FormControl>
+                    <IconInput
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}

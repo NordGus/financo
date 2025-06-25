@@ -23,10 +23,19 @@ interface Props {
   name: string
   fixedSign?: boolean
   forDebts?: boolean
+  disabled?: boolean
+  placeholder?: string
 }
 
 export function CurrencyAmountInput({
-  value = 0, name, onChange, currency, fixedSign = false, forDebts = false
+  value,
+  name,
+  onChange,
+  currency,
+  fixedSign = false,
+  forDebts = false,
+  disabled = false,
+  placeholder
 }: Props) {
 
   return (
@@ -37,12 +46,26 @@ export function CurrencyAmountInput({
             variant="outline"
             className={cn(
               "w-full px-3 text-left font-normal",
-              currencyAmountColor(value)
+              currencyAmountColor(value ?? 0)
             )}
+            disabled={disabled}
+            type="button"
           >
-            {currencyAmountToHuman(value, currency)}
-            {forDebts && value > 0 && <span className="ml-auto">I&apos;m owed</span>}
-            {forDebts && value < 0 && <span className="ml-auto">I owe</span>}
+            {
+              value !== undefined
+                ? (
+                  <>
+                    {currencyAmountToHuman(value, currency)}
+                    {forDebts && value > 0 && <span className="ml-auto">{"I'm owed"}</span>}
+                    {forDebts && value < 0 && <span className="ml-auto">{"I owe"}</span>}
+                  </>
+                )
+                : (
+                  <span>
+                    {placeholder ?? "Set amount"}
+                  </span>
+                )
+            }
             <BanknoteIcon
               className={cn(
                 "h-4 w-4 text-muted-foreground",

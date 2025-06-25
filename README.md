@@ -2,26 +2,42 @@
 
 A simple personal finances application to bring order to the chaos of your personal finances.
 
-## Setup application
+## Requirements
 
-```shell
-bin/setup
-```
+For the development environment to work, you need to install the following:
 
-## To start the application inside the dev container
+- `Visual Studio Code`
+  - `Dev Containers` extension
+  - `Containers` extension
+- `Docker`
+  - `docker compose`
 
-- To start the api's server
+## Setup your development environment
 
-```shell
-make server
-```
+1. To start your Dev Container open the Command Pallette (`Ctrl+Shift+P` or
+`Cmd+Shift+P` or `F1`) search `Dev Containers: Reopen in Container`, press enter
+to run it and wait for Visual Studio Code to build the Dev Container.
 
-- To start the webapp's dev server
+2. Now that the environment is setup, yes that's the magic of
+Dev Containers. Open again the Command Pallette (`Ctrl+Shift+P` or
+`Cmd+Shift+P` or `F1`) search `Go: Install/Update Tools`, press enter to start
+the installation dialog. In the dialog select all tools (checkboxes), press `Ok`
+and wait for the `Go Extension` to install all its dependencies.
 
-```shell
-make webapp
-```
+3. Your environment is ready for development
 
-## TODO
+- To start the api's server, open a new terminal and run:
+
+  ```shell
+  make server
+  ```
+
+- To start the webapp's dev server, open a new terminal and run:
+
+  ```shell
+  make webapp
+  ```
+
+## TODOs
 
 - [ ] Refactor message consumers to be more centralized or implement a mutex.

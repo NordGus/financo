@@ -10,10 +10,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 interface Props {
   value?: Date
   onSelect: (day: Date | undefined, selectedDay: Date, activeModifiers: ActiveModifiers, e: React.MouseEvent) => void
+  disabled?: boolean
+  placeholder?: string
 }
 
-// TODO: Refactor to use drawer instead of popover
-export function DateInput({ value, onSelect }: Props) {
+export function DateInput({ value, onSelect, disabled = false, placeholder }: Props) {
   const disabledFrom = startOfDay(add(new Date(), { days: 1 }))
 
   return (
@@ -26,8 +27,10 @@ export function DateInput({ value, onSelect }: Props) {
               "w-full px-3 text-left font-normal",
               !value && "text-muted-foreground"
             )}
+            disabled={disabled}
+            type="button"
           >
-            {value ? (format(value, "PPP")) : (<span>Pick a date</span>)}
+            {value ? (format(value, "PPP")) : (<span>{placeholder ?? "Pick a date"}</span>)}
             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
           </Button>
         </FormControl>

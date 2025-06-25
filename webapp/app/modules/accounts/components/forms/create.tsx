@@ -33,7 +33,7 @@ import { Label } from "~/modules/shared/components/ui/label";
 import { Switch } from "~/modules/shared/components/ui/switch";
 import { Textarea } from "~/modules/shared/components/ui/textarea";
 import { accountKindToHuman } from "~/modules/shared/helpers/account-kind-to-human";
-import { isCapital, isCredit, isLoan, isPassive } from "~/modules/shared/types/account";
+import { isCapital, isCredit, isDebt, isPassive } from "~/modules/shared/types/account";
 import { Currency } from "~/modules/shared/types/currency";
 import { Icon } from "~/modules/shared/types/icon";
 import { accountKindsManual } from "../../manual/account-kinds-manual";
@@ -84,7 +84,7 @@ interface FormProps {
 }
 
 function CreateForm({ kind, defaultCurrency, defaultIcon, submitting, onSubmitAction }: FormProps) {
-  const isFixedSignDebt = isCredit(kind) || isLoan(kind)
+  const isFixedSignDebt = isCredit(kind) || isDebt(kind)
   const forDebts = isPassive(kind)
   const withCapital = forDebts
   const [hasIncompleteLedger, setHasIncompleteLedger] = useState(false)
@@ -155,13 +155,10 @@ function CreateForm({ kind, defaultCurrency, defaultIcon, submitting, onSubmitAc
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Icon</FormLabel>
-                  <FormControl>
-                    <IconInput
-                      value={field.value}
-                      onChange={field.onChange}
-                      entity="account"
-                    />
-                  </FormControl>
+                  <IconInput
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

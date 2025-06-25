@@ -34,7 +34,7 @@ import { Label } from "~/modules/shared/components/ui/label";
 import { Switch } from "~/modules/shared/components/ui/switch";
 import { Textarea } from "~/modules/shared/components/ui/textarea";
 import { accountKindToHuman } from "~/modules/shared/helpers/account-kind-to-human";
-import { isCapital, isCredit, isLoan, isPassive } from "~/modules/shared/types/account";
+import { isCapital, isCredit, isDebt, isPassive } from "~/modules/shared/types/account";
 import { accountKindsManual } from "../../manual/account-kinds-manual";
 import { capitalManual } from "../../manual/capital-manual";
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual";
@@ -102,7 +102,7 @@ function UpdateForm({
   onOpenUnarchiveChange,
   submitting
 }: FormProps) {
-  const isFixedSignDebt = isCredit(account.kind) || isLoan(account.kind)
+  const isFixedSignDebt = isCredit(account.kind) || isDebt(account.kind)
   const forDebts = isPassive(account.kind)
   const withCapital = isPassive(account.kind)
   const historyAt = account.additionalData.history?.at
@@ -163,13 +163,10 @@ function UpdateForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Icon</FormLabel>
-                  <FormControl>
-                    <IconInput
-                      value={field.value}
-                      onChange={field.onChange}
-                      entity="account"
-                    />
-                  </FormControl>
+                  <IconInput
+                    value={field.value}
+                    onChange={field.onChange}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

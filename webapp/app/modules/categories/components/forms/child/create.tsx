@@ -86,9 +86,7 @@ export function ChildForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Icon</FormLabel>
-                      <FormControl>
-                        <IconInput value={field.value} onChange={field.onChange} />
-                      </FormControl>
+                      <IconInput value={field.value} onChange={field.onChange} />
                       <FormMessage />
                     </FormItem>
                   )}

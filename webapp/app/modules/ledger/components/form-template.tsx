@@ -198,7 +198,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
 
   const onDestroy = async () => {
     if (isHistoryTransaction) {
-      toast.error("You delete history transactions")
+      toast.error("You delete can't history transactions")
       return
     }
 

@@ -5,9 +5,9 @@ export {
   isCapital,
   isCategory,
   isCredit,
+  isDebt,
   isExpense,
   isIncome,
-  isLoan,
   isPassive,
   isSavings
 };
@@ -110,7 +110,7 @@ function isPassive(kind: SystemKind) {
   return kind === KINDS.debt || kind === KINDS.credit
 }
 
-function isLoan(kind: SystemKind) {
+function isDebt(kind: SystemKind) {
   return kind === KINDS.debt
 }
 
