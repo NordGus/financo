@@ -19,6 +19,9 @@ export default [
           route("new", "routes/accounts/new.tsx")
         ]),
       ]),
+      route("/", "routes/accounts/account-layout.tsx", [
+        route("accounts/:id", "routes/accounts/edit.tsx", []),
+      ]),
     ]),
 
     route("categories", "routes/categories/index.tsx"),

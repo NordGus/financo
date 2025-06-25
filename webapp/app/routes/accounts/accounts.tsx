@@ -1,5 +1,5 @@
 import { use } from "react";
-import { Outlet } from "react-router";
+import { Link, Outlet } from "react-router";
 import { list as listAccountsQuery } from "~/modules/accounts/api/queries/list";
 import { NoAccountsForKind } from "~/modules/accounts/components/no-accounts-for-kind";
 import { ListFiltersContext } from "~/modules/accounts/contexts/list-filters-context";
@@ -53,19 +53,24 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             </Heading2>
             {
               accounts.capital.map((account) => (
-                <Preview
+                <Link
                   key={`account.${account.id}`}
-                  kind={account.kind}
-                  currency={account.currency}
-                  name={account.name}
-                  description={account.description}
-                  color={account.color}
-                  icon={account.icon}
-                  capital={account.capital}
-                  balance={account.additionalData.balance}
-                  main={account.additionalData.main}
-                  archivedAt={account.archivedAt}
-                />
+                  to={{ pathname: account.id.toString() }}
+                >
+                  <Preview
+                    key={`account.${account.id}`}
+                    kind={account.kind}
+                    currency={account.currency}
+                    name={account.name}
+                    description={account.description}
+                    color={account.color}
+                    icon={account.icon}
+                    capital={account.capital}
+                    balance={account.additionalData.balance}
+                    main={account.additionalData.main}
+                    archivedAt={account.archivedAt}
+                  />
+                </Link>
               ))
             }
             {accounts.capital.length === 0 && (<NoAccountsForKind kind="capital" archived={filters.archived} />)}
@@ -74,19 +79,24 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             </Heading2>
             {
               accounts.savings.map((account) => (
-                <Preview
+                <Link
                   key={`account.${account.id}`}
-                  kind={account.kind}
-                  currency={account.currency}
-                  name={account.name}
-                  description={account.description}
-                  color={account.color}
-                  icon={account.icon}
-                  capital={account.capital}
-                  balance={account.additionalData.balance}
-                  main={account.additionalData.main}
-                  archivedAt={account.archivedAt}
-                />
+                  to={{ pathname: account.id.toString() }}
+                >
+                  <Preview
+                    key={`account.${account.id}`}
+                    kind={account.kind}
+                    currency={account.currency}
+                    name={account.name}
+                    description={account.description}
+                    color={account.color}
+                    icon={account.icon}
+                    capital={account.capital}
+                    balance={account.additionalData.balance}
+                    main={account.additionalData.main}
+                    archivedAt={account.archivedAt}
+                  />
+                </Link>
               ))
             }
             {accounts.savings.length === 0 && (<NoAccountsForKind kind="savings" archived={filters.archived} />)}
@@ -95,19 +105,23 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             </Heading2>
             {
               accounts.debt.map((account) => (
-                <Preview
+                <Link
                   key={`account.${account.id}`}
-                  kind={account.kind}
-                  currency={account.currency}
-                  name={account.name}
-                  description={account.description}
-                  color={account.color}
-                  icon={account.icon}
-                  capital={account.capital}
-                  balance={account.additionalData.balance}
-                  main={account.additionalData.main}
-                  archivedAt={account.archivedAt}
-                />
+                  to={{ pathname: account.id.toString() }}
+                >
+                  <Preview
+                    kind={account.kind}
+                    currency={account.currency}
+                    name={account.name}
+                    description={account.description}
+                    color={account.color}
+                    icon={account.icon}
+                    capital={account.capital}
+                    balance={account.additionalData.balance}
+                    main={account.additionalData.main}
+                    archivedAt={account.archivedAt}
+                  />
+                </Link>
               ))
             }
             {accounts.debt.length === 0 && (<NoAccountsForKind kind="debt" archived={filters.archived} />)}
@@ -116,19 +130,23 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             </Heading2>
             {
               accounts.credit.map((account) => (
-                <Preview
+                <Link
                   key={`account.${account.id}`}
-                  kind={account.kind}
-                  currency={account.currency}
-                  name={account.name}
-                  description={account.description}
-                  color={account.color}
-                  icon={account.icon}
-                  capital={account.capital}
-                  balance={account.additionalData.balance}
-                  main={account.additionalData.main}
-                  archivedAt={account.archivedAt}
-                />
+                  to={{ pathname: account.id.toString() }}
+                >
+                  <Preview
+                    kind={account.kind}
+                    currency={account.currency}
+                    name={account.name}
+                    description={account.description}
+                    color={account.color}
+                    icon={account.icon}
+                    capital={account.capital}
+                    balance={account.additionalData.balance}
+                    main={account.additionalData.main}
+                    archivedAt={account.archivedAt}
+                  />
+                </Link>
               ))
             }
             {accounts.credit.length === 0 && (<NoAccountsForKind kind="credit" archived={filters.archived} />)}
