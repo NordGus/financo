@@ -38,9 +38,18 @@ export function AccountListingIcon({
     >
       <DynamicIcon name={icon} color={colorContrast(color)} />
       {
-        main && <span className="absolute -top-2 -right-2 p-0.5 bg-primary rounded-full border-accent border-[1px]">
-          <StarIcon className="!size-4 text-primary-foreground" />
-        </span>
+        main && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="absolute -top-2 -right-2 p-0.5 bg-primary rounded-full border-accent border-[1px]">
+                <StarIcon className="!size-4 text-primary-foreground" />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              This is your main Account
+            </TooltipContent>
+          </Tooltip>
+        )
       }
       {
         archived && (
