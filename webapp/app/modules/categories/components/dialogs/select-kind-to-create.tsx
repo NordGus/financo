@@ -10,17 +10,17 @@ import {
   DrawerTitle
 } from "~/modules/shared/components/ui/drawer"
 import { accountKindToHuman } from "~/modules/shared/helpers/account-kind-to-human"
-import { ModuleKind } from "../../types/category"
+import { Kind } from "../../types/category"
 import { defaultIcons } from "../../types/icons"
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSelect: (kind: ModuleKind) => void
+  onSelect: (kind: Kind) => void
 }
 
 export function SelectKindToCreate({ open, onOpenChange, onSelect }: Props) {
-  const kinds: ModuleKind[] = ["income", "expense"]
+  const kinds: Kind[] = ["income", "expense"]
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>

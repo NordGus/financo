@@ -1,5 +1,5 @@
 import { Icon } from "~/modules/shared/types/icon";
-import { ModuleKind } from "./category";
+import { Kind } from "./category";
 
 export type CreateChild = {
   name: string
@@ -8,7 +8,7 @@ export type CreateChild = {
 }
 
 export type Create = {
-  kind: ModuleKind
+  kind: Kind
   name: string
   description?: string | null
   color: string,
@@ -19,7 +19,7 @@ export type Create = {
 export type Created = {
   id: number
   name: string
-  kind: ModuleKind
+  kind: Kind
   color: string
   icon: Icon
 }

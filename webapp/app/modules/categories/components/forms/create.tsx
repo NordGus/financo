@@ -28,7 +28,7 @@ import { Textarea } from "~/modules/shared/components/ui/textarea";
 import { accountKindToHuman as kindToHuman } from "~/modules/shared/helpers/account-kind-to-human";
 import { Icon } from "~/modules/shared/types/icon";
 import { schema } from "../../schemas/create";
-import { ModuleKind } from "../../types/category";
+import { Kind } from "../../types/category";
 import { OnSubmitCreateAction } from "../../types/create";
 import { defaultIcons } from "../../types/icons";
 import { PreviewCard } from "../child/preview-card";
@@ -37,7 +37,7 @@ import { ChildForm } from "./child/create";
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
-  kind: ModuleKind
+  kind: Kind
   onSubmitAction: OnSubmitCreateAction
   submitting: boolean
 }
@@ -62,7 +62,7 @@ export function CreateCategory({ open, onOpenChange, kind, submitting, onSubmitA
 }
 
 interface FormProps {
-  kind: ModuleKind
+  kind: Kind
   onSubmitAction: OnSubmitCreateAction
   submitting: boolean
 }

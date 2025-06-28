@@ -1,11 +1,11 @@
-import { Kinds } from "~/modules/shared/types/account";
+import { Kinds as SystemKinds } from "~/modules/shared/types/account";
 import { Icon } from "~/modules/shared/types/icon";
 
-type ModuleKind = Kinds["expense"] | Kinds["income"]
+type Kind = SystemKinds["expense"] | SystemKinds["income"]
 
 type Child = {
   id: number
-  kind: ModuleKind
+  kind: Kind
   name: string
   description?: string | null
   icon: Icon
@@ -19,7 +19,7 @@ type Child = {
 
 type Category = {
   id: number
-  kind: ModuleKind
+  kind: Kind
   name: string
   description?: string | null
   icon: Icon
@@ -32,4 +32,4 @@ type Category = {
   children: Child[]
 }
 
-export type { Category, Child, ModuleKind };
+export type { Category, Child, Kind };

@@ -13,7 +13,7 @@ import { UpdateCategory } from "../components/forms/update";
 import { ListForKind } from "../components/list-for-kind";
 import { archivedCategoriesManual } from "../manual/archived-categories-manual";
 import { ArchiveAction, ArchiveChildAction } from "../types/archive";
-import { Category, ModuleKind } from "../types/category";
+import { Category, Kind } from "../types/category";
 import { Create, CreateAction, CreateChildAction } from "../types/create";
 import { DeleteAction, DeleteChildAction } from "../types/delete";
 import { UnarchiveAction, UnarchiveChildAction } from "../types/unarchive";
@@ -86,7 +86,7 @@ type ScreenActions = typeof _screenActions
 type ScreenAction =
   { type: ScreenActions["VIEW_CHANGED"], value: View } |
   { type: ScreenActions["SUBVIEW_CHANGED"], value: SubView } |
-  { type: ScreenActions["KIND_CHANGED"], kind: ModuleKind } |
+  { type: ScreenActions["KIND_CHANGED"], kind: Kind } |
   { type: ScreenActions["CATEGORY_CHANGED"], category: Category } |
   { type: ScreenActions["OPEN_SELECT_KIND_CHANGED"], open: boolean } |
   { type: ScreenActions["OPEN_CREATE_CHANGED"], open: boolean } |
@@ -101,7 +101,7 @@ type ScreenAction =
 type ScreenState = {
   view: View
   subView: SubView
-  kind: ModuleKind
+  kind: Kind
   id: number
   open: Open
   dialog: OpenDialog
@@ -228,7 +228,7 @@ export function Screen({
 
   const onOpenSelectKindChange = (open: boolean) =>
     dispatch({ type: "OPEN_SELECT_KIND_CHANGED", open })
-  const onKindChange = (kind: ModuleKind) =>
+  const onKindChange = (kind: Kind) =>
     dispatch({ type: "KIND_CHANGED", kind })
   const onOpenCreateChange = (open: boolean) =>
     dispatch({ type: "OPEN_CREATE_CHANGED", open })

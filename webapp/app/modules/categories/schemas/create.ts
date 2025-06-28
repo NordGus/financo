@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { ICONS } from "~/modules/shared/types/icon";
-import { ModuleKind } from "../types/category";
+import { Kind } from "../types/category";
 
-const KINDS: Record<ModuleKind, ModuleKind> = {
+const KINDS: Record<Kind, Kind> = {
   expense: "expense",
   income: "income",
 } as const
