@@ -13,16 +13,16 @@ export default [
     route("morning-brew", "routes/morning-brew/index.tsx"),
 
     layout("routes/accounts/_layout.tsx", [
-      route("/", "routes/accounts/accounts-layout.tsx", [
-        route("accounts", "routes/accounts/accounts.tsx", [
-          index("routes/accounts/index.tsx"),
-          route("new", "routes/accounts/new.tsx"),
-          route(":id", "routes/accounts/edit.tsx"),
-        ]),
+      route("accounts", "routes/accounts/accounts.tsx", [
+        index("routes/accounts/index.tsx"),
+        route("new", "routes/accounts/new.tsx"),
+        route(":id", "routes/accounts/edit.tsx"),
       ]),
     ]),
 
-    route("categories", "routes/categories/index.tsx"),
+    layout("routes/categories/_layout.tsx", [
+      route("categories", "routes/categories/index.tsx"),
+    ]),
 
     layout("routes/ledger/_layout.tsx", [
       route("ledger", "routes/ledger/ledger.tsx", [
