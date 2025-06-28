@@ -1,11 +1,11 @@
 import { Card } from "~/modules/shared/components/ui/card";
 import { accountKindToHuman } from "~/modules/shared/helpers/account-kind-to-human";
-import { Category, ModuleKind } from "../types/category";
+import { Category, Kind } from "../types/category";
 import { PreviewCard } from "./preview-card";
 
 interface Props {
   categories: Category[]
-  kind: ModuleKind
+  kind: Kind
   forArchived: boolean
   onClick: (account: Category) => void
 }

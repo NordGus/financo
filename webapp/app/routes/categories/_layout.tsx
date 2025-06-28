@@ -1,10 +1,10 @@
 import { BookTextIcon, Plus } from "lucide-react";
 import { Link, Outlet, useLocation, useResolvedPath } from "react-router";
-import { CurrenciesFilters } from "~/modules/accounts/components/filters/currencies";
-import { KindsFilters } from "~/modules/accounts/components/filters/kinds";
-import { StatusFilters } from "~/modules/accounts/components/filters/status";
-import { ListFiltersContextProvider } from "~/modules/accounts/contexts/list-filters-context";
-import { getListFilters } from "~/modules/accounts/utils/router-requests";
+import { CurrenciesFilters } from "~/modules/categories/components/filters/currencies";
+import { KindsFilters } from "~/modules/categories/components/filters/kinds";
+import { StatusFilters } from "~/modules/categories/components/filters/status";
+import { ListFiltersContextProvider } from "~/modules/categories/contexts/list-filters-context";
+import { getListFilters } from "~/modules/categories/utils/router-requests";
 import { list as listCurrenciesQuery } from "~/modules/shared/api/queries/list-currencies";
 import { ToolSidebar } from "~/modules/shared/components/tool-sidebar";
 import {
@@ -52,7 +52,7 @@ export default function Layout({ loaderData }: Route.ComponentProps) {
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild isActive={pathname === summaryPath}>
                       <Link to={{ pathname: summaryPath, search, hash }}>
-                        <BookTextIcon /> Budget Summary
+                        <BookTextIcon /> Summary
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
