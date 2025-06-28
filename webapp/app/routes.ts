@@ -21,7 +21,9 @@ export default [
     ]),
 
     layout("routes/categories/_layout.tsx", [
-      route("categories", "routes/categories/index.tsx"),
+      route("categories", "routes/categories/categories.tsx", [
+        index("routes/categories/index.tsx")
+      ]),
     ]),
 
     layout("routes/ledger/_layout.tsx", [
