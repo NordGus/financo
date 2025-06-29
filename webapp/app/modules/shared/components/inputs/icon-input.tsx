@@ -1,11 +1,12 @@
 import { DynamicIcon } from "lucide-react/dynamic";
-import { useMemo } from "react";
 import { Icon, ICONS } from "~/modules/shared/types/icon";
 import { colorContrast } from "../../helpers/color-contrast";
 import { Button } from "../ui/button";
 import { FormControl } from "../ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+
+const selectables = Object.values(ICONS)
 
 interface Props {
   value: Icon
@@ -14,8 +15,6 @@ interface Props {
 }
 
 export function IconInput({ value, onChange, color }: Props) {
-  const selectables = useMemo(() => Object.values(ICONS), [])
-
   return (
     <Tooltip>
       <Popover>
