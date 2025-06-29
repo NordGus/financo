@@ -32,7 +32,7 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   }
 }
 
-export default function CategoriesRoute({ loaderData }: Route.ComponentProps) {
+export default function Categories({ loaderData }: Route.ComponentProps) {
   const { categories } = loaderData
 
   const { filters } = use(ListFiltersContext)
