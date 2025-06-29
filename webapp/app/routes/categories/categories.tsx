@@ -1,7 +1,8 @@
 import { use } from "react";
-import { Outlet } from "react-router";
+import { Link, Outlet } from "react-router";
 import { list as listCategoriesQuery } from "~/modules/categories/api/queries/list";
 import { NoCategoriesForKind } from "~/modules/categories/components/no-categories-for-kind";
+import { CategoryPreview } from "~/modules/categories/components/previews/category";
 import { ListFiltersContext } from "~/modules/categories/contexts/list-filters-context";
 import { Category, Kind } from "~/modules/categories/types/category";
 import { getListFilters } from "~/modules/categories/utils/router-requests";
@@ -48,28 +49,32 @@ export default function CategoriesRoute({ loaderData }: Route.ComponentProps) {
               Expenses
             </Heading2>
             {
-              categories.expense.map((account) => (
-                // <Link
-                //   key={`account.${account.id}`}
-                //   to={{ pathname: account.id.toString() }}
-                // >
-                //   <Preview
-                //     key={`account.${account.id}`}
-                //     kind={account.kind}
-                //     currency={account.currency}
-                //     name={account.name}
-                //     description={account.description}
-                //     color={account.color}
-                //     icon={account.icon}
-                //     capital={account.capital}
-                //     balance={account.additionalData.balance}
-                //     main={account.additionalData.main}
-                //     archivedAt={account.archivedAt}
-                //   />
-                // </Link>
-                <span key={account.id}>
-                  {account.name}
-                </span>
+              categories.expense.map((category) => (
+                <Link
+                  key={`account.${category.id}`}
+                  to={{ pathname: category.id.toString() }}
+                >
+                  <CategoryPreview
+                    kind={category.kind}
+                    name={category.name}
+                    description={category.description}
+                    color={category.color}
+                    icon={category.icon}
+                    archivedAt={category.archivedAt}
+                    archivedChildren={
+                      category.children.reduce(
+                        (acc, child) => (child.archivedAt && child.kind ? acc + 1 : acc),
+                        0
+                      )
+                    }
+                    activeChildren={
+                      category.children.reduce(
+                        (acc, child) => (child.archivedAt ? acc : acc + 1),
+                        0
+                      )
+                    }
+                  />
+                </Link>
               ))
             }
             {categories.expense.length === 0 && (<NoCategoriesForKind kind="capital" archived={filters.archived} />)}
@@ -77,28 +82,32 @@ export default function CategoriesRoute({ loaderData }: Route.ComponentProps) {
               Income
             </Heading2>
             {
-              categories.income.map((account) => (
-                // <Link
-                //   key={`account.${account.id}`}
-                //   to={{ pathname: account.id.toString() }}
-                // >
-                //   <Preview
-                //     key={`account.${account.id}`}
-                //     kind={account.kind}
-                //     currency={account.currency}
-                //     name={account.name}
-                //     description={account.description}
-                //     color={account.color}
-                //     icon={account.icon}
-                //     capital={account.capital}
-                //     balance={account.additionalData.balance}
-                //     main={account.additionalData.main}
-                //     archivedAt={account.archivedAt}
-                //   />
-                // </Link>
-                <span key={account.id}>
-                  {account.name}
-                </span>
+              categories.income.map((category) => (
+                <Link
+                  key={`account.${category.id}`}
+                  to={{ pathname: category.id.toString() }}
+                >
+                  <CategoryPreview
+                    kind={category.kind}
+                    name={category.name}
+                    description={category.description}
+                    color={category.color}
+                    icon={category.icon}
+                    archivedAt={category.archivedAt}
+                    archivedChildren={
+                      category.children.reduce(
+                        (acc, child) => (child.archivedAt ? acc + 1 : acc),
+                        0
+                      )
+                    }
+                    activeChildren={
+                      category.children.reduce(
+                        (acc, child) => (child.archivedAt ? acc : acc + 1),
+                        0
+                      )
+                    }
+                  />
+                </Link>
               ))
             }
             {categories.income.length === 0 && (<NoCategoriesForKind kind="savings" archived={filters.archived} />)}
