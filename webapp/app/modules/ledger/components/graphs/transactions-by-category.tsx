@@ -132,14 +132,14 @@ export function TransactionsByCategory({ transactions, accounts, title, currency
                     <tspan
                       x={viewBox.cx}
                       y={viewBox.cy}
-                      className="fill-foreground text-3xl font-bold"
+                      className="fill-foreground text-xl font-bold"
                     >
                       {currencyAmountToHuman(total, currency)}
                     </tspan>
                     <tspan
                       x={viewBox.cx}
                       y={(viewBox.cy || 0) + 24}
-                      className="fill-muted-foreground"
+                      className="fill-muted-foreground text-xs"
                     >
                       {title}
                     </tspan>
