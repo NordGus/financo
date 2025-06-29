@@ -23,7 +23,12 @@ export function FiltersPanel() {
 
   const handlePeriodChange = useCallback((period: Period) => {
     startSetFiltersTransition(() => {
-      setFilters(prev => ({ ...prev, period }))
+      setFilters(prev => ({
+        ...prev,
+        period,
+        from: period === "unlimited" ? undefined : prev.from,
+        to: period === "unlimited" ? undefined : prev.to
+      }))
     })
   }, [setFilters, startSetFiltersTransition])
 
