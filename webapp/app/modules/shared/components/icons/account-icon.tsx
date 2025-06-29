@@ -46,7 +46,7 @@ export function AccountListingIcon({
               </span>
             </TooltipTrigger>
             <TooltipContent>
-              This is your main Account
+              {"This is your main Account"}
             </TooltipContent>
           </Tooltip>
         )
@@ -60,7 +60,11 @@ export function AccountListingIcon({
               </span>
             </TooltipTrigger>
             <TooltipContent>
-              This Account is archived
+              {
+                ["income", "expense"].includes(kind)
+                  ? "This Category is archived"
+                  : "This Account is archived"
+              }
             </TooltipContent>
           </Tooltip>
         )
