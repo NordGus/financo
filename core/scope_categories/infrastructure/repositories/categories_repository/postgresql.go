@@ -163,51 +163,60 @@ func (p *postgresql) Where(ctx context.Context, f filters.Categories) ([]categor
 	}
 	defer conn.Close()
 
-	rows, err := conn.QueryContext(
-		ctx,
-		`
-		SELECT
-			acc.id,
-			acc.parent_id,
-			acc.kind,
-			acc.currency,
-			acc.name,
-			acc.description,
-			acc.color,
-			acc.icon,
-			acc.capital,
-			acc.archived_at,
-			acc.deleted_at,
-			acc.created_at,
-			acc.updated_at,
-			acc.dynamic_data,
-			child.id,
-			child.parent_id,
-			child.kind,
-			child.currency,
-			child.name,
-			child.description,
-			child.color,
-			child.icon,
-			child.capital,
-			child.archived_at,
-			child.deleted_at,
-			child.created_at,
-			child.updated_at,
-			child.dynamic_data
-		FROM
-			accounts acc
-			LEFT JOIN accounts child ON child.parent_id = acc.id
-			AND child.deleted_at IS NULL
-		WHERE
-			acc.deleted_at IS NULL
-			AND acc.parent_id IS NULL
-			AND (acc.kind = ANY ($1) OR child.kind = ANY ($1))
-		ORDER BY
-			acc.id
-		`,
-		f.Kinds,
-	)
+	query := `
+	SELECT
+		acc.id,
+		acc.parent_id,
+		acc.kind,
+		acc.currency,
+		acc.name,
+		acc.description,
+		acc.color,
+		acc.icon,
+		acc.capital,
+		acc.archived_at,
+		acc.deleted_at,
+		acc.created_at,
+		acc.updated_at,
+		acc.dynamic_data,
+		child.id,
+		child.parent_id,
+		child.kind,
+		child.currency,
+		child.name,
+		child.description,
+		child.color,
+		child.icon,
+		child.capital,
+		child.archived_at,
+		child.deleted_at,
+		child.created_at,
+		child.updated_at,
+		child.dynamic_data
+	FROM
+		accounts acc
+		LEFT JOIN accounts child ON child.parent_id = acc.id
+		AND child.deleted_at IS NULL
+	WHERE
+		acc.deleted_at IS NULL
+		AND acc.parent_id IS NULL
+		AND (acc.kind = ANY ($1) OR child.kind = ANY ($1))
+	`
+
+	if f.Archived.Valid && f.Archived.Val {
+		query += " AND acc.archived_at IS NOT NULL"
+	}
+
+	if f.Archived.Valid && !f.Archived.Val {
+		query += " AND acc.archived_at IS NULL"
+	}
+
+	query += `
+	ORDER BY
+		acc.id
+	`
+
+	rows, err := conn.QueryContext(ctx, query, f.Kinds)
 	if err != nil {
 		return out, err
 	}

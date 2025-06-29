@@ -19,6 +19,7 @@ export type {
   CategoryKind,
   SystemKind as Kind,
   Kinds,
+  PureCategoryKind,
   SystemKind
 };
 
@@ -51,6 +52,8 @@ type CategoryKind = Kinds["debt"] |
   Kinds["credit"] |
   Kinds["income"] |
   Kinds["expense"];
+
+type PureCategoryKind = Kinds["income"] | Kinds["expense"];
 
 interface History {
   at: string | null | undefined

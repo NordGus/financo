@@ -58,7 +58,6 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                   to={{ pathname: account.id.toString() }}
                 >
                   <Preview
-                    key={`account.${account.id}`}
                     kind={account.kind}
                     currency={account.currency}
                     name={account.name}
@@ -84,7 +83,6 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                   to={{ pathname: account.id.toString() }}
                 >
                   <Preview
-                    key={`account.${account.id}`}
                     kind={account.kind}
                     currency={account.currency}
                     name={account.name}
