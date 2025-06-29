@@ -35,7 +35,7 @@ interface CategoriesState {
 const useCategoriesStore = createStore<CategoriesState>((set) => ({
   categories: [],
   list: async () => {
-    const categories = await list({ kinds: [], currencies: [] })
+    const categories = await list({ kinds: [] })
 
     set({ categories })
   },

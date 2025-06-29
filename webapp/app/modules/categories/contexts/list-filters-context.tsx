@@ -42,8 +42,7 @@ export function ListFiltersContextProvider({ filters, children }: PropsWithChild
   }, [
     filters.kinds.sort().join(","),
     filters.kind,
-    filters.archived,
-    filters.currencies.sort().join(",")
+    filters.archived
   ])
 
   return (
