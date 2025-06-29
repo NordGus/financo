@@ -77,7 +77,7 @@ export default function CategoriesRoute({ loaderData }: Route.ComponentProps) {
                 </Link>
               ))
             }
-            {categories.expense.length === 0 && (<NoCategoriesForKind kind="capital" archived={filters.archived} />)}
+            {categories.expense.length === 0 && (<NoCategoriesForKind kind="expense" archived={filters.archived} />)}
             <Heading2 className="flex items-center gap-2">
               Income
             </Heading2>
@@ -110,7 +110,7 @@ export default function CategoriesRoute({ loaderData }: Route.ComponentProps) {
                 </Link>
               ))
             }
-            {categories.income.length === 0 && (<NoCategoriesForKind kind="savings" archived={filters.archived} />)}
+            {categories.income.length === 0 && (<NoCategoriesForKind kind="income" archived={filters.archived} />)}
           </div>
           <span
             className="absolute bottom-0 left-0 right-0 contents-[' '] h-2 bg-linear-to-b from-transparent to-background z-50"

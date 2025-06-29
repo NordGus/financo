@@ -3,12 +3,12 @@ import { ComponentProps, use } from "react"
 import { createSearchParams, Link, Path, useLocation, useResolvedPath } from "react-router"
 import { Button } from "~/modules/shared/components/ui/button"
 import { accountKindToHuman } from "~/modules/shared/helpers/account-kind-to-human"
-import { AccountKind } from "~/modules/shared/types/account"
+import { PureCategoryKind } from "~/modules/shared/types/account"
 import { ListFiltersContext } from "../../contexts/list-filters-context"
 import { listFiltersToURLSearchParams } from "../../types/filters"
 
 type Props = {
-  kind: AccountKind
+  kind: PureCategoryKind
   to?: string | Path
 }
 
