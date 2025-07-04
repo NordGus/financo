@@ -80,7 +80,7 @@ export function TransactionsByCategory({ transactions, accounts, title, currency
       config={chartConfig}
       className="mx-auto aspect-square max-h-[250px]"
     >
-      <PieChart>
+      <PieChart accessibilityLayer syncMethod={"index"}>
         <ChartTooltip
           cursor={false}
           content={
@@ -118,36 +118,17 @@ export function TransactionsByCategory({ transactions, accounts, title, currency
             />
           }
         />
-        <Pie data={data} dataKey="amount" nameKey="category" innerRadius={85} outerRadius={100} strokeWidth={2} paddingAngle={0.5}>
+        <Pie data={data} dataKey="amount" nameKey="category" innerRadius={85} outerRadius={100} strokeWidth={2} >
           <Label
-            content={({ viewBox }) => {
-              if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                return (
-                  <text
-                    x={viewBox.cx}
-                    y={viewBox.cy}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                  >
-                    <tspan
-                      x={viewBox.cx}
-                      y={viewBox.cy}
-                      className="fill-foreground text-xl font-bold"
-                    >
-                      {currencyAmountToHuman(total, currency)}
-                    </tspan>
-                    <tspan
-                      x={viewBox.cx}
-                      y={(viewBox.cy || 0) + 24}
-                      className="fill-muted-foreground text-xs"
-                    >
-                      {title}
-                    </tspan>
-                  </text>
-                )
-              }
-            }}
-          />
+            position={"center"}
+            className="fill-foreground text-xl font-bold"
+            dy={-6}
+          >
+            {currencyAmountToHuman(total, currency)}
+          </Label>
+          <Label position={"center"} className="fill-muted-foreground text-xs" dy={16}>
+            {title}
+          </Label>
         </Pie>
       </PieChart>
     </ChartContainer>
