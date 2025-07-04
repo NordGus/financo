@@ -119,11 +119,7 @@ export function TransactionsByCategory({ transactions, accounts, title, currency
           }
         />
         <Pie data={data} dataKey="amount" nameKey="category" innerRadius={85} outerRadius={100} strokeWidth={2} >
-          <Label
-            position={"center"}
-            className="fill-foreground text-xl font-bold"
-            dy={-6}
-          >
+          <Label position={"center"} className="fill-foreground text-xl font-bold" dy={-6}>
             {currencyAmountToHuman(total, currency)}
           </Label>
           <Label position={"center"} className="fill-muted-foreground text-xs" dy={16}>
