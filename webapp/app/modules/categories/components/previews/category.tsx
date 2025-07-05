@@ -104,7 +104,7 @@ export function ChildCategoryPreview({
           {...props}
         />
       </TooltipTrigger>
-      <TooltipContent className="flex flex-col gap-1">
+      <TooltipContent className="flex flex-col gap-1 max-w-[15dvw]">
         {description && description.length > 0 && (<span>{description}</span>)}
         {archived && (<span>{"This category is archived!"}</span>)}
       </TooltipContent>
