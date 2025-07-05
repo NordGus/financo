@@ -6,10 +6,10 @@ export const categoryKindsManual: Record<Kind, Copy> = {
     title: "What is a Expense Category?",
     message: <>
       <p>
-        A Capital Account represents your personal bank account, cash wallet, Paypal account, Steam wallet, the bank account you use for your freelance payments, etc.
+        A Expense Category, is simply a synthetic account that groups expenses of a similar sources. This is to help you categorize your expenses. For finer grain changes you can also define subcategories or children for each Category.
       </p>
       <p>
-        Basically any kind of account where you store your capital.
+        For practical reasons any Debt or Credit Account that indicates that you owe money is considered also an Expense Category.
       </p>
     </>
   },
@@ -17,10 +17,10 @@ export const categoryKindsManual: Record<Kind, Copy> = {
     title: "What is a Income Category",
     message: <>
       <p>
-        A Savings Account represents your personal bank savings account, bank deposits, government bonds or any other financial instrument that generates that represents your savings for the future.
+        A Expense Category, is simply a synthetic account that groups income of a similar sources. This is to help you categorize your income sources. For finer grain changes you can also define subcategories or children for each Category.
       </p>
       <p>
-        Basically any account or asset where you save your capital for the future.
+        For practical reasons any Debt or Credit Account that indicates that you are owed money is considered also an Income Category.
       </p>
     </>
   }
