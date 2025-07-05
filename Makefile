@@ -8,6 +8,9 @@ webapp:
 	@npm run -w ${WEBAPP_WORKSPACE} dev
 webapp-lint:
 	@npm run -w ${WEBAPP_WORKSPACE} lint
+webapp-typecheck:
+	@npm run -w ${WEBAPP_WORKSPACE} typecheck
+webapp-checks: webapp-lint webapp-typecheck
 
 
 # Database targets
