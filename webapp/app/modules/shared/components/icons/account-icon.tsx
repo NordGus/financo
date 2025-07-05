@@ -1,4 +1,4 @@
-import { PackageIcon, StarIcon } from "lucide-react";
+import { Package, Star } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { ComponentProps } from "react";
 import { cn } from "~/lib/utils";
@@ -42,7 +42,7 @@ export function AccountListingIcon({
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="absolute -top-2 -right-2 p-0.5 bg-primary rounded-full border-accent border-[1px]">
-                <StarIcon className="!size-4 text-primary-foreground" />
+                <Star className="!size-4 text-primary-foreground" />
               </span>
             </TooltipTrigger>
             <TooltipContent>
@@ -56,7 +56,7 @@ export function AccountListingIcon({
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="absolute -bottom-2 -left-2 p-0.5 bg-primary rounded-full border-accent border-[1px]">
-                <PackageIcon className="!size-4 text-primary-foreground" />
+                <Package className="!size-4 text-primary-foreground" />
               </span>
             </TooltipTrigger>
             <TooltipContent>

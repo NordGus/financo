@@ -2,7 +2,7 @@ import { use } from "react";
 import { Link, Outlet } from "react-router";
 import { list as listCategoriesQuery } from "~/modules/categories/api/queries/list";
 import { NoCategoriesForKind } from "~/modules/categories/components/no-categories-for-kind";
-import { CategoryPreview } from "~/modules/categories/components/previews/category";
+import { CategoryPreview, ChildCategoryPreview } from "~/modules/categories/components/previews/category";
 import { ListFiltersContext } from "~/modules/categories/contexts/list-filters-context";
 import { Category, Kind } from "~/modules/categories/types/category";
 import { getListFilters } from "~/modules/categories/utils/router-requests";
@@ -61,19 +61,18 @@ export default function Categories({ loaderData }: Route.ComponentProps) {
                     color={category.color}
                     icon={category.icon}
                     archivedAt={category.archivedAt}
-                    archivedChildren={
-                      category.children.reduce(
-                        (acc, child) => (child.archivedAt && child.kind ? acc + 1 : acc),
-                        0
-                      )
-                    }
-                    activeChildren={
-                      category.children.reduce(
-                        (acc, child) => (child.archivedAt ? acc : acc + 1),
-                        0
-                      )
-                    }
-                  />
+                  >
+                    {category.children.map((child) => (
+                      <ChildCategoryPreview
+                        key={`account.${child.id}`}
+                        name={child.name}
+                        color={child.color}
+                        icon={child.icon}
+                        description={child.description}
+                        archived={!!child.archivedAt}
+                      />
+                    ))}
+                  </CategoryPreview>
                 </Link>
               ))
             }
@@ -94,19 +93,18 @@ export default function Categories({ loaderData }: Route.ComponentProps) {
                     color={category.color}
                     icon={category.icon}
                     archivedAt={category.archivedAt}
-                    archivedChildren={
-                      category.children.reduce(
-                        (acc, child) => (child.archivedAt ? acc + 1 : acc),
-                        0
-                      )
-                    }
-                    activeChildren={
-                      category.children.reduce(
-                        (acc, child) => (child.archivedAt ? acc : acc + 1),
-                        0
-                      )
-                    }
-                  />
+                  >
+                    {category.children.map((child) => (
+                      <ChildCategoryPreview
+                        key={`account.${child.id}`}
+                        name={child.name}
+                        color={child.color}
+                        icon={child.icon}
+                        description={child.description}
+                        archived={!!child.archivedAt}
+                      />
+                    ))}
+                  </CategoryPreview>
                 </Link>
               ))
             }
