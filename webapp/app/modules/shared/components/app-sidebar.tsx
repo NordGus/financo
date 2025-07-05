@@ -4,9 +4,11 @@ import {
   Check,
   ChevronUp,
   Coffee,
+  LucideProps,
   NotebookTabs,
   PiggyBank,
-  RouteIcon,
+  Plus,
+  Route,
   Settings,
   Trophy,
   User2,
@@ -34,11 +36,20 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem
 } from "./ui/sidebar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
-const items = [
+type MenuItem = {
+  title: string,
+  url: string,
+  icon: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>,
+  action?: MenuItem
+}
+
+const items: MenuItem[] = [
   {
     title: "Morning Brew",
     url: "/morning-brew",
@@ -48,16 +59,31 @@ const items = [
     title: "Accounts",
     url: "/accounts",
     icon: Vault,
+    action: {
+      title: "New Account",
+      url: "/new",
+      icon: Plus
+    }
   },
   {
     title: "Categories",
     url: "/categories",
     icon: Bookmark,
+    action: {
+      title: "New Category",
+      url: "/new",
+      icon: Plus
+    }
   },
   {
     title: "Ledger",
     url: "/ledger",
     icon: BookMarked,
+    action: {
+      title: "New Transaction",
+      url: "/new",
+      icon: Plus
+    }
   },
   {
     title: "Budgets",
@@ -67,11 +93,11 @@ const items = [
   {
     title: "Payment Plans",
     url: "/payment-plans",
-    icon: RouteIcon,
+    icon: Route,
   },
 ]
 
-const achievements = [
+const achievements: MenuItem[] = [
   {
     title: "Trophy Room",
     url: "/achievements",
@@ -111,7 +137,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map(({ title, url, icon: Icon }) => (
+              {items.map(({ title, url, icon: Icon, action }) => (
                 <SidebarMenuItem key={title}>
                   <SidebarMenuButton
                     isActive={isActive(url)}
@@ -123,6 +149,22 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
                       <span>{title}</span>
                     </NavLink>
                   </SidebarMenuButton>
+                  {
+                    action && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <SidebarMenuAction asChild>
+                            <NavLink to={`${url}${action.url}`}>
+                              <action.icon />
+                            </NavLink>
+                          </SidebarMenuAction>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          {action.title}
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  }
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -133,7 +175,7 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
           <SidebarGroupLabel>Achievements</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {achievements.map(({ title, url, icon: Icon }) => (
+              {achievements.map(({ title, url, icon: Icon, action }) => (
                 <SidebarMenuItem key={title}>
                   <SidebarMenuButton
                     isActive={isActive(url)}
@@ -145,6 +187,22 @@ export function AppSidebar({ ...props }: ComponentProps<typeof Sidebar>) {
                       <span>{title}</span>
                     </NavLink>
                   </SidebarMenuButton>
+                  {
+                    action && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <SidebarMenuAction asChild>
+                            <NavLink to={`${url}${action.url}`}>
+                              <action.icon />
+                            </NavLink>
+                          </SidebarMenuAction>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          {action.title}
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  }
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
