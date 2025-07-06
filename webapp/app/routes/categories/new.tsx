@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { use } from "react";
 import { createSearchParams, Link, useLocation } from "react-router";
+import { FormCreateTemplate } from "~/modules/categories/components/forms/form-create-template";
 import { ListFiltersContext } from "~/modules/categories/contexts/list-filters-context";
 import { categoryKindsManual } from "~/modules/categories/manual/category-kinds-manual";
 import { listFiltersToURLSearchParams } from "~/modules/categories/types/filters";
@@ -55,11 +56,7 @@ export default function New({ }: Route.ComponentProps) {
             </>
           )
         }
-        {
-          !!filters.kind && (
-            <span>Create Category</span>
-          )
-        }
+        {!!filters.kind && (<FormCreateTemplate kind={filters.kind} />)}
       </div>
     </section>
   )
