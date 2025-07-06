@@ -12,9 +12,11 @@ interface Props {
   value: Icon
   onChange: (value: Icon) => void
   color?: string
+  withColorBackground?: boolean
+  className?: string
 }
 
-export function IconInput({ value, onChange, color }: Props) {
+export function IconInput({ value, onChange, color, withColorBackground = false }: Props) {
   return (
     <Tooltip>
       <Popover>
@@ -23,10 +25,19 @@ export function IconInput({ value, onChange, color }: Props) {
             <FormControl>
               <Button
                 size={"icon"}
-                className="size-12 cursor-pointer"
+                className="cursor-pointer size-12"
                 style={{
-                  backgroundColor: color ? colorContrast(color) : undefined,
-                  color: color ? colorContrast(colorContrast(color)) : undefined
+                  ...(
+                    withColorBackground
+                      ? {
+                        backgroundColor: color,
+                        color: color ? colorContrast(color) : undefined
+                      }
+                      : {
+                        backgroundColor: color ? colorContrast(color) : undefined,
+                        color: color ? colorContrast(colorContrast(color)) : undefined
+                      }
+                  )
                 }}
                 type={"button"}
               >
@@ -38,7 +49,7 @@ export function IconInput({ value, onChange, color }: Props) {
         <TooltipContent>
           {"Pick an Icon"}
         </TooltipContent>
-        <PopoverContent className="overflow-clip max-h-[70dvh] overflow-y-auto no-scrollbar flex flex-wrap gap-2">
+        <PopoverContent className="overflow-clip max-h-[40dvh] overflow-y-auto no-scrollbar flex flex-wrap gap-2">
           {selectables.map((icon) => (
             <Button
               key={icon}

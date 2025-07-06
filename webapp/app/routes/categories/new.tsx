@@ -1,12 +1,39 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { use } from "react";
-import { createSearchParams, Link, useLocation } from "react-router";
+import { createSearchParams, Link, redirect, useLocation } from "react-router";
+import { create as createCategoryCommand } from "~/modules/categories/api/commands/create";
 import { FormCreateTemplate } from "~/modules/categories/components/forms/form-create-template";
 import { ListFiltersContext } from "~/modules/categories/contexts/list-filters-context";
 import { categoryKindsManual } from "~/modules/categories/manual/category-kinds-manual";
+import { schema as createSchema } from "~/modules/categories/schemas/create";
 import { listFiltersToURLSearchParams } from "~/modules/categories/types/filters";
 import { Heading2 } from "~/modules/shared/components/ui/headings";
 import { Route } from "./+types/new";
+
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  const action = createSchema.safeParse(await request.json())
+
+  if (!action.success) throw action.error
+
+  const {
+    kind, icon, color, name, description, subcategories
+  } = action.data
+
+  const res = await createCategoryCommand({
+    kind,
+    name,
+    description: description ?? null,
+    color,
+    icon,
+    children: subcategories.map(subcategory => ({
+      name: subcategory.name,
+      description: subcategory.description ?? null,
+      icon: subcategory.icon
+    }))
+  })
+
+  return redirect(`/categories/${res.id}`)
+}
 
 export default function New({ }: Route.ComponentProps) {
   const { filters } = use(ListFiltersContext)
