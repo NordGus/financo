@@ -27,7 +27,7 @@ import { Input } from "~/modules/shared/components/ui/input";
 import { Textarea } from "~/modules/shared/components/ui/textarea";
 import { accountKindToHuman as kindToHuman } from "~/modules/shared/helpers/account-kind-to-human";
 import { Icon } from "~/modules/shared/types/icon";
-import { schema } from "../../schemas/create";
+import { oldSchema } from "../../schemas/create";
 import { Kind } from "../../types/category";
 import { OnSubmitCreateAction } from "../../types/create";
 import { defaultIcons } from "../../types/icons";
@@ -154,8 +154,8 @@ function initChildForm({ name = "", description, icon }: ChildInitialState): Chi
 function CreateForm({ kind, onSubmitAction, submitting }: FormProps) {
   const [child, childDispatch] = useReducer(reducer, { icon: defaultIcons[kind] }, initChildForm)
 
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const form = useForm<z.infer<typeof oldSchema>>({
+    resolver: zodResolver(oldSchema),
     defaultValues: {
       kind: kind,
       color: {
@@ -171,7 +171,7 @@ function CreateForm({ kind, onSubmitAction, submitting }: FormProps) {
     keyName: "identity"
   })
 
-  const onSubmit = async (values: z.infer<typeof schema>) =>
+  const onSubmit = async (values: z.infer<typeof oldSchema>) =>
     onSubmitAction({ ...values })
 
   const onChildOpenChanged = (open: boolean) =>

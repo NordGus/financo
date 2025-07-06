@@ -40,6 +40,6 @@ type Entry = {
 };
 
 export type {
-  Currencies, Currency, Entry, SystemCurrency
+  Currencies, Currency, Entry, SystemCurrencies, SystemCurrency
 };
 
