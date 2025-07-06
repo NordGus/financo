@@ -326,10 +326,9 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
           className="w-full"
           type="button"
           onClick={() => append({
-            kind,
-            intent: "create",
             icon: DEFAULT_ICONS[kind],
             name: DEFAULT_SUBCATEGORY_NAMES[kind],
+            intent: "create",
           })}
         >
           <Plus /> {"Add Subcategory"}
