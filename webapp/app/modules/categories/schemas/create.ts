@@ -26,8 +26,8 @@ export const oldSchema = z.object({
   }).array(),
 })
 
-const expenseSchema = z.object({
-  kind: z.literal("expense"),
+export const schema = z.object({
+  kind: z.union([z.literal("income"), z.literal("expense")]),
   color: z.string({ required_error: "required" })
     .max(10, { message: "invalid" }),
   icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
@@ -39,7 +39,6 @@ const expenseSchema = z.object({
     .nullish(),
   subcategories: z.array(
     z.object({
-      kind: z.literal("expense"),
       icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
       name: z.string({ required_error: "required" })
         .max(NAME_MAX_LENGTH, { message: "too long" })
@@ -52,32 +51,3 @@ const expenseSchema = z.object({
   ),
   intent: z.literal("create")
 })
-
-const incomeSchema = z.object({
-  kind: z.literal("income"),
-  color: z.string({ required_error: "required" })
-    .max(10, { message: "invalid" }),
-  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
-  name: z.string({ required_error: "required" })
-    .max(NAME_MAX_LENGTH, { message: "too long" })
-    .min(NAME_MIN_LENGTH, { message: "too short" }),
-  description: z.string()
-    .max(DESCRIPTION_MAX_LENGTH, { message: "too long" })
-    .nullish(),
-  subcategories: z.array(
-    z.object({
-      kind: z.literal("income"),
-      icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
-      name: z.string({ required_error: "required" })
-        .max(NAME_MAX_LENGTH, { message: "too long" })
-        .min(NAME_MIN_LENGTH, { message: "too short" }),
-      description: z.string()
-        .max(DESCRIPTION_MAX_LENGTH, { message: "too long" })
-        .nullish(),
-      intent: z.literal("create")
-    })
-  ),
-  intent: z.literal("create")
-})
-
-export const schema = z.union([expenseSchema, incomeSchema])
