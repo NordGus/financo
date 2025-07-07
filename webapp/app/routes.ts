@@ -24,6 +24,7 @@ export default [
       route("categories", "routes/categories/categories.tsx", [
         index("routes/categories/index.tsx"),
         route("new", "routes/categories/new.tsx"),
+        route(":id", "routes/categories/edit.tsx")
       ]),
     ]),
 
