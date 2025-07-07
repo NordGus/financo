@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus, Save, Trash } from "lucide-react"
-import { ComponentProps, useEffect } from "react"
+import { ComponentProps, Fragment, useEffect } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { useFetcher } from "react-router"
 import { toast } from "sonner"
@@ -10,7 +10,6 @@ import { ColorInput } from "~/modules/shared/components/inputs/color-input"
 import { IconInput } from "~/modules/shared/components/inputs/icon-input"
 import { Throbber } from "~/modules/shared/components/throbber"
 import { Button } from "~/modules/shared/components/ui/button"
-import { Card, CardContent, CardFooter } from "~/modules/shared/components/ui/card"
 import {
   Form,
   FormControl,
@@ -20,6 +19,7 @@ import {
   FormMessage
 } from "~/modules/shared/components/ui/form"
 import { Input } from "~/modules/shared/components/ui/input"
+import { Separator } from "~/modules/shared/components/ui/separator"
 import { Textarea } from "~/modules/shared/components/ui/textarea"
 import {
   Tooltip,
@@ -85,6 +85,7 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
   }, [form.formState.errors])
 
   const formColor = form.watch("color")
+  const formIcon = form.watch("icon")
 
   const {
     fields: subcategoriesFields,
@@ -222,10 +223,30 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
             )
           }}
         />
+        <Separator className="mb-2" />
+        {
+          subcategoriesFields.length >= 2 && (
+            <>
+              <Button
+                variant={"outline"}
+                className="w-full"
+                type="button"
+                onClick={() => append({
+                  icon: formIcon,
+                  name: DEFAULT_SUBCATEGORY_NAMES[kind],
+                  intent: "create",
+                })}
+              >
+                <Plus /> {"Add Subcategory"}
+              </Button>
+              <Separator className="my-2" />
+            </>
+          )
+        }
         {
           subcategoriesFields.map((subcategory, index) => (
-            <Card key={`subcategory.${subcategory.id}`}>
-              <CardContent className="flex flex-col gap-2">
+            <Fragment key={`subcategory.${subcategory.id}`}>
+              <div className="flex flex-col gap-2">
                 <div className="grid gap-2 grid-cols-[min-content_1fr]">
                   <FormField
                     control={form.control}
@@ -301,8 +322,8 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
                     )
                   }}
                 />
-              </CardContent>
-              <CardFooter className="justify-end">
+              </div>
+              <div className="flex items-center justify-end">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -317,8 +338,9 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
                     {"Remove Subcategory"}
                   </TooltipContent>
                 </Tooltip>
-              </CardFooter>
-            </Card>
+              </div>
+              <Separator className="my-2" />
+            </Fragment>
           ))
         }
         <Button
@@ -326,7 +348,7 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
           className="w-full"
           type="button"
           onClick={() => append({
-            icon: DEFAULT_ICONS[kind],
+            icon: formIcon,
             name: DEFAULT_SUBCATEGORY_NAMES[kind],
             intent: "create",
           })}
