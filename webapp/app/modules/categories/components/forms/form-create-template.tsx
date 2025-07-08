@@ -223,24 +223,22 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
             )
           }}
         />
-        <Separator className="mb-2" />
+        <Separator className="mb-1" />
+        <Button
+          variant={"outline"}
+          className="w-full"
+          type="button"
+          onClick={() => append({
+            icon: formIcon,
+            name: DEFAULT_SUBCATEGORY_NAMES[kind],
+            intent: "create",
+          })}
+        >
+          <Plus /> {"Add Subcategory"}
+        </Button>
         {
-          subcategoriesFields.length >= 2 && (
-            <>
-              <Button
-                variant={"outline"}
-                className="w-full"
-                type="button"
-                onClick={() => append({
-                  icon: formIcon,
-                  name: DEFAULT_SUBCATEGORY_NAMES[kind],
-                  intent: "create",
-                })}
-              >
-                <Plus /> {"Add Subcategory"}
-              </Button>
-              <Separator className="my-2" />
-            </>
+          subcategoriesFields.length > 0 && (
+            <Separator className="my-2" />
           )
         }
         {
@@ -339,22 +337,26 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <Separator className="my-2" />
+              <Separator className="my-1" />
             </Fragment>
           ))
         }
-        <Button
-          variant={"outline"}
-          className="w-full"
-          type="button"
-          onClick={() => append({
-            icon: formIcon,
-            name: DEFAULT_SUBCATEGORY_NAMES[kind],
-            intent: "create",
-          })}
-        >
-          <Plus /> {"Add Subcategory"}
-        </Button>
+        {
+          subcategoriesFields.length > 1 && (
+            <Button
+              variant={"outline"}
+              className="w-full"
+              type="button"
+              onClick={() => append({
+                icon: formIcon,
+                name: DEFAULT_SUBCATEGORY_NAMES[kind],
+                intent: "create",
+              })}
+            >
+              <Plus /> {"Add Subcategory"}
+            </Button>
+          )
+        }
       </form>
     </Form>
   )
