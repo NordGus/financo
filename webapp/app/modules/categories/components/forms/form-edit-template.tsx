@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Plus, Save, Trash } from "lucide-react"
+import { AlertCircle, Plus, Save, Trash } from "lucide-react"
 import { ComponentProps, Fragment, useEffect } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { useFetcher } from "react-router"
@@ -9,6 +9,7 @@ import { cn } from "~/lib/utils"
 import { ColorInput } from "~/modules/shared/components/inputs/color-input"
 import { IconInput } from "~/modules/shared/components/inputs/icon-input"
 import { Throbber } from "~/modules/shared/components/throbber"
+import { Alert, AlertDescription, AlertTitle } from "~/modules/shared/components/ui/alert"
 import { Button } from "~/modules/shared/components/ui/button"
 import {
   Form,
@@ -30,6 +31,7 @@ import {
   Kinds
 } from "~/modules/shared/types/account"
 import { Icon } from "~/modules/shared/types/icon"
+import { archivedCategoriesManual } from "../../manual/archived-categories-manual"
 import { DESCRIPTION_MAX_LENGTH, NAME_MAX_LENGTH } from "../../schemas/constants"
 import { schema } from "../../schemas/update"
 
@@ -45,6 +47,7 @@ type SubcategoryProps = {
   icon: Icon
   name: string
   description: string | undefined | null
+  archived: boolean
 }
 
 type Props = {
@@ -53,6 +56,7 @@ type Props = {
   icon: Icon
   name: string
   description: string | undefined | null
+  archived: boolean
   subcategories: SubcategoryProps[]
 }
 
@@ -62,6 +66,7 @@ export function FormEditTemplate({
   icon,
   name,
   description,
+  archived,
   subcategories,
   ...props
 }: ComponentProps<"form"> & Props) {
@@ -210,6 +215,19 @@ export function FormEditTemplate({
             />
           </div>
         </div>
+        {
+          archived && (
+            <Alert>
+              <AlertCircle className="size-4" />
+              <AlertTitle className="mb-2">
+                {"This Category is archived!"}
+              </AlertTitle>
+              <AlertDescription className="text-xs">
+                {archivedCategoriesManual.message}
+              </AlertDescription>
+            </Alert>
+          )
+        }
         <FormField
           control={form.control}
           name="name"
@@ -268,126 +286,6 @@ export function FormEditTemplate({
             )
           }}
         />
-        <Separator className="mb-2" />
-        {
-          subcategoriesFields.length >= 2 && (
-            <>
-              <Button
-                variant={"outline"}
-                className="w-full"
-                type="button"
-                onClick={() => append({
-                  icon: formIcon,
-                  name: DEFAULT_SUBCATEGORY_NAMES[kind],
-                  intent: "create",
-                })}
-              >
-                <Plus /> {"Add Subcategory"}
-              </Button>
-              <Separator className="my-2" />
-            </>
-          )
-        }
-        {
-          subcategoriesFields.map((subcategory, index) => (
-            <Fragment key={`subcategory.${subcategory.id}`}>
-              <div className="flex flex-col gap-2">
-                <div className="grid gap-2 grid-cols-[min-content_1fr]">
-                  <FormField
-                    control={form.control}
-                    name={`subcategories.${index}.icon`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <IconInput
-                          value={field.value}
-                          onChange={field.onChange}
-                          color={formColor}
-                          withColorBackground
-                        />
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name={`subcategories.${index}.name`}
-                    render={({ field }) => {
-                      const charCount = field.value?.length ?? 0
-                      const isApproachingLimit = charCount >= NAME_MAX_LENGTH * 0.9
-                      const isAboveLimit = charCount > NAME_MAX_LENGTH
-
-                      return (
-                        <FormItem className="grow">
-                          <FormControl>
-                            <Input
-                              {...field}
-                              className={cn(
-                                isApproachingLimit && "border-yellow-500 focus-visible:ring-yellow-500",
-                                isAboveLimit && "border-destructive focus-visible:ring-destructive"
-                              )}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            {NAME_MAX_LENGTH - charCount} characters remaining
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )
-                    }}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name={`subcategories.${index}.description`}
-                  render={({ field }) => {
-                    const charCount = field.value?.length ?? 0
-                    const isApproachingLimit = charCount >= DESCRIPTION_MAX_LENGTH * 0.9
-                    const isAboveLimit = charCount > DESCRIPTION_MAX_LENGTH
-
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            value={field.value ?? undefined}
-                            placeholder="You can add a little extra information about this Subcategory..."
-                            maxLength={DESCRIPTION_MAX_LENGTH}
-                            className={cn(
-                              "h-32",
-                              isApproachingLimit && "border-yellow-500 focus-visible:ring-yellow-500",
-                              isAboveLimit && "border-destructive focus-visible:ring-destructive"
-                            )}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          {DESCRIPTION_MAX_LENGTH - charCount} characters remaining
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )
-                  }}
-                />
-              </div>
-              <div className="flex items-center justify-end">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant={"destructive"}
-                      type="button"
-                      onClick={() => remove(index)}
-                    >
-                      <Trash />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {"Remove Subcategory"}
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <Separator className="my-2" />
-            </Fragment>
-          ))
-        }
         <Button
           variant={"outline"}
           className="w-full"
@@ -400,6 +298,139 @@ export function FormEditTemplate({
         >
           <Plus /> {"Add Subcategory"}
         </Button>
+        {
+          subcategoriesFields.map((subcategory, index) => {
+            const data = subcategories.at(index)
+
+            return (
+              <Fragment key={`subcategory.${subcategory.id}`}>
+                {
+                  data?.archived && !archived && (
+                    <Alert>
+                      <AlertCircle className="size-4" />
+                      <AlertTitle className="mb-2">
+                        {"This Subcategory is archived!"}
+                      </AlertTitle>
+                      <AlertDescription className="text-xs">
+                        {archivedCategoriesManual.message}
+                      </AlertDescription>
+                    </Alert>
+                  )
+                }
+                <div className="flex flex-col gap-2">
+                  <div className="grid gap-2 grid-cols-[min-content_1fr]">
+                    <FormField
+                      control={form.control}
+                      name={`subcategories.${index}.icon`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <IconInput
+                            value={field.value}
+                            onChange={field.onChange}
+                            color={formColor}
+                            withColorBackground
+                          />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`subcategories.${index}.name`}
+                      render={({ field }) => {
+                        const charCount = field.value?.length ?? 0
+                        const isApproachingLimit = charCount >= NAME_MAX_LENGTH * 0.9
+                        const isAboveLimit = charCount > NAME_MAX_LENGTH
+
+                        return (
+                          <FormItem className="grow">
+                            <FormControl>
+                              <Input
+                                {...field}
+                                className={cn(
+                                  isApproachingLimit && "border-yellow-500 focus-visible:ring-yellow-500",
+                                  isAboveLimit && "border-destructive focus-visible:ring-destructive"
+                                )}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              {NAME_MAX_LENGTH - charCount} characters remaining
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )
+                      }}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name={`subcategories.${index}.description`}
+                    render={({ field }) => {
+                      const charCount = field.value?.length ?? 0
+                      const isApproachingLimit = charCount >= DESCRIPTION_MAX_LENGTH * 0.9
+                      const isAboveLimit = charCount > DESCRIPTION_MAX_LENGTH
+
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              value={field.value ?? undefined}
+                              placeholder="You can add a little extra information about this Subcategory..."
+                              maxLength={DESCRIPTION_MAX_LENGTH}
+                              className={cn(
+                                "h-32",
+                                isApproachingLimit && "border-yellow-500 focus-visible:ring-yellow-500",
+                                isAboveLimit && "border-destructive focus-visible:ring-destructive"
+                              )}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            {DESCRIPTION_MAX_LENGTH - charCount} characters remaining
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )
+                    }}
+                  />
+                </div>
+                <div className="flex items-center justify-end">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant={"destructive"}
+                        type="button"
+                        onClick={() => remove(index)}
+                      >
+                        <Trash />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {"Remove Subcategory"}
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Separator className="my-1" />
+              </Fragment>
+            )
+          })
+        }
+        {
+          subcategoriesFields.length > 1 && (
+            <Button
+              variant={"outline"}
+              className="w-full"
+              type="button"
+              onClick={() => append({
+                icon: formIcon,
+                name: DEFAULT_SUBCATEGORY_NAMES[kind],
+                intent: "create",
+              })}
+            >
+              <Plus /> {"Add Subcategory"}
+            </Button>
+          )
+        }
       </form>
     </Form>
   )

@@ -21,11 +21,13 @@ export default function Edit({ loaderData }: Route.ComponentProps) {
           icon={category.icon}
           name={category.name}
           description={category.description}
+          archived={!!category.archivedAt}
           subcategories={category.children.map(child => ({
             id: child.id,
             icon: child.icon,
             name: child.name,
-            description: child.description
+            description: child.description,
+            archived: !!child.archivedAt
           }))}
         />
       </div>
