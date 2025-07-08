@@ -28,7 +28,7 @@ import { Textarea } from "~/modules/shared/components/ui/textarea";
 import { accountKindToHuman as kindToHuman } from "~/modules/shared/helpers/account-kind-to-human";
 import { childName } from "~/modules/shared/helpers/child-name";
 import { Icon } from "~/modules/shared/types/icon";
-import { schema } from "../../schemas/update";
+import { oldSchema } from "../../schemas/update";
 import { ArchiveChildAction } from "../../types/archive";
 import { Category } from "../../types/category";
 import { CreateChildAction } from "../../types/create";
@@ -370,8 +370,8 @@ function UpdateForm({
   onAddChildClick,
   submitting
 }: FormProps) {
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
+  const form = useForm<z.infer<typeof oldSchema>>({
+    resolver: zodResolver(oldSchema),
     defaultValues: {
       id: category.id,
       name: category.name,
@@ -381,7 +381,7 @@ function UpdateForm({
     }
   })
 
-  const onSubmit = async (values: z.infer<typeof schema>) =>
+  const onSubmit = async (values: z.infer<typeof oldSchema>) =>
     await onSubmitAction({ ...values })
 
   useEffect(() => {
