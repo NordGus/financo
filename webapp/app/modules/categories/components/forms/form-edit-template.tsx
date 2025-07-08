@@ -286,6 +286,7 @@ export function FormEditTemplate({
             )
           }}
         />
+        <Separator className="mb-1" />
         <Button
           variant={"outline"}
           className="w-full"
@@ -298,6 +299,11 @@ export function FormEditTemplate({
         >
           <Plus /> {"Add Subcategory"}
         </Button>
+        {
+          subcategoriesFields.length > 0 && (
+            <Separator className="my-1" />
+          )
+        }
         {
           subcategoriesFields.map((subcategory, index) => {
             const data = subcategories.at(index)
