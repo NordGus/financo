@@ -238,7 +238,7 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
         </Button>
         {
           subcategoriesFields.length > 0 && (
-            <Separator className="my-2" />
+            <Separator className="my-1" />
           )
         }
         {
