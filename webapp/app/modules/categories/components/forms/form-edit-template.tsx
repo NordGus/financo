@@ -56,7 +56,7 @@ type Props = {
   subcategories: SubcategoryProps[]
 }
 
-export function FormCreateTemplate({
+export function FormEditTemplate({
   kind,
   color,
   icon,
