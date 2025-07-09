@@ -1,11 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { AlertCircle, Plus, Save, Trash } from "lucide-react"
+import { AlertCircle, Package, PackageOpen, Plus, Save, Trash, Undo2 } from "lucide-react"
 import { ComponentProps, Fragment, useEffect } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { useFetcher } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
 import { cn } from "~/lib/utils"
+import { InfoDialog } from "~/modules/shared/components/dialogs/info"
 import { ColorInput } from "~/modules/shared/components/inputs/color-input"
 import { IconInput } from "~/modules/shared/components/inputs/icon-input"
 import { Throbber } from "~/modules/shared/components/throbber"
@@ -92,21 +93,21 @@ export function FormEditTemplate({
   })
 
   useEffect(() => {
-    form.setValue("kind", kind)
-    form.setValue("color", color)
-    form.setValue("icon", icon)
-    form.setValue("name", name)
-    form.setValue("description", description)
-    form.setValue(
-      "subcategories",
-      subcategories.map(subcategory => ({
+    form.reset({
+      kind,
+      color,
+      icon,
+      name,
+      description,
+      subcategories: subcategories.map(subcategory => ({
         id: subcategory.id,
         icon: subcategory.icon,
         name: subcategory.name,
         description: subcategory.description,
         intent: "update" as const
-      }))
-    )
+      })),
+      intent: "update"
+    })
   }, [
     kind,
     color,
@@ -296,6 +297,7 @@ export function FormEditTemplate({
             name: DEFAULT_SUBCATEGORY_NAMES[kind],
             intent: "create",
           })}
+          disabled={archived}
         >
           <Plus /> {"Add Subcategory"}
         </Button>
@@ -307,20 +309,72 @@ export function FormEditTemplate({
         {
           subcategoriesFields.map((subcategory, index) => {
             const data = subcategories.at(index)
+            const intent = form.watch(`subcategories.${index}.intent`)
 
             return (
               <Fragment key={`subcategory.${subcategory.id}`}>
                 {
                   data?.archived && !archived && (
-                    <Alert>
-                      <AlertCircle className="size-4" />
-                      <AlertTitle className="mb-2">
-                        {"This Subcategory is archived!"}
-                      </AlertTitle>
-                      <AlertDescription className="text-xs">
-                        {archivedCategoriesManual.message}
-                      </AlertDescription>
-                    </Alert>
+                    <InfoDialog
+                      withTitleInButton
+                      copy={{
+                        title: "This Subcategory is archived!",
+                        message: archivedCategoriesManual.message
+                      }}
+                      variant={"outline"}
+                      size={"default"}
+                    />
+                  )
+                }
+                {
+                  intent === "destroy" && (
+                    <InfoDialog
+                      withTitleInButton
+                      copy={{
+                        title: "This Subcategory is marked for deletion!",
+                        message: (
+                          <>
+                            <p>{`This action is irreversible. It will also delete all transaction(s) related to this Subcategory. It will take effect once you save its parent Category.`}</p>
+                          </>
+                        )
+                      }}
+                      variant={"outline"}
+                      size={"default"}
+                    />
+                  )
+                }
+                {
+                  intent === "archive" && !data?.archived && !archived && (
+                    <InfoDialog
+                      withTitleInButton
+                      copy={{
+                        title: "This Subcategory is marked for archival!",
+                        message: (
+                          <>
+                            <p>{`This action can be reversed. It does not delete any transaction(s) related to this Subcategory. It will take effect once you save its parent Category.`}</p>
+                          </>
+                        )
+                      }}
+                      variant={"outline"}
+                      size={"default"}
+                    />
+                  )
+                }
+                {
+                  intent === "unarchive" && data?.archived && !archived && (
+                    <InfoDialog
+                      withTitleInButton
+                      copy={{
+                        title: "This Subcategory is marked for unarchival!",
+                        message: (
+                          <>
+                            <p>{`This action can be reversed. It does not delete any transaction(s) related to this Subcategory. It will take effect once you save its parent Category.`}</p>
+                          </>
+                        )
+                      }}
+                      variant={"outline"}
+                      size={"default"}
+                    />
                   )
                 }
                 <div className="flex flex-col gap-2">
@@ -400,19 +454,100 @@ export function FormEditTemplate({
                     }}
                   />
                 </div>
-                <div className="flex items-center justify-end">
+                <div className="flex items-center gap-2 justify-end">
+                  {
+                    data && data.archived && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              form.setValue(
+                                `subcategories.${index}.intent`,
+                                intent === "unarchive" ? "update" : "unarchive"
+                              )
+                            }}
+                            disabled={archived}
+                          >
+                            {
+                              intent === "unarchive"
+                                ? <Undo2 />
+                                : <PackageOpen />
+                            }
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {
+                            intent === "unarchive"
+                              ? "Unmark Subcategory for unarchival"
+                              : "Mark Subcategory for unarchival"
+                          }
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  }
+                  {
+                    data && !data.archived && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              form.setValue(
+                                `subcategories.${index}.intent`,
+                                intent === "archive" ? "update" : "archive"
+                              )
+                            }}
+                            disabled={archived}
+                          >
+                            {
+                              intent === "archive"
+                                ? <Undo2 />
+                                : <Package />
+                            }
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {
+                            intent === "archive"
+                              ? "Unmark Subcategory for archival"
+                              : "Mark Subcategory for archival"
+                          }
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  }
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
                         variant={"destructive"}
                         type="button"
-                        onClick={() => remove(index)}
+                        onClick={() => {
+                          if (subcategory.id) {
+                            form.setValue(
+                              `subcategories.${index}.intent`,
+                              intent === "destroy" ? "update" : "destroy"
+                            )
+                          } else remove(index)
+                        }}
                       >
-                        <Trash />
+                        {
+                          data
+                            ? intent === "destroy"
+                              ? <Undo2 />
+                              : <Trash />
+                            : <Trash />
+                        }
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {"Remove Subcategory"}
+                      {
+                        intent === "destroy"
+                          ? "Unmark Subcategory for deletion"
+                          : data
+                            ? "Mark Subcategory for deletion"
+                            : "Remove Subcategory"
+                      }
                     </TooltipContent>
                   </Tooltip>
                 </div>
@@ -432,6 +567,7 @@ export function FormEditTemplate({
                 name: DEFAULT_SUBCATEGORY_NAMES[kind],
                 intent: "create",
               })}
+              disabled={archived}
             >
               <Plus /> {"Add Subcategory"}
             </Button>
