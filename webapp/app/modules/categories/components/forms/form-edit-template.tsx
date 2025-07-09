@@ -12,7 +12,16 @@ import { IconInput } from "~/modules/shared/components/inputs/icon-input"
 import { Throbber } from "~/modules/shared/components/throbber"
 import { Alert, AlertDescription, AlertTitle } from "~/modules/shared/components/ui/alert"
 import { Button } from "~/modules/shared/components/ui/button"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "~/modules/shared/components/ui/dialog"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "~/modules/shared/components/ui/dialog"
 import {
   Form,
   FormControl,
