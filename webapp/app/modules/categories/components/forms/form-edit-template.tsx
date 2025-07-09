@@ -594,6 +594,7 @@ export function FormEditTemplate({
                         <TooltipTrigger asChild>
                           <Button
                             type="button"
+                            size={"icon"}
                             onClick={() => {
                               form.setValue(
                                 `subcategories.${index}.intent`,
@@ -625,6 +626,7 @@ export function FormEditTemplate({
                         <TooltipTrigger asChild>
                           <Button
                             type="button"
+                            size={"icon"}
                             onClick={() => {
                               form.setValue(
                                 `subcategories.${index}.intent`,
@@ -655,6 +657,7 @@ export function FormEditTemplate({
                       <Button
                         variant={"destructive"}
                         type="button"
+                        size={"icon"}
                         onClick={() => {
                           if (subcategory.id) {
                             form.setValue(

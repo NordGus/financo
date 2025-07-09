@@ -334,6 +334,7 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
                     <Button
                       variant={"destructive"}
                       type="button"
+                      size={"icon"}
                       onClick={() => remove(index)}
                     >
                       <Trash />
