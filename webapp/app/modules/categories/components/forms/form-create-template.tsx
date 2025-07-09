@@ -74,8 +74,15 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
   })
 
   useEffect(() => {
-    form.reset()
-    form.setValue("kind", kind)
+    form.reset({
+      kind,
+      color: DEFAULT_COLORS[kind],
+      icon: DEFAULT_ICONS[kind],
+      name: DEFAULT_NAMES[kind],
+      description: null,
+      subcategories: [],
+      intent: "create",
+    })
   }, [kind])
 
   useEffect(() => {
