@@ -300,7 +300,7 @@ export function FormEditTemplate({
             <span className="flex-1 contents-[' ']" />
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button type="submit" form="account-form" size={"icon"}>
+                <Button type="submit" form="category-form" size={"icon"}>
                   {
                     fetcher.state !== "idle"
                       ? <Throbber />

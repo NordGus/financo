@@ -122,7 +122,7 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
           "overflow-auto flex flex-col gap-2 px-1 no-scrollbar relative",
           props.className
         )}
-        id="account-form"
+        id="category-form"
       >
         <div
           className="grid sticky top-0 grid-rows-2 min-h-42 h-42 gap-2 rounded-lg shadow-xs p-4 z-40"
@@ -132,7 +132,7 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
             <span className="flex-1 contents-[' ']" />
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button type="submit" form="account-form" size={"icon"}>
+                <Button type="submit" form="category-form" size={"icon"}>
                   {
                     fetcher.state !== "idle"
                       ? <Throbber />
