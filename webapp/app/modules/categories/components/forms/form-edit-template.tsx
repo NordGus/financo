@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { AlertCircle, Package, PackageOpen, Plus, Save, Trash, Undo2 } from "lucide-react"
+import { AlertCircle, Package, PackageOpen, Plus, Save, Trash, Undo2, X } from "lucide-react"
 import { ComponentProps, Fragment, useEffect } from "react"
 import { useFieldArray, useForm } from "react-hook-form"
 import { useFetcher } from "react-router"
@@ -12,6 +12,7 @@ import { IconInput } from "~/modules/shared/components/inputs/icon-input"
 import { Throbber } from "~/modules/shared/components/throbber"
 import { Alert, AlertDescription, AlertTitle } from "~/modules/shared/components/ui/alert"
 import { Button } from "~/modules/shared/components/ui/button"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "~/modules/shared/components/ui/dialog"
 import {
   Form,
   FormControl,
@@ -126,6 +127,7 @@ export function FormEditTemplate({
 
   const formColor = form.watch("color")
   const formIcon = form.watch("icon")
+  const formName = form.watch("name")
 
   const {
     fields: subcategoriesFields,
@@ -151,8 +153,39 @@ export function FormEditTemplate({
       promise,
       {
         loading: "Creating...",
-        success: () => `${values.name} account created!`,
+        success: () => `${values.name} category created!`,
         error: `Couldn't save ${values.name}, something went wrong`
+      }
+    )
+  }
+
+  const onDestroy = async () => {
+    const promise = fetcher.submit({ intent: "destroy" }, { method: "post", encType: "application/json" })
+
+    toast.promise(
+      promise,
+      {
+        loading: "Deleting...",
+        success: () => `${formName} deleted!`,
+        error: `Couldn't delete ${formName}, something went wrong"`
+      }
+    )
+  }
+
+  const onArchiveOrUnarchive = async () => {
+    const promise = fetcher.submit(
+      { intent: !archived ? "archive" : "unarchive" },
+      { method: "post", encType: "application/json" }
+    )
+
+    toast.promise(
+      promise,
+      {
+        loading: !archived ? "Archiving..." : "Unarchiving...",
+        success: () => !archived ? `${formName} archived!` : `${formName} unarchived!`,
+        error: () => !archived
+          ? `Couldn't archive ${formName}, something went wrong`
+          : `Couldn't unarchive ${formName}, something went wrong`
       }
     )
   }
@@ -166,13 +199,104 @@ export function FormEditTemplate({
           "overflow-auto flex flex-col gap-2 px-1 no-scrollbar relative",
           props.className
         )}
-        id="account-form"
+        id="category-form"
       >
         <div
           className="grid sticky top-0 grid-rows-2 min-h-42 h-42 gap-2 rounded-lg shadow-xs p-4 z-40"
           style={{ backgroundColor: formColor }}
         >
           <div className="flex gap-2 items-start">
+            <Dialog>
+              <Tooltip>
+                <DialogTrigger asChild>
+                  <TooltipTrigger asChild>
+                    <Button type="button" variant="destructive" size={"icon"} className="dark:bg-destructive">
+                      <Trash />
+                    </Button>
+                  </TooltipTrigger>
+                </DialogTrigger>
+                <TooltipContent>
+                  {"Delete Category"}
+                </TooltipContent>
+              </Tooltip>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {`Do you want to delete this Category?`}
+                  </DialogTitle>
+                  <DialogDescription>
+                    {`This action is irreversible. It will also delete any transaction(s) related to this Category.`}
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant={"outline"} type="button">
+                      <X /> Cancel
+                    </Button>
+                  </DialogClose>
+                  <DialogClose asChild>
+                    <Button onClick={onDestroy} variant={"destructive"} type="button">
+                      <Trash /> Delete
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Dialog>
+              <Tooltip>
+                <DialogTrigger asChild>
+                  <TooltipTrigger asChild>
+                    <Button type="button" variant="secondary" size={"icon"}>
+                      {!archived ? <Package /> : <PackageOpen />}
+                    </Button>
+                  </TooltipTrigger>
+                </DialogTrigger>
+                <TooltipContent>
+                  {!archived ? "Archive Category" : "Unarchive Category"}
+                </TooltipContent>
+              </Tooltip>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {
+                      !archived
+                        ? `Do you want to archive this Category?`
+                        : `Do you want to unarchive this Category?`
+                    }
+                  </DialogTitle>
+                  <DialogDescription asChild>
+                    <div className="space-y-1">
+                      <p>
+                        {`This action can be reversed. It does not delete any transaction(s) related to this Category.`}
+                      </p>
+                      <p>
+                        {
+                          !archived
+                            ? `It only makes this Category stop appearing as an option anywhere else in financo.`
+                            : `It only makes this Category appear as an option anywhere else in financo, again.`
+                        }
+                      </p>
+                    </div>
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant={"outline"} type="button">
+                      <X /> Cancel
+                    </Button>
+                  </DialogClose>
+                  <DialogClose asChild>
+                    <Button onClick={onArchiveOrUnarchive} type="button">
+                      {
+                        !archived
+                          ? <><Package /> Archive</>
+                          : <><PackageOpen /> Unarchive</>
+                      }
+                    </Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <span className="flex-1 contents-[' ']" />
             <Tooltip>
               <TooltipTrigger asChild>
