@@ -7,7 +7,7 @@ import { destroy } from "../api/commands/destroy";
 import { destroyChild } from "../api/commands/destroy-child";
 import { unarchive } from "../api/commands/unarchive";
 import { unarchiveChild } from "../api/commands/unarchive-child";
-import { update } from "../api/commands/update";
+import { oldUpdate } from "../api/commands/update";
 import { updateChild } from "../api/commands/update-child";
 import { list } from "../api/queries/list";
 import { Category, Child as ChildCategory } from "../types/category";
@@ -53,7 +53,7 @@ const useCategoriesStore = createStore<CategoriesState>((set) => ({
     return created
   },
   update: async (data) => {
-    const updated = await update(data)
+    const updated = await oldUpdate(data)
 
     set((state) => ({
       ...state,
