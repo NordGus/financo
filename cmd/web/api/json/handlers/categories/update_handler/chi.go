@@ -63,7 +63,15 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := update_command.New(req, update, broker.Updated()).Run(r.Context())
+	res, err := update_command.New(
+		req,
+		update,
+		broker.Updated(),
+		broker.Created(),
+		broker.Archived(),
+		broker.Unarchived(),
+		broker.Deleted(),
+	).Run(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(

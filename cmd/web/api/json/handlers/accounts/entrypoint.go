@@ -16,11 +16,11 @@ func Routes(r chi.Router) {
 	r.Get("/", list_handler.HandlerFunc)
 	r.Post("/", create_handler.HandlerFunc)
 
-	r.Route("/{id}", func(r chi.Router) {
-		r.Get("/", show_handler.HandlerFunc)
-		r.Delete("/", destroy_handler.HandlerFunc)
-		r.Put("/", update_handler.HandlerFunc)
-		r.Patch("/archive", archive_handler.HandlerFunc)
-		r.Patch("/unarchive", unarchive_handler.HandlerFunc)
+	r.Route("/{id}", func(account chi.Router) {
+		account.Get("/", show_handler.HandlerFunc)
+		account.Delete("/", destroy_handler.HandlerFunc)
+		account.Put("/", update_handler.HandlerFunc)
+		account.Patch("/archive", archive_handler.HandlerFunc)
+		account.Patch("/unarchive", unarchive_handler.HandlerFunc)
 	})
 }
