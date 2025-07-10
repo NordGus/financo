@@ -12,7 +12,7 @@ import { updateChild } from "../api/commands/update-child";
 import { list } from "../api/queries/list";
 import { Category, Child as ChildCategory } from "../types/category";
 import { Create, CreateChild } from "../types/create";
-import { Update, UpdateChild } from "../types/update";
+import { OldUpdate, UpdateChild } from "../types/update";
 
 interface CategoriesState {
   categories: Category[]
@@ -20,7 +20,7 @@ interface CategoriesState {
   list: () => void
 
   create: (data: Create) => Promise<Category>
-  update: (data: Update) => Promise<Category>
+  update: (data: OldUpdate) => Promise<Category>
   archive: (id: number) => Promise<Category>
   unarchive: (id: number) => Promise<Category>
   destroy: (id: number) => Promise<Category>

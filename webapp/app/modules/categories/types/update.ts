@@ -8,7 +8,7 @@ export type UpdateChild = {
   icon: Icon
 }
 
-export type Update = {
+export type OldUpdate = {
   id: number
   name: string
   description?: string | null
@@ -16,8 +16,8 @@ export type Update = {
   icon: Icon,
 }
 
-export type UpdateAction = (values: Update, success: () => void, failure: () => void) => Promise<void>
-export type OnSubmitUpdateAction = (values: Update) => Promise<void>
+export type UpdateAction = (values: OldUpdate, success: () => void, failure: () => void) => Promise<void>
+export type OnSubmitUpdateAction = (values: OldUpdate) => Promise<void>
 
 export type UpdateChildAction = (values: UpdateChild, success: () => void, failure: () => void) => Promise<void>
 export type OnSubmitUpdateChildAction = (values: UpdateChild) => Promise<void>
