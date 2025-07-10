@@ -146,31 +146,56 @@ func (p *postgresql) Find(ctx context.Context, id int64) (category.Record, error
 	return out, nil
 }
 
-func (p *postgresql) Save(ctx context.Context, r category.Record) error {
+func (p *postgresql) Save(ctx context.Context, r category.Record) (category.Record, error) {
+	out := category.Record{
+		Parent:   r.Parent,
+		Children: make([]account.Record, len(r.Children)),
+	}
+
 	conn, err := p.db.Conn(ctx)
 	if err != nil {
-		return err
+		return out, err
 	}
 	defer conn.Close()
 
 	tx, err := conn.BeginTx(ctx, nil)
 	if err != nil {
-		return err
+		return out, err
 	}
 
 	err = p.save(ctx, tx, r.Parent)
 	if err != nil {
 		_ = tx.Rollback()
-		return err
+		return out, err
+	}
+
+	for i, child := range r.Children {
+		if child.ID <= 0 {
+			created, err := p.create(ctx, tx, child)
+			if err != nil {
+				_ = tx.Rollback()
+				return out, err
+			}
+
+			out.Children[i] = created
+		} else {
+			err = p.save(ctx, tx, child)
+			if err != nil {
+				_ = tx.Rollback()
+				return out, err
+			}
+
+			out.Children[i] = child
+		}
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		_ = tx.Rollback()
-		return err
+		return out, err
 	}
 
-	return nil
+	return out, nil
 }
 
 func (p *postgresql) save(ctx context.Context, tx *sql.Tx, r account.Record) error {
@@ -201,4 +226,40 @@ func (p *postgresql) save(ctx context.Context, tx *sql.Tx, r account.Record) err
 	).Scan(&r.ID)
 
 	return err
+}
+
+func (p *postgresql) create(ctx context.Context, tx *sql.Tx, r account.Record) (account.Record, error) {
+	err := tx.QueryRowContext(
+		ctx,
+		`
+		INSERT INTO accounts(
+			parent_id,
+			kind,
+			currency,
+			name,
+			description,
+			color,
+			icon,
+			capital,
+			dynamic_data,
+			created_at,
+			updated_at
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		RETURNING id
+		`,
+		r.ParentID,
+		r.Kind,
+		r.Currency,
+		r.Name,
+		r.Description,
+		r.Color,
+		r.Icon,
+		r.Capital,
+		r.DynamicData,
+		r.CreatedAt,
+		r.UpdatedAt,
+	).Scan(&r.ID)
+
+	return r, err
 }

@@ -1,3 +1,4 @@
+// Package commands defines the interfaces that commands must follow.
 package commands
 
 import (
