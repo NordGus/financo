@@ -17,7 +17,7 @@ import { Category, Kind } from "../types/category";
 import { Create, CreateAction, CreateChildAction } from "../types/create";
 import { DeleteAction, DeleteChildAction } from "../types/delete";
 import { UnarchiveAction, UnarchiveChildAction } from "../types/unarchive";
-import { Update, UpdateAction, UpdateChildAction } from "../types/update";
+import { OldUpdate, UpdateAction, UpdateChildAction } from "../types/update";
 
 interface Props {
   categories: Category[]
@@ -251,7 +251,7 @@ export function Screen({
     return onCreateAction(values, onActionSuccess, onActionFailure)
   }
 
-  const onUpdate = (values: Update) => {
+  const onUpdate = (values: OldUpdate) => {
     onActionSubmit()
 
     return onUpdateAction(values, onActionSuccess, onActionFailure)

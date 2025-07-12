@@ -74,8 +74,15 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
   })
 
   useEffect(() => {
-    form.reset()
-    form.setValue("kind", kind)
+    form.reset({
+      kind,
+      color: DEFAULT_COLORS[kind],
+      icon: DEFAULT_ICONS[kind],
+      name: DEFAULT_NAMES[kind],
+      description: null,
+      subcategories: [],
+      intent: "create",
+    })
   }, [kind])
 
   useEffect(() => {
@@ -115,7 +122,7 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
           "overflow-auto flex flex-col gap-2 px-1 no-scrollbar relative",
           props.className
         )}
-        id="account-form"
+        id="category-form"
       >
         <div
           className="grid sticky top-0 grid-rows-2 min-h-42 h-42 gap-2 rounded-lg shadow-xs p-4 z-40"
@@ -125,7 +132,7 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
             <span className="flex-1 contents-[' ']" />
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button type="submit" form="account-form" size={"icon"}>
+                <Button type="submit" form="category-form" size={"icon"}>
                   {
                     fetcher.state !== "idle"
                       ? <Throbber />
@@ -223,24 +230,22 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
             )
           }}
         />
-        <Separator className="mb-2" />
+        <Separator className="mb-1" />
+        <Button
+          variant={"outline"}
+          className="w-full"
+          type="button"
+          onClick={() => append({
+            icon: formIcon,
+            name: DEFAULT_SUBCATEGORY_NAMES[kind],
+            intent: "create",
+          })}
+        >
+          <Plus /> {"Add Subcategory"}
+        </Button>
         {
-          subcategoriesFields.length >= 2 && (
-            <>
-              <Button
-                variant={"outline"}
-                className="w-full"
-                type="button"
-                onClick={() => append({
-                  icon: formIcon,
-                  name: DEFAULT_SUBCATEGORY_NAMES[kind],
-                  intent: "create",
-                })}
-              >
-                <Plus /> {"Add Subcategory"}
-              </Button>
-              <Separator className="my-2" />
-            </>
+          subcategoriesFields.length > 0 && (
+            <Separator className="my-1" />
           )
         }
         {
@@ -329,6 +334,7 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
                     <Button
                       variant={"destructive"}
                       type="button"
+                      size={"icon"}
                       onClick={() => remove(index)}
                     >
                       <Trash />
@@ -339,22 +345,26 @@ export function FormCreateTemplate({ kind, ...props }: ComponentProps<"form"> & 
                   </TooltipContent>
                 </Tooltip>
               </div>
-              <Separator className="my-2" />
+              <Separator className="my-1" />
             </Fragment>
           ))
         }
-        <Button
-          variant={"outline"}
-          className="w-full"
-          type="button"
-          onClick={() => append({
-            icon: formIcon,
-            name: DEFAULT_SUBCATEGORY_NAMES[kind],
-            intent: "create",
-          })}
-        >
-          <Plus /> {"Add Subcategory"}
-        </Button>
+        {
+          subcategoriesFields.length > 1 && (
+            <Button
+              variant={"outline"}
+              className="w-full"
+              type="button"
+              onClick={() => append({
+                icon: formIcon,
+                name: DEFAULT_SUBCATEGORY_NAMES[kind],
+                intent: "create",
+              })}
+            >
+              <Plus /> {"Add Subcategory"}
+            </Button>
+          )
+        }
       </form>
     </Form>
   )

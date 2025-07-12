@@ -1,16 +1,12 @@
 package categories
 
 import (
-	"financo/cmd/web/api/json/handlers/categories/archive_child_handler"
 	"financo/cmd/web/api/json/handlers/categories/archive_handler"
-	"financo/cmd/web/api/json/handlers/categories/create_child_handler"
 	"financo/cmd/web/api/json/handlers/categories/create_handler"
-	"financo/cmd/web/api/json/handlers/categories/destroy_child_handler"
 	"financo/cmd/web/api/json/handlers/categories/destroy_handler"
 	"financo/cmd/web/api/json/handlers/categories/list_handler"
-	"financo/cmd/web/api/json/handlers/categories/unarchive_child_handler"
+	"financo/cmd/web/api/json/handlers/categories/show_handler"
 	"financo/cmd/web/api/json/handlers/categories/unarchive_handler"
-	"financo/cmd/web/api/json/handlers/categories/update_child_handler"
 	"financo/cmd/web/api/json/handlers/categories/update_handler"
 
 	"github.com/go-chi/chi/v5"
@@ -20,21 +16,11 @@ func Routes(r chi.Router) {
 	r.Get("/", list_handler.HandlerFunc)
 	r.Post("/", create_handler.HandlerFunc)
 
-	r.Route("/{id}", func(cat chi.Router) {
-		cat.Delete("/", destroy_handler.HandlerFunc)
-		cat.Put("/", update_handler.HandlerFunc)
-		cat.Patch("/archive", archive_handler.HandlerFunc)
-		cat.Patch("/unarchive", unarchive_handler.HandlerFunc)
-
-		cat.Route("/children", func(children chi.Router) {
-			children.Post("/", create_child_handler.HandlerFunc)
-
-			children.Route("/{childId}", func(child chi.Router) {
-				child.Delete("/", destroy_child_handler.HandlerFunc)
-				child.Put("/", update_child_handler.HandlerFunc)
-				child.Patch("/archive", archive_child_handler.HandlerFunc)
-				child.Patch("/unarchive", unarchive_child_handler.HandlerFunc)
-			})
-		})
+	r.Route("/{id}", func(category chi.Router) {
+		category.Get("/", show_handler.HandlerFunc)
+		category.Delete("/", destroy_handler.HandlerFunc)
+		category.Put("/", update_handler.HandlerFunc)
+		category.Patch("/archive", archive_handler.HandlerFunc)
+		category.Patch("/unarchive", unarchive_handler.HandlerFunc)
 	})
 }

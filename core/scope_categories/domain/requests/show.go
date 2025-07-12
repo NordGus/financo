@@ -1,5 +1,5 @@
 package requests
 
-type Unarchive struct {
+type Show struct {
 	ID int64
 }

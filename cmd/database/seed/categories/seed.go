@@ -4,20 +4,22 @@ import (
 	"context"
 	"errors"
 	"financo/cmd/database/seed/lib/helpers"
-	"financo/core/domain/services"
-	"financo/core/scope_categories/application/commands/archive_child_command"
 	"financo/core/scope_categories/application/commands/archive_command"
 	"financo/core/scope_categories/application/commands/create_command"
+	"financo/core/scope_categories/application/commands/update_command"
 	"financo/core/scope_categories/domain/requests"
 	"financo/core/scope_categories/infrastructure/repositories/archival_repository"
 	"financo/core/scope_categories/infrastructure/repositories/categories_repository"
 	"financo/core/scope_categories/infrastructure/repositories/create_repository"
+	"financo/core/scope_categories/infrastructure/repositories/update_repository"
 	"financo/core/scope_categories/infrastructure/services/message_broker"
 	"financo/lib/currency"
+	"financo/lib/nullable"
 	"financo/models/account"
 	"financo/services/postgresql_database"
 	"fmt"
 	"log"
+	"slices"
 	"time"
 )
 
@@ -37,11 +39,13 @@ func SeedCategories(ctx context.Context, timestamp time.Time) (map[string]seeded
 		db         = postgresql_database.New()
 		repo       = create_repository.NewPostgreSQL(db)
 		categories = categories_repository.NewPostgreSQL(db)
+		update     = update_repository.NewPostgreSQL(db)
 		archival   = archival_repository.NewPostgreSQL(db)
 		broker     = message_broker.New()
 
-		out     = make(map[string]seeded, 10)
-		summary = make(map[account.Kind]uint, 8)
+		out          = make(map[string]seeded, 10)
+		summary      = make(map[account.Kind]uint, 8)
+		childSummary = make(map[account.Kind]uint, 8)
 	)
 
 	log.Println("\tseeding categories")
@@ -65,33 +69,67 @@ func SeedCategories(ctx context.Context, timestamp time.Time) (map[string]seeded
 
 		out[helpers.CategoryMapKey(key)] = seeded{ID: res.ID, Currency: res.Currency}
 
-		c, err := getChildrenCategories(ctx, db, res.ID)
-		if err != nil {
-			return out, errors.Join(fmt.Errorf("categories: failed to retrieve category %s children", req.Name), err)
+		updateReq := requests.Update{
+			ID:            res.ID,
+			Name:          res.Name,
+			Description:   res.Description,
+			Color:         res.Color,
+			Icon:          res.Icon,
+			Subcategories: make([]requests.UpdateSubcategory, 0, len(res.Children)),
 		}
 
-		for i := 0; i < len(c); i++ {
-			for j := 0; j < len(children); j++ {
-				if children[j].req.Name != c[i].Name {
-					continue
-				}
+		for _, child := range res.Children {
+			i := slices.IndexFunc(children, func(c childCreateReq) bool {
+				return c.req.Name == child.Name
+			})
 
-				out[helpers.ChildCategoryMapKey(key, children[j].key)] = seeded{ID: c[i].ID, Currency: c[i].Currency}
-
-				if children[j].archived {
-					r := requests.ArchiveChild{ID: c[i].ID, ParentID: res.ID}
-
-					_, err = archive_child_command.New(r, categories, archival, broker.Archived()).Run(ctx)
-					if err != nil {
-						return out, errors.Join(
-							fmt.Errorf("categories: failed to archive category %s (%s)", req.Name, children[j].req.Name),
-							err,
-						)
-					}
-				}
-
-				break
+			if i < 0 {
+				return out, errors.Join(
+					fmt.Errorf(
+						"categories: find data for subcategory %s (%s)",
+						req.Name,
+						child.Name,
+					),
+					err,
+				)
 			}
+
+			childSummary[child.Kind] += 1
+
+			out[helpers.ChildCategoryMapKey(key, children[i].key)] = seeded{ID: child.ID, Currency: child.Currency}
+
+			subcategory := requests.UpdateSubcategory{
+				ID:          nullable.New(child.ID),
+				Name:        child.Name,
+				Description: child.Description,
+				Icon:        child.Icon,
+				Intent:      requests.UPDATE,
+			}
+
+			if children[i].archived {
+				subcategory.Intent = requests.ARCHIVE
+			}
+
+			updateReq.Subcategories = append(updateReq.Subcategories, subcategory)
+		}
+
+		_, err = update_command.New(
+			updateReq,
+			update,
+			broker.Updated(),
+			broker.Created(),
+			broker.Archived(),
+			broker.Unarchived(),
+			broker.Deleted(),
+		).Run(ctx)
+		if err != nil {
+			return out, errors.Join(
+				fmt.Errorf(
+					"categories: failed to update category %s to run child archival",
+					req.Name,
+				),
+				err,
+			)
 		}
 
 		if archive {
@@ -109,51 +147,8 @@ func SeedCategories(ctx context.Context, timestamp time.Time) (map[string]seeded
 	// printing summary
 	for kind, count := range summary {
 		log.Printf("\t\t%d %v categories seeded\n", count, kind)
+		log.Printf("\t\t\t%d subcategories seeded\n", count)
 	}
 
 	return out, nil
-}
-
-func getChildrenCategories(ctx context.Context, db services.SQLDatabaseService, parent int64) ([]childID, error) {
-	children := make([]childID, 0, 10)
-
-	conn, err := db.Conn(ctx)
-	if err != nil {
-		return children, err
-	}
-	defer conn.Close()
-
-	rows, err := conn.QueryContext(
-		ctx,
-		`
-		SELECT id, name, currency
-		FROM accounts
-		WHERE
-			parent_id = $1
-			AND deleted_at IS NULL
-			AND archived_at IS NULL
-			AND kind != $2
-		`,
-		parent,
-		account.History,
-	)
-	if err != nil {
-		return children, err
-	}
-
-	for rows.Next() {
-		var child childID
-
-		err = rows.Scan(&child.ID, &child.Name, &child.Currency)
-		if err != nil {
-			_ = rows.Close()
-			return children, err
-		}
-
-		children = append(children, child)
-	}
-
-	_ = rows.Close()
-
-	return children, nil
 }

@@ -382,13 +382,19 @@ export function FormTemplate({
                               : `Do you want to unarchive this Account?`
                           }
                         </DialogTitle>
-                        <DialogDescription>
-                          {`This action can be reversed. It does not delete any of the ${transactions} transaction(s) related to this Account. `}
-                          {
-                            !archivedAt
-                              ? `It only makes this Account stop appearing as an option anywhere else in financo.`
-                              : `It only makes this Account appear as an option anywhere else in financo, again.`
-                          }
+                        <DialogDescription asChild>
+                          <div className="space-y-1">
+                            <p>
+                              {`This action can be reversed. It does not delete any of the ${transactions} transaction(s) related to this Account.`}
+                            </p>
+                            <p>
+                              {
+                                !archivedAt
+                                  ? `It only makes this Account stop appearing as an option anywhere else in financo.`
+                                  : `It only makes this Account appear as an option anywhere else in financo, again.`
+                              }
+                            </p>
+                          </div>
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>

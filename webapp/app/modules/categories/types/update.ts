@@ -8,7 +8,7 @@ export type UpdateChild = {
   icon: Icon
 }
 
-export type Update = {
+export type OldUpdate = {
   id: number
   name: string
   description?: string | null
@@ -16,8 +16,33 @@ export type Update = {
   icon: Icon,
 }
 
-export type UpdateAction = (values: Update, success: () => void, failure: () => void) => Promise<void>
-export type OnSubmitUpdateAction = (values: Update) => Promise<void>
+export type UpdateSubcategory = {
+  id: number
+  icon: Icon
+  name: string
+  description: string | null | undefined
+  intent: "update" | "archive" | "unarchive" | "destroy"
+}
+
+export type CreateSubcategory = {
+  id?: null
+  icon: Icon
+  name: string
+  description: string | null | undefined
+  intent: "create"
+}
+
+export type Update = {
+  id: number
+  name: string
+  description: string | null | undefined
+  color: string
+  icon: Icon
+  subcategories: Array<UpdateSubcategory | CreateSubcategory>
+}
+
+export type UpdateAction = (values: OldUpdate, success: () => void, failure: () => void) => Promise<void>
+export type OnSubmitUpdateAction = (values: OldUpdate) => Promise<void>
 
 export type UpdateChildAction = (values: UpdateChild, success: () => void, failure: () => void) => Promise<void>
 export type OnSubmitUpdateChildAction = (values: UpdateChild) => Promise<void>
