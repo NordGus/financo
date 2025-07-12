@@ -29,25 +29,6 @@ func (req *Update) ToRecord(r account.Record, timestamp time.Time) account.Recor
 	return r
 }
 
-// UpdateChild is here for seeds stuff
-type UpdateChild struct {
-	ID          int64                 `json:"id"`
-	ParentID    int64                 `json:"parentId"`
-	Name        string                `json:"name"`
-	Description nullable.Type[string] `json:"description"`
-	Icon        icon.Type             `json:"icon"`
-}
-
-func (req *UpdateChild) ToRecord(child account.Record, timestamp time.Time) account.Record {
-	child.Currency = currency.MULTI
-	child.Name = req.Name
-	child.Description = req.Description
-	child.Icon = req.Icon
-	child.UpdatedAt = timestamp
-
-	return child
-}
-
 type UpdateSubcategory struct {
 	ID          nullable.Type[int64]  `json:"id"`
 	Name        string                `json:"name"`
