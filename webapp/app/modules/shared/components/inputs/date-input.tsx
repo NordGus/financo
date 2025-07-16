@@ -1,6 +1,5 @@
 import { add, format, startOfDay } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { ActiveModifiers } from "react-day-picker";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import { Calendar } from "../ui/calendar";
@@ -9,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface Props {
   value?: Date
-  onSelect: (day: Date | undefined, selectedDay: Date, activeModifiers: ActiveModifiers, e: React.MouseEvent) => void
+  onSelect: (day: Date | undefined) => void
   disabled?: boolean
   placeholder?: string
 }
@@ -41,7 +40,6 @@ export function DateInput({ value, onSelect, disabled = false, placeholder }: Pr
           selected={value}
           onSelect={onSelect}
           disabled={(date) => date >= disabledFrom}
-          initialFocus
         />
       </PopoverContent>
     </Popover>

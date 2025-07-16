@@ -13,7 +13,7 @@ updates:
       - dependency-type: "all"
     ignore:
       - dependency-name: "react-day-picker"
-        versions: ["9.x", "10.x"]
+        versions: ["10.x"]
     commit-message:
       prefix: "npm"
       include: "scope"
