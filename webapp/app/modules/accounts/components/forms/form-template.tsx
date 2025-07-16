@@ -604,7 +604,7 @@ export function FormTemplate({
                   field.onChange(checked)
                 }}
               />
-              <Label htmlFor="has-form">Has incomplete an incomplete ledger</Label>
+              <Label>Has incomplete an incomplete ledger</Label>
               <InfoDialog copy={hasIncompleteLedgerManual} />
             </FormItem>
           )}
