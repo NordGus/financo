@@ -4,7 +4,7 @@
   "service": "devcontainer",
   "postStartCommand": {
     "node:install": "npm install -g npm@latest && npm install",
-    "go:install": "go mod download && go get tool && go install tool && make db-setup"
+    "go:install": "go mod download && go get tool && go install tool && go mod tidy && make db-setup"
   },
   "workspaceFolder": "/workspaces/financo",
   "shutdownAction": "stopCompose",
