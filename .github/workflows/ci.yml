@@ -29,17 +29,8 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
-      - name: Typecheck cmd/web
-        run: go vet ./cmd/web
-
-      - name: Typecheck cmd/database/create
-        run: go vet -tags development ./cmd/database/create
-
-      - name: Typecheck cmd/database/drop
-        run: go vet -tags development ./cmd/database/drop
-
-      - name: Typecheck cmd/database/seed
-        run: go vet -tags development ./cmd/database/seed
+      - name: Typecheck
+        run: go vet -tags development ./..
 
       - name: Go Build
         run: go build -o ./tmp/build/web -tags development ./cmd/web
