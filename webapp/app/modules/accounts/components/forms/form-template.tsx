@@ -49,18 +49,13 @@ import {
   isDebt,
   Kinds
 } from "~/modules/shared/types/account"
-import {
-  CURRENCIES,
-  Currency
-} from "~/modules/shared/types/currency"
-import {
-  Icon,
-  ICONS
-} from "~/modules/shared/types/icon"
+import type { Currency } from "~/modules/shared/types/currency"
+import type { Icon } from "~/modules/shared/types/icon"
 import { archivedAccountsManual } from "../../manual/archived-accounts-manual"
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual"
 import { mainAccountManual } from "../../manual/main-account-manual"
-import { schema as capitalAndSavingsSchema } from "../../schemas/capital-and-savings"
+import { DESCRIPTION_MAX_LENGTH, NAME_MAX_LENGTH } from "../../schemas/constants"
+import { schema } from "../../schemas/create-or-update"
 
 type Kind = Kinds["capital"] | Kinds["savings"] | Kinds["debt"] | Kinds["credit"]
 
@@ -84,49 +79,6 @@ const DEFAULT_NAMES: Record<Kind, string> = {
   debt: "New Debt",
   credit: "New Credit Line"
 }
-
-const debtSchema = z.object({
-  kind: z.literal("debt"),
-  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
-  color: z.string({ required_error: "required" })
-    .max(10, { message: "invalid" }),
-  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
-  name: z.string({ required_error: "required" })
-    .max(NAME_MAX_LENGTH, { message: "too long" })
-    .min(NAME_MIN_LENGTH, { message: "too short" }),
-  description: z.string()
-    .max(DESCRIPTION_MAX_LENGTH, { message: "too long" })
-    .nullish(),
-  capital: z.number({ required_error: "required" })
-    .refine((val) => val !== 0, { message: "required" }),
-  main: z.boolean({ required_error: "required" }),
-  hasHistory: z.boolean({ required_error: "required" }),
-  historyAt: z.date().nullish(),
-  historyBalance: z.number().nullish(),
-  intent: z.enum(["create", "update"])
-})
-
-const creditSchema = z.object({
-  kind: z.literal("credit"),
-  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
-  color: z.string({ required_error: "required" })
-    .max(10, { message: "invalid" }),
-  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
-  name: z.string({ required_error: "required" })
-    .max(NAME_MAX_LENGTH, { message: "too long" })
-    .min(NAME_MIN_LENGTH, { message: "too short" }),
-  description: z.string()
-    .max(DESCRIPTION_MAX_LENGTH, { message: "too long" })
-    .nullish(),
-  capital: z.number({ required_error: "required" }).positive({ message: "must be positive" }),
-  main: z.boolean({ required_error: "required" }),
-  hasHistory: z.boolean({ required_error: "required" }),
-  historyAt: z.date().nullish(),
-  historyBalance: z.number().nullish(),
-  intent: z.enum(["create", "update"])
-})
-
-const schema = z.union([capitalAndSavingsSchema, debtSchema, creditSchema])
 
 type Props = {
   kind: Kind
