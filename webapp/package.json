@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
-    "@radix-ui/react-separator": "^1.1.7",
     "@react-router/node": "^7.6.1",
     "@react-router/serve": "^7.6.1",
     "class-variance-authority": "^0.7.1",
