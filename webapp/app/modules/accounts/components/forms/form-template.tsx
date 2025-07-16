@@ -160,6 +160,7 @@ export function FormTemplate({
     historyAt?.toDateString(),
     historyBalance,
     role,
+    form.reset,
   ])
 
   useEffect(() => {
