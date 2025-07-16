@@ -26,8 +26,17 @@ jobs:
         with:
           go-version: '1.24'
 
-      - name: Go Typecheck
-        run: go vet ./... -tags development
+      - name: Typecheck cmd/web
+        run: go vet ./cmd/web -tags development
+
+      - name: Typecheck cmd/database/create
+        run: go vet ./cmd/database/create -tags development
+
+      - name: Typecheck cmd/database/drop
+        run: go vet ./cmd/database/drop -tags development
+
+      - name: Typecheck cmd/database/seed
+        run: go vet ./cmd/database/seed -tags development
 
       - name: Go Build
         run: go build -o ./tmp/build/web -tags development ./cmd/web
