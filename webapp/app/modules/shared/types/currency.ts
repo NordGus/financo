@@ -15,6 +15,23 @@ export const CURRENCIES = {
   GBP: "GBP",
 } as const;
 
+export const CurrenciesForZodEnum = [
+  CURRENCIES.CAD,
+  CURRENCIES.USD,
+  CURRENCIES.EUR,
+  CURRENCIES.CHF,
+  CURRENCIES.GBP,
+] as const
+
+export const SystemCurrenciesForZodEnum = [
+  SYSTEM_CURRENCIES.CAD,
+  SYSTEM_CURRENCIES.USD,
+  SYSTEM_CURRENCIES.EUR,
+  SYSTEM_CURRENCIES.CHF,
+  SYSTEM_CURRENCIES.GBP,
+  SYSTEM_CURRENCIES.MULTI,
+] as const
+
 type SystemCurrencies = typeof SYSTEM_CURRENCIES;
 
 type Currencies = typeof CURRENCIES;
