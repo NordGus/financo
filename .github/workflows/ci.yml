@@ -10,12 +10,27 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-
       - name: Install Dependencies
         run: npm install
-
       - name: Typecheck
         run: npm run -w webapp typecheck
-
       - name: Lint
         run: npm run -w webapp lint
+
+  server-code-health:
+    name: Code Health (Server)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Typecheck development code
+        run: go vet -tags development ./...
+
+      - name: Go Build
+        run: go build -o ./tmp/build/web -tags development ./cmd/web
