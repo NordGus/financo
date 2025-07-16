@@ -30,7 +30,7 @@ jobs:
         run: go mod download
 
       - name: Typecheck
-        run: go vet -tags development ./..
+        run: go vet -tags development ./...
 
       - name: Go Build
         run: go build -o ./tmp/build/web -tags development ./cmd/web
