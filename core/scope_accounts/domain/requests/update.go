@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"financo/core/domain/primitives/date"
 	"financo/lib/color"
 	"financo/lib/currency"
 	"financo/lib/icon"
@@ -13,7 +14,7 @@ import (
 // UpdateHistory is the DTO that handles the processes related to accounts with
 // an incomplete ledger history inside financo.
 type UpdateHistory struct {
-	At      nullable.Type[time.Time] `json:"at"`
+	At      nullable.Type[date.Type] `json:"at"`
 	Balance nullable.Type[int64]     `json:"balance"`
 }
 
@@ -60,7 +61,7 @@ func (req *Update) Record(r account.Record, timestamp time.Time) account.Record 
 	// When the request contains a valid At attribute it means that the account
 	// been created has an incomplete ledger.
 	if req.History.At.Valid {
-		r.DynamicData.History.At.Val = req.History.At.Val.UTC()
+		r.DynamicData.History.At = nullable.New(req.History.At.Val.ToTime().UTC())
 		r.DynamicData.History.Balance = nullable.New(req.History.Balance.OrElse(0))
 	} else {
 		r.DynamicData.History.At = nullable.Type[time.Time]{}
@@ -70,7 +71,7 @@ func (req *Update) Record(r account.Record, timestamp time.Time) account.Record 
 	return r
 }
 
-// Record maps [Update] into the given [account.Record] with [account.Kind] set
+// HistoryRecord maps [Update] into the given [account.Record] with [account.Kind] set
 // to [account.History] use by financo to update it.
 func (req *Update) HistoryRecord(r account.Record, timestamp time.Time) account.Record {
 	// Builds the basic record data
@@ -109,9 +110,14 @@ func (req *Update) HistoryTransaction(t transaction.Record, timestamp time.Time)
 	t.SourceAmount = req.History.Balance.OrElse(0)
 	t.TargetAmount = req.History.Balance.OrElse(0)
 	t.Currency = req.Currency
-	t.IssuedAt = req.History.At.Val.UTC()
-	t.ExecutedAt = req.History.At
+	t.IssuedAt = req.History.At.OrElse(date.Type(timestamp)).ToTime().UTC()
 	t.UpdatedAt = timestamp
+
+	if req.History.At.Valid {
+		t.ExecutedAt = nullable.New(req.History.At.Val.ToTime().UTC())
+	} else {
+		t.ExecutedAt = nullable.Type[time.Time]{}
+	}
 
 	// Set DeletedAt to null to reactivated
 	t.DeletedAt = nullable.Type[time.Time]{}
