@@ -23,11 +23,3 @@ export type Created = {
   color: string
   icon: Icon
 }
-
-export type CreateAction = (data: Create, success: () => void, failure: () => void) => Promise<void>
-export type OnSubmitCreateAction = (data: Create) => Promise<void>
-
-export type CreateChildAction =
-  (parentId: number, data: CreateChild, success: () => void, failure: () => void) => Promise<void>
-export type OnSubmitCreateChildAction =
-  (parentId: number, data: CreateChild) => Promise<void>
