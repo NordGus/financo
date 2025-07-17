@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { format } from "date-fns"
 import { AlertCircle, Package, PackageOpen, Save, Trash, X } from "lucide-react"
 import { ComponentProps, useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -59,6 +60,8 @@ import { schema } from "../../schemas/create-or-update"
 
 type Kind = Kinds["capital"] | Kinds["savings"] | Kinds["debt"] | Kinds["credit"]
 
+const DATE_FORMAT = "yyyy-MM-dd"
+
 const DEFAULT_ICONS: Record<Kind, Icon> = {
   capital: "landmark",
   savings: "piggy-bank",
@@ -116,7 +119,7 @@ export function FormTemplate({
 }: ComponentProps<"form"> & Props) {
   const fetcher = useFetcher()
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
       kind: kind,
@@ -136,6 +139,7 @@ export function FormTemplate({
 
   useEffect(() => {
     form.reset({
+      kind,
       currency,
       color: color ?? DEFAULT_COLORS[kind],
       icon: icon ?? DEFAULT_ICONS[kind],
@@ -147,7 +151,7 @@ export function FormTemplate({
       historyAt: historyAt,
       historyBalance: historyBalance,
       intent: role
-    })
+    } as z.infer<typeof schema>)
   }, [
     currency,
     color,
@@ -178,7 +182,7 @@ export function FormTemplate({
   const onSubmit = async (values: z.infer<typeof schema>) => {
     const promise = fetcher.submit({
       ...values,
-      historyAt: values.historyAt ? values.historyAt.toISOString() : null,
+      historyAt: values.historyAt ? format(values.historyAt, DATE_FORMAT) : null,
     }, { method: "post", encType: "application/json" })
 
     toast.promise(

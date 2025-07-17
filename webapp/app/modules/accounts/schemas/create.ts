@@ -2,7 +2,6 @@ import { z } from "zod";
 import { CurrenciesForZodEnum } from "~/modules/shared/types/currency";
 import { IconsForZodEnum } from "~/modules/shared/types/icon";
 import {
-  ActionsForZodEnum,
   DESCRIPTION_MAX_LENGTH,
   NAME_MAX_LENGTH,
   NAME_MIN_LENGTH
@@ -25,9 +24,9 @@ const capitalAndSavingsSchema = z.object({
     .max(0, { message: "must be zero" }),
   main: z.boolean({ error: "required" }),
   hasHistory: z.boolean({ error: "required" }),
-  historyAt: z.date().nullish(),
+  historyAt: z.iso.date({ error: "invalid" }).nullish(),
   historyBalance: z.number().nullish(),
-  intent: z.enum(ActionsForZodEnum, { error: "invalid action" })
+  intent: z.literal("create", { error: "invalid action" })
 })
 
 const debtSchema = z.object({
@@ -46,9 +45,9 @@ const debtSchema = z.object({
     .refine((val) => val !== 0, { error: "can't be zero" }),
   main: z.boolean({ error: "required" }),
   hasHistory: z.boolean({ error: "required" }),
-  historyAt: z.date().nullish(),
+  historyAt: z.iso.date({ error: "invalid" }).nullish(),
   historyBalance: z.number().nullish(),
-  intent: z.enum(ActionsForZodEnum, { error: "invalid action" })
+  intent: z.literal("create", { error: "invalid action" })
 })
 
 const creditSchema = z.object({
@@ -67,12 +66,13 @@ const creditSchema = z.object({
     .gt(0, { error: "must be greater than zero" }),
   main: z.boolean({ error: "required" }),
   hasHistory: z.boolean({ error: "required" }),
-  historyAt: z.date().nullish(),
+  historyAt: z.iso.date({ error: "invalid" }).nullish(),
   historyBalance: z.number().nullish(),
-  intent: z.enum(ActionsForZodEnum, { error: "invalid action" })
+  intent: z.literal("create", { error: "invalid action" })
 })
 
 export const schema = z.discriminatedUnion(
   "kind",
   [capitalAndSavingsSchema, debtSchema, creditSchema]
 )
+

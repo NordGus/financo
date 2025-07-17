@@ -1,35 +1,18 @@
 import { CreditCard, HandCoins, Landmark, PiggyBank } from "lucide-react";
 import { use } from "react";
 import { createSearchParams, Link, redirect, useLocation } from "react-router";
-import { z } from "zod";
 import { create as createAccountCommand } from "~/modules/accounts/api/commands/create";
 import { FormTemplate } from "~/modules/accounts/components/forms/form-template";
 import { ListFiltersContext } from "~/modules/accounts/contexts/list-filters-context";
 import { accountKindsManual } from "~/modules/accounts/manual/account-kinds-manual";
+import { schema } from "~/modules/accounts/schemas/create";
 import { listFiltersToURLSearchParams } from "~/modules/accounts/types/filters";
 import { Heading2 } from "~/modules/shared/components/ui/headings";
 import { CurrenciesContext } from "~/modules/shared/contexts/currencies-context";
-import { CURRENCIES } from "~/modules/shared/types/currency";
-import { ICONS } from "~/modules/shared/types/icon";
 import { Route } from "./+types/new";
 
-const createActionSchema = z.object({
-  kind: z.enum(["capital", "savings", "debt", "credit"]),
-  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
-  color: z.string({ required_error: "required" }),
-  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
-  name: z.string({ required_error: "required" }),
-  description: z.string().nullish(),
-  capital: z.number({ required_error: "required" }),
-  main: z.boolean({ required_error: "required" }),
-  hasHistory: z.boolean({ required_error: "required" }),
-  historyAt: z.string().date().nullish(),
-  historyBalance: z.number().nullish(),
-  intent: z.literal("create")
-})
-
 export async function clientAction({ request }: Route.ClientActionArgs) {
-  const action = createActionSchema.safeParse(await request.json())
+  const action = schema.safeParse(await request.json())
 
   if (!action.success) throw action.error
 

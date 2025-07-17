@@ -6,36 +6,11 @@ import { unarchive as unarchiveAccountCommand } from "~/modules/accounts/api/com
 import { update as updateAccountCommand } from "~/modules/accounts/api/commands/update";
 import { get as getAccountQuery } from "~/modules/accounts/api/queries/get";
 import { FormTemplate } from "~/modules/accounts/components/forms/form-template";
-import { CURRENCIES } from "~/modules/shared/types/currency";
-import { ICONS } from "~/modules/shared/types/icon";
+import { schema as archiveActionSchema } from "~/modules/accounts/schemas/archive";
+import { schema as destroyActionSchema } from "~/modules/accounts/schemas/destroy";
+import { schema as unarchiveActionSchema } from "~/modules/accounts/schemas/unarchive";
+import { schema as updateActionSchema } from "~/modules/accounts/schemas/update";
 import { Route } from "./+types/edit";
-
-const updateActionSchema = z.object({
-  kind: z.enum(["capital", "savings", "debt", "credit"]),
-  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
-  color: z.string({ required_error: "required" }),
-  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
-  name: z.string({ required_error: "required" }),
-  description: z.string().nullish(),
-  capital: z.number({ required_error: "required" }),
-  main: z.boolean({ required_error: "required" }),
-  hasHistory: z.boolean({ required_error: "required" }),
-  historyAt: z.string().datetime().nullish(),
-  historyBalance: z.number().nullish(),
-  intent: z.literal("update")
-})
-
-const destroyActionSchema = z.object({
-  intent: z.literal("destroy")
-})
-
-const archiveActionSchema = z.object({
-  intent: z.literal("archive")
-})
-
-const unarchiveActionSchema = z.object({
-  intent: z.literal("unarchive")
-})
 
 const actionsSchema = z.union([
   updateActionSchema,
