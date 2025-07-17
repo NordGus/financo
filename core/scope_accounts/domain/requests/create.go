@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"financo/core/domain/primitives/date"
 	"financo/lib/color"
 	"financo/lib/currency"
 	"financo/lib/icon"
@@ -13,7 +14,7 @@ import (
 // History is the DTO that handles the processes related to accounts with an
 // incomplete ledger history inside financo.
 type History struct {
-	At      nullable.Type[time.Time] `json:"at"`
+	At      nullable.Type[date.Type] `json:"at"`
 	Balance nullable.Type[int64]     `json:"balance"`
 }
 
@@ -48,7 +49,6 @@ func (req *Create) Record(timestamp time.Time) account.Record {
 		DynamicData: account.DynamicData{
 			Balance: req.History.Balance.OrElse(0),
 			History: account.HistoryDynamicData{
-				At:      req.History.At,
 				Balance: req.History.Balance,
 			},
 		},
@@ -73,7 +73,7 @@ func (req *Create) Record(timestamp time.Time) account.Record {
 	// been created has an incomplete ledger.
 	if req.History.At.Valid {
 		record.DynamicData.Transactions = 1
-		record.DynamicData.History.At.Val = req.History.At.Val.UTC()
+		record.DynamicData.History.At = nullable.New(req.History.At.Val.ToTime().UTC())
 	} else {
 		record.DynamicData.History.Balance = nullable.Type[int64]{}
 	}
@@ -126,8 +126,7 @@ func (req *Create) HistoryTransaction(timestamp time.Time) transaction.Record {
 		TargetAmount: req.History.Balance.OrElse(0),
 		Notes:        nullable.New("This Transaction was created by the system to represent the starting point for the incomplete ledger for the Account. DO NOT MODIFY NOR DELETE"),
 		Currency:     req.Currency,
-		IssuedAt:     req.History.At.OrElse(timestamp).UTC(),
-		ExecutedAt:   req.History.At,
+		IssuedAt:     req.History.At.OrElse(date.Type(timestamp)).ToTime().UTC(),
 		Metadata: transaction.Metadata{
 			Kind: transaction.Transfer,
 		},
@@ -138,7 +137,7 @@ func (req *Create) HistoryTransaction(timestamp time.Time) transaction.Record {
 	// Sets the ExecutedAt value for the transaction if the request History At
 	// attribute contains a valid value.
 	if req.History.At.Valid {
-		record.ExecutedAt.Val = record.ExecutedAt.Val.UTC()
+		record.ExecutedAt = nullable.New(req.History.At.Val.ToTime().UTC())
 	}
 
 	// Sets the DeletedAt value for the transaction if the request History At

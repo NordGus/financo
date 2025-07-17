@@ -33,11 +33,6 @@ func (t *Type) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// UnmarshalJSON receives a buffer b, and ensures that the provided value is a
-// valid [Type]. So [Type] satisfies the [json.Unmarshaler] interface.
-//
-// It returns an error if the buffer can't be unmarshal into an string or the
-// provided value is not a supported [Type].
 func (t Type) MarshalJSON() ([]byte, error) {
 	s, err := iconToString(t)
 	if err != nil {
