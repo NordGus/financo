@@ -12,6 +12,10 @@ import (
 // serialization.
 type Type time.Time
 
+func New(t time.Time) Type {
+	return Type(t)
+}
+
 func (t *Type) UnmarshalJSON(b []byte) error {
 	var s string
 

@@ -1,6 +1,7 @@
 package accounts
 
 import (
+	"financo/core/domain/primitives/date"
 	"financo/core/scope_accounts/domain/requests"
 	"financo/lib/currency"
 	"financo/lib/icon"
@@ -27,7 +28,7 @@ var (
 				Color:       "#eb8934",
 				Icon:        icon.Landmark,
 				History: requests.History{
-					At:      nullable.New(time.Now().UTC().AddDate(0, -1, 0)),
+					At:      nullable.New(date.New(time.Now().UTC().AddDate(0, -1, 0))),
 					Balance: nullable.New[int64](1_337_42),
 				},
 				Main: true,
@@ -60,7 +61,7 @@ var (
 				Color:       "#eb8934",
 				Icon:        icon.PiggyBank,
 				History: requests.History{
-					At:      nullable.New(time.Now().UTC().AddDate(0, -6, 0)),
+					At:      nullable.New(date.New(time.Now().UTC().AddDate(0, -6, 0))),
 					Balance: nullable.New[int64](420_69),
 				},
 				Main: false,
@@ -77,7 +78,7 @@ var (
 				Color:    "#eb8934",
 				Icon:     icon.PiggyBank,
 				History: requests.History{
-					At:      nullable.New(time.Now().UTC().AddDate(0, -3, 0)),
+					At:      nullable.New(date.New(time.Now().UTC().AddDate(0, -3, 0))),
 					Balance: nullable.New[int64](343_00),
 				},
 				Main: false,
@@ -95,7 +96,7 @@ var (
 				Color:       "#eb8934",
 				Icon:        icon.CarFront,
 				History: requests.History{
-					At:      nullable.New(time.Now().UTC().AddDate(-1, 0, 0)),
+					At:      nullable.New(date.New(time.Now().UTC().AddDate(-1, 0, 0))),
 					Balance: nullable.New[int64](3_000_00),
 				},
 				Main: false,
@@ -113,7 +114,7 @@ var (
 				Color:       "#34baeb",
 				Icon:        icon.House,
 				History: requests.History{
-					At:      nullable.New(time.Now().UTC().AddDate(0, -1, 0)),
+					At:      nullable.New(date.New(time.Now().UTC().AddDate(0, -1, 0))),
 					Balance: nullable.New[int64](-300_00),
 				},
 				Main: false,
@@ -146,7 +147,7 @@ var (
 				Color:       "#eb8934",
 				Icon:        icon.CreditCard,
 				History: requests.History{
-					At:      nullable.New(time.Now().UTC().AddDate(0, -3, 0)),
+					At:      nullable.New(date.New(time.Now().UTC().AddDate(0, -3, 0))),
 					Balance: nullable.New[int64](800_00),
 				},
 				Main: false,
@@ -163,7 +164,7 @@ var (
 				Color:    "#34baeb",
 				Icon:     icon.Laptop,
 				History: requests.History{
-					At:      nullable.New(time.Now().UTC().AddDate(0, -8, 0)),
+					At:      nullable.New(date.New(time.Now().UTC().AddDate(0, -8, 0))),
 					Balance: nullable.New[int64](1_337_42),
 				},
 				Main: false,

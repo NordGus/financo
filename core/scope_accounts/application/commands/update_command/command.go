@@ -3,6 +3,7 @@ package update_command
 import (
 	"context"
 	"financo/core/domain/commands"
+	"financo/core/domain/primitives/date"
 	"financo/core/scope_accounts/domain/brokers"
 	"financo/core/scope_accounts/domain/messages"
 	"financo/core/scope_accounts/domain/repositories"
@@ -80,10 +81,10 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	// not have an incomplete ledger. By doing this the debt is filled with
 	// capital for the user to transfer to the expected account.
 	if (account.IsCredit(current.Record.Kind) || account.IsDebt(current.Record.Kind)) && !c.req.History.At.Valid {
-		c.req.History.At = nullable.New(current.Record.CreatedAt)
+		c.req.History.At = nullable.New(date.New(current.Record.CreatedAt))
 		c.req.History.Balance = nullable.New(current.Record.Capital * -1)
 
-		current.Record.DynamicData.History.At = c.req.History.At
+		current.Record.DynamicData.History.At = nullable.New(c.req.History.At.Val.ToTime())
 		current.Record.DynamicData.History.Balance = c.req.History.Balance
 
 		current.History.DynamicData.Balance = current.Record.Capital
@@ -92,8 +93,8 @@ func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 		current.Transaction.DeletedAt = nullable.Type[time.Time]{}
 		current.Transaction.SourceAmount = c.req.History.Balance.Val
 		current.Transaction.TargetAmount = c.req.History.Balance.Val
-		current.Transaction.IssuedAt = c.req.History.At.Val
-		current.Transaction.ExecutedAt = c.req.History.At
+		current.Transaction.IssuedAt = c.req.History.At.Val.ToTime()
+		current.Transaction.ExecutedAt = nullable.New(c.req.History.At.Val.ToTime())
 	}
 
 	// Add the current history balance from the request
