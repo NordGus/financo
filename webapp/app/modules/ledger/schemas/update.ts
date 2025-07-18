@@ -19,5 +19,5 @@ export const schema = z.object({
     .nullish(),
   currency: z.enum(CurrenciesForZodEnum, { error: "invalid option" }),
   kind: z.enum(KindsForZodEnum, { error: "invalid option" }),
-  intent: z.literal("create")
+  intent: z.literal("update")
 })

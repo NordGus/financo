@@ -4,14 +4,16 @@ import {
   useLocation,
   useNavigation
 } from "react-router";
+import z from "zod";
 import { cn } from "~/lib/utils";
 import { destroy as destroyTransaction } from "~/modules/ledger/api/commands/destroy";
 import { update as updateTransaction } from "~/modules/ledger/api/commands/update";
 import { get as getTransactionQuery } from "~/modules/ledger/api/queries/transactions/get";
 import { FormTemplate } from "~/modules/ledger/components/form-template";
-import { Kind, TransactionRecord } from "~/modules/ledger/types/transactions";
+import { schema as destroyActionSchema } from "~/modules/ledger/schemas/destroy";
+import { schema as updateActionSchema } from "~/modules/ledger/schemas/update";
+import { TransactionRecord } from "~/modules/ledger/types/transactions";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
-import { Currency } from "~/modules/shared/types/currency";
 import { Route } from "./+types/edit";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
@@ -34,47 +36,37 @@ export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   }
 }
 
-type OperateOnTransaction = {
-  sourceId: number
-  targetId: number
-  sourceAmount: number
-  targetAmount: number
-  issuedAt: string
-  executedAt: string | null
-  notes: string | null
-  currency: Currency
-  kind: Kind
-  intent: "create" | "update" | "destroy"
-}
+const operateOnTransactionSchema = z.discriminatedUnion(
+  "intent",
+  [updateActionSchema, destroyActionSchema]
+)
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const id = Number(params.id)
-  const data = await request.json() as OperateOnTransaction
+  const action = operateOnTransactionSchema.safeParse(await request.json())
   const searchParams = new URL(request.url).searchParams
 
-  const { sourceId, targetId, sourceAmount, targetAmount, issuedAt, executedAt, notes, currency, kind } = data
+  if (!action.success) throw action.error
 
-  switch (data.intent) {
+  switch (action.data.intent) {
     case "destroy":
       await destroyTransaction(id)
 
       return redirect(`/ledger?${createSearchParams(searchParams)}`)
     case "update":
       await updateTransaction(id, {
-        sourceId,
-        targetId,
-        sourceAmount,
-        targetAmount,
-        issuedAt,
-        executedAt,
-        notes,
-        currency,
-        kind
+        sourceId: action.data.sourceId,
+        targetId: action.data.targetId,
+        sourceAmount: action.data.sourceAmount,
+        targetAmount: action.data.targetAmount,
+        issuedAt: action.data.issuedAt,
+        executedAt: action.data.executedAt,
+        notes: action.data.notes,
+        currency: action.data.currency,
+        kind: action.data.kind
       })
 
       return redirect(`/ledger/${id}?${createSearchParams(searchParams)}`)
-    default:
-      throw new Error("Invalid intent", { cause: `invalid intent '${data.intent}' expected: update or destroy` })
   }
 }
 

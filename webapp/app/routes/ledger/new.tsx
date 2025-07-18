@@ -11,6 +11,7 @@ import { FormTemplate } from "~/modules/ledger/components/form-template";
 import { TransactionSourcePicker } from "~/modules/ledger/components/transaction-source-picker";
 import { TransactionTargetPicker } from "~/modules/ledger/components/transaction-target-picker";
 import { AccountsContext } from "~/modules/ledger/contexts/accounts-context";
+import { schema as createActionSchema } from "~/modules/ledger/schemas/create";
 import { Kind } from "~/modules/ledger/types/transactions";
 import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import {
@@ -25,27 +26,13 @@ import { Route } from "./+types/new";
 
 export function clientLoader({ }: Route.ClientLoaderArgs) { }
 
-type CreateTransaction = {
-  sourceId: number
-  targetId: number
-  sourceAmount: number
-  targetAmount: number
-  issuedAt: string
-  executedAt: string | null
-  notes: string | null
-  currency: Currency
-  kind: Kind
-  intent: "create" | "update" | "destroy"
-}
-
 export async function clientAction({ request }: Route.ClientActionArgs) {
-  const data = await request.json() as CreateTransaction
+  const action = createActionSchema.safeParse(await request.json())
   const searchParams = new URL(request.url).searchParams
 
-  if (data.intent !== "create")
-    throw new Error("Invalid intent", { cause: `invalid intent '${data.intent}' expected: create` })
+  if (!action.success) throw action.error
 
-  const { sourceId, targetId, sourceAmount, targetAmount, issuedAt, executedAt, notes, currency, kind } = data
+  const { sourceId, targetId, sourceAmount, targetAmount, issuedAt, executedAt, notes, currency, kind } = action.data
 
   const response = await createTransaction({
     sourceId,

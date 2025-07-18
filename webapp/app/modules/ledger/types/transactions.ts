@@ -21,6 +21,12 @@ export const KINDS = {
   transfer: "transfer"
 } as const
 
+export const KindsForZodEnum = [
+  KINDS.expense,
+  KINDS.income,
+  KINDS.transfer,
+] as const
+
 export type Kinds = typeof KINDS
 
 export type Kind =

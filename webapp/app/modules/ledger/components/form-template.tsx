@@ -32,43 +32,15 @@ import { Label } from "~/modules/shared/components/ui/label";
 import { Switch } from "~/modules/shared/components/ui/switch";
 import { Textarea } from "~/modules/shared/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip";
-import { CURRENCIES, Currency } from "~/modules/shared/types/currency";
+import { Currency } from "~/modules/shared/types/currency";
 import { AccountsContext } from "../contexts/accounts-context";
+import { NOTES_MAX_LENGTH } from "../schemas/constants";
+import { schema } from "../schemas/create-or-update";
 import { Account } from "../types/accounts";
-import { DATE_FORMAT, Kind, KINDS, TransactionRecord } from "../types/transactions";
+import { DATE_FORMAT, Kind, TransactionRecord } from "../types/transactions";
 import { AmountInput } from "./form/amount-input";
 import { ExecutedAt, IssuedAt } from "./form/transaction-date-selectors";
 import { TransactionSource, TransactionTarget } from "./form/transaction-source-target";
-
-const NOTES_MAX_LENGTH = 1000
-
-const schema = z.object({
-  sourceId: z.number({
-    required_error: "Source account is required",
-  }).positive(),
-  targetId: z.number({
-    required_error: "Target account is required",
-  }).positive(),
-  sourceAmount: z.number({
-    required_error: "Amount is required",
-  }).refine(val => val !== 0, {
-    message: "Amount must be greater than 0",
-  }),
-  targetAmount: z.number({
-    required_error: "Amount is required",
-  }).refine(val => val !== 0, {
-    message: "Amount must be greater than 0",
-  }),
-  issuedAt: z.date({
-    required_error: "Issued date is required",
-  }),
-  executedAt: z.date().nullish(),
-  notes: z.string().max(NOTES_MAX_LENGTH, {
-    message: "Notes is too long"
-  }).nullish(),
-  currency: z.nativeEnum(CURRENCIES),
-  kind: z.nativeEnum(KINDS)
-})
 
 function capitalizeKind(kind: Kind): string {
   return `${kind.at(0)!.toLocaleUpperCase()}${kind.slice(1)}`
@@ -94,7 +66,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   // NOTE: Fetchers allow action redirects to happen.
   const fetcher = useFetcher()
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
       sourceId: transaction.sourceId,
@@ -106,6 +78,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       notes: transaction.notes,
       currency: transaction.currency,
       kind: transaction.kind,
+      intent: role,
     }
   })
 
@@ -129,28 +102,25 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   const currency = form.watch("currency", transaction.currency)
 
   useEffect(() => {
-    form.setValue("sourceId", transaction.sourceId)
-    form.setValue("targetId", transaction.targetId)
-    form.setValue("sourceAmount", transaction.sourceAmount)
-    form.setValue("targetAmount", transaction.targetAmount)
-    form.setValue("issuedAt", transaction.issuedAt)
-    form.setValue("executedAt", transaction.executedAt)
-    form.setValue("currency", transaction.currency)
-    form.setValue("kind", transaction.kind)
-    form.setValue("notes", transaction.notes ?? "")
+    const source = accounts.get(transaction.sourceId)!
+    const target = accounts.get(transaction.targetId)!
+
+    form.reset({
+      sourceId: transaction.sourceId,
+      targetId: transaction.targetId,
+      sourceAmount: transaction.sourceAmount,
+      targetAmount: transaction.targetAmount,
+      issuedAt: transaction.issuedAt,
+      executedAt: transaction.executedAt,
+      currency: transaction.currency,
+      kind: transaction.kind,
+      notes: transaction.notes ?? "",
+      intent: role,
+    } as z.infer<typeof schema>)
 
     setIsPendingTransaction(!transaction.executedAt)
-
-    setWithConversionRate(isWithConversionRate(
-      accounts.get(transaction.sourceId)!,
-      accounts.get(transaction.targetId)!,
-      transaction.currency
-    ))
-
-    setIsHistoryTransaction(
-      accounts.get(transaction.sourceId)!.kind === "history" ||
-      accounts.get(transaction.targetId)!.kind === "history"
-    )
+    setWithConversionRate(isWithConversionRate(source, target, transaction.currency))
+    setIsHistoryTransaction(source.kind === "history" || target.kind === "history")
   }, [
     transaction.sourceId,
     transaction.targetId,
@@ -160,7 +130,8 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
     transaction.executedAt?.toDateString(),
     transaction.currency,
     transaction.kind,
-    transaction.notes
+    transaction.notes,
+    form.reset,
   ])
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
@@ -177,7 +148,6 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       issuedAt: format(values.issuedAt, DATE_FORMAT),
       executedAt: values.executedAt ? format(values.executedAt, DATE_FORMAT) : null,
       notes: values.notes ?? null,
-      intent: role
     }, { method: "post", encType: "application/json" })
 
     toast.promise(
@@ -202,13 +172,10 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
       return
     }
 
-    const promise = fetcher.submit({
-      ...transaction,
-      issuedAt: format(transaction.issuedAt, DATE_FORMAT),
-      executedAt: transaction.executedAt ? format(transaction.executedAt, DATE_FORMAT) : null,
-      notes: transaction.notes ?? null,
-      intent: "destroy"
-    }, { method: "post", encType: "application/json" })
+    const promise = fetcher.submit(
+      { intent: "destroy" },
+      { method: "post", encType: "application/json" }
+    )
 
     toast.promise(
       promise,

@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import { format } from "date-fns"
 import { AlertCircle, Package, PackageOpen, Save, Trash, X } from "lucide-react"
 import { ComponentProps, useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -49,23 +50,17 @@ import {
   isDebt,
   Kinds
 } from "~/modules/shared/types/account"
-import {
-  CURRENCIES,
-  Currency
-} from "~/modules/shared/types/currency"
-import {
-  Icon,
-  ICONS
-} from "~/modules/shared/types/icon"
+import type { Currency } from "~/modules/shared/types/currency"
+import type { Icon } from "~/modules/shared/types/icon"
 import { archivedAccountsManual } from "../../manual/archived-accounts-manual"
 import { hasIncompleteLedgerManual } from "../../manual/has-incomplete-ledger-manual"
 import { mainAccountManual } from "../../manual/main-account-manual"
+import { DESCRIPTION_MAX_LENGTH, NAME_MAX_LENGTH } from "../../schemas/constants"
+import { schema } from "../../schemas/create-or-update"
 
 type Kind = Kinds["capital"] | Kinds["savings"] | Kinds["debt"] | Kinds["credit"]
 
-const NAME_MIN_LENGTH = 3
-const NAME_MAX_LENGTH = 250
-const DESCRIPTION_MAX_LENGTH = 1000
+const DATE_FORMAT = "yyyy-MM-dd"
 
 const DEFAULT_ICONS: Record<Kind, Icon> = {
   capital: "landmark",
@@ -87,71 +82,6 @@ const DEFAULT_NAMES: Record<Kind, string> = {
   debt: "New Debt",
   credit: "New Credit Line"
 }
-
-const capitalAndSavingsSchema = z.object({
-  kind: z.union([z.literal("capital"), z.literal("savings")]),
-  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
-  color: z.string({ required_error: "required" })
-    .max(10, { message: "invalid" }),
-  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
-  name: z.string({ required_error: "required" })
-    .max(NAME_MAX_LENGTH, { message: "too long" })
-    .min(NAME_MIN_LENGTH, { message: "too short" }),
-  description: z.string()
-    .max(DESCRIPTION_MAX_LENGTH, { message: "too long" })
-    .nullish(),
-  capital: z.number({ required_error: "required" })
-    .min(0, { message: "must be zero" })
-    .max(0, { message: "must be zero" }),
-  main: z.boolean({ required_error: "required" }),
-  hasHistory: z.boolean({ required_error: "required" }),
-  historyAt: z.date().nullish(),
-  historyBalance: z.number().nullish(),
-  intent: z.enum(["create", "update"])
-})
-
-const debtSchema = z.object({
-  kind: z.literal("debt"),
-  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
-  color: z.string({ required_error: "required" })
-    .max(10, { message: "invalid" }),
-  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
-  name: z.string({ required_error: "required" })
-    .max(NAME_MAX_LENGTH, { message: "too long" })
-    .min(NAME_MIN_LENGTH, { message: "too short" }),
-  description: z.string()
-    .max(DESCRIPTION_MAX_LENGTH, { message: "too long" })
-    .nullish(),
-  capital: z.number({ required_error: "required" })
-    .refine((val) => val !== 0, { message: "required" }),
-  main: z.boolean({ required_error: "required" }),
-  hasHistory: z.boolean({ required_error: "required" }),
-  historyAt: z.date().nullish(),
-  historyBalance: z.number().nullish(),
-  intent: z.enum(["create", "update"])
-})
-
-const creditSchema = z.object({
-  kind: z.literal("credit"),
-  currency: z.nativeEnum(CURRENCIES, { required_error: "required", message: "invalid option" }),
-  color: z.string({ required_error: "required" })
-    .max(10, { message: "invalid" }),
-  icon: z.nativeEnum(ICONS, { required_error: "required", message: "invalid option" }),
-  name: z.string({ required_error: "required" })
-    .max(NAME_MAX_LENGTH, { message: "too long" })
-    .min(NAME_MIN_LENGTH, { message: "too short" }),
-  description: z.string()
-    .max(DESCRIPTION_MAX_LENGTH, { message: "too long" })
-    .nullish(),
-  capital: z.number({ required_error: "required" }).positive({ message: "must be positive" }),
-  main: z.boolean({ required_error: "required" }),
-  hasHistory: z.boolean({ required_error: "required" }),
-  historyAt: z.date().nullish(),
-  historyBalance: z.number().nullish(),
-  intent: z.enum(["create", "update"])
-})
-
-const schema = z.union([capitalAndSavingsSchema, debtSchema, creditSchema])
 
 type Props = {
   kind: Kind
@@ -189,7 +119,7 @@ export function FormTemplate({
 }: ComponentProps<"form"> & Props) {
   const fetcher = useFetcher()
 
-  const form = useForm({
+  const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
       kind: kind,
@@ -208,17 +138,20 @@ export function FormTemplate({
   })
 
   useEffect(() => {
-    if (currency) form.setValue("currency", currency)
-    form.setValue("color", color ?? DEFAULT_COLORS[kind])
-    form.setValue("icon", icon ?? DEFAULT_ICONS[kind])
-    form.setValue("name", name ?? DEFAULT_NAMES[kind])
-    form.setValue("description", description)
-    form.setValue("capital", capital ?? 0)
-    form.setValue("main", main ?? false)
-    form.setValue("hasHistory", !!hasHistory)
-    form.setValue("historyAt", historyAt)
-    form.setValue("historyBalance", historyBalance)
-    form.setValue("intent", role)
+    form.reset({
+      kind,
+      currency,
+      color: color ?? DEFAULT_COLORS[kind],
+      icon: icon ?? DEFAULT_ICONS[kind],
+      name: name ?? DEFAULT_NAMES[kind],
+      description: description,
+      capital: capital ?? 0,
+      main: main ?? false,
+      hasHistory: !!hasHistory,
+      historyAt: historyAt,
+      historyBalance: historyBalance,
+      intent: role
+    } as z.infer<typeof schema>)
   }, [
     currency,
     color,
@@ -231,6 +164,7 @@ export function FormTemplate({
     historyAt?.toDateString(),
     historyBalance,
     role,
+    form.reset,
   ])
 
   useEffect(() => {
@@ -248,7 +182,7 @@ export function FormTemplate({
   const onSubmit = async (values: z.infer<typeof schema>) => {
     const promise = fetcher.submit({
       ...values,
-      historyAt: values.historyAt ? values.historyAt.toISOString() : null,
+      historyAt: values.historyAt ? format(values.historyAt, DATE_FORMAT) : null,
     }, { method: "post", encType: "application/json" })
 
     toast.promise(
