@@ -37,7 +37,7 @@ import { AccountsContext } from "../contexts/accounts-context";
 import { NOTES_MAX_LENGTH } from "../schemas/constants";
 import { schema } from "../schemas/create-or-update";
 import { Account } from "../types/accounts";
-import { DATE_FORMAT, Kind, TransactionRecord } from "../types/transactions";
+import { DATE_FORMAT, Kind } from "../types/transactions";
 import { AmountInput } from "./form/amount-input";
 import { ExecutedAt, IssuedAt } from "./form/transaction-date-selectors";
 import { TransactionSource, TransactionTarget } from "./form/transaction-source-target";
@@ -56,11 +56,32 @@ function isWithConversionRate(source: Account, target: Account, transactionCurre
 }
 
 type Props = {
-  transaction: TransactionRecord
+  sourceId: number
+  targetId: number
+  sourceAmount: number
+  targetAmount: number
+  issuedAt: Date
+  executedAt: Date | null | undefined
+  notes: string | null | undefined,
+  currency: Currency,
+  kind: Kind
   role: "create" | "update"
 }
 
-export function FormTemplate({ transaction, className, role, ...props }: ComponentProps<"form"> & Props) {
+export function FormTemplate({
+  sourceId,
+  targetId,
+  sourceAmount,
+  targetAmount,
+  issuedAt,
+  executedAt,
+  notes,
+  currency,
+  kind,
+  className,
+  role,
+  ...props
+}: ComponentProps<"form"> & Props) {
   const { accountsMap: accounts } = use(AccountsContext)
 
   // NOTE: Fetchers allow action redirects to happen.
@@ -69,68 +90,71 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      sourceId: transaction.sourceId,
-      targetId: transaction.targetId,
-      sourceAmount: transaction.sourceAmount,
-      targetAmount: transaction.targetAmount,
-      issuedAt: transaction.issuedAt,
-      executedAt: transaction.executedAt,
-      notes: transaction.notes,
-      currency: transaction.currency,
-      kind: transaction.kind,
+      sourceId,
+      targetId,
+      sourceAmount,
+      targetAmount,
+      issuedAt,
+      executedAt,
+      notes,
+      currency,
+      kind,
       intent: role,
     }
   })
 
-  const [isPendingTransaction, setIsPendingTransaction] = useState(!transaction.executedAt)
+  const [isPendingTransaction, setIsPendingTransaction] = useState(!executedAt)
 
   const [isHistoryTransaction, setIsHistoryTransaction] = useState(
-    accounts.get(transaction.sourceId)!.kind === "history" ||
-    accounts.get(transaction.targetId)!.kind === "history"
+    accounts.get(sourceId)!.kind === "history" ||
+    accounts.get(targetId)!.kind === "history"
   )
 
-  const [withConversionRate, setWithConversionRate] = useState<boolean>(isWithConversionRate(
-    accounts.get(transaction.sourceId)!,
-    accounts.get(transaction.targetId)!,
-    transaction.currency
-  ))
+  const [withConversionRate, setWithConversionRate] = useState<boolean>(
+    isWithConversionRate(
+      accounts.get(sourceId)!,
+      accounts.get(targetId)!,
+      currency
+    )
+  )
 
-  const sourceId = form.watch("sourceId", transaction.sourceId)
-  const targetId = form.watch("targetId", transaction.targetId)
-  const issuedAt = form.watch("issuedAt", transaction.issuedAt)
-  const kind = form.watch("kind", transaction.kind)
-  const currency = form.watch("currency", transaction.currency)
+  const formSourceId = form.watch("sourceId", sourceId)
+  const formTargetId = form.watch("targetId", targetId)
+  const formIssuedAt = form.watch("issuedAt", issuedAt)
+  const formKind = form.watch("kind", kind)
+  const formCurrency = form.watch("currency", currency)
 
   useEffect(() => {
-    const source = accounts.get(transaction.sourceId)!
-    const target = accounts.get(transaction.targetId)!
+    const source = accounts.get(sourceId)!
+    const target = accounts.get(targetId)!
 
     form.reset({
-      sourceId: transaction.sourceId,
-      targetId: transaction.targetId,
-      sourceAmount: transaction.sourceAmount,
-      targetAmount: transaction.targetAmount,
-      issuedAt: transaction.issuedAt,
-      executedAt: transaction.executedAt,
-      currency: transaction.currency,
-      kind: transaction.kind,
-      notes: transaction.notes ?? "",
+      sourceId,
+      targetId,
+      sourceAmount,
+      targetAmount,
+      issuedAt,
+      executedAt,
+      currency,
+      kind,
+      notes: notes ?? "",
       intent: role,
     } as z.infer<typeof schema>)
 
-    setIsPendingTransaction(!transaction.executedAt)
-    setWithConversionRate(isWithConversionRate(source, target, transaction.currency))
+    setIsPendingTransaction(!executedAt)
+    setWithConversionRate(isWithConversionRate(source, target, currency))
     setIsHistoryTransaction(source.kind === "history" || target.kind === "history")
   }, [
-    transaction.sourceId,
-    transaction.targetId,
-    transaction.sourceAmount,
-    transaction.targetAmount,
-    transaction.issuedAt.toDateString(),
-    transaction.executedAt?.toDateString(),
-    transaction.currency,
-    transaction.kind,
-    transaction.notes,
+    sourceId,
+    targetId,
+    sourceAmount,
+    targetAmount,
+    issuedAt.toDateString(),
+    executedAt?.toDateString(),
+    currency,
+    kind,
+    notes,
+    role,
     form.reset,
   ])
 
@@ -420,8 +444,8 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     field.onChange(id)
                   }}
                   disabled={isHistoryTransaction}
-                  kind={kind}
-                  targetId={targetId}
+                  kind={formKind}
+                  targetId={formTargetId}
                 />
                 <FormMessage />
               </FormItem>
@@ -515,8 +539,8 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                     field.onChange(source.id)
                   }}
                   disabled={isHistoryTransaction}
-                  kind={kind}
-                  targetId={sourceId}
+                  kind={formKind}
+                  targetId={formSourceId}
                 />
                 <FormMessage />
               </FormItem>
@@ -551,7 +575,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               <FormItem>
                 <ExecutedAt
                   value={field.value}
-                  issuedAt={issuedAt}
+                  issuedAt={formIssuedAt}
                   onChange={(date) => {
                     setIsPendingTransaction(!date)
                     field.onChange(date)
@@ -586,8 +610,8 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                   value={field.value}
                   disabled={
                     isHistoryTransaction || (
-                      accounts.get(sourceId)!.currency !== "MULTI" &&
-                      accounts.get(targetId)!.currency !== "MULTI"
+                      accounts.get(formSourceId)!.currency !== "MULTI" &&
+                      accounts.get(formTargetId)!.currency !== "MULTI"
                     )
                   }
                 />
@@ -603,11 +627,11 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               <FormItem className={cn("relative", !withConversionRate && "col-span-2")}>
                 <AmountInput
                   value={field.value}
-                  kind={kind}
+                  kind={formKind}
                   currency={
-                    accounts.get(sourceId)!.currency === "MULTI"
-                      ? currency
-                      : accounts.get(sourceId)!.currency as Currency
+                    accounts.get(formSourceId)!.currency === "MULTI"
+                      ? formCurrency
+                      : accounts.get(formSourceId)!.currency as Currency
                   }
                   onValueChange={(value) => {
                     // When the value is positive, just update the current value and let the form validate it.
@@ -666,7 +690,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                   }}
                   dialogTitle="Source amount"
                   dialogDescription="Enter the amount removed form the source account"
-                  style={{ borderColor: accounts.get(sourceId)!.color }}
+                  style={{ borderColor: accounts.get(formSourceId)!.color }}
                   disabled={isHistoryTransaction}
                 />
                 <FormMessage className="absolute right-0 bottom-0 py-1 px-2" />
@@ -681,11 +705,11 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
               <FormItem className={cn("relative", !withConversionRate && "hidden")}>
                 <AmountInput
                   value={field.value}
-                  kind={kind}
+                  kind={formKind}
                   currency={
-                    accounts.get(targetId)!.currency === "MULTI"
-                      ? currency
-                      : accounts.get(targetId)!.currency as Currency
+                    accounts.get(formTargetId)!.currency === "MULTI"
+                      ? formCurrency
+                      : accounts.get(formTargetId)!.currency as Currency
                   }
                   onValueChange={(value) => {
                     // When the value is positive, just update the current value and let the form validate it.
@@ -743,7 +767,7 @@ export function FormTemplate({ transaction, className, role, ...props }: Compone
                   }}
                   dialogTitle="Target amount"
                   dialogDescription="Enter the amount added to the target account"
-                  style={{ borderColor: accounts.get(targetId)!.color }}
+                  style={{ borderColor: accounts.get(formTargetId)!.color }}
                   disabled={isHistoryTransaction}
                 />
                 <FormMessage className="absolute right-0 bottom-0 py-1 px-2" />
