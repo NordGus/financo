@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { format } from "date-fns"
 import { AlertCircle, Package, PackageOpen, Save, Trash, X } from "lucide-react"
-import { ComponentProps, useEffect } from "react"
+import { ComponentProps, useCallback, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useFetcher } from "react-router"
 import { toast } from "sonner"
@@ -179,7 +179,7 @@ export function FormTemplate({
   const formHasHistory = form.watch("hasHistory")
   const formColor = form.watch("color")
 
-  const onSubmit = async (values: z.infer<typeof schema>) => {
+  const onSubmit = useCallback(async (values: z.infer<typeof schema>) => {
     const promise = fetcher.submit({
       ...values,
       historyAt: values.historyAt ? format(values.historyAt, DATE_FORMAT) : null,
@@ -188,16 +188,18 @@ export function FormTemplate({
     toast.promise(
       promise,
       {
-        loading: role === "create" ? "Creating..." : "Updating...",
+        loading: values.intent === "create" ? "Creating..." : "Updating...",
         success: () => {
+          if (values.intent !== "create") return `${values.name} account updated!`
+
           return `${values.name} account created!`
         },
         error: `Couldn't save ${values.name}, something went wrong`
       }
     )
-  }
+  }, [fetcher.submit])
 
-  const onDestroy = async () => {
+  const onDestroy = useCallback(async () => {
     if (role !== "update") {
       toast.error("This account is not saved yet")
       return
@@ -213,9 +215,9 @@ export function FormTemplate({
         error: `Couldn't delete ${formName}, something went wrong"`
       }
     )
-  }
+  }, [role])
 
-  const onArchiveOrUnarchive = async () => {
+  const onArchiveOrUnarchive = useCallback(async () => {
     if (role !== "update") {
       toast.error("This account is not saved yet")
       return
@@ -237,7 +239,7 @@ export function FormTemplate({
           : `Couldn't unarchive ${formName}, something went wrong`
       }
     )
-  }
+  }, [role, archivedAt])
 
   return (
     <Form {...form}>

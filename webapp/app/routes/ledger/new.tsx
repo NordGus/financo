@@ -24,7 +24,14 @@ import {
 import { Currency } from "~/modules/shared/types/currency";
 import { Route } from "./+types/new";
 
-export function clientLoader({ }: Route.ClientLoaderArgs) { }
+export function clientLoader({ }: Route.ClientLoaderArgs) {
+  // This default value is used here to prevent prop change on non-navigation related re-renders
+  const issuedAt = new Date()
+
+  return {
+    issuedAt
+  }
+}
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const action = createActionSchema.safeParse(await request.json())
@@ -101,7 +108,7 @@ export function init(): State {
   }
 }
 
-export default function New({ }: Route.ComponentProps) {
+export default function New({ loaderData }: Route.ComponentProps) {
   const { pathname } = useLocation() // current location
   const { state: navigationState, location } = useNavigation() // navigation location
 
@@ -167,23 +174,23 @@ export default function New({ }: Route.ComponentProps) {
       {
         state.stage === "form" && (
           <FormTemplate
-            transaction={{
-              sourceId: state.sourceId,
-              targetId: state.targetId,
-              sourceAmount: 0,
-              targetAmount: 0,
-              issuedAt: new Date(),
-              executedAt: null,
-              notes: null,
-              currency: accountsMap.get(state.sourceId)!.currency === "MULTI"
+            sourceId={state.sourceId}
+            targetId={state.targetId}
+            sourceAmount={0}
+            targetAmount={0}
+            issuedAt={loaderData.issuedAt}
+            executedAt={null}
+            notes={null}
+            currency={
+              accountsMap.get(state.sourceId)!.currency === "MULTI"
                 // This value is going to be a Currency because is not possible to create a transaction between
                 // Accounts with MULTI currency
                 ? accountsMap.get(state.targetId)!.currency as Currency
                 // This value is going to be a Currency because is not possible to create a transaction between
                 // Accounts with MULTI currency
-                : accountsMap.get(state.sourceId)!.currency as Currency,
-              kind: state.kind
-            }}
+                : accountsMap.get(state.sourceId)!.currency as Currency
+            }
+            kind={state.kind}
             role="create"
           />
         )

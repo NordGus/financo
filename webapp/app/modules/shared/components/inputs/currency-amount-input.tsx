@@ -1,19 +1,11 @@
-import { BanknoteIcon, XIcon } from "lucide-react";
+import { BanknoteIcon } from "lucide-react";
 import { cn } from "~/lib/utils";
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color";
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
 import { Currency } from "~/modules/shared/types/currency";
 import { Calculator } from "../calculator";
 import { Button } from "../ui/button";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger
-} from "../ui/drawer";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { FormControl } from "../ui/form";
 
 interface Props {
@@ -39,8 +31,8 @@ export function CurrencyAmountInput({
 }: Props) {
 
   return (
-    <Drawer>
-      <DrawerTrigger asChild>
+    <Dialog>
+      <DialogTrigger asChild>
         <FormControl>
           <Button
             variant="outline"
@@ -75,19 +67,12 @@ export function CurrencyAmountInput({
             />
           </Button>
         </FormControl>
-      </DrawerTrigger>
-      <DrawerContent className="overflow-clip">
-        <DrawerHeader className="hidden">
-          <DrawerTitle>{name}</DrawerTitle>
-          <DrawerDescription>Input the currency amount</DrawerDescription>
-        </DrawerHeader>
-        <div className="flex justify-end px-2">
-          <DrawerClose asChild>
-            <Button type="button" variant={"link"} size={"icon"}>
-              <XIcon />
-            </Button>
-          </DrawerClose>
-        </div>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{name}</DialogTitle>
+          <DialogDescription>Input the currency amount</DialogDescription>
+        </DialogHeader>
         <div className="px-4 pb-4">
           <Calculator
             initialValue={value}
@@ -96,7 +81,7 @@ export function CurrencyAmountInput({
             disableFlipSign={fixedSign}
           />
         </div>
-      </DrawerContent>
-    </Drawer>
+      </DialogContent>
+    </Dialog>
   )
 }

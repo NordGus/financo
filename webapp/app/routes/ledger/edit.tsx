@@ -1,11 +1,9 @@
+import { useMemo } from "react";
 import {
   createSearchParams,
-  redirect,
-  useLocation,
-  useNavigation
+  redirect
 } from "react-router";
 import z from "zod";
-import { cn } from "~/lib/utils";
 import { destroy as destroyTransaction } from "~/modules/ledger/api/commands/destroy";
 import { update as updateTransaction } from "~/modules/ledger/api/commands/update";
 import { get as getTransactionQuery } from "~/modules/ledger/api/queries/transactions/get";
@@ -13,23 +11,10 @@ import { FormTemplate } from "~/modules/ledger/components/form-template";
 import { schema as destroyActionSchema } from "~/modules/ledger/schemas/destroy";
 import { schema as updateActionSchema } from "~/modules/ledger/schemas/update";
 import { TransactionRecord } from "~/modules/ledger/types/transactions";
-import { FullScreenThrobber } from "~/modules/shared/components/throbber";
 import { Route } from "./+types/edit";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const transactionData = await getTransactionQuery(Number(params.id))
-
-  const transaction: TransactionRecord = {
-    sourceId: transactionData.sourceId,
-    targetId: transactionData.targetId,
-    sourceAmount: transactionData.sourceAmount,
-    targetAmount: transactionData.targetAmount,
-    issuedAt: new Date(transactionData.issuedAt),
-    executedAt: transactionData.executedAt ? new Date(transactionData.executedAt) : null,
-    notes: transactionData.notes,
-    currency: transactionData.currency,
-    kind: transactionData.metadata.kind
-  }
+  const transaction = await getTransactionQuery(Number(params.id))
 
   return {
     transaction
@@ -70,19 +55,44 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
   }
 }
 
-export default function Edit({ loaderData: { transaction } }: Route.ComponentProps) {
-  const { pathname } = useLocation() // current location
-  const { state: navigationState, location } = useNavigation() // navigation location
+export default function Edit({ loaderData }: Route.ComponentProps) {
+  const transaction = useMemo<TransactionRecord>(() => ({
+    sourceId: loaderData.transaction.sourceId,
+    targetId: loaderData.transaction.targetId,
+    sourceAmount: loaderData.transaction.sourceAmount,
+    targetAmount: loaderData.transaction.targetAmount,
+    issuedAt: new Date(loaderData.transaction.issuedAt),
+    executedAt: loaderData.transaction.executedAt ? new Date(loaderData.transaction.executedAt) : null,
+    notes: loaderData.transaction.notes,
+    currency: loaderData.transaction.currency,
+    kind: loaderData.transaction.metadata.kind
+  }), [
+    loaderData.transaction.sourceId,
+    loaderData.transaction.targetId,
+    loaderData.transaction.sourceAmount,
+    loaderData.transaction.targetAmount,
+    loaderData.transaction.issuedAt,
+    loaderData.transaction.executedAt,
+    loaderData.transaction.notes,
+    loaderData.transaction.currency,
+    loaderData.transaction.metadata.kind,
+    loaderData.transaction.updatedAt,
+  ])
 
   return (
     <section className="flex flex-col py-2 overflow-hidden relative">
-      <FullScreenThrobber
-        className={cn(
-          "absolute inset-0 z-50",
-          (navigationState === "idle" || location.pathname === pathname) && "hidden"
-        )}
+      <FormTemplate
+        sourceId={transaction.sourceId}
+        targetId={transaction.targetId}
+        sourceAmount={transaction.sourceAmount}
+        targetAmount={transaction.targetAmount}
+        issuedAt={transaction.issuedAt}
+        executedAt={transaction.executedAt}
+        notes={transaction.notes}
+        currency={transaction.currency}
+        kind={transaction.kind}
+        role="update"
       />
-      <FormTemplate transaction={transaction} role="update" />
     </section>
   )
 }

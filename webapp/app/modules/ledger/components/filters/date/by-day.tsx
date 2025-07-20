@@ -1,4 +1,4 @@
-import { ComponentProps, useDeferredValue, useEffect, useState } from "react"
+import { ComponentProps, useEffect, useState } from "react"
 import { cn } from "~/lib/utils"
 import { Calendar } from "~/modules/shared/components/ui/calendar"
 
@@ -12,11 +12,10 @@ export function ByDay({
   value,
   onChange,
   className,
-  defaultValue = new Date,
+  defaultValue = new Date(),
   ...props
 }: ComponentProps<typeof Calendar> & ByDayProps) {
   const [selected, setSelected] = useState(value ?? defaultValue)
-  const deferredSelected = useDeferredValue(selected)
 
   useEffect(() => {
     if (!value) setSelected(defaultValue)
@@ -24,8 +23,8 @@ export function ByDay({
   }, [value?.toDateString()])
 
   useEffect(() => {
-    onChange(deferredSelected)
-  }, [deferredSelected.toDateString()])
+    onChange(selected)
+  }, [selected.toDateString()])
 
   return (
     <Calendar
@@ -34,10 +33,7 @@ export function ByDay({
       selected={selected}
       defaultMonth={value ?? defaultValue}
       onSelect={(day) => setSelected(prev => day ?? prev)}
-      className={cn(
-        "[&_[role=gridcell].bg-accent]:bg-sidebar-primary [&_[role=gridcell].bg-accent]:text-sidebar-primary-foreground [&_[role=gridcell]]:w-[33px]",
-        className
-      )}
+      className={cn("bg-sidebar", className)}
     />
   )
 }

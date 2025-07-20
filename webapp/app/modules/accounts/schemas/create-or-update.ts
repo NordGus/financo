@@ -64,7 +64,7 @@ const creditSchema = z.object({
     .max(DESCRIPTION_MAX_LENGTH, { error: "too long" })
     .nullish(),
   capital: z.number({ error: "required" })
-    .gt(0, { error: "must be greater than zero" }),
+    .refine((val) => val !== 0, { error: "can't be zero" }),
   main: z.boolean({ error: "required" }),
   hasHistory: z.boolean({ error: "required" }),
   historyAt: z.date().nullish(),
