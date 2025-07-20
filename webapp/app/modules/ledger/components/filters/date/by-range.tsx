@@ -1,4 +1,4 @@
-import { ComponentProps, useDeferredValue, useEffect, useState } from "react"
+import { ComponentProps, useEffect, useState } from "react"
 import { DateRange } from "react-day-picker"
 import { cn } from "~/lib/utils"
 import { Calendar } from "~/modules/shared/components/ui/calendar"
@@ -20,7 +20,6 @@ export function ByRange({
     from: value.from ?? defaultValue,
     to: value.to ?? value.from ?? defaultValue
   })
-  const deferredSelected = useDeferredValue(selected)
 
   useEffect(() => {
     if (!value.from || !value.to)
@@ -34,8 +33,8 @@ export function ByRange({
   }, [value.from?.toDateString(), value.to?.toDateString()])
 
   useEffect(() => {
-    onChange(deferredSelected.from, deferredSelected.to)
-  }, [deferredSelected.from.toDateString(), deferredSelected.to.toDateString()])
+    onChange(selected.from, selected.to)
+  }, [selected.from.toDateString(), selected.to.toDateString()])
 
   return (
     <Calendar
@@ -49,7 +48,7 @@ export function ByRange({
         setSelected({ from: range.from, to: range.to })
       }}
       className={cn(
-        "[&_[role=gridcell].bg-accent]:bg-sidebar-primary [&_[role=gridcell].bg-accent]:text-sidebar-primary-foreground [&_[role=gridcell]]:w-[33px]",
+        "bg-sidebar text-sidebar-primary-foreground",
         className
       )}
     />
