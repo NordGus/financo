@@ -33,10 +33,7 @@ export function ByDay({
       selected={selected}
       defaultMonth={value ?? defaultValue}
       onSelect={(day) => setSelected(prev => day ?? prev)}
-      className={cn(
-        "bg-sidebar text-sidebar-primary-foreground",
-        className
-      )}
+      className={cn("bg-sidebar", className)}
     />
   )
 }

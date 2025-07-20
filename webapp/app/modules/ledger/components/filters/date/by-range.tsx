@@ -47,10 +47,7 @@ export function ByRange({
 
         setSelected({ from: range.from, to: range.to })
       }}
-      className={cn(
-        "bg-sidebar text-sidebar-primary-foreground",
-        className
-      )}
+      className={cn("bg-sidebar", className)}
     />
   )
 }

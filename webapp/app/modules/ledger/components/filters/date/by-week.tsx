@@ -51,10 +51,7 @@ export function ByWeek({
         setSelected({ from: startOfWeek(day), to: endOfWeek(day) })
       }}
       onSelect={() => { }} // This is here to prevent render errors.
-      className={cn(
-        "bg-sidebar text-sidebar-primary-foreground",
-        className
-      )}
+      className={cn("bg-sidebar", className)}
     />
   )
 }
