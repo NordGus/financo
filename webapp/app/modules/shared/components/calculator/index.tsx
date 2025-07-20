@@ -9,7 +9,7 @@ import {
   MinusIcon,
   PlusIcon
 } from "lucide-react"
-import { ReactNode, useEffect, useMemo, useReducer } from "react"
+import { ReactNode, useEffect, useReducer } from "react"
 import { cn } from "~/lib/utils"
 import { currencyAmountColor } from "~/modules/shared/helpers/currency-amount-color"
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human"
@@ -251,136 +251,129 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
 
   useEffect(() => { if (state.calc.length === 0) onChange(state.value) }, [state.value, state.calc.length])
 
-  const buttons: ButtonProps[] = useMemo(() => {
-    return [
-      // line 1
-      {
-        name: <DivideIcon />,
-        type: "calc",
-        disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
-        onClick: () => onStartCalc(CalcOp.Division)
-      },
-      {
-        name: "7",
-        type: "button",
-        disabled: (__s) => false,
-        onClick: () => onModifyValue(7)
-      },
-      {
-        name: "8",
-        type: "button",
-        disabled: (__s) => false,
-        onClick: () => onModifyValue(8)
-      },
-      {
-        name: "9",
-        type: "button",
-        disabled: (__s) => false,
-        onClick: () => onModifyValue(9)
-      },
-      {
-        name: <DeleteIcon />,
-        type: "clear",
-        disabled: (__s) => false,
-        onClick: () => onRevertValue()
-      },
-      // line 2
-      {
-        name: <AsteriskIcon />,
-        type: "calc",
-        disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
-        onClick: () => onStartCalc(CalcOp.Multiplication)
-      },
-      {
-        name: "4",
-        type: "button",
-        disabled: (__s) => false,
-        onClick: () => onModifyValue(4)
-      },
-      {
-        name: "5",
-        type: "button",
-        disabled: (__s) => false,
-        onClick: () => onModifyValue(5)
-      },
-      {
-        name: "6",
-        type: "button",
-        disabled: (__s) => false,
-        onClick: () => onModifyValue(6)
-      },
-      {
-        name: <DiffIcon />,
-        type: "operation",
-        disabled: (s) => s.calc.length !== 0 || s.value === 0 || disableFlipSign,
-        onClick: () => onFlipSign()
-      },
-      // line 3
-      {
-        name: <MinusIcon />,
-        type: "calc",
-        disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
-        onClick: () => onStartCalc(CalcOp.Subtraction)
-      },
-      {
-        name: "1",
-        type: "button",
-        disabled: (__s) => false,
-        onClick: () => onModifyValue(1)
-      },
-      {
-        name: "2",
-        type: "button",
-        disabled: (__s) => false,
-        onClick: () => onModifyValue(2)
-      },
-      {
-        name: "3",
-        type: "button",
-        disabled: (__s) => false,
-        onClick: () => onModifyValue(3)
-      },
-      {
-        name: "=",
-        type: "submit",
-        disabled: (__s) => false
-      },
-      // line 4
-      {
-        name: <PlusIcon />,
-        type: "calc",
-        disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
-        onClick: () => onStartCalc(CalcOp.Sum)
-      },
-      {
-        name: "",
-        type: "dummy",
-        disabled: (__s) => false
-      },
-      {
-        name: "0",
-        type: "button",
-        disabled: (__s) => false,
-        onClick: () => onModifyValue(0)
-      },
-      {
-        name: <CircleHelpIcon />,
-        type: "help",
-        disabled: (__s) => false,
-      },
-    ]
-  }, [dispatch])
+  const buttons: ButtonProps[] = [
+    // line 1
+    {
+      name: <DivideIcon />,
+      type: "calc",
+      disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
+      onClick: () => onStartCalc(CalcOp.Division)
+    },
+    {
+      name: "7",
+      type: "button",
+      disabled: (__s) => false,
+      onClick: () => onModifyValue(7)
+    },
+    {
+      name: "8",
+      type: "button",
+      disabled: (__s) => false,
+      onClick: () => onModifyValue(8)
+    },
+    {
+      name: "9",
+      type: "button",
+      disabled: (__s) => false,
+      onClick: () => onModifyValue(9)
+    },
+    {
+      name: <DeleteIcon />,
+      type: "clear",
+      disabled: (__s) => false,
+      onClick: () => onRevertValue()
+    },
+    // line 2
+    {
+      name: <AsteriskIcon />,
+      type: "calc",
+      disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
+      onClick: () => onStartCalc(CalcOp.Multiplication)
+    },
+    {
+      name: "4",
+      type: "button",
+      disabled: (__s) => false,
+      onClick: () => onModifyValue(4)
+    },
+    {
+      name: "5",
+      type: "button",
+      disabled: (__s) => false,
+      onClick: () => onModifyValue(5)
+    },
+    {
+      name: "6",
+      type: "button",
+      disabled: (__s) => false,
+      onClick: () => onModifyValue(6)
+    },
+    {
+      name: <DiffIcon />,
+      type: "operation",
+      disabled: (s) => s.calc.length !== 0 || s.value === 0,
+      onClick: () => onFlipSign()
+    },
+    // line 3
+    {
+      name: <MinusIcon />,
+      type: "calc",
+      disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
+      onClick: () => onStartCalc(CalcOp.Subtraction)
+    },
+    {
+      name: "1",
+      type: "button",
+      disabled: (__s) => false,
+      onClick: () => onModifyValue(1)
+    },
+    {
+      name: "2",
+      type: "button",
+      disabled: (__s) => false,
+      onClick: () => onModifyValue(2)
+    },
+    {
+      name: "3",
+      type: "button",
+      disabled: (__s) => false,
+      onClick: () => onModifyValue(3)
+    },
+    {
+      name: "=",
+      type: "submit",
+      disabled: (__s) => false
+    },
+    // line 4
+    {
+      name: <PlusIcon />,
+      type: "calc",
+      disabled: (s) => s.calc.length === 0 ? s.value === 0 : s.calc[s.calc.length - 1].value === 0,
+      onClick: () => onStartCalc(CalcOp.Sum)
+    },
+    {
+      name: "0",
+      type: "button",
+      disabled: (__s) => false,
+      onClick: () => onModifyValue(0)
+    },
+    {
+      name: <CircleHelpIcon />,
+      type: "help",
+      disabled: (__s) => false,
+    },
+  ]
 
   return (
     <div className="flex flex-col gap-4 items-stretch justify-center">
       <div
         className={cn(
-          "text-3xl mt-4 flex flex-col gap-4 text-right",
+          "text-3xl flex flex-col gap-4 text-right border rounded-lg p-2",
           currencyAmountColor(runCalcStack(state.value, state.calc))
         )}
       >
         <div
-          className="flex flex-wrap items-center justify-end gap-2 text-lg text-muted-foreground min-h-4 max-h-[30dvh]"
+          className="flex flex-wrap items-center justify-end gap-2 text-lg text-muted-foreground min-h-4 max-h-[30dvh]max-w-[30dvh]"
         >
           {state.calc.length > 0 && renderCalcStack(state.value, currency, state.calc)}
         </div>
@@ -389,10 +382,10 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
         </p>
       </div>
       <div>
-        <div className="grid grid-cols-5 grid-rows-4 gap-2 w-fit m-auto">
+        <div className="grid grid-cols-5 grid-rows-4 gap-1 mx-auto h-auto w-full max-w-[30dvh] *:flex *:items-center *:justify-center *:text-2xl">
           {buttons.map((button, idx) => {
             const key = `${button.type}.${idx}`
-            const baseClassNames = "h-16! w-16 [&_svg]:pointer-events-none [&_svg]:size-5 [&_svg]:shrink-0"
+            const baseClassNames = "flex [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-6 shrink-0 [&_svg]:shrink-0"
 
             switch (button.type) {
               case "dummy":
@@ -403,7 +396,7 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
                     key={key}
                     copy={calculatorManual}
                     variant={"ghost"}
-                    size={"default"}
+                    size={"adaptable"}
                     className={baseClassNames}
                   />
                 )
@@ -412,8 +405,9 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
                 return (
                   <Button
                     key={key}
-                    className={baseClassNames}
+                    className={cn(baseClassNames, "aspect-square")}
                     variant={"secondary"}
+                    size={"adaptable"}
                     disabled={button.disabled(state)}
                     onClick={button.onClick}
                   >
@@ -426,7 +420,7 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
                     ? <DialogClose
                       key={key}
                       className={cn(
-                        buttonVariants({ className: baseClassNames }),
+                        buttonVariants({ className: baseClassNames, size: "adaptable" }),
                         "row-span-2 h-full!"
                       )}
                       onClick={() => onChange(state.value)}
@@ -435,6 +429,7 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
                     </DialogClose>
                     : <Button
                       key={key}
+                      size={"adaptable"}
                       className={cn(baseClassNames, "row-span-2 h-full!")}
                       onClick={() => onExecuteCalc()}
                     >
@@ -445,8 +440,9 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
                 return (
                   <Button
                     key={key}
-                    className={baseClassNames}
+                    className={cn(baseClassNames, "aspect-square")}
                     variant={"destructive"}
+                    size={"adaptable"}
                     disabled={button.disabled(state)}
                     onClick={button.onClick}
                   >
@@ -457,8 +453,13 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
                 return (
                   <Button
                     key={key}
-                    className={baseClassNames}
+                    className={cn(
+                      baseClassNames,
+                      button.name !== "0" && "aspect-square",
+                      button.name === "0" && "col-span-2"
+                    )}
                     variant={"outline"}
+                    size={"adaptable"}
                     disabled={button.disabled(state)}
                     onClick={button.onClick}
                   >
@@ -469,6 +470,6 @@ export function Calculator({ initialValue, currency, onChange, disableFlipSign =
           })}
         </div>
       </div>
-    </div >
+    </div>
   )
 }

@@ -12,12 +12,15 @@ import { schema as unarchiveActionSchema } from "~/modules/accounts/schemas/unar
 import { schema as updateActionSchema } from "~/modules/accounts/schemas/update";
 import { Route } from "./+types/edit";
 
-const actionsSchema = z.union([
-  updateActionSchema,
-  destroyActionSchema,
-  archiveActionSchema,
-  unarchiveActionSchema
-])
+const actionsSchema = z.discriminatedUnion(
+  "intent",
+  [
+    updateActionSchema,
+    destroyActionSchema,
+    archiveActionSchema,
+    unarchiveActionSchema
+  ]
+)
 
 export async function clientAction({ request, params }: Route.ClientActionArgs) {
   const id = Number(params.id)
