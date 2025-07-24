@@ -7,9 +7,9 @@ import (
 	"financo/cmd/web/api/json/handlers/categories"
 	"financo/cmd/web/api/json/handlers/currencies"
 	"financo/cmd/web/api/json/handlers/health"
-	"financo/cmd/web/api/json/handlers/my_journey"
 	"financo/cmd/web/api/json/handlers/savings_goals"
 	"financo/cmd/web/api/json/handlers/transactions"
+	"financo/cmd/web/api/json/handlers/trophy_room"
 	"financo/cmd/web/middleware/cors"
 	"fmt"
 	"log"
@@ -98,7 +98,7 @@ func startHTTPServer(ctx context.Context) {
 			protected.Route("/categories", categories.Routes)
 			protected.Route("/currencies", currencies.Routes)
 			protected.Route("/health", health.Routes)
-			protected.Route("/my-journey", my_journey.Routes)
+			protected.Route("/my-journey", trophy_room.Routes)
 			protected.Route("/savings-goals", savings_goals.Routes)
 			protected.Route("/transactions", transactions.Routes)
 		})
