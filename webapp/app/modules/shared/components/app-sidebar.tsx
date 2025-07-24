@@ -100,7 +100,7 @@ const items: MenuItem[] = [
 const achievements: MenuItem[] = [
   {
     title: "Trophy Room",
-    url: "/achievements",
+    url: "/trophies",
     icon: Trophy,
   },
   {

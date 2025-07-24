@@ -48,6 +48,10 @@ export default [
       index("routes/settings/index.tsx")
     ]),
 
+    route("trophies", "routes/trophies/_layout.tsx", [
+      index("routes/trophies/index.tsx")
+    ]),
+
     route("achievements", "routes/achievements/index.tsx")
   ]),
 
