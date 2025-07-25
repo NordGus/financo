@@ -4,7 +4,7 @@ package timeline_handler
 
 import (
 	"encoding/json"
-	"financo/core/scope_trophy_room/application/timeline_query"
+	"financo/core/scope_trophy_room/application/queries/timeline_query"
 	"financo/core/scope_trophy_room/domain/requests"
 	"financo/core/scope_trophy_room/infrastructure/repositories/milestones_repository"
 	"financo/services/postgresql_database"
