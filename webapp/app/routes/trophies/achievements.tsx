@@ -3,7 +3,7 @@ import { Fragment } from "react";
 import { Outlet } from "react-router";
 import z from "zod";
 import { list as listMilestonesQuery } from "~/modules/achievements/trophies/api/queries/list";
-import { SavingsGoal } from "~/modules/achievements/trophies/components/achivements/saving-goal";
+import { SavingsGoal } from "~/modules/achievements/trophies/components/achievements/saving-goal";
 import { getFilters } from "~/modules/achievements/trophies/utils/router-requests";
 import { Heading3 } from "~/modules/shared/components/ui/headings";
 import { CurrenciesForZodEnum } from "~/modules/shared/types/currency";
