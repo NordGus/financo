@@ -42,9 +42,7 @@ func (r *postgresql) Find(ctx context.Context) ([]achievement.Milestone, error) 
 		return out, err
 	}
 
-	for _, goal := range savings {
-		out = append(out, goal)
-	}
+	out = append(out, savings...)
 
 	// sorting all results from newest to oldest
 	slices.SortFunc(out, func(a achievement.Milestone, b achievement.Milestone) int {
@@ -66,8 +64,8 @@ func (r *postgresql) Find(ctx context.Context) ([]achievement.Milestone, error) 
 	return out, nil
 }
 
-func (r *postgresql) findSavingsGoals(ctx context.Context, conn *sql.Conn) ([]savings_goal.Record, error) {
-	out := make([]savings_goal.Record, 0, minSliceSize)
+func (r *postgresql) findSavingsGoals(ctx context.Context, conn *sql.Conn) ([]achievement.Milestone, error) {
+	out := make([]achievement.Milestone, 0, minSliceSize)
 
 	rows, err := conn.QueryContext(
 		ctx,
