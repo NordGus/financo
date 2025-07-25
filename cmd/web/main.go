@@ -98,7 +98,7 @@ func startHTTPServer(ctx context.Context) {
 			protected.Route("/categories", categories.Routes)
 			protected.Route("/currencies", currencies.Routes)
 			protected.Route("/health", health.Routes)
-			protected.Route("/my-journey", trophy_room.Routes)
+			protected.Route("/trophies", trophy_room.Routes)
 			protected.Route("/savings-goals", savings_goals.Routes)
 			protected.Route("/transactions", transactions.Routes)
 		})
