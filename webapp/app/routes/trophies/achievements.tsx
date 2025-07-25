@@ -66,6 +66,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                         case "savings_goal":
                           return (
                             <SavingsGoal
+                              key={achievement.id}
                               id={achievement.id}
                               name={achievement.name}
                               description={achievement.description}
@@ -80,7 +81,10 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                           })
 
                           return (
-                            <span className="bg-destructive rounded-xl p-6 text-destructive-foreground">
+                            <span
+                              key={achievement.id}
+                              className="bg-destructive rounded-xl p-6 text-destructive-foreground"
+                            >
                               {"Sorry, this kind of achievement is not supported"}
                             </span>
                           )
