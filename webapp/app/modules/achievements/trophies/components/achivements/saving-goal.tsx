@@ -1,5 +1,6 @@
 import { PiggyBank } from "lucide-react"
 import { Link, useLocation } from "react-router"
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/modules/shared/components/ui/tooltip"
 import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human"
 import { Currency } from "~/modules/shared/types/currency"
 
@@ -21,7 +22,14 @@ export function SavingsGoal({ id, name, description, saved, currency }: Props) {
       className="bg-card text-card-foreground flex rounded-xl border hover:border-foreground py-6 shadow-sm overflow-clip"
     >
       <span className="pl-6">
-        <PiggyBank className="size-10" />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PiggyBank className="size-10" />
+          </TooltipTrigger>
+          <TooltipContent>
+            Savings Goal
+          </TooltipContent>
+        </Tooltip>
       </span>
       <span className="flex flex-col gap-6">
         <span
