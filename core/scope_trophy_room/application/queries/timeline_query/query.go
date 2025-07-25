@@ -27,7 +27,7 @@ func (q *query) Find(ctx context.Context) ([]responses.Milestone, error) {
 		position = -1
 	)
 
-	milestones, err := q.milestones.Find(ctx)
+	milestones, err := q.milestones.Where(ctx)
 	if err != nil {
 		return res, err
 	}

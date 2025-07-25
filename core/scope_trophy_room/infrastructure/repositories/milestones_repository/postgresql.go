@@ -33,7 +33,7 @@ func NewPostgreSQL(db databases.SQLAdapter) Repository {
 	}
 }
 
-func (r *postgresql) Find(ctx context.Context) ([]achievement.Milestone, error) {
+func (r *postgresql) Where(ctx context.Context) ([]achievement.Milestone, error) {
 	out := make([]achievement.Milestone, 0, minSliceCapacity)
 
 	conn, err := r.db.Conn(ctx)

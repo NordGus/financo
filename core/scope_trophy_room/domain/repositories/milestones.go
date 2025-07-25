@@ -6,6 +6,6 @@ import (
 )
 
 type Milestones interface {
-	// Find must return [[]achievement.Milestone] sorted from newest to oldest
-	Find(ctx context.Context) ([]achievement.Milestone, error)
+	// Where must return [[]achievement.Milestone] sorted from newest to oldest
+	Where(ctx context.Context) ([]achievement.Milestone, error)
 }
