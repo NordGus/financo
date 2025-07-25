@@ -42,28 +42,27 @@ func (r *postgresql) Where(ctx context.Context) ([]achievement.Milestone, error)
 	}
 	defer conn.Close()
 
-	rows, err := conn.QueryContext(
-		ctx,
-		`
-		SELECT
-			id,
-			kind,
-			name,
-			description,
-			settings,
-			achieved_at,
-			deleted_at,
-			created_at,
-			updated_at
-		FROM achievements
-		WHERE
-			achieved_at IS NOT NULL
-			AND deleted_at IS NULL
-		ORDER BY
-			achieved_at DESC,
-			updated_at DESC
-		`,
-	)
+	query := `
+	SELECT
+		id,
+		kind,
+		name,
+		description,
+		settings,
+		achieved_at,
+		deleted_at,
+		created_at,
+		updated_at
+	FROM achievements
+	WHERE
+		achieved_at IS NOT NULL
+		AND deleted_at IS NULL
+	ORDER BY
+		achieved_at DESC,
+		updated_at DESC
+	`
+
+	rows, err := conn.QueryContext(ctx, query)
 	if err != nil {
 		return out, err
 	}
