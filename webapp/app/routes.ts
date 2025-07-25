@@ -49,7 +49,7 @@ export default [
     ]),
 
     route("trophies", "routes/trophies/_layout.tsx", [
-      index("routes/trophies/index.tsx")
+      index("routes/trophies/achievements.tsx")
     ]),
 
     route("achievements", "routes/achievements/index.tsx")
