@@ -20,6 +20,7 @@ type postgresql struct {
 
 type Repository interface {
 	repositories.Milestones
+	repositories.Milestone
 }
 
 const (
@@ -115,6 +116,83 @@ func (r *postgresql) Where(ctx context.Context) ([]achievement.Milestone, error)
 		}
 
 		out = append(out, milestone)
+	}
+
+	return out, nil
+}
+
+func (r *postgresql) Find(ctx context.Context, id int64) (achievement.Milestone, error) {
+	var (
+		kind        achievement.Kind
+		name        string
+		description nullable.Type[string]
+		settings    = make([]uint8, 0, settingsBufferCapacity)
+		achievedAt  nullable.Type[time.Time]
+		deletedAt   nullable.Type[time.Time]
+		createdAt   time.Time
+		updatedAt   time.Time
+
+		out achievement.Milestone
+	)
+
+	conn, err := r.db.Conn(ctx)
+	if err != nil {
+		return out, err
+	}
+	defer conn.Close()
+
+	err = conn.QueryRowContext(
+		ctx,
+		`
+		SELECT
+			kind,
+			name,
+			description,
+			settings,
+			achieved_at,
+			deleted_at,
+			created_at,
+			updated_at
+		FROM achievements
+		WHERE
+			achieved_at IS NOT NULL
+			AND deleted_at IS NULL
+			AND id = $1
+		`,
+		id,
+	).Scan(
+		&kind,
+		&name,
+		&description,
+		&settings,
+		&achievedAt,
+		&deletedAt,
+		&createdAt,
+		&updatedAt,
+	)
+	if err != nil {
+		return out, errors.Join(
+			errors.New("milestones_repository: failed to scan row"),
+			err,
+		)
+	}
+
+	out, err = mapToMilestone(
+		id,
+		kind,
+		name,
+		description,
+		settings,
+		achievedAt,
+		deletedAt,
+		createdAt,
+		updatedAt,
+	)
+	if err != nil {
+		return out, errors.Join(
+			errors.New("milestones_repository: failed to map row to milestone"),
+			err,
+		)
 	}
 
 	return out, nil
