@@ -1,7 +1,7 @@
 import { Filters, filtersToURLSearchParams } from "../../types/filters";
-import { Milestone } from "../../types/milestone";
+import { MilestoneGroup } from "../../types/milestone";
 
-async function list(filters: Filters): Promise<Milestone[]> {
+async function list(filters: Filters): Promise<MilestoneGroup[]> {
   const query = new URLSearchParams(filtersToURLSearchParams(filters))
 
   const response = await fetch(

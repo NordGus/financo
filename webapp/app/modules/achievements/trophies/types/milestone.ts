@@ -1,8 +1,10 @@
 import { SavingsGoal } from "../../shared/types/savings-goals";
 
-export type { Milestone };
+export type { Milestone, MilestoneGroup };
 
-type Milestone = {
+type Milestone = SavingsGoal
+
+type MilestoneGroup = {
   timestamp: string
-  achievements: SavingsGoal[]
+  achievements: Milestone[]
 }
