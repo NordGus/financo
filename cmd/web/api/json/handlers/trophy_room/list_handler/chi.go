@@ -1,6 +1,6 @@
 // Package timeline_handler contains all the logic for handling http request
 // to retrieve timeline data.
-package timeline_handler
+package list_handler
 
 import (
 	"encoding/json"
