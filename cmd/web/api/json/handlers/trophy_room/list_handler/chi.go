@@ -17,7 +17,7 @@ func HandleFunc(w http.ResponseWriter, r *http.Request) {
 		db           = postgresql_database.New()
 		achievements = milestones_repository.NewPostgreSQL(db)
 
-		req requests.Timeline
+		req requests.List
 	)
 
 	res, err := timeline_query.New(req, achievements).Find(r.Context())

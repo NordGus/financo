@@ -10,11 +10,11 @@ import (
 )
 
 type query struct {
-	req        requests.Timeline
+	req        requests.List
 	milestones repositories.Milestones
 }
 
-func New(req requests.Timeline, milestonesRepo repositories.Milestones) queries.Query[[]responses.Milestone] {
+func New(req requests.List, milestonesRepo repositories.Milestones) queries.Query[[]responses.Milestone] {
 	return &query{
 		req:        req,
 		milestones: milestonesRepo,
