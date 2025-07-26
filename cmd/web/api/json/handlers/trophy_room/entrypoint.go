@@ -12,7 +12,7 @@ import (
 func Routes(r chi.Router) {
 	r.Get("/", list_handler.HandleFunc)
 
-	r.Route("/:id", func(milestone chi.Router) {
+	r.Route("/{id}", func(milestone chi.Router) {
 		milestone.Get("/", show_handler.HandleFunc)
 	})
 }

@@ -2,12 +2,15 @@ package show_handler
 
 import (
 	"encoding/json"
-	"financo/core/scope_trophy_room/application/queries/timeline_query"
+	"financo/core/scope_trophy_room/application/queries/show_query"
 	"financo/core/scope_trophy_room/domain/requests"
 	"financo/core/scope_trophy_room/infrastructure/repositories/milestones_repository"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func HandleFunc(w http.ResponseWriter, r *http.Request) {
@@ -15,10 +18,22 @@ func HandleFunc(w http.ResponseWriter, r *http.Request) {
 		db           = postgresql_database.New()
 		achievements = milestones_repository.NewPostgreSQL(db)
 
-		req requests.Timeline
+		req requests.Show
+		err error
 	)
 
-	res, err := timeline_query.New(req, achievements).Find(r.Context())
+	req.ID, err = strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		log.Println("failed to parse account id", err)
+		http.Error(
+			w,
+			http.StatusText(http.StatusInternalServerError),
+			http.StatusInternalServerError,
+		)
+		return
+	}
+
+	res, err := show_query.New(req, achievements).Find(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(
