@@ -4,7 +4,7 @@ package list_handler
 
 import (
 	"encoding/json"
-	"financo/core/scope_trophy_room/application/queries/timeline_query"
+	"financo/core/scope_trophy_room/application/queries/list_query"
 	"financo/core/scope_trophy_room/domain/requests"
 	"financo/core/scope_trophy_room/infrastructure/repositories/milestones_repository"
 	"financo/services/postgresql_database"
@@ -20,7 +20,7 @@ func HandleFunc(w http.ResponseWriter, r *http.Request) {
 		req requests.List
 	)
 
-	res, err := timeline_query.New(req, achievements).Find(r.Context())
+	res, err := list_query.New(req, achievements).Find(r.Context())
 	if err != nil {
 		log.Println("command failed", err)
 		http.Error(

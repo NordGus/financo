@@ -1,4 +1,4 @@
-package timeline_query
+package list_query
 
 import (
 	"context"
