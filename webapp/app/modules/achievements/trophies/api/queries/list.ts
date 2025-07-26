@@ -5,7 +5,7 @@ async function list(filters: Filters): Promise<MilestoneGroup[]> {
   const query = new URLSearchParams(filtersToURLSearchParams(filters))
 
   const response = await fetch(
-    `${import.meta.env.VITE_API_HOST}/api/trophies/timeline?${query.toString()}`,
+    `${import.meta.env.VITE_API_HOST}/api/trophies?${query.toString()}`,
     {
       headers: {
         "Content-Type": "application/json; charset=UTF-8"
