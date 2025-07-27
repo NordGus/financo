@@ -4,7 +4,9 @@ import { Outlet } from "react-router";
 import z from "zod";
 import { list as listMilestonesQuery } from "~/modules/achievements/trophies/api/queries/list";
 import { SavingsGoal } from "~/modules/achievements/trophies/components/achievements/saving-goal";
+import { isDefaultFilters } from "~/modules/achievements/trophies/types/filters";
 import { getFilters } from "~/modules/achievements/trophies/utils/router-requests";
+import { Card, CardDescription, CardHeader, CardTitle } from "~/modules/shared/components/ui/card";
 import { Heading3 } from "~/modules/shared/components/ui/headings";
 import { CurrenciesForZodEnum } from "~/modules/shared/types/currency";
 import { Route } from "./+types/achievements";
@@ -36,17 +38,19 @@ const milestoneSchema = z.object({
 }).array()
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
-  const milestones = milestoneSchema.safeParse(await listMilestonesQuery(getFilters(request)))
+  const filters = getFilters(request)
+  const milestones = milestoneSchema.safeParse(await listMilestonesQuery(filters))
 
   if (!milestones.success) throw milestones.error
 
   return {
-    milestones: milestones.data
+    milestones: milestones.data,
+    filters
   }
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { milestones } = loaderData
+  const { milestones, filters } = loaderData
 
   return (
     <>
@@ -93,6 +97,30 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                   }
                 </Fragment>
               ))
+            }
+            {
+              isDefaultFilters(filters) && milestones.length === 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{"Your journey is just starting!"}</CardTitle>
+                    <CardDescription>
+                      {"You haven't unlock any Achievements, yet. Keep going!"}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              )
+            }
+            {
+              !isDefaultFilters(filters) && milestones.length === 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>{"It seems you haven't unlock any Achievements matching the filters!"}</CardTitle>
+                    <CardDescription>
+                      {"Please adjust the filters"}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              )
             }
           </div>
           <span
