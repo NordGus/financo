@@ -1,0 +1,21 @@
+import { Filters, filtersToURLSearchParams } from "../../types/filters";
+import { MilestoneGroup } from "../../types/milestone";
+
+async function list(filters: Filters): Promise<MilestoneGroup[]> {
+  const query = new URLSearchParams(filtersToURLSearchParams(filters))
+
+  const response = await fetch(
+    `${import.meta.env.VITE_API_HOST}/api/trophies?${query.toString()}`,
+    {
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8"
+      }
+    }
+  )
+
+  if (response.ok) return response.json()
+
+  throw response
+}
+
+export { list };

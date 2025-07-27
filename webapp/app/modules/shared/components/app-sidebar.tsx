@@ -5,10 +5,7 @@ import {
   ChevronUp,
   Coffee,
   LucideProps,
-  NotebookTabs,
-  PiggyBank,
   Plus,
-  Route,
   Settings,
   Trophy,
   User2,
@@ -85,29 +82,29 @@ const items: MenuItem[] = [
       icon: Plus
     }
   },
-  {
-    title: "Budgets",
-    url: "/budgets",
-    icon: NotebookTabs,
-  },
-  {
-    title: "Payment Plans",
-    url: "/payment-plans",
-    icon: Route,
-  },
+  // {
+  //   title: "Budgets",
+  //   url: "/budgets",
+  //   icon: NotebookTabs,
+  // },
+  // {
+  //   title: "Payment Plans",
+  //   url: "/payment-plans",
+  //   icon: Route,
+  // },
 ]
 
 const achievements: MenuItem[] = [
   {
     title: "Trophy Room",
-    url: "/achievements",
+    url: "/trophies",
     icon: Trophy,
   },
-  {
-    title: "Savings Goals",
-    url: "/achievements",
-    icon: PiggyBank,
-  },
+  // {
+  //   title: "Savings Goals",
+  //   url: "/achievements",
+  //   icon: PiggyBank,
+  // },
 ]
 
 const footer = [
