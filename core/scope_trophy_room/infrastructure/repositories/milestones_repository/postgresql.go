@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"financo/core/domain/databases"
+	"financo/core/scope_trophy_room/domain/filters"
 	"financo/core/scope_trophy_room/domain/repositories"
 	"financo/lib/nullable"
 	"financo/models/achievement"
@@ -34,7 +35,7 @@ func NewPostgreSQL(db databases.SQLAdapter) Repository {
 	}
 }
 
-func (r *postgresql) Where(ctx context.Context) ([]achievement.Milestone, error) {
+func (r *postgresql) Where(ctx context.Context, f filters.Milestones) ([]achievement.Milestone, error) {
 	out := make([]achievement.Milestone, 0, minSliceCapacity)
 
 	conn, err := r.db.Conn(ctx)
@@ -58,12 +59,14 @@ func (r *postgresql) Where(ctx context.Context) ([]achievement.Milestone, error)
 	WHERE
 		achieved_at IS NOT NULL
 		AND deleted_at IS NULL
+		AND achieved_at BETWEEN $1 AND $2
+		AND kind = ANY($3)
 	ORDER BY
 		achieved_at DESC,
 		updated_at DESC
 	`
 
-	rows, err := conn.QueryContext(ctx, query)
+	rows, err := conn.QueryContext(ctx, query, f.From, f.To, f.Kinds)
 	if err != nil {
 		return out, err
 	}
