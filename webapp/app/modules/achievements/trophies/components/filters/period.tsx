@@ -35,7 +35,7 @@ export function ByPeriod({ value, onChange }: ByPeriodProps) {
       { value: "weekly", name: "By Week" },
       { value: "monthly", name: "By Month" },
       { value: "yearly", name: "By Year" },
-      { value: "unlimited", name: "Entire Ledger" }
+      { value: "unlimited", name: "All Trophies" }
     ]
   }, [])
 

@@ -110,8 +110,8 @@ function filtersFromURLSearchParams(params: URLSearchParams): Filters {
 
   if (!params.get(FiltersSearchParamsKeys.PERIOD)) return defaults
 
-  const from = toOptionalDate(params.get(FiltersSearchParamsKeys.FROM)) ?? defaults.from
-  const to = toOptionalDate(params.get(FiltersSearchParamsKeys.TO)) ?? defaults.to
+  const from = toOptionalDate(params.get(FiltersSearchParamsKeys.FROM))
+  const to = toOptionalDate(params.get(FiltersSearchParamsKeys.TO))
   const kinds = toKinds(params.getAll(FiltersSearchParamsKeys.KINDS)) ?? defaults.kinds
   const period = toPeriod(params.get(FiltersSearchParamsKeys.PERIOD), from, to)
 
