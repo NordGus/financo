@@ -13,7 +13,6 @@ import {
 } from "date-fns"
 import { URLSearchParamsInit } from "react-router"
 import { Kind, KINDS } from "~/modules/shared/types/achievement"
-import { Currency } from "~/modules/shared/types/currency"
 
 export {
   defaultFilters,
@@ -30,7 +29,6 @@ type Filters = {
   from?: Date
   to?: Date
   kinds: Kind[]
-  currencies: Currency[]
 }
 
 const _periods = {
@@ -74,8 +72,7 @@ const FiltersSearchParamsKeys = {
   FROM: "from",
   TO: "to",
   PERIOD: "period",
-  KINDS: "kinds",
-  CURRENCIES: "currencies"
+  KINDS: "kinds"
 } as const
 
 function toOptionalDate(value?: string | null) {
@@ -108,12 +105,6 @@ function toKinds(values: string[]): Kind[] {
   return values.filter(value => kinds.includes(value as Kind)) as Kind[]
 }
 
-function toCurrencies(values: string[]): Currency[] {
-  const currencies: Currency[] = ["CAD", "USD", "EUR", "CHF", "GBP"]
-
-  return values.filter(value => currencies.includes(value as Currency)) as Currency[]
-}
-
 function filtersFromURLSearchParams(params: URLSearchParams): Filters {
   const defaults = defaultFilters()
 
@@ -122,10 +113,9 @@ function filtersFromURLSearchParams(params: URLSearchParams): Filters {
   const from = toOptionalDate(params.get(FiltersSearchParamsKeys.FROM)) ?? defaults.from
   const to = toOptionalDate(params.get(FiltersSearchParamsKeys.TO)) ?? defaults.to
   const kinds = toKinds(params.getAll(FiltersSearchParamsKeys.KINDS)) ?? defaults.kinds
-  const currencies = toCurrencies(params.getAll(FiltersSearchParamsKeys.CURRENCIES)) ?? defaults.currencies
   const period = toPeriod(params.get(FiltersSearchParamsKeys.PERIOD), from, to)
 
-  return { kinds, currencies, from, to, period }
+  return { kinds, from, to, period }
 }
 
 function optionalDateToParam(date?: Date | null) {
@@ -140,21 +130,13 @@ function kindsToParam(values: Kind[]): string[] | undefined {
   return values as string[]
 }
 
-function currenciesToParam(values: Currency[]): string[] | undefined {
-  if (values.length === 0) return undefined
-
-  // I do not care about the type, a kind is a string in the end.
-  return values as string[]
-}
-
 function filtersToURLSearchParams(filters: Filters): URLSearchParams
-function filtersToURLSearchParams({ kinds, currencies, period, to, from }: Filters): URLSearchParamsInit {
+function filtersToURLSearchParams({ kinds, period, to, from }: Filters): URLSearchParamsInit {
   return Object.fromEntries([
     [FiltersSearchParamsKeys.PERIOD, period],
     [FiltersSearchParamsKeys.FROM, optionalDateToParam(from)],
     [FiltersSearchParamsKeys.TO, optionalDateToParam(to)],
     [FiltersSearchParamsKeys.KINDS, kindsToParam(kinds)],
-    [FiltersSearchParamsKeys.CURRENCIES, currenciesToParam(currencies)],
   ].filter(([, val]) => !!val))
 }
 
@@ -165,21 +147,18 @@ function defaultFilters(): Filters {
     period: "yearly",
     from: startOfYear(today),
     to: endOfYear(today),
-    kinds: [],
-    currencies: []
+    kinds: []
   }
 }
 
 function isDefaultFilters(filters: Filters): boolean {
-  const { from, to, period, kinds, currencies } = defaultFilters()
+  const { from, to, period, kinds } = defaultFilters()
 
   return (
     filters.from?.toDateString() === from?.toDateString() &&
     filters.to?.toDateString() === to?.toDateString() &&
     filters.period === period &&
-    filters.currencies.length === currencies.length &&
     filters.kinds.length === kinds.length &&
-    filters.currencies.every(currency => currencies.includes(currency)) &&
     filters.kinds.every(kind => kinds.includes(kind))
   )
 }

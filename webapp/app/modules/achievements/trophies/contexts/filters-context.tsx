@@ -43,8 +43,7 @@ export function FiltersContextProvider({ filters, children }: PropsWithChildren<
     filters.from?.toDateString(),
     filters.to?.toDateString(),
     filters.period,
-    filters.kinds.sort().join(","),
-    filters.currencies.sort().join(",")
+    filters.kinds.sort().join(",")
   ])
 
   return (
