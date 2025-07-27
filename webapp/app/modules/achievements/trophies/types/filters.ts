@@ -1,9 +1,8 @@
 import { URLSearchParamsInit } from "react-router"
-import { ListFilters } from "~/modules/accounts/types/filters"
 import { KINDS, Kind } from "~/modules/shared/types/achievement"
 import { Currency } from "~/modules/shared/types/currency"
 
-export { filtersFromURLSearchParams, filtersToURLSearchParams }
+export { defaultFilters, filtersFromURLSearchParams, filtersToURLSearchParams }
 export type { Filters }
 
 type Filters = {
@@ -31,7 +30,7 @@ function toCurrencies(values: string[]): Currency[] {
 }
 
 function filtersFromURLSearchParams(params: URLSearchParams): Filters {
-  const defaults = defaultListFilters()
+  const defaults = defaultFilters()
 
   const kinds = toKinds(params.getAll(FiltersSearchParamsKeys.KINDS)) ?? defaults.kinds
   const currencies = toCurrencies(params.getAll(FiltersSearchParamsKeys.CURRENCIES)) ?? defaults.currencies
@@ -61,7 +60,7 @@ function filtersToURLSearchParams({ kinds, currencies }: Filters): URLSearchPara
   ].filter(([, val]) => !!val))
 }
 
-function defaultListFilters(): ListFilters {
+function defaultFilters(): Filters {
   return {
     kinds: [],
     currencies: []
