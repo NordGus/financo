@@ -54,7 +54,9 @@ export default [
       ]),
     ]),
 
-    route("achievements", "routes/achievements/index.tsx")
+    layout("routes/savings-goals/_layout.tsx", [
+      route("savings-goals", "routes/savings-goals/savings-goals.tsx")
+    ])
   ]),
 
   layout("modules/authentication/layout.tsx", [
