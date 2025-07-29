@@ -1,4 +1,4 @@
-// package lock implements a global mutex lock for the savings goals
+// Package lock implements a global mutex lock for the savings goals
 // achievements feature inside financo.
 //
 // This is done to prevent race conditions related with Go's stdlib net/http
@@ -9,12 +9,12 @@ package lock
 
 import "sync"
 
-var instance *sync.Mutex
+var instance *sync.RWMutex
 
 // GlobalLock returns savings goal's global mutex
-func GlobalLock() *sync.Mutex {
+func GlobalLock() *sync.RWMutex {
 	if instance == nil {
-		instance = new(sync.Mutex)
+		instance = new(sync.RWMutex)
 	}
 
 	return instance
