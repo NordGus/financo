@@ -9,6 +9,7 @@ import (
 	"financo/core/scope_savings_goals/domain/repositories"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
+	"financo/core/scope_savings_goals/infrastructure/lock"
 	"time"
 )
 
@@ -42,8 +43,12 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 		res responses.Created
 	)
 
+	// Locking to prevent weird behavior
+	lock.GlobalLock().Lock()
+
 	goals, err := c.goals.Where(ctx, goalsF)
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
 
@@ -51,8 +56,13 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 
 	record, err = c.create.Save(ctx, record)
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
+
+	// needs to unlock the system before publishing the message for the background processes to regain a lock.
+	// This is probably a design flaw.
+	lock.GlobalLock().Unlock()
 
 	err = c.broker.Publish(messages.Created{Record: record})
 	if err != nil {

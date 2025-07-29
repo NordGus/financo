@@ -9,6 +9,7 @@ import (
 	"financo/core/scope_savings_goals/domain/repositories"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
+	"financo/core/scope_savings_goals/infrastructure/lock"
 	"financo/lib/currency"
 	"financo/models/achievement/savings_goal"
 	"time"
@@ -46,20 +47,25 @@ func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
 		res     responses.Reordered
 	)
 
+	// Locking to prevent weird behavior
+	lock.GlobalLock().Lock()
+
 	record, err := c.goals.Find(ctx, c.req.ID)
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
 
 	previous, err := c.goals.Where(ctx, filters.SavingsGoals{Currency: record.Settings.Currency})
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
 
 	goals := make([]savings_goal.Record, 0, len(previous))
 
 	// reordering array
-	for i := 0; i < len(previous); i++ {
+	for i := range previous {
 		position := int64(i + 1)
 
 		if c.req.From == position {
@@ -75,6 +81,7 @@ func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
 
 	s, err := c.savings.Where(ctx, filters.Savings{Currencies: []currency.Type{record.Settings.Currency}})
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
 
@@ -110,8 +117,13 @@ func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
 
 	err = c.update.SaveMultiple(ctx, updated)
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
+
+	// needs to unlock the system before publishing the message for the background processes to regain a lock.
+	// This is probably a design flaw.
+	lock.GlobalLock().Unlock()
 
 	err = c.broker.Publish(messages.Reordered{Currency: record.Settings.Currency})
 	if err != nil {
