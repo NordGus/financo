@@ -9,7 +9,7 @@ import (
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
 	"financo/core/scope_savings_goals/infrastructure/repositories/create_repository"
-	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
+	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals"
 	"financo/core/scope_savings_goals/infrastructure/repositories/update_repository"
 	"financo/core/scope_savings_goals/infrastructure/services/message_broker"
 	"financo/lib/currency"
@@ -21,7 +21,7 @@ import (
 func CreateSavingsGoals(ctx context.Context) ([]responses.Created, error) {
 	var (
 		db     = postgresql_database.New()
-		goals  = savings_goals_repository.NewPostgreSQL(db)
+		goals  = savings_goals.NewPostgreSQL(db)
 		repo   = create_repository.NewPostgreSQL(db)
 		broker = message_broker.New()
 
@@ -53,7 +53,7 @@ func CreateSavingsGoals(ctx context.Context) ([]responses.Created, error) {
 func AchieveSavingsGoals(ctx context.Context, created []responses.Created) ([]responses.MarkedAsAchieved, error) {
 	var (
 		db     = postgresql_database.New()
-		goals  = savings_goals_repository.NewPostgreSQL(db)
+		goals  = savings_goals.NewPostgreSQL(db)
 		update = update_repository.NewPostgreSQL(db)
 		broker = message_broker.New()
 

@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"financo/core/scope_savings_goals/application/commands/delete_command"
 	"financo/core/scope_savings_goals/domain/requests"
-	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
+	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals"
 	"financo/core/scope_savings_goals/infrastructure/repositories/update_repository"
 	"financo/core/scope_savings_goals/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
@@ -18,7 +18,7 @@ import (
 func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
 		db      = postgresql_database.New()
-		goals   = savings_goals_repository.NewPostgreSQL(db)
+		goals   = savings_goals.NewPostgreSQL(db)
 		destroy = update_repository.NewPostgreSQL(db)
 		broker  = message_broker.New()
 

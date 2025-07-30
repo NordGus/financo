@@ -5,7 +5,7 @@ import (
 	"financo/core/infrastructure/http/utils/params"
 	"financo/core/scope_savings_goals/application/queries/list_query"
 	"financo/core/scope_savings_goals/domain/requests"
-	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
+	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -14,7 +14,7 @@ import (
 func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
 		db    = postgresql_database.New()
-		goals = savings_goals_repository.NewPostgreSQL(db)
+		goals = savings_goals.NewPostgreSQL(db)
 
 		req requests.List
 		err error

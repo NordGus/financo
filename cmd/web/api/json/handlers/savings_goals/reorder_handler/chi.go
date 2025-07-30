@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"financo/core/scope_savings_goals/application/commands/reorder_command"
 	"financo/core/scope_savings_goals/domain/requests"
-	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
+	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals"
 	"financo/core/scope_savings_goals/infrastructure/repositories/savings_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/update_repository"
 	"financo/core/scope_savings_goals/infrastructure/services/message_broker"
@@ -19,7 +19,7 @@ import (
 func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
 		db      = postgresql_database.New()
-		goals   = savings_goals_repository.NewPostgreSQL(db)
+		goals   = savings_goals.NewPostgreSQL(db)
 		savings = savings_repository.NewPostgreSQL(db)
 		update  = update_repository.NewPostgreSQL(db)
 		broker  = message_broker.New()
