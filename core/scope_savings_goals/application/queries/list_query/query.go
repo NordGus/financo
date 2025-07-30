@@ -10,6 +10,7 @@ import (
 	"financo/core/scope_savings_goals/infrastructure/lock"
 	"financo/lib/currency"
 	"financo/models/achievement/savings_goal"
+	"log"
 )
 
 type query struct {
@@ -32,7 +33,9 @@ func (q *query) Find(ctx context.Context) ([]responses.Listed, error) {
 
 	// Locking to prevent weird behavior
 	lock.GlobalLock().RLock()
-	defer lock.GlobalLock().Lock() // this one can be deferred because is just a read lock
+	defer lock.GlobalLock().RUnlock() // this one can be deferred because is just a read lock
+
+	log.Println("Query")
 
 	// records are assumed to be ordered by position in ascending order
 	records, err := q.goals.Where(ctx, filters.SavingsGoals{
@@ -41,6 +44,8 @@ func (q *query) Find(ctx context.Context) ([]responses.Listed, error) {
 	if err != nil {
 		return res, err
 	}
+
+	log.Println("Query")
 
 	for _, record := range records {
 		if _, ok := goals[record.Settings.Currency]; ok {
@@ -53,8 +58,19 @@ func (q *query) Find(ctx context.Context) ([]responses.Listed, error) {
 		goals[record.Settings.Currency] = append(goals[record.Settings.Currency], record)
 	}
 
+	log.Println("Query")
+
 	for curr, records := range goals {
 		res = append(res, responses.SavingsGoalRecordsToListed(curr, records))
+	}
+
+	log.Println("Query END")
+
+	for _, r := range res {
+		log.Println(r.Currency)
+		for _, goal := range r.Goals {
+			log.Println(goal)
+		}
 	}
 
 	return res, nil

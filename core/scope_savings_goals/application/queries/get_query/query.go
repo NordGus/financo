@@ -28,7 +28,7 @@ func (q *query) Find(ctx context.Context) (responses.Detailed, error) {
 
 	// Locking to prevent weird behavior
 	lock.GlobalLock().RLock()
-	defer lock.GlobalLock().Lock() // this one can be deferred because is just a read lock
+	defer lock.GlobalLock().RUnlock() // this one can be deferred because is just a read lock
 
 	record, err := q.goals.Find(ctx, q.req.ID)
 	if err != nil {
