@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, use } from "react";
 import { Outlet } from "react-router";
 import z from "zod";
 import { list as listSavingsGoalsQuery } from "~/modules/achievements/savings-goals/api/queries/list";
@@ -6,6 +6,7 @@ import { isDefaultFilters } from "~/modules/achievements/savings-goals/types/fil
 import { getFilters } from "~/modules/achievements/savings-goals/utils/router-requests";
 import { Card, CardDescription, CardHeader, CardTitle } from "~/modules/shared/components/ui/card";
 import { Heading3 } from "~/modules/shared/components/ui/headings";
+import { CurrenciesContext } from "~/modules/shared/contexts/currencies-context";
 import { CurrenciesForZodEnum } from "~/modules/shared/types/currency";
 import { Route } from "./+types/savings-goals";
 
@@ -39,6 +40,8 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 export default function Index({ loaderData }: Route.ComponentProps) {
   const { milestones, filters } = loaderData
 
+  const { currenciesMap } = use(CurrenciesContext)
+
   return (
     <>
       <section className="flex flex-col gap-2 overflow-y-hidden my-2 relative">
@@ -50,7 +53,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             {
               milestones.map(({ currency, goals }) => (
                 <Fragment key={currency}>
-                  <Heading3>{currency}</Heading3>
+                  <Heading3>{currenciesMap.get(currency)!.name}</Heading3>
                   {
                     goals.map((goal) => (<span key={goal.id}>{goal.name}</span>))
                   }
