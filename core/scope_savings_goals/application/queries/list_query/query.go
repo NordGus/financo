@@ -1,4 +1,4 @@
-package active_query
+package list_query
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"financo/core/scope_savings_goals/domain/repositories"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
+	"financo/core/scope_savings_goals/infrastructure/lock"
 )
 
 type query struct {
@@ -23,6 +24,10 @@ func New(req requests.Active, goals repositories.SavingsGoalsRepository) queries
 
 func (q *query) Find(ctx context.Context) (responses.Active, error) {
 	var res responses.Active
+
+	// Locking to prevent weird behavior
+	lock.GlobalLock().RLock()
+	defer lock.GlobalLock().Lock() // this one can be deferred because is just a read lock
 
 	goals, err := q.goals.Where(ctx, filters.SavingsGoals{Currency: q.req.Currency})
 	if err != nil {
