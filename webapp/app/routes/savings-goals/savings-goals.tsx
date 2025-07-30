@@ -32,7 +32,9 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   if (!milestones.success) throw milestones.error
 
   return {
-    milestones: milestones.data,
+    milestones: milestones.data.sort(
+      (a, b) => (a.currency.localeCompare(b.currency, undefined, { sensitivity: "base" }))
+    ),
     filters
   }
 }
