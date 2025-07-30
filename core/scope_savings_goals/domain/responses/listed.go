@@ -5,13 +5,13 @@ import (
 	"financo/models/achievement/savings_goal"
 )
 
-type Active struct {
+type Listed struct {
 	Currency currency.Type         `json:"currency"`
 	Goals    []savings_goal.Record `json:"goals"`
 }
 
-func NewActive(curr currency.Type, r []savings_goal.Record) Active {
-	return Active{
+func SavingsGoalRecordsToListed(curr currency.Type, r []savings_goal.Record) Listed {
+	return Listed{
 		Currency: curr,
 		Goals:    r,
 	}
