@@ -1,8 +1,8 @@
 import { Outlet } from "react-router";
+import ClearFiltersButton from "~/modules/achievements/savings-goals/components/filters/clear-button";
 import { CurrenciesFilters } from "~/modules/achievements/savings-goals/components/filters/currencies";
-import ClearFiltersButton from "~/modules/achievements/trophies/components/filters/clear-button";
-import { FiltersContextProvider } from "~/modules/achievements/trophies/contexts/filters-context";
-import { getFilters } from "~/modules/achievements/trophies/utils/router-requests";
+import { FiltersContextProvider } from "~/modules/achievements/savings-goals/contexts/filters-context";
+import { getFilters } from "~/modules/achievements/savings-goals/utils/router-requests";
 import { list as listCurrenciesQuery } from "~/modules/shared/api/queries/list-currencies";
 import { ToolSidebar } from "~/modules/shared/components/tool-sidebar";
 import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-context";
