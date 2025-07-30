@@ -1,11 +1,11 @@
-package active_goals_for_handler
+package list_handler
 
 import (
 	"encoding/json"
-	"financo/core/scope_savings_goals/application/queries/active_query"
+	"financo/core/infrastructure/http/utils/params"
+	"financo/core/scope_savings_goals/application/queries/list_query"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
-	"financo/lib/currency"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
@@ -16,19 +16,18 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 		db    = postgresql_database.New()
 		goals = savings_goals_repository.NewPostgreSQL(db)
 
-		req requests.Active
+		req requests.List
+		err error
 	)
 
-	curr, err := currency.New(r.URL.Query().Get("currency"))
+	req.Currencies, err = params.ParseCurrencies(r, "currencies")
 	if err != nil {
 		log.Println("savings_goals: active_goals_for_handler: failed to parse currency", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	req.Currency = curr
-
-	res, err := active_query.New(req, goals).Find(r.Context())
+	res, err := list_query.New(req, goals).Find(r.Context())
 	if err != nil {
 		log.Println("savings_goals: active_goals_for_handler: command failed, reason:", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
