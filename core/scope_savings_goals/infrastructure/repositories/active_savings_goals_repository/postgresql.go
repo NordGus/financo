@@ -19,9 +19,9 @@ func NewPostgreSQL(db databases.SQLAdapter) repositories.ActiveSavingsGoals {
 	}
 }
 
-func (r *postgresql) Find(ctx context.Context) ([]responses.Active, error) {
+func (r *postgresql) Find(ctx context.Context) ([]responses.Listed, error) {
 	var (
-		out = make([]responses.Active, 0, 10)
+		out = make([]responses.Listed, 0, 10)
 		idx = -1
 	)
 
@@ -93,8 +93,8 @@ func (r *postgresql) Find(ctx context.Context) ([]responses.Active, error) {
 	return out, nil
 }
 
-func (r *postgresql) buildResponse(record savings_goal.Record) responses.Active {
-	return responses.Active{
+func (r *postgresql) buildResponse(record savings_goal.Record) responses.Listed {
+	return responses.Listed{
 		Currency: record.Settings.Currency,
 		Goals:    make([]savings_goal.Record, 0, 10),
 	}
