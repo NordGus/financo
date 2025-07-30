@@ -1,4 +1,4 @@
-package savings_goals_repository
+package savings_goals
 
 import (
 	"context"
@@ -10,8 +10,8 @@ import (
 )
 
 type Repository interface {
-	repositories.SavingsGoalRepository
 	repositories.SavingsGoalsRepository
+	repositories.SavingsGoal
 }
 
 type postgresql struct {
@@ -94,14 +94,14 @@ func (p *postgresql) Where(ctx context.Context, f filters.SavingsGoals) ([]savin
 		FROM achievements
 		WHERE
 			kind = $1
-			AND settings->>'currency' = $2
+			AND settings->>'currency' = ANY($2)
 			AND achieved_at IS NULL
 			AND deleted_at IS NULL
 		ORDER BY
 			settings->'currency', settings->'position' ASC, created_at ASC
 		`,
 		achievement.SavingsGoal,
-		f.Currency,
+		f.Currencies,
 	)
 	if err != nil {
 		return out, err
