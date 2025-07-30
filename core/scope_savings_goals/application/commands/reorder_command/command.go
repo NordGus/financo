@@ -56,7 +56,9 @@ func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
 		return res, err
 	}
 
-	previous, err := c.goals.Where(ctx, filters.SavingsGoals{Currency: record.Settings.Currency})
+	previous, err := c.goals.Where(ctx, filters.SavingsGoals{
+		Currencies: filters.FilterSavingsGoalCurrency([]currency.Type{record.Settings.Currency}),
+	})
 	if err != nil {
 		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err

@@ -15,14 +15,14 @@ import (
 
 type command struct {
 	req    requests.MarkAsAchieved
-	goal   repositories.SavingsGoalRepository
+	goal   repositories.SavingsGoal
 	update repositories.UpdateRepository
 	broker brokers.MarkedAsAchieved
 }
 
 func New(
 	req requests.MarkAsAchieved,
-	goal repositories.SavingsGoalRepository,
+	goal repositories.SavingsGoal,
 	update repositories.UpdateRepository,
 	broker brokers.MarkedAsAchieved,
 ) commands.Command[responses.MarkedAsAchieved] {

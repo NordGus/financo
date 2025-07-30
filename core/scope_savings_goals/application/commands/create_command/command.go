@@ -10,6 +10,7 @@ import (
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
 	"financo/core/scope_savings_goals/infrastructure/lock"
+	"financo/lib/currency"
 	"time"
 )
 
@@ -38,7 +39,9 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 	var (
 		timestamp = time.Now().UTC()
 		record    = c.req.ToRecord(timestamp)
-		goalsF    = filters.SavingsGoals{Currency: c.req.Currency}
+		goalsF    = filters.SavingsGoals{
+			Currencies: filters.FilterSavingsGoalCurrency([]currency.Type{c.req.Currency}),
+		}
 
 		res responses.Created
 	)

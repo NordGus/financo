@@ -14,14 +14,14 @@ import (
 
 type command struct {
 	req    requests.Update
-	goal   repositories.SavingsGoalRepository
+	goal   repositories.SavingsGoal
 	update repositories.UpdateRepository
 	broker brokers.Updated
 }
 
 func New(
 	req requests.Update,
-	goal repositories.SavingsGoalRepository,
+	goal repositories.SavingsGoal,
 	update repositories.UpdateRepository,
 	broker brokers.Updated,
 ) commands.Command[responses.Updated] {
