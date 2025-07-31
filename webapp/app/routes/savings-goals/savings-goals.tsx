@@ -27,12 +27,12 @@ const savingsGoalsSchema = z.object({
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   const filters = getFilters(request)
-  const milestones = savingsGoalsSchema.safeParse(await listSavingsGoalsQuery(filters))
+  const goals = savingsGoalsSchema.safeParse(await listSavingsGoalsQuery(filters))
 
-  if (!milestones.success) throw milestones.error
+  if (!goals.success) throw goals.error
 
   return {
-    milestones: milestones.data.sort(
+    goals: goals.data.sort(
       (a, b) => (a.currency.localeCompare(b.currency, undefined, { sensitivity: "base" }))
     ),
     filters
@@ -40,7 +40,7 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const { milestones, filters } = loaderData
+  const { goals, filters } = loaderData
 
   const { currenciesMap } = use(CurrenciesContext)
 
@@ -53,7 +53,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           />
           <div className="flex flex-col flex-1 gap-2 py-2 overflow-y-scroll no-scrollbar">
             {
-              milestones.map(({ currency, goals }) => (
+              goals.map(({ currency, goals }) => (
                 <Fragment key={currency}>
                   <Heading3>{currenciesMap.get(currency)!.name}</Heading3>
                   {
@@ -63,7 +63,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
               ))
             }
             {
-              isDefaultFilters(filters) && milestones.length === 0 && (
+              isDefaultFilters(filters) && goals.length === 0 && (
                 <Card>
                   <CardHeader>
                     <CardTitle>{"Your journey is just starting!"}</CardTitle>
@@ -75,7 +75,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
               )
             }
             {
-              !isDefaultFilters(filters) && milestones.length === 0 && (
+              !isDefaultFilters(filters) && goals.length === 0 && (
                 <Card>
                   <CardHeader>
                     <CardTitle>{"It seems you haven't unlock any Achievements matching the filters!"}</CardTitle>
