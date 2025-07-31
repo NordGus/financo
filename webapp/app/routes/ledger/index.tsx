@@ -72,26 +72,24 @@ export default function Index({
   const [currency, setCurrency] = useState<Currency>(currencies.length > 0 ? currencies[0].code : "EUR")
 
   return (
-    <section className="flex flex-col justify-center gap-2 overflow-y-hidden no-scrollbar my-2">
-      <div className="grid grid-cols-2 gap-2 justify-stretch items-stretch">
-        <span className="flex items-center justify-end">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Label>
-                Currency
-              </Label>
-            </TooltipTrigger>
-            <TooltipContent>
-              {"Which currency you want to summarize you transactions by"}
-            </TooltipContent>
-          </Tooltip>
-        </span>
+    <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar my-2">
+      <div className="flex justify-end gap-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Label>
+              Currency
+            </Label>
+          </TooltipTrigger>
+          <TooltipContent>
+            {"Which currency you want to summarize you transactions by"}
+          </TooltipContent>
+        </Tooltip>
         <Select
           value={currency}
           onValueChange={(value) => setCurrency(value as Currency)}
           disabled={currencies.length <= 0}
         >
-          <SelectTrigger className="w-full cursor-pointer" disabled={currencies.length <= 0}>
+          <SelectTrigger className="w-[250px] cursor-pointer" disabled={currencies.length <= 0}>
             <SelectValue placeholder="No Currencies Available" />
           </SelectTrigger>
           <SelectContent>
@@ -110,7 +108,7 @@ export default function Index({
           </SelectContent>
         </Select>
       </div>
-      <div className="grid grid-rows-2 gap-2">
+      <div className="grid grid-rows-2 gap-2 flex-1 items-center">
         <div className="flex-1">
           {
             expenseCurrencies.has(currency)

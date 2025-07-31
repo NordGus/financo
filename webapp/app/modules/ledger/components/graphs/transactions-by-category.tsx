@@ -78,7 +78,7 @@ export function TransactionsByCategory({ transactions, accounts, title, currency
   return (
     <ChartContainer
       config={chartConfig}
-      className="mx-auto aspect-square max-h-[300px]"
+      className="mx-auto aspect-square max-h-[400px]"
     >
       <PieChart accessibilityLayer syncMethod={"index"}>
         <ChartTooltip
@@ -122,7 +122,7 @@ export function TransactionsByCategory({ transactions, accounts, title, currency
           data={data}
           dataKey="amount"
           nameKey="category"
-          innerRadius={95}
+          innerRadius={130}
           paddingAngle={1}
         >
           <Label position={"center"} className="fill-foreground text-xl font-bold" dy={-6}>
