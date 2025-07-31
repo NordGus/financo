@@ -44,8 +44,11 @@ export default function Index({ loaderData }: Route.ComponentProps) {
               type="single"
               collapsible
             >
-              <AccordionItem value="pending" className="flex flex-col h-full overflow-y-auto no-scrollbar relative rounded-lg overflow-clip border-b!">
-                <AccordionTrigger className="items-center px-4 rounded-none">
+              <AccordionItem
+                value="pending"
+                className="flex flex-col h-full overflow-y-auto no-scrollbar relative overflow-clip border-b!"
+              >
+                <AccordionTrigger className="items-center px-4">
                   <div className="flex gap-2 items-center">
                     <p className="leading-none">Pending Transactions</p>
                     <Tooltip>
@@ -70,7 +73,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             </Accordion>
           )
         }
-        <div className="flex-2 flex flex-col gap-2 h-full overflow-y-hidden rounded-lg overflow-clip">
+        <div className="flex-2 flex flex-col gap-2 h-full overflow-y-hidden overflow-clip">
           <div className="flex justify-between">
             <MoveDateRangeLink direction="backwards" variant={"outline"} />
             <span className="h-9 px-4 py-2 has-[>svg]:px-3 text-sm font-medium flex-1 inline-flex justify-center items-center">
