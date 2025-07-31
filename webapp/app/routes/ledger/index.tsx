@@ -12,13 +12,6 @@ import { ExecutedTransaction } from "~/modules/ledger/types/transactions";
 import { getFilters } from "~/modules/ledger/utils/router-requests";
 import { list as listCurrenciesQuery } from "~/modules/shared/api/queries/list-currencies";
 import { Button } from "~/modules/shared/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "~/modules/shared/components/ui/card";
 import { Label } from "~/modules/shared/components/ui/label";
 import {
   Select,
@@ -117,71 +110,55 @@ export default function Index({
           </SelectContent>
         </Select>
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Expenses Summary</CardTitle>
-            <CardDescription>
-              {"Expense Transactions by category for the period"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {
-              expenseCurrencies.has(currency)
-                ? (
-                  <TransactionsByCategory
-                    transactions={expenseTransactions}
-                    accounts={accountsMap}
-                    title={"Expenses"}
-                    currency={currency}
-                  />
-                ) : (
-                  <div className="h-[250px] w-full flex flex-col justify-center items-center gap-6">
-                    <p className="text-center">
-                      {"Sorry there are no Expense Transactions for the given currency and filters"}
-                    </p>
-                    <Button asChild>
-                      <Link to={{ pathname: newPathname, search, hash }}>
-                        <Plus /> You can create a new Transaction
-                      </Link>
-                    </Button>
-                  </div>
-                )
-            }
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Income Summary</CardTitle>
-            <CardDescription>
-              {"Income Transactions by category for the period"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex-1">
-            {
-              incomeCurrencies.has(currency)
-                ? (
-                  <TransactionsByCategory
-                    transactions={incomeTransactions}
-                    accounts={accountsMap}
-                    title={"Income"}
-                    currency={currency}
-                  />
-                ) : (
-                  <div className="h-[250px] w-full flex flex-col justify-center items-center gap-6">
-                    <p className="text-center">
-                      {"Sorry there are no Income Transactions for the given currency and filters"}
-                    </p>
-                    <Button asChild>
-                      <Link to={{ pathname: newPathname, search, hash }}>
-                        <Plus /> You can create a new Transaction
-                      </Link>
-                    </Button>
-                  </div>
-                )
-            }
-          </CardContent>
-        </Card>
+      <div className="grid grid-rows-2 gap-2">
+        <div className="flex-1">
+          {
+            expenseCurrencies.has(currency)
+              ? (
+                <TransactionsByCategory
+                  transactions={expenseTransactions}
+                  accounts={accountsMap}
+                  title={"Expenses"}
+                  currency={currency}
+                />
+              ) : (
+                <div className="h-[250px] w-full flex flex-col justify-center items-center gap-6">
+                  <p className="text-center">
+                    {"Sorry there are no Expense Transactions for the given currency and filters"}
+                  </p>
+                  <Button asChild>
+                    <Link to={{ pathname: newPathname, search, hash }}>
+                      <Plus /> You can create a new Transaction
+                    </Link>
+                  </Button>
+                </div>
+              )
+          }
+        </div>
+        <div className="flex-1">
+          {
+            incomeCurrencies.has(currency)
+              ? (
+                <TransactionsByCategory
+                  transactions={incomeTransactions}
+                  accounts={accountsMap}
+                  title={"Income"}
+                  currency={currency}
+                />
+              ) : (
+                <div className="h-[250px] w-full flex flex-col justify-center items-center gap-6">
+                  <p className="text-center">
+                    {"Sorry there are no Income Transactions for the given currency and filters"}
+                  </p>
+                  <Button asChild>
+                    <Link to={{ pathname: newPathname, search, hash }}>
+                      <Plus /> You can create a new Transaction
+                    </Link>
+                  </Button>
+                </div>
+              )
+          }
+        </div>
       </div>
     </section>
   )
