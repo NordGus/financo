@@ -1,4 +1,4 @@
-import { use, useMemo } from "react"
+import { use } from "react"
 import { AccountsContext } from "../contexts/accounts-context"
 import { Transaction, Transactions } from "../types/transactions"
 import { DateGroup } from "./date-group"
@@ -16,12 +16,10 @@ interface Props {
 export function TransactionsSearchResults({ transactions, futureEnable = false }: Props) {
   const { accountsMap: accounts } = use(AccountsContext)
 
-  const last = useMemo(() => transactions.length - 1, [transactions.length])
-
   if (transactions.length === 0) return <NoResults />
 
-  return transactions.map(([date, entries], idx) => (
-    <DateGroup key={date} date={date} isLast={idx === last}>
+  return transactions.map(([date, entries]) => (
+    <DateGroup key={date} date={date}>
       {entries.map((transaction) => {
         const source = accounts.get(transaction.sourceId)!
         const sourceParent = accounts.get(source.parentId ?? -1) ?? null
