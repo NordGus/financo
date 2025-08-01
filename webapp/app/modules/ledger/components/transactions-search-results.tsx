@@ -1,9 +1,9 @@
-import { use } from "react"
-import { AccountsContext } from "../contexts/accounts-context"
-import { Transaction, Transactions } from "../types/transactions"
-import { DateGroup } from "./date-group"
-import { Entry } from "./entry"
-import { NoResults } from "./no-results"
+import { use } from "react";
+import { DateGroup } from "~/modules/shared/components/previews/date-group";
+import { AccountsContext } from "../contexts/accounts-context";
+import { Transaction, Transactions } from "../types/transactions";
+import { Entry } from "./entry";
+import { NoResults } from "./no-results";
 
 type OnTransactionClick = (transaction: Transaction) => void
 

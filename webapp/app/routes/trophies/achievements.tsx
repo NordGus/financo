@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import { Fragment } from "react";
 import { Outlet } from "react-router";
 import z from "zod";
 import { list as listMilestonesQuery } from "~/modules/achievements/trophies/api/queries/list";
@@ -7,8 +6,8 @@ import { SavingsGoal } from "~/modules/achievements/trophies/components/achievem
 import { MoveDateRangeLink } from "~/modules/achievements/trophies/components/buttons/move-date-rage-link";
 import { isDefaultFilters } from "~/modules/achievements/trophies/types/filters";
 import { getFilters } from "~/modules/achievements/trophies/utils/router-requests";
+import { DateGroup } from "~/modules/shared/components/previews/date-group";
 import { Card, CardDescription, CardHeader, CardTitle } from "~/modules/shared/components/ui/card";
-import { Heading5 } from "~/modules/shared/components/ui/headings";
 import { CurrenciesForZodEnum } from "~/modules/shared/types/currency";
 import { Route } from "./+types/achievements";
 
@@ -93,8 +92,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           <div className="flex flex-col flex-1 gap-2 py-2 overflow-y-scroll no-scrollbar">
             {
               milestones.map(({ timestamp, achievements }) => (
-                <Fragment key={timestamp}>
-                  <Heading5 className="text-muted-foreground">{format(new Date(timestamp), "PPP")}</Heading5>
+                <DateGroup key={timestamp} date={timestamp}>
                   {
                     achievements.map((achievement) => {
                       switch (achievement.kind) {
@@ -126,7 +124,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                       }
                     })
                   }
-                </Fragment>
+                </DateGroup>
               ))
             }
             {
