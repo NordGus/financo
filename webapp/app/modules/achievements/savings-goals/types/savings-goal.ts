@@ -5,7 +5,7 @@ export type { SavingsGoal, SavingsGoalsGroup }
 type SavingsGoal = {
   id: number
   name: string
-  description: string | null | undefined
+  description?: string | null | undefined
   position: number
   target: number
   saved: number
