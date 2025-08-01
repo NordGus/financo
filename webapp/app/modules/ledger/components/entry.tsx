@@ -78,7 +78,7 @@ export function Entry({
     <Link
       to={{ pathname, search, hash }}
       className={cn(
-        "grid grid-cols-[min-content_1fr_1fr] items-top gap-1 py-2.5 px-2 hover:border-foreground cursor-pointer relative border rounded-lg",
+        "grid grid-cols-[min-content_1fr_1fr] items-top gap-1 py-2.5 px-2 hover:border-foreground! cursor-pointer relative border border-transparent rounded-lg",
         futureEnable && inTheFuture && "opacity-75"
       )}
     >
