@@ -29,7 +29,7 @@ import { toast } from "sonner";
 import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Heading3 } from "~/modules/shared/components/ui/headings";
-import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
+import { currencyAmountToHuman as formatCurrency } from "~/modules/shared/helpers/currency-amount-to-human";
 import { useCurrencies } from "~/modules/shared/hooks/use-currencies";
 import { Currency } from "~/modules/shared/types/currency";
 import type { clientAction } from "~/routes/savings-goals/savings-goals";
@@ -176,7 +176,7 @@ function DraggableGoalLink({ goal, pathname, search, hash }: DraggableGoalLinkPr
           {goal.description}
         </span>
         <span className="text-right">
-          {currencyAmountToHuman(goal.saved, goal.currency)} saved out of {currencyAmountToHuman(goal.target, goal.currency)}
+          <span className="font-bold">{formatCurrency(goal.saved, goal.currency)}</span> saved out of <span className="font-bold">{formatCurrency(goal.target, goal.currency)}</span>
         </span>
       </Link>
     </div>
