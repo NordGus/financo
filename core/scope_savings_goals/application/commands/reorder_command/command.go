@@ -1,6 +1,7 @@
 package reorder_command
 
 import (
+	"cmp"
 	"context"
 	"financo/core/domain/commands"
 	"financo/core/scope_savings_goals/domain/brokers"
@@ -12,6 +13,7 @@ import (
 	"financo/core/scope_savings_goals/infrastructure/lock"
 	"financo/lib/currency"
 	"financo/models/achievement/savings_goal"
+	"slices"
 	"time"
 )
 
@@ -29,7 +31,7 @@ func New(
 	savings repositories.SavingsRepository,
 	update repositories.UpdateRepository,
 	broker brokers.Reordered,
-) commands.Command[responses.Reordered] {
+) commands.Command[responses.Listed] {
 	return &command{
 		req:     req,
 		goals:   goals,
@@ -39,12 +41,12 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
+func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	var (
 		timestamp = time.Now().UTC()
 
 		savings int64
-		res     responses.Reordered
+		res     responses.Listed
 	)
 
 	// Locking to prevent weird behavior
@@ -67,9 +69,7 @@ func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
 	goals := make([]savings_goal.Record, 0, len(previous))
 
 	// reordering array
-	for i := range previous {
-		position := int64(i + 1)
-
+	for position := range previous {
 		if c.req.From == position {
 			continue
 		}
@@ -78,7 +78,7 @@ func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
 			goals = append(goals, record)
 		}
 
-		goals = append(goals, previous[i])
+		goals = append(goals, previous[position])
 	}
 
 	s, err := c.savings.Where(ctx, filters.Savings{Currencies: []currency.Type{record.Settings.Currency}})
@@ -132,7 +132,11 @@ func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
 		return res, err
 	}
 
-	res = responses.NewReordered(record.Settings.Currency, updated)
+	slices.SortFunc(updated, func(a savings_goal.Record, b savings_goal.Record) int {
+		return cmp.Compare(a.Settings.Position, b.Settings.Position)
+	})
+
+	res = responses.SavingsGoalRecordsToListed(record.Settings.Currency, updated)
 
 	return res, nil
 }

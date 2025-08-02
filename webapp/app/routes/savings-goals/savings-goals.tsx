@@ -1,31 +1,47 @@
 import { Outlet } from "react-router";
 import z from "zod";
+import { reorder as reorderSavingsGoalsCommand } from "~/modules/achievements/savings-goals/api/commands/reorder";
 import { list as listSavingsGoalsQuery } from "~/modules/achievements/savings-goals/api/queries/list";
 import { GoalsByCurrency } from "~/modules/achievements/savings-goals/components/goals-by-currency";
+import { reorderActionSchema } from "~/modules/achievements/savings-goals/schemas/actions";
+import { savingsGoalsGroupSchema } from "~/modules/achievements/savings-goals/schemas/queries";
+import { Reorder } from "~/modules/achievements/savings-goals/types/commands";
 import { isDefaultFilters } from "~/modules/achievements/savings-goals/types/filters";
 import { getFilters } from "~/modules/achievements/savings-goals/utils/router-requests";
 import { Card, CardDescription, CardHeader, CardTitle } from "~/modules/shared/components/ui/card";
-import { CurrenciesForZodEnum } from "~/modules/shared/types/currency";
 import { Route } from "./+types/savings-goals";
 
-const savingsGoalsSchema = z.object({
-  currency: z.enum(CurrenciesForZodEnum, { error: "invalid value" }),
-  goals: z.object({
-    id: z.number(),
-    name: z.string(),
-    description: z.string().nullish(),
-    position: z.number(),
-    target: z.number(),
-    saved: z.number(),
-    currency: z.enum(CurrenciesForZodEnum, { error: "invalid value" }),
-    updatedAt: z.iso.datetime(),
-    createdAt: z.iso.datetime()
-  }).array()
-}).array()
+async function reorderSavingsGoal(params: Reorder): Promise<z.infer<typeof savingsGoalsGroupSchema>> {
+  const res = await reorderSavingsGoalsCommand(params)
+  const { data, error, success } = savingsGoalsGroupSchema.safeParse(res)
+
+  if (!success) throw error
+
+  return data
+}
+
+const actionSchema = z.discriminatedUnion("intent", [reorderActionSchema])
+
+export async function clientAction({ request }: Route.ClientActionArgs) {
+  const action = actionSchema.safeParse(await request.json())
+
+  if (!action.success) throw action.error
+
+  switch (action.data.intent) {
+    case "reorder":
+      return reorderSavingsGoal({
+        id: action.data.id,
+        from: action.data.from,
+        to: action.data.to,
+      })
+  }
+}
+
+const loaderSchema = savingsGoalsGroupSchema.array()
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
   const filters = getFilters(request)
-  const goals = savingsGoalsSchema.safeParse(await listSavingsGoalsQuery(filters))
+  const goals = loaderSchema.safeParse(await listSavingsGoalsQuery(filters))
 
   if (!goals.success) throw goals.error
 

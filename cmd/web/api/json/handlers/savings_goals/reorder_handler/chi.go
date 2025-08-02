@@ -11,9 +11,6 @@ import (
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
-	"strconv"
-
-	"github.com/go-chi/chi/v5"
 )
 
 func HandlerFunc(w http.ResponseWriter, r *http.Request) {
@@ -29,23 +26,10 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	)
 	defer body.Close()
 
-	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
-	if err != nil {
-		log.Println("savings_goals: reorder_handler: failed to parse savings goal id", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	err = json.NewDecoder(body).Decode(&req)
+	err := json.NewDecoder(body).Decode(&req)
 	if err != nil {
 		log.Println("savings_goals: reorder_handler: unable to decode body, reason:", err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-
-	if id != req.ID {
-		log.Println("savings_goals: reorder_handler: ids don't match")
-		http.Error(w, http.StatusText(http.StatusNotAcceptable), http.StatusNotAcceptable)
 		return
 	}
 

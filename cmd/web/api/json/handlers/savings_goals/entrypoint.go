@@ -15,7 +15,7 @@ import (
 func Routes(r chi.Router) {
 	r.Get("/", list_handler.HandlerFunc)
 	r.Post("/", create_handler.HandlerFunc)
-	r.Put("/reorder", reorder_handler.HandlerFunc)
+	r.Patch("/reorder", reorder_handler.HandlerFunc)
 
 	r.Route("/{id}", func(goal chi.Router) {
 		goal.Get("/", show_handler.HandlerFunc)
