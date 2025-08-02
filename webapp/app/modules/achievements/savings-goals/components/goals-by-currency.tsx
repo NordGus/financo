@@ -13,7 +13,7 @@ import {
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus } from "lucide-react";
+import { GripVertical } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -100,14 +100,7 @@ export function GoalsByCurrency({ currency, goals: goalsData }: Props) {
 
   return (
     <>
-      <div className="flex justify-between items-center">
-        <Heading3>{name}</Heading3>
-        <Button variant={"outline"} asChild>
-          <Link to={{ pathname: `new/${currency}`, search, hash }}>
-            <Plus /> New Goal
-          </Link>
-        </Button>
-      </div>
+      <Heading3>{name}</Heading3>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
