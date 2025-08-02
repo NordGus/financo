@@ -13,7 +13,7 @@ import {
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Plus } from "lucide-react";
+import { GripVertical, Plus } from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -26,11 +26,13 @@ import {
   useLocation
 } from "react-router";
 import { toast } from "sonner";
+import { cn } from "~/lib/utils";
 import { Button } from "~/modules/shared/components/ui/button";
 import { Heading3 } from "~/modules/shared/components/ui/headings";
+import { currencyAmountToHuman } from "~/modules/shared/helpers/currency-amount-to-human";
 import { useCurrencies } from "~/modules/shared/hooks/use-currencies";
 import { Currency } from "~/modules/shared/types/currency";
-import type { clientLoader } from "~/routes/savings-goals/savings-goals";
+import type { clientAction } from "~/routes/savings-goals/savings-goals";
 import { SavingsGoal } from "../types/savings-goal";
 
 type Props = {
@@ -43,16 +45,22 @@ export function GoalsByCurrency({ currency, goals: goalsData }: Props) {
 
   const name = useMemo(() => currenciesMap.get(currency)!.name, [currency, currenciesMap])
 
-  const { search, hash } = useLocation()
-  const { submit: reorder, state: status } = useFetcher<typeof clientLoader>({ key: `${currency}.reordered` })
+  const { pathname, search, hash } = useLocation()
+  const fetcher = useFetcher<typeof clientAction>({ key: `${currency}.reordered` })
 
-  const [goals, setGoals] = useState(goalsData.sort((a, b) => a.position - b.position))
+  const [goals, setGoals] = useState(goalsData)
 
   const sensors = useSensors(useSensor(PointerSensor))
 
   useEffect(() => {
     setGoals(goalsData)
-  }, [goalsData.sort((a, b) => a.position - b.position).map(goal => goal.id).join(",")])
+  }, [goalsData.map(goal => goal.id).join(",")])
+
+  useEffect(() => {
+    if (!fetcher.data) return
+
+    setGoals(fetcher.data.goals)
+  }, [fetcher.data?.goals.map(({ id }) => id).join(",")])
 
   const onDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
@@ -66,8 +74,10 @@ export function GoalsByCurrency({ currency, goals: goalsData }: Props) {
 
     if (!goal) return
 
+    setGoals(arrayMove([...goals], oldIndex, newIndex))
+
     toast.promise(
-      reorder(
+      fetcher.submit(
         {
           id: goal.id,
           from: oldIndex,
@@ -85,16 +95,14 @@ export function GoalsByCurrency({ currency, goals: goalsData }: Props) {
         error: `Oops, looks like something went wrong!`
       }
     )
-
-    setGoals(arrayMove(goals, oldIndex, newIndex))
-  }, [reorder, setGoals])
+  }, [fetcher.submit, setGoals, goals.map(goal => goal.id).join(",")])
 
   return (
     <>
       <div className="flex justify-between items-center">
         <Heading3>{name}</Heading3>
         <Button variant={"ghost"} asChild>
-          <Link to={{ pathname: "new", search, hash }}>
+          <Link to={{ pathname: `new/${currency}`, search, hash }}>
             <Plus /> New Goal
           </Link>
         </Button>
@@ -106,13 +114,13 @@ export function GoalsByCurrency({ currency, goals: goalsData }: Props) {
       >
         <SortableContext
           items={goals}
-          disabled={status === "submitting"}
           strategy={verticalListSortingStrategy}
         >
           {
             goals.map((goal) => (
               <DraggableGoalLink
                 key={goal.id}
+                pathname={pathname}
                 goal={goal}
                 search={search}
                 hash={hash}
@@ -127,17 +135,18 @@ export function GoalsByCurrency({ currency, goals: goalsData }: Props) {
 
 type DraggableGoalLinkProps = {
   goal: SavingsGoal,
+  pathname: string
   search: string,
   hash: string
 }
 
-function DraggableGoalLink({ goal, search, hash }: DraggableGoalLinkProps) {
+function DraggableGoalLink({ goal, pathname, search, hash }: DraggableGoalLinkProps) {
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
-    transition,
+    transition
   } = useSortable({ id: goal.id });
 
   const style = useMemo(() => ({
@@ -147,9 +156,28 @@ function DraggableGoalLink({ goal, search, hash }: DraggableGoalLinkProps) {
 
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="p-2.5">
-      <Link to={{ pathname: goal.id.toString(), search, hash }}>
-        <span key={goal.id}>{goal.name}</span>
+    <div ref={setNodeRef} style={style} className="flex gap-2">
+      <Button asChild size={"icon"} variant={"ghost"} className="hover:cursor-grab focus:cursor-grabbing mt-3">
+        <span {...attributes} {...listeners}>
+          <GripVertical />
+        </span>
+      </Button>
+      <Link
+        to={{ pathname: goal.id.toString(), search, hash }}
+        className={cn(
+          "border p-2.5 w-full rounded-lg flex flex-col gap-1 justify-stretch",
+          pathname.endsWith(goal.id.toString())
+            ? "border-foreground"
+            : "hover:border-foreground! border-transparent"
+        )}
+      >
+        <span className="text-lg">{goal.name}</span>
+        <span className="text-xs text-muted-foreground">
+          {goal.description}
+        </span>
+        <span className="text-right">
+          {currencyAmountToHuman(goal.saved, goal.currency)} saved out of {currencyAmountToHuman(goal.target, goal.currency)}
+        </span>
       </Link>
     </div>
   )
