@@ -56,6 +56,7 @@ export function GoalsByCurrency({ currency, goals: goalsData }: Props) {
     setGoals(goalsData)
   }, [goalsData.map(goal => goal.id).join(",")])
 
+  // I know this is a hack but this is better than nothing to work with my current understanding of dnd-kit
   useEffect(() => {
     if (!fetcher.data) return
 
