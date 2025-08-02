@@ -56,6 +56,7 @@ export default [
 
     layout("routes/savings-goals/_layout.tsx", [
       route("savings-goals", "routes/savings-goals/savings-goals.tsx", [
+        index("routes/savings-goals/index.tsx"),
         route("new", "routes/savings-goals/new.tsx"),
         route(":id", "routes/savings-goals/edit.tsx")
       ])
