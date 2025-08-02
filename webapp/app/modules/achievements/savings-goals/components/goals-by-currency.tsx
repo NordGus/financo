@@ -101,7 +101,7 @@ export function GoalsByCurrency({ currency, goals: goalsData }: Props) {
     <>
       <div className="flex justify-between items-center">
         <Heading3>{name}</Heading3>
-        <Button variant={"ghost"} asChild>
+        <Button variant={"outline"} asChild>
           <Link to={{ pathname: `new/${currency}`, search, hash }}>
             <Plus /> New Goal
           </Link>
