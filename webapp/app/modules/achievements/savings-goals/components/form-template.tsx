@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Save, Trash, Trophy, X } from "lucide-react";
-import { ComponentProps, useCallback, useEffect } from "react";
+import { ComponentProps, useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useFetcher } from "react-router";
 import { toast } from "sonner";
@@ -57,6 +57,12 @@ export function FormTemplate({
 }: ComponentProps<"form"> & Props) {
   const fetcher = useFetcher()
 
+  const { submit: destroySavingsGoal, state: destroyState } = useFetcher()
+  const [openDestroyDialog, setOpenDestroyDialog] = useState(false)
+
+  const { submit: markSavingsGoalAsAchieved, state: markAsAchieveState } = useFetcher()
+  const [openMarkAsAchievedDialog, setOpenMarkAsAchievedDialog] = useState(false)
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -91,6 +97,18 @@ export function FormTemplate({
     console.error(form.formState.errors)
   }, [form.formState.errors])
 
+  useEffect(() => {
+    if (destroyState !== "idle") return // to prevent unnecessary re-renders
+
+    setOpenDestroyDialog(false)
+  }, [destroyState, setOpenDestroyDialog])
+
+  useEffect(() => {
+    if (markAsAchieveState !== "idle") return // to prevent unnecessary re-renders
+
+    setOpenMarkAsAchievedDialog(false)
+  }, [markAsAchieveState, setOpenMarkAsAchievedDialog])
+
   const formName = form.watch("name")
   const formCurrency = form.watch("currency")
 
@@ -118,7 +136,7 @@ export function FormTemplate({
     }
 
     toast.promise(
-      fetcher.submit(
+      destroySavingsGoal(
         { intent: "destroy" },
         { method: "post", encType: "application/json" }
       ),
@@ -128,7 +146,7 @@ export function FormTemplate({
         error: `Couldn't delete ${formName}, something went wrong`
       }
     )
-  }, [fetcher.submit, formName, role])
+  }, [destroySavingsGoal, formName, role])
 
   const onMarkAsAchieved = useCallback(() => {
     if (role !== "update") {
@@ -137,7 +155,7 @@ export function FormTemplate({
     }
 
     toast.promise(
-      fetcher.submit(
+      markSavingsGoalAsAchieved(
         { intent: "mark-as-achieved" },
         { method: "post", encType: "application/json" }
       ),
@@ -147,7 +165,7 @@ export function FormTemplate({
         error: `Couldn't marked as achieved ${formName}, something went wrong`
       }
     )
-  }, [fetcher.submit, formName, role])
+  }, [markSavingsGoalAsAchieved, formName, role])
 
   return (
     <Form {...form}>
@@ -164,7 +182,7 @@ export function FormTemplate({
           {
             role === "update" && (
               <>
-                <Dialog>
+                <Dialog open={openDestroyDialog} onOpenChange={setOpenDestroyDialog}>
                   <Tooltip>
                     <DialogTrigger asChild>
                       <TooltipTrigger asChild>
@@ -192,19 +210,21 @@ export function FormTemplate({
                           <X /> Cancel
                         </Button>
                       </DialogClose>
-                      <DialogClose asChild>
-                        <Button
-                          onClick={onDestroy}
-                          variant={"destructive"}
-                          type="button"
-                        >
-                          <Trash /> Delete
-                        </Button>
-                      </DialogClose>
+                      <Button
+                        onClick={onDestroy}
+                        variant={"destructive"}
+                        type="button"
+                      >
+                        {
+                          destroyState !== "idle"
+                            ? <Throbber />
+                            : <><Trash /> Delete</>
+                        }
+                      </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-                <Dialog>
+                <Dialog open={openMarkAsAchievedDialog} onOpenChange={setOpenMarkAsAchievedDialog}>
                   <Tooltip>
                     <DialogTrigger asChild>
                       <TooltipTrigger asChild>
@@ -232,14 +252,16 @@ export function FormTemplate({
                           <X /> Cancel
                         </Button>
                       </DialogClose>
-                      <DialogClose asChild>
-                        <Button
-                          onClick={onMarkAsAchieved}
-                          type="button"
-                        >
-                          <Check /> Mark as Achieved
-                        </Button>
-                      </DialogClose>
+                      <Button
+                        onClick={onMarkAsAchieved}
+                        type="button"
+                      >
+                        {
+                          markAsAchieveState !== "idle"
+                            ? <Throbber />
+                            : <><Check /> Mark as Achieved</>
+                        }
+                      </Button>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
