@@ -32,12 +32,12 @@ export function CurrencyAmountInput({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild disabled={disabled} className="disabled:cursor-not-allowed!">
         <FormControl>
           <Button
             variant="outline"
             className={cn(
-              "w-full px-3 text-left font-normal",
+              "w-full px-3 text-left font-normal disabled:cursor-not-allowed!",
               currencyAmountColor(value ?? 0)
             )}
             disabled={disabled}
@@ -77,7 +77,7 @@ export function CurrencyAmountInput({
           <Calculator
             initialValue={value}
             onChange={onChange}
-            currency={currency}
+            currency={currency!}
             disableFlipSign={fixedSign}
           />
         </div>
