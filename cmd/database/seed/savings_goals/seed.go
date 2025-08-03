@@ -18,7 +18,7 @@ import (
 	"log"
 )
 
-func CreateSavingsGoals(ctx context.Context) ([]responses.Created, error) {
+func CreateSavingsGoals(ctx context.Context) ([]responses.Detailed, error) {
 	var (
 		db     = postgresql_database.New()
 		goals  = savings_goals.NewPostgreSQL(db)
@@ -27,12 +27,12 @@ func CreateSavingsGoals(ctx context.Context) ([]responses.Created, error) {
 
 		summary = make(map[currency.Type]uint, 10)
 
-		out = make([]responses.Created, 0, len(create))
+		out = make([]responses.Detailed, 0, len(create))
 	)
 
 	log.Println("\tseeding savings goals achievements")
 
-	for i := 0; i < len(create); i++ {
+	for i := range create {
 		res, err := create_command.New(create[i], goals, repo, broker.Created()).Run(ctx)
 		if err != nil {
 			return out, errors.Join(fmt.Errorf("savings_goals: failed to seed savings goal %s", create[i].Name), err)
@@ -50,7 +50,7 @@ func CreateSavingsGoals(ctx context.Context) ([]responses.Created, error) {
 	return out, nil
 }
 
-func AchieveSavingsGoals(ctx context.Context, created []responses.Created) ([]responses.MarkedAsAchieved, error) {
+func AchieveSavingsGoals(ctx context.Context, created []responses.Detailed) ([]responses.MarkedAsAchieved, error) {
 	var (
 		db     = postgresql_database.New()
 		goals  = savings_goals.NewPostgreSQL(db)
@@ -60,7 +60,7 @@ func AchieveSavingsGoals(ctx context.Context, created []responses.Created) ([]re
 		summary = make(map[currency.Type]uint, 10)
 
 		out  = make([]responses.MarkedAsAchieved, 0, len(created))
-		mark = make([]responses.Created, 0, len(created))
+		mark = make([]responses.Detailed, 0, len(created))
 	)
 
 	for i := 0; i < len(created); i++ {

@@ -26,7 +26,7 @@ func New(
 	goals repositories.SavingsGoalsRepository,
 	create repositories.CreateRepository,
 	broker brokers.Created,
-) commands.Command[responses.Created] {
+) commands.Command[responses.Detailed] {
 	return &command{
 		req:    req,
 		goals:  goals,
@@ -35,7 +35,7 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Created, error) {
+func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	var (
 		timestamp = time.Now().UTC()
 		record    = c.req.ToRecord(timestamp)
@@ -43,7 +43,7 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 			Currencies: filters.FilterSavingsGoalCurrency([]currency.Type{c.req.Currency}),
 		}
 
-		res responses.Created
+		res responses.Detailed
 	)
 
 	// Locking to prevent weird behavior
@@ -72,5 +72,5 @@ func (c *command) Run(ctx context.Context) (responses.Created, error) {
 		return res, err
 	}
 
-	return responses.NewCreated(record), nil
+	return responses.SavingsGoalRecordToDetailed(record), nil
 }
