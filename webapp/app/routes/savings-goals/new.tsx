@@ -31,7 +31,7 @@ export default function New({ }: Route.ComponentProps) {
       <FormTemplate
         name={undefined}
         description={undefined}
-        target={undefined}
+        targetAmount={undefined}
         currency={undefined}
         role="create"
       />
