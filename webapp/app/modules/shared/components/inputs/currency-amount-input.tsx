@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { FormControl } from "../ui/form";
 
 interface Props {
-  currency: Currency
+  currency?: Currency
   value?: number
   onChange: (value?: number) => void
   name: string
@@ -44,7 +44,7 @@ export function CurrencyAmountInput({
             type="button"
           >
             {
-              value !== undefined
+              value !== undefined && currency !== undefined
                 ? (
                   <>
                     {currencyAmountToHuman(value, currency)}
