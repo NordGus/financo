@@ -42,7 +42,7 @@ import { formSchema } from "../schemas/create-or-update";
 type Props = {
   name: string | undefined
   description: string | null | undefined
-  target: number | undefined
+  targetAmount: number | undefined
   currency: Currency | undefined
   role: "create" | "update"
 }
@@ -50,7 +50,7 @@ type Props = {
 export function FormTemplate({
   name,
   description,
-  target,
+  targetAmount,
   currency,
   role,
   ...props
@@ -62,7 +62,7 @@ export function FormTemplate({
     defaultValues: {
       name: name ?? "New Savings Goal",
       description,
-      target: target ?? 0,
+      target: targetAmount ?? 0,
       currency,
       intent: role
     }
@@ -72,14 +72,14 @@ export function FormTemplate({
     form.reset({
       name: name ?? "New Savings Goal",
       description,
-      target: target ?? 0,
+      target: targetAmount ?? 0,
       currency,
       intent: role
     })
   }, [
     name,
     description,
-    target,
+    targetAmount,
     currency,
     role,
     form.reset
