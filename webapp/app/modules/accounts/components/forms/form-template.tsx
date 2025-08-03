@@ -479,7 +479,7 @@ export function FormTemplate({
             <FormItem>
               <CurrencyInput onValueChange={field.onChange} defaultValue={field.value} value={field.value} />
               <FormDescription>
-                The currency of your debt
+                The currency of your account operates on
               </FormDescription>
               <FormMessage />
             </FormItem>
