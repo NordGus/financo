@@ -48,19 +48,19 @@ export function GoalsByCurrency({ currency, goals: goalsData }: Props) {
   const { pathname, search, hash } = useLocation()
   const fetcher = useFetcher<typeof clientAction>({ key: `${currency}.reordered` })
 
-  const [goals, setGoals] = useState(goalsData)
+  const [goals, setGoals] = useState([...goalsData])
 
   const sensors = useSensors(useSensor(PointerSensor))
 
   useEffect(() => {
-    setGoals(goalsData)
+    setGoals([...goalsData])
   }, [goalsData.map(goal => goal.id).join(",")])
 
   // I know this is a hack but this is better than nothing to work with my current understanding of dnd-kit
   useEffect(() => {
     if (!fetcher.data) return
 
-    setGoals(fetcher.data.goals)
+    setGoals([...fetcher.data.goals])
   }, [fetcher.data?.goals.map(({ id }) => id).join(",")])
 
   const onDragEnd = useCallback((event: DragEndEvent) => {
@@ -70,6 +70,7 @@ export function GoalsByCurrency({ currency, goals: goalsData }: Props) {
     const newIndex = goals.findIndex(goal => goal.id === over!.id)
 
     if (oldIndex < 0 || newIndex < 0) return
+    if (oldIndex === newIndex) return
 
     const goal = goals.at(oldIndex)
 
@@ -140,7 +141,8 @@ function DraggableGoalLink({ goal, pathname, search, hash }: DraggableGoalLinkPr
     listeners,
     setNodeRef,
     transform,
-    transition
+    transition,
+    isDragging
   } = useSortable({ id: goal.id });
 
   const style = useMemo(() => ({
@@ -150,7 +152,7 @@ function DraggableGoalLink({ goal, pathname, search, hash }: DraggableGoalLinkPr
 
 
   return (
-    <div ref={setNodeRef} style={style} className="flex gap-2">
+    <div ref={setNodeRef} style={style} className={cn("flex gap-2", isDragging && "z-99")}>
       <Button asChild size={"icon"} variant={"ghost"} className="hover:cursor-grab focus:cursor-grabbing mt-3">
         <span {...attributes} {...listeners}>
           <GripVertical />
@@ -159,7 +161,7 @@ function DraggableGoalLink({ goal, pathname, search, hash }: DraggableGoalLinkPr
       <Link
         to={{ pathname: goal.id.toString(), search, hash }}
         className={cn(
-          "border p-2.5 w-full rounded-lg flex flex-col gap-1 justify-stretch",
+          "border bg-background p-2.5 w-full rounded-lg flex flex-col gap-1 justify-stretch",
           pathname.endsWith(goal.id.toString())
             ? "border-foreground"
             : "hover:border-foreground! border-transparent"
