@@ -1,8 +1,17 @@
 import { createPath, redirect } from "react-router";
 import z from "zod";
-import { destroy as destroySavingsGoalCommand } from "~/modules/achievements/savings-goals/api/commands/destroy";
-import { update as updateSavingsGoalCommand } from "~/modules/achievements/savings-goals/api/commands/update";
-import { get as getSavingsGoalQuery } from "~/modules/achievements/savings-goals/api/queries/get";
+import {
+  destroy as destroySavingsGoalCommand
+} from "~/modules/achievements/savings-goals/api/commands/destroy";
+import {
+  markAsAchieved as markAsAchievedCommand
+} from "~/modules/achievements/savings-goals/api/commands/mark-as-achieved";
+import {
+  update as updateSavingsGoalCommand
+} from "~/modules/achievements/savings-goals/api/commands/update";
+import {
+  get as getSavingsGoalQuery
+} from "~/modules/achievements/savings-goals/api/queries/get";
 import { FormTemplate } from "~/modules/achievements/savings-goals/components/form-template";
 import { updateSchema } from "~/modules/achievements/savings-goals/schemas/create-or-update";
 import { destroySchema } from "~/modules/achievements/savings-goals/schemas/destroy";
@@ -43,6 +52,11 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 
       return redirect(createPath({ pathname: `/savings-goals`, search, hash }))
     case "mark-as-achieved":
+      await markAsAchievedCommand({
+        id,
+        achievedAt: actions.data.achievedAt
+      })
+
       return redirect(createPath({ pathname: `/savings-goals`, search, hash }))
   }
 }
@@ -68,6 +82,7 @@ export default function New({ loaderData }: Route.ComponentProps) {
           name={goal.name}
           description={goal.description}
           targetAmount={goal.target}
+          savedAmount={goal.saved}
           currency={goal.currency}
           role="update"
         />

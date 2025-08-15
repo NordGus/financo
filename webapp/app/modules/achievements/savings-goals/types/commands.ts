@@ -1,6 +1,6 @@
 import { Currency } from "~/modules/shared/types/currency"
 
-export type { Create, Reorder, Update }
+export type { Create, MarkAsAchieved, Reorder, Update }
 
 type Reorder = {
   id: number
@@ -21,4 +21,9 @@ type Update = {
   description: string | null | undefined
   target: number
   currency: Currency
+}
+
+type MarkAsAchieved = {
+  id: number
+  achievedAt: string
 }

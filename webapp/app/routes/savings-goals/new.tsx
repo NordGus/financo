@@ -33,6 +33,7 @@ export default function New({ }: Route.ComponentProps) {
         name={undefined}
         description={undefined}
         targetAmount={undefined}
+        savedAmount={undefined}
         currency={undefined}
         role="create"
       />

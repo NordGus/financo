@@ -36,6 +36,7 @@ type Props = {
   name: string | undefined
   description: string | null | undefined
   targetAmount: number | undefined
+  savedAmount: number | undefined
   currency: Currency | undefined
   role: "create" | "update"
 }
@@ -46,6 +47,7 @@ export function FormTemplate({
   description,
   targetAmount,
   currency,
+  savedAmount,
   role,
   ...props
 }: ComponentProps<"form"> & Props) {
@@ -171,6 +173,7 @@ export function FormTemplate({
                   <TooltipTrigger asChild>
                     <Button
                       type="button"
+                      disabled={savedAmount !== targetAmount}
                       size={"icon"}
                       onClick={() => {
                         if (role !== "update") {
@@ -182,6 +185,7 @@ export function FormTemplate({
                           id: goalId!,
                           name: formName,
                           target: formTarget,
+                          saved: savedAmount!,
                           currency: formCurrency
                         })
                       }}
