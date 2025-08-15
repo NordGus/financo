@@ -1,4 +1,4 @@
-import { Trash, X } from "lucide-react";
+import { Trophy, X } from "lucide-react";
 import { createContext, PropsWithChildren, use, useCallback, useEffect, useMemo, useState } from "react";
 import { useFetcher, useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -23,27 +23,27 @@ type SavingsGoalData = {
   currency: Currency
 }
 
-type OnConfirmSavingsGoalDeletion = (goal: SavingsGoalData) => void
+type OnConfirmSavingsGoalMarkAsAchieved = (goal: SavingsGoalData) => void
 
 type DialogState = {
   submitting: boolean
-  onConfirmSavingsGoalDeletion: OnConfirmSavingsGoalDeletion
+  onConfirmSavingsGoalMarkAsAchieved: OnConfirmSavingsGoalMarkAsAchieved
 }
 
-const DestroyDialogContext = createContext<DialogState>({
+const MarkAsAchievedDialogContext = createContext<DialogState>({
   submitting: false,
-  onConfirmSavingsGoalDeletion: () => { }
+  onConfirmSavingsGoalMarkAsAchieved: () => { }
 })
 
-export function useDestroyDialog(): DialogState {
-  return use(DestroyDialogContext)
+export function useMarkAsAchievedDialog(): DialogState {
+  return use(MarkAsAchievedDialogContext)
 }
 
-// Destroy Dialog exposes a combination of Contexts, Components and Hooks to
-// expose the functionality to trigger the dialog from every child in the
-// financo, so make sure to wrap the components you want to control.
-export function DestroyDialog({ children }: PropsWithChildren) {
-  const { data, state, submit } = useFetcher<typeof clientAction>({ key: "destroy.savings-goal.dialog" })
+// Mark As Achieved Dialog exposes a combination of Contexts, Components and
+// Hooks to expose the functionality to trigger the dialog from every child in
+// the financo, so make sure to wrap the components you want to control.
+export function MarkAsAchievedDialog({ children }: PropsWithChildren) {
+  const { data, state, submit } = useFetcher<typeof clientAction>({ key: "mark-as-achieved.savings-goal.dialog" })
   const { search, hash } = useLocation()
   const navigate = useNavigate()
 
@@ -52,15 +52,15 @@ export function DestroyDialog({ children }: PropsWithChildren) {
 
   const isSubmitting = state === "submitting"
 
-  const onConfirmSavingsGoalDeletion = useCallback<OnConfirmSavingsGoalDeletion>((goal) => {
+  const onConfirmSavingsGoalMarkAsAchieved = useCallback<OnConfirmSavingsGoalMarkAsAchieved>((goal) => {
     setSavingsGoal(goal)
     setOpen(true)
   }, [setSavingsGoal, setOpen])
 
   const context = useMemo<DialogState>(() => ({
     submitting: isSubmitting,
-    onConfirmSavingsGoalDeletion,
-  }), [isSubmitting, onConfirmSavingsGoalDeletion])
+    onConfirmSavingsGoalMarkAsAchieved,
+  }), [isSubmitting, onConfirmSavingsGoalMarkAsAchieved])
 
   const onOpenChange = useCallback((open: boolean) => {
     if (isSubmitting) return;
@@ -73,7 +73,7 @@ export function DestroyDialog({ children }: PropsWithChildren) {
 
     toast.promise(
       submit(
-        { intent: "destroy" },
+        { intent: "mark-as-achieved" },
         {
           action: `/savings-goals/${savingsGoal.id}`,
           method: "post",
@@ -81,9 +81,9 @@ export function DestroyDialog({ children }: PropsWithChildren) {
         }
       ).then(undefined, () => setOpen(false)),
       {
-        loading: "Deleting...",
-        success: `'${savingsGoal.name}' deleted!`,
-        error: `Couldn't delete '${savingsGoal.name}', something went wrong`
+        loading: "Marking as Achieved...",
+        success: `'${savingsGoal.name}' marked as achieved!`,
+        error: `Couldn't marked as achieved '${savingsGoal.name}', something went wrong`
       }
     )
   }, [savingsGoal?.id, savingsGoal?.name, setOpen])
@@ -101,7 +101,7 @@ export function DestroyDialog({ children }: PropsWithChildren) {
   }, [data?.id, savingsGoal?.id, open, navigate])
 
   return (
-    <DestroyDialogContext.Provider value={context}>
+    <MarkAsAchievedDialogContext.Provider value={context}>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="min-w-[35dvw]">
           <DialogHeader>
@@ -119,7 +119,7 @@ export function DestroyDialog({ children }: PropsWithChildren) {
                       {`Do you want to delete this Savings Goal?`}
                     </DialogTitle>
                     <DialogDescription>
-                      {`You're about to delete `}<span className="font-bold">{savingsGoal.name}</span>{`. This is action cannot be undone!`}
+                      {`You're about to marked `}<span className="font-bold">{savingsGoal.name}</span>{` as Achieved. This is action cannot be undone!`}
                     </DialogDescription>
                   </>
                 )
@@ -128,7 +128,7 @@ export function DestroyDialog({ children }: PropsWithChildren) {
           {
             savingsGoal && (
               <ul className="space-y-2 text-sm">
-                <li>This will permanently remove <span className="font-black">{savingsGoal.name}</span> from <span className="font-black">financo</span>.</li>
+                <li>This will permanently move <span className="font-black">{savingsGoal.name}</span> to your Trophy Room history.</li>
                 <li>And will make <span className="font-black">financo</span> recalculate your progress relative to the remaining Savings Goals.</li>
               </ul>
             )
@@ -145,20 +145,19 @@ export function DestroyDialog({ children }: PropsWithChildren) {
             </DialogClose>
             <Button
               onClick={onConfirmed}
-              variant={"destructive"}
               type="button"
               disabled={isSubmitting}
             >
               {
                 isSubmitting
                   ? <Throbber />
-                  : <><Trash /> Delete</>
+                  : <><Trophy /> Mark as Achieved</>
               }
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
       {children}
-    </DestroyDialogContext.Provider>
+    </MarkAsAchievedDialogContext.Provider>
   )
 }

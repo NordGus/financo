@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, Save, Trash, Trophy, X } from "lucide-react";
-import { ComponentProps, useCallback, useEffect, useState } from "react";
+import { Save, Trash, Trophy } from "lucide-react";
+import { ComponentProps, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useFetcher } from "react-router";
 import { toast } from "sonner";
@@ -10,16 +10,6 @@ import { CurrencyAmountInput } from "~/modules/shared/components/inputs/currency
 import { CurrencyInput } from "~/modules/shared/components/inputs/currency-input";
 import { Throbber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "~/modules/shared/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -39,6 +29,7 @@ import { Currency } from "~/modules/shared/types/currency";
 import { DESCRIPTION_MAX_LENGTH, NAME_MAX_LENGTH } from "../schemas/constants";
 import { formSchema } from "../schemas/create-or-update";
 import { useDestroyDialog } from "./dialogs/destroy";
+import { useMarkAsAchievedDialog } from "./dialogs/mark-as-achieved";
 
 type Props = {
   goalId: number | undefined
@@ -58,15 +49,17 @@ export function FormTemplate({
   role,
   ...props
 }: ComponentProps<"form"> & Props) {
-  const fetcher = useFetcher()
-
-  const { submit: markSavingsGoalAsAchieved, state: markAsAchieveState } = useFetcher()
-  const [openMarkAsAchievedDialog, setOpenMarkAsAchievedDialog] = useState(false)
+  const { submit, state } = useFetcher()
 
   const {
     submitting: isDeletingGoal,
     onConfirmSavingsGoalDeletion: onConfirmDestroy
   } = useDestroyDialog()
+
+  const {
+    submitting: isMarkingAsAchieved,
+    onConfirmSavingsGoalMarkAsAchieved: onConfirmMarkAsAchieved,
+  } = useMarkAsAchievedDialog()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -102,19 +95,13 @@ export function FormTemplate({
     console.error(form.formState.errors)
   }, [form.formState.errors])
 
-  useEffect(() => {
-    if (markAsAchieveState !== "idle") return // to prevent unnecessary re-renders
-
-    setOpenMarkAsAchievedDialog(false)
-  }, [markAsAchieveState, setOpenMarkAsAchievedDialog])
-
   const formName = form.watch("name")
   const formTarget = form.watch("target")
   const formCurrency = form.watch("currency")
 
   const onSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
     toast.promise(
-      fetcher.submit(
+      submit(
         { ...values },
         { method: "post", encType: "application/json" }
       ),
@@ -127,26 +114,7 @@ export function FormTemplate({
         error: `Couldn't save ${values.name}, something went wrong`
       }
     )
-  }, [fetcher.submit])
-
-  const onMarkAsAchieved = useCallback(() => {
-    if (role !== "update") {
-      toast.error("This goal is not saved yet")
-      return
-    }
-
-    toast.promise(
-      markSavingsGoalAsAchieved(
-        { intent: "mark-as-achieved" },
-        { method: "post", encType: "application/json" }
-      ),
-      {
-        loading: "deleting...",
-        success: `${formName} marked as achieved!`,
-        error: `Couldn't marked as achieved ${formName}, something went wrong`
-      }
-    )
-  }, [markSavingsGoalAsAchieved, formName, role])
+  }, [submit])
 
   return (
     <Form {...form}>
@@ -199,47 +167,40 @@ export function FormTemplate({
                     {"Delete Savings Goal"}
                   </TooltipContent>
                 </Tooltip>
-                <Dialog open={openMarkAsAchievedDialog} onOpenChange={setOpenMarkAsAchievedDialog}>
-                  <Tooltip>
-                    <DialogTrigger asChild>
-                      <TooltipTrigger asChild>
-                        <Button type="button" size={"icon"}>
-                          <Trophy />
-                        </Button>
-                      </TooltipTrigger>
-                    </DialogTrigger>
-                    <TooltipContent>
-                      {"Mark Savings Goal as achieved"}
-                    </TooltipContent>
-                  </Tooltip>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
-                        {`Do you want to mark this Savings Goal as achieved?`}
-                      </DialogTitle>
-                      <DialogDescription>
-                        {`This action is irreversible. It will be move to your Trophy Room history and financo will recalculated your progress.`}
-                      </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button variant={"outline"} type="button">
-                          <X /> Cancel
-                        </Button>
-                      </DialogClose>
-                      <Button
-                        onClick={onMarkAsAchieved}
-                        type="button"
-                      >
-                        {
-                          markAsAchieveState !== "idle"
-                            ? <Throbber />
-                            : <><Check /> Mark as Achieved</>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      size={"icon"}
+                      onClick={() => {
+                        if (role !== "update") {
+                          toast.error("This goal is not saved yet")
+                          return
                         }
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+
+                        onConfirmMarkAsAchieved({
+                          id: goalId!,
+                          name: formName,
+                          target: formTarget,
+                          currency: formCurrency
+                        })
+                      }}
+                    >
+                      {
+                        isMarkingAsAchieved
+                          ? <Throbber />
+                          : (
+                            <>
+                              <Trophy />
+                            </>
+                          )
+                      }
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {"Mark Savings Goal as achieved"}
+                  </TooltipContent>
+                </Tooltip>
               </>
             )
           }
@@ -252,7 +213,7 @@ export function FormTemplate({
                 size={"icon"}
               >
                 {
-                  fetcher.state !== "idle"
+                  state === "submitting"
                     ? <Throbber />
                     : <Save />
                 }
