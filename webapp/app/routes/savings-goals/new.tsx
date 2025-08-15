@@ -29,6 +29,7 @@ export default function New({ }: Route.ComponentProps) {
   return (
     <section className="flex flex-col gap-2 overflow-y-hidden my-2 relative">
       <FormTemplate
+        goalId={undefined}
         name={undefined}
         description={undefined}
         targetAmount={undefined}

@@ -2,6 +2,7 @@ import { Outlet } from "react-router";
 import z from "zod";
 import { reorder as reorderSavingsGoalsCommand } from "~/modules/achievements/savings-goals/api/commands/reorder";
 import { list as listSavingsGoalsQuery } from "~/modules/achievements/savings-goals/api/queries/list";
+import { DestroyDialog } from "~/modules/achievements/savings-goals/components/dialogs/destroy";
 import { GoalsByCurrency } from "~/modules/achievements/savings-goals/components/goals-by-currency";
 import { savingsGoalsGroupSchema } from "~/modules/achievements/savings-goals/schemas/queries";
 import { reorderActionSchema } from "~/modules/achievements/savings-goals/schemas/reorder";
@@ -57,7 +58,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   const { goals, filters } = loaderData
 
   return (
-    <>
+    <DestroyDialog>
       <section className="flex flex-col gap-2 overflow-y-hidden my-2 relative">
         <div className="flex flex-col flex-1 gap-2 overflow-y-hidden relative">
           <span
@@ -100,6 +101,6 @@ export default function Index({ loaderData }: Route.ComponentProps) {
         </div>
       </section>
       <Outlet />
-    </>
+    </DestroyDialog>
   )
 }

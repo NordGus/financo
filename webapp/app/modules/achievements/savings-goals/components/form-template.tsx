@@ -38,8 +38,10 @@ import {
 import { Currency } from "~/modules/shared/types/currency";
 import { DESCRIPTION_MAX_LENGTH, NAME_MAX_LENGTH } from "../schemas/constants";
 import { formSchema } from "../schemas/create-or-update";
+import { useDestroyDialog } from "./dialogs/destroy";
 
 type Props = {
+  goalId: number | undefined
   name: string | undefined
   description: string | null | undefined
   targetAmount: number | undefined
@@ -48,6 +50,7 @@ type Props = {
 }
 
 export function FormTemplate({
+  goalId,
   name,
   description,
   targetAmount,
@@ -57,11 +60,13 @@ export function FormTemplate({
 }: ComponentProps<"form"> & Props) {
   const fetcher = useFetcher()
 
-  const { submit: destroySavingsGoal, state: destroyState } = useFetcher()
-  const [openDestroyDialog, setOpenDestroyDialog] = useState(false)
-
   const { submit: markSavingsGoalAsAchieved, state: markAsAchieveState } = useFetcher()
   const [openMarkAsAchievedDialog, setOpenMarkAsAchievedDialog] = useState(false)
+
+  const {
+    submitting: isDeletingGoal,
+    onConfirmSavingsGoalDeletion: onConfirmDestroy
+  } = useDestroyDialog()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -98,18 +103,13 @@ export function FormTemplate({
   }, [form.formState.errors])
 
   useEffect(() => {
-    if (destroyState !== "idle") return // to prevent unnecessary re-renders
-
-    setOpenDestroyDialog(false)
-  }, [destroyState, setOpenDestroyDialog])
-
-  useEffect(() => {
     if (markAsAchieveState !== "idle") return // to prevent unnecessary re-renders
 
     setOpenMarkAsAchievedDialog(false)
   }, [markAsAchieveState, setOpenMarkAsAchievedDialog])
 
   const formName = form.watch("name")
+  const formTarget = form.watch("target")
   const formCurrency = form.watch("currency")
 
   const onSubmit = useCallback(async (values: z.infer<typeof formSchema>) => {
@@ -128,25 +128,6 @@ export function FormTemplate({
       }
     )
   }, [fetcher.submit])
-
-  const onDestroy = useCallback(() => {
-    if (role !== "update") {
-      toast.error("This goal is not saved yet")
-      return
-    }
-
-    toast.promise(
-      destroySavingsGoal(
-        { intent: "destroy" },
-        { method: "post", encType: "application/json" }
-      ),
-      {
-        loading: "deleting...",
-        success: `${formName} deleted!`,
-        error: `Couldn't delete ${formName}, something went wrong`
-      }
-    )
-  }, [destroySavingsGoal, formName, role])
 
   const onMarkAsAchieved = useCallback(() => {
     if (role !== "update") {
@@ -182,48 +163,42 @@ export function FormTemplate({
           {
             role === "update" && (
               <>
-                <Dialog open={openDestroyDialog} onOpenChange={setOpenDestroyDialog}>
-                  <Tooltip>
-                    <DialogTrigger asChild>
-                      <TooltipTrigger asChild>
-                        <Button type="button" variant="destructive" size={"icon"} className="dark:bg-destructive">
-                          <Trash />
-                        </Button>
-                      </TooltipTrigger>
-                    </DialogTrigger>
-                    <TooltipContent>
-                      {"Delete Savings Goal"}
-                    </TooltipContent>
-                  </Tooltip>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
-                        {`Do you want to delete this Savings Goal?`}
-                      </DialogTitle>
-                      <DialogDescription>
-                        {`This action is irreversible. It will be remove of this goal from your history and financo will recalculated your progress.`}
-                      </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button variant={"outline"} type="button">
-                          <X /> Cancel
-                        </Button>
-                      </DialogClose>
-                      <Button
-                        onClick={onDestroy}
-                        variant={"destructive"}
-                        type="button"
-                      >
-                        {
-                          destroyState !== "idle"
-                            ? <Throbber />
-                            : <><Trash /> Delete</>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      className="dark:bg-destructive"
+                      size={"icon"}
+                      onClick={() => {
+                        if (role !== "update") {
+                          toast.error("This goal is not saved yet")
+                          return
                         }
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+
+                        onConfirmDestroy({
+                          id: goalId!,
+                          name: formName,
+                          target: formTarget,
+                          currency: formCurrency
+                        })
+                      }}
+                    >
+                      {
+                        isDeletingGoal
+                          ? <Throbber />
+                          : (
+                            <>
+                              <Trash />
+                            </>
+                          )
+                      }
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {"Delete Savings Goal"}
+                  </TooltipContent>
+                </Tooltip>
                 <Dialog open={openMarkAsAchievedDialog} onOpenChange={setOpenMarkAsAchievedDialog}>
                   <Tooltip>
                     <DialogTrigger asChild>
