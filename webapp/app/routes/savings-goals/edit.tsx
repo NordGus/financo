@@ -1,5 +1,6 @@
 import { createPath, redirect } from "react-router";
 import z from "zod";
+import { destroy as destroySavingsGoalCommand } from "~/modules/achievements/savings-goals/api/commands/destroy";
 import { update as updateSavingsGoalCommand } from "~/modules/achievements/savings-goals/api/commands/update";
 import { get as getSavingsGoalQuery } from "~/modules/achievements/savings-goals/api/queries/get";
 import { FormTemplate } from "~/modules/achievements/savings-goals/components/form-template";
@@ -38,9 +39,11 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 
       return redirect(createPath({ pathname: `/savings-goals/${id}`, search, hash }))
     case "destroy":
-      return { action: "destroy", status: "ok", id }
+      await destroySavingsGoalCommand(id)
+
+      return redirect(createPath({ pathname: `/savings-goals`, search, hash }))
     case "mark-as-achieved":
-      return { action: "mark-as-achieved", status: "ok", id }
+      return redirect(createPath({ pathname: `/savings-goals`, search, hash }))
   }
 }
 

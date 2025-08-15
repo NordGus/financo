@@ -1,6 +1,6 @@
 import { Trophy, X } from "lucide-react";
 import { createContext, PropsWithChildren, use, useCallback, useEffect, useMemo, useState } from "react";
-import { useFetcher, useLocation, useNavigate } from "react-router";
+import { createPath, useFetcher, useLocation } from "react-router";
 import { toast } from "sonner";
 import { Throbber } from "~/modules/shared/components/throbber";
 import { Button } from "~/modules/shared/components/ui/button";
@@ -43,19 +43,18 @@ export function useMarkAsAchievedDialog(): DialogState {
 // Hooks to expose the functionality to trigger the dialog from every child in
 // the financo, so make sure to wrap the components you want to control.
 export function MarkAsAchievedDialog({ children }: PropsWithChildren) {
-  const { data, state, submit } = useFetcher<typeof clientAction>({ key: "mark-as-achieved.savings-goal.dialog" })
-  const { search, hash } = useLocation()
-  const navigate = useNavigate()
+  const { submit } = useFetcher<typeof clientAction>({ key: "mark-as-achieved.savings-goal.dialog" })
+  const { pathname, search, hash } = useLocation()
 
   const [savingsGoal, setSavingsGoal] = useState<SavingsGoalData | null>(null)
   const [open, setOpen] = useState(false)
-
-  const isSubmitting = state === "submitting"
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const onConfirmSavingsGoalMarkAsAchieved = useCallback<OnConfirmSavingsGoalMarkAsAchieved>((goal) => {
     setSavingsGoal(goal)
     setOpen(true)
-  }, [setSavingsGoal, setOpen])
+    setIsSubmitting(false)
+  }, [setSavingsGoal, setOpen, setIsSubmitting])
 
   const context = useMemo<DialogState>(() => ({
     submitting: isSubmitting,
@@ -71,11 +70,13 @@ export function MarkAsAchievedDialog({ children }: PropsWithChildren) {
   const onConfirmed = useCallback(() => {
     if (savingsGoal?.id === undefined) return;
 
+    setIsSubmitting(true)
+
     toast.promise(
       submit(
         { intent: "mark-as-achieved" },
         {
-          action: `/savings-goals/${savingsGoal.id}`,
+          action: createPath({ pathname: `/savings-goals/${savingsGoal.id}`, search, hash }),
           method: "post",
           encType: "application/json",
         }
@@ -86,19 +87,12 @@ export function MarkAsAchievedDialog({ children }: PropsWithChildren) {
         error: `Couldn't marked as achieved '${savingsGoal.name}', something went wrong`
       }
     )
-  }, [savingsGoal?.id, savingsGoal?.name, setOpen])
+  }, [savingsGoal?.id, savingsGoal?.name, setIsSubmitting, search, hash])
 
   useEffect(() => {
-    if (!open) return
-    if (data?.id === undefined) return
-    if (savingsGoal?.id === undefined) return
-    if (data.id !== savingsGoal.id) return
-
+    setIsSubmitting(false)
     setOpen(false)
-    // This is not ideal, but until I find a way to trigger the redirection
-    // until I find a way to trigger it on animation end.
-    setTimeout(() => navigate({ pathname: "/savings-goals", search, hash }, { replace: true }), 200)
-  }, [data?.id, savingsGoal?.id, open, navigate])
+  }, [pathname])
 
   return (
     <MarkAsAchievedDialogContext.Provider value={context}>
