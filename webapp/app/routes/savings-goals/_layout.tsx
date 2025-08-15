@@ -6,7 +6,13 @@ import { FiltersContextProvider } from "~/modules/achievements/savings-goals/con
 import { getFilters } from "~/modules/achievements/savings-goals/utils/router-requests";
 import { list as listCurrenciesQuery } from "~/modules/shared/api/queries/list-currencies";
 import { ToolSidebar } from "~/modules/shared/components/tool-sidebar";
-import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "~/modules/shared/components/ui/sidebar";
+import {
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem
+} from "~/modules/shared/components/ui/sidebar";
 import { CurrenciesContextProvider } from "~/modules/shared/contexts/currencies-context";
 import { Route } from "./+types/_layout";
 
