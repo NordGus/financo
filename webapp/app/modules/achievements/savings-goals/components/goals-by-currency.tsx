@@ -114,7 +114,7 @@ export function GoalsByCurrency({ currency, goals: goalsData }: Props) {
           {
             goals.map((goal) => (
               <DraggableGoalLink
-                key={goal.id}
+                key={`${goal.id}.${goal.updatedAt}`}
                 pathname={pathname}
                 goal={goal}
                 search={search}

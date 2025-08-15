@@ -1,5 +1,6 @@
 import { createPath, redirect } from "react-router";
 import z from "zod";
+import { update as updateSavingsGoalCommand } from "~/modules/achievements/savings-goals/api/commands/update";
 import { get as getSavingsGoalQuery } from "~/modules/achievements/savings-goals/api/queries/get";
 import { FormTemplate } from "~/modules/achievements/savings-goals/components/form-template";
 import { updateSchema } from "~/modules/achievements/savings-goals/schemas/create-or-update";
@@ -27,6 +28,14 @@ export async function clientAction({ request, params }: Route.ClientActionArgs) 
 
   switch (actions.data.intent) {
     case "update":
+      await updateSavingsGoalCommand({
+        id,
+        name: actions.data.name,
+        description: actions.data.description,
+        currency: actions.data.currency,
+        target: actions.data.target
+      })
+
       return redirect(createPath({ pathname: `/savings-goals/${id}`, search, hash }))
     case "destroy":
       return { action: "destroy", status: "ok", id }

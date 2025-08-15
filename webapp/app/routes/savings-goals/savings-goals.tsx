@@ -69,7 +69,11 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             <div className="flex flex-col flex-1 gap-2 py-2 overflow-y-scroll no-scrollbar">
               {
                 goals.map(({ currency, goals }) => (
-                  <GoalsByCurrency key={currency} currency={currency} goals={goals} />
+                  <GoalsByCurrency
+                    key={`${currency}.${goals.map(goal => goal.updatedAt).join(".")}`}
+                    currency={currency}
+                    goals={goals}
+                  />
                 ))
               }
               {
