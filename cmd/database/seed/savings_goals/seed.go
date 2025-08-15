@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"financo/cmd/database/seed/lib/helpers"
+	"financo/core/domain/primitives/date"
 	"financo/core/scope_savings_goals/application/commands/create_command"
 	"financo/core/scope_savings_goals/application/commands/mark_as_achieved_command"
 	"financo/core/scope_savings_goals/domain/requests"
@@ -71,7 +72,10 @@ func AchieveSavingsGoals(ctx context.Context, created []responses.Detailed) ([]r
 
 	for i := 0; i < len(mark); i++ {
 		var (
-			req  = requests.MarkAsAchieved{ID: mark[i].ID, AchievedAt: achieved[helpers.SavingsGoalMapKey(mark[i].Name, mark[i].Currency)]}
+			req = requests.MarkAsAchieved{
+				ID:         mark[i].ID,
+				AchievedAt: date.New(achieved[helpers.SavingsGoalMapKey(mark[i].Name, mark[i].Currency)]),
+			}
 			curr = mark[i].Currency
 		)
 
