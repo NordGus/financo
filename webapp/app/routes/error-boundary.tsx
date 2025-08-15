@@ -45,7 +45,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-20 p-16">
+    <section className="pt-20 p-16">
       <Heading1>{message}</Heading1>
       <p>{details}</p>
       {stack && (
@@ -67,6 +67,6 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
           )
         }[action]
       }
-    </main>
+    </section>
   );
 }
