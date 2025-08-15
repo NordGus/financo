@@ -34,7 +34,7 @@ export function CategoryPreview({
     <span
       className={
         cn(
-          "grid grid-cols-[min-content_1fr] gap-2 cursor-pointer hover:bg-muted-foreground/20 p-2 rounded-lg",
+          "grid grid-cols-[min-content_1fr] gap-2 cursor-pointer hover:border-foreground! p-2.5 rounded-lg border border-transparent",
           !!archivedAt && "opacity-80",
           className
         )

@@ -5,6 +5,7 @@ import {
   ChevronUp,
   Coffee,
   LucideProps,
+  PiggyBank,
   Plus,
   Settings,
   Trophy,
@@ -100,11 +101,11 @@ const achievements: MenuItem[] = [
     url: "/trophies",
     icon: Trophy,
   },
-  // {
-  //   title: "Savings Goals",
-  //   url: "/achievements",
-  //   icon: PiggyBank,
-  // },
+  {
+    title: "Savings Goals",
+    url: "/savings-goals",
+    icon: PiggyBank,
+  },
 ]
 
 const footer = [

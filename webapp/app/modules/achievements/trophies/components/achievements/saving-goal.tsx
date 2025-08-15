@@ -19,22 +19,20 @@ export function SavingsGoal({ id, name, description, saved, currency }: Props) {
     <Link
       to={{ pathname: `savings-goals/${id}`, search }}
       data-slot="card"
-      className="bg-card text-card-foreground flex rounded-xl border hover:border-foreground py-6 shadow-sm overflow-clip"
+      className="bg-card text-card-foreground grid grid-cols-[min-content_1fr] rounded-lg border border-transparent hover:border-foreground p-2.5 shadow-sm overflow-clip gap-4"
     >
-      <span className="pl-6">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <PiggyBank className="size-10" />
-          </TooltipTrigger>
-          <TooltipContent>
-            Savings Goal
-          </TooltipContent>
-        </Tooltip>
-      </span>
-      <span className="flex flex-col gap-6">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PiggyBank className="size-10" />
+        </TooltipTrigger>
+        <TooltipContent>
+          Savings Goal
+        </TooltipContent>
+      </Tooltip>
+      <span className="flex flex-col gap-3">
         <span
           data-slot="card-header"
-          className="flex flex-col gap-1.5 px-6"
+          className="flex flex-col gap-1.5"
         >
           <span
             data-slot="card-title"
@@ -51,7 +49,7 @@ export function SavingsGoal({ id, name, description, saved, currency }: Props) {
         </span>
         <span
           data-slot="card-footer"
-          className="flex items-center px-6"
+          className="flex items-center"
         >
           <span>
             {"you successfully saved "}

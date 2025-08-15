@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { FormControl } from "../ui/form";
 
 interface Props {
-  currency: Currency
+  currency?: Currency
   value?: number
   onChange: (value?: number) => void
   name: string
@@ -32,19 +32,19 @@ export function CurrencyAmountInput({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild disabled={disabled} className="disabled:cursor-not-allowed!">
         <FormControl>
           <Button
             variant="outline"
             className={cn(
-              "w-full px-3 text-left font-normal",
+              "w-full px-3 text-left font-normal disabled:cursor-not-allowed!",
               currencyAmountColor(value ?? 0)
             )}
             disabled={disabled}
             type="button"
           >
             {
-              value !== undefined
+              value !== undefined && currency !== undefined
                 ? (
                   <>
                     {currencyAmountToHuman(value, currency)}
@@ -77,7 +77,7 @@ export function CurrencyAmountInput({
           <Calculator
             initialValue={value}
             onChange={onChange}
-            currency={currency}
+            currency={currency!}
             disableFlipSign={fixedSign}
           />
         </div>

@@ -5,14 +5,15 @@ import (
 	"financo/models/achievement/savings_goal"
 )
 
-type Reordered struct {
-	Currency currency.Type         `json:"currency"`
-	Goals    []savings_goal.Record `json:"goals"`
-}
+func NewReordered(curr currency.Type, r []savings_goal.Record) Listed {
+	goals := make([]Detailed, 0, len(r))
 
-func NewReordered(curr currency.Type, r []savings_goal.Record) Reordered {
-	return Reordered{
+	for _, record := range r {
+		goals = append(goals, SavingsGoalRecordToDetailed(record))
+	}
+
+	return Listed{
 		Currency: curr,
-		Goals:    r,
+		Goals:    goals,
 	}
 }

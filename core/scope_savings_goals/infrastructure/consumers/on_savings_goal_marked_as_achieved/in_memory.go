@@ -4,7 +4,7 @@ import (
 	"financo/core/scope_savings_goals/application/event_handlers/on_savings_goal_marked_as_achieved"
 	"financo/core/scope_savings_goals/domain/messages"
 	"financo/core/scope_savings_goals/infrastructure/lock"
-	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
+	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals"
 	"financo/core/scope_savings_goals/infrastructure/repositories/savings_repository"
 	"financo/core/scope_savings_goals/infrastructure/repositories/update_repository"
 	"financo/services/postgresql_database"
@@ -20,7 +20,7 @@ func NewInMemory(wg *sync.WaitGroup, payload messages.MarkedAsAchieved) {
 
 	var (
 		db      = postgresql_database.New()
-		goals   = savings_goals_repository.NewPostgreSQL(db)
+		goals   = savings_goals.NewPostgreSQL(db)
 		savings = savings_repository.NewPostgreSQL(db)
 		update  = update_repository.NewPostgreSQL(db)
 	)
