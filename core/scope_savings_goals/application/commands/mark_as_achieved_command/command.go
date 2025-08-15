@@ -25,7 +25,7 @@ func New(
 	goal repositories.SavingsGoal,
 	update repositories.UpdateRepository,
 	broker brokers.MarkedAsAchieved,
-) commands.Command[responses.MarkedAsAchieved] {
+) commands.Command[responses.Detailed] {
 	return &command{
 		req:    req,
 		goal:   goal,
@@ -34,11 +34,11 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.MarkedAsAchieved, error) {
+func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	var (
 		timestamp = time.Now().UTC()
 
-		res responses.MarkedAsAchieved
+		res responses.Detailed
 	)
 
 	// Locking to prevent weird behavior
@@ -72,7 +72,7 @@ func (c *command) Run(ctx context.Context) (responses.MarkedAsAchieved, error) {
 		return res, err
 	}
 
-	res = responses.NewMarkedAsAchieved(record)
+	res = responses.SavingsGoalRecordToDetailed(record)
 
 	return res, nil
 }

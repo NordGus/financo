@@ -50,7 +50,7 @@ func CreateSavingsGoals(ctx context.Context) ([]responses.Detailed, error) {
 	return out, nil
 }
 
-func AchieveSavingsGoals(ctx context.Context, created []responses.Detailed) ([]responses.MarkedAsAchieved, error) {
+func AchieveSavingsGoals(ctx context.Context, created []responses.Detailed) ([]responses.Detailed, error) {
 	var (
 		db     = postgresql_database.New()
 		goals  = savings_goals.NewPostgreSQL(db)
@@ -59,7 +59,7 @@ func AchieveSavingsGoals(ctx context.Context, created []responses.Detailed) ([]r
 
 		summary = make(map[currency.Type]uint, 10)
 
-		out  = make([]responses.MarkedAsAchieved, 0, len(created))
+		out  = make([]responses.Detailed, 0, len(created))
 		mark = make([]responses.Detailed, 0, len(created))
 	)
 

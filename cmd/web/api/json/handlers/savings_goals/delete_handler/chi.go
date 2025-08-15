@@ -2,6 +2,7 @@ package delete_handler
 
 import (
 	"encoding/json"
+	"financo/core/infrastructure/http/utils/params"
 	"financo/core/scope_savings_goals/application/commands/delete_command"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals"
@@ -10,9 +11,6 @@ import (
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
-	"strconv"
-
-	"github.com/go-chi/chi/v5"
 )
 
 func HandlerFunc(w http.ResponseWriter, r *http.Request) {
@@ -23,16 +21,15 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 		broker  = message_broker.New()
 
 		req requests.Delete
+		err error
 	)
 
-	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	req.ID, err = params.ParseGenericID(r, "id")
 	if err != nil {
 		log.Println("savings_goals: delete_handler: failed to parse savings goal id", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-
-	req.ID = id
 
 	res, err := delete_command.New(req, goals, destroy, broker.Deleted()).Run(r.Context())
 	if err != nil {

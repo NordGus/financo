@@ -24,7 +24,7 @@ func New(
 	goal repositories.SavingsGoal,
 	update repositories.UpdateRepository,
 	broker brokers.Updated,
-) commands.Command[responses.Updated] {
+) commands.Command[responses.Detailed] {
 	return &command{
 		req:    req,
 		goal:   goal,
@@ -33,11 +33,11 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Updated, error) {
+func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	var (
 		timestamp = time.Now().UTC()
 
-		res responses.Updated
+		res responses.Detailed
 	)
 
 	// Locking to prevent weird behavior
@@ -66,7 +66,7 @@ func (c *command) Run(ctx context.Context) (responses.Updated, error) {
 		return res, err
 	}
 
-	res = responses.NewUpdated(current)
+	res = responses.SavingsGoalRecordToDetailed(current)
 
 	return res, nil
 }
