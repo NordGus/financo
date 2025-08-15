@@ -162,7 +162,7 @@ function DraggableGoalLink({ goal, pathname, search, hash }: DraggableGoalLinkPr
         to={{ pathname: goal.id.toString(), search, hash }}
         className={cn(
           "border bg-background p-2.5 w-full rounded-lg flex flex-col gap-1 justify-stretch",
-          pathname.endsWith(goal.id.toString())
+          pathname.split("/").includes(goal.id.toString())
             ? "border-foreground"
             : "hover:border-foreground! border-transparent"
         )}
