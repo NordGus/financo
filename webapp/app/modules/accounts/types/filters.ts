@@ -1,5 +1,5 @@
 import { URLSearchParamsInit } from "react-router"
-import { Currency } from "~/modules/shared/types/currency"
+import { CurrenciesForZodEnum, Currency } from "~/modules/shared/types/currency"
 import { Kind } from "./accounts"
 
 export {
@@ -88,9 +88,7 @@ function toArchived(value: string | null | undefined): boolean | undefined {
 }
 
 function toCurrencies(values: string[]): Currency[] {
-  const currencies: Currency[] = ["CAD", "USD", "EUR", "CHF", "GBP"]
-
-  return values.filter(value => currencies.includes(value as Currency)) as Currency[]
+  return values.filter(value => CurrenciesForZodEnum.includes(value as Currency)) as Currency[]
 }
 
 function listFiltersFromURLSearchParams(params: URLSearchParams): ListFilters {

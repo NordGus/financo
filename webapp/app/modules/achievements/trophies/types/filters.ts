@@ -18,7 +18,8 @@ export {
   defaultFilters,
   filtersFromURLSearchParams,
   filtersToURLSearchParams,
-  isDefaultFilters
+  isDefaultFilters,
+  updateURLSearchParams
 }
 export type { Filters, Period, Periods }
 
@@ -137,6 +138,22 @@ function filtersToURLSearchParams({ kinds, period, to, from }: Filters): URLSear
     [FiltersSearchParamsKeys.FROM, optionalDateToParam(from)],
     [FiltersSearchParamsKeys.TO, optionalDateToParam(to)],
     [FiltersSearchParamsKeys.KINDS, kindsToParam(kinds)],
+  ].filter(([, val]) => !!val))
+}
+
+function updateURLSearchParams(searchParams: URLSearchParams, filters: Filters): URLSearchParams
+function updateURLSearchParams(searchParams: URLSearchParams, filters: Filters): URLSearchParamsInit {
+  return Object.fromEntries([
+    ...Array.from(searchParams.entries()).filter(([key,]) => (![
+      FiltersSearchParamsKeys.PERIOD as string,
+      FiltersSearchParamsKeys.FROM as string,
+      FiltersSearchParamsKeys.TO as string,
+      FiltersSearchParamsKeys.KINDS as string,
+    ].includes(key))),
+    [FiltersSearchParamsKeys.PERIOD, filters.period],
+    [FiltersSearchParamsKeys.FROM, optionalDateToParam(filters.from)],
+    [FiltersSearchParamsKeys.TO, optionalDateToParam(filters.to)],
+    [FiltersSearchParamsKeys.KINDS, kindsToParam(filters.kinds)],
   ].filter(([, val]) => !!val))
 }
 

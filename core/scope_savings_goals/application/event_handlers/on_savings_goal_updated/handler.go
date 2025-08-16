@@ -36,10 +36,12 @@ func (h *handler) Handle(message messages.Updated) error {
 		ctx       = context.Background()
 		timestamp = time.Now().UTC()
 
-		sf = filters.Savings{Currencies: []currency.Type{
-			message.Current.Settings.Currency,
-			message.Previous.Settings.Currency,
-		}}
+		sf = filters.Savings{
+			Currencies: []currency.Type{
+				message.Current.Settings.Currency,
+				message.Previous.Settings.Currency,
+			},
+		}
 	)
 
 	s, err := h.savings.Where(ctx, sf)
@@ -67,7 +69,9 @@ func (h *handler) Handle(message messages.Updated) error {
 func (h *handler) updateGoalsFor(ctx context.Context, s savingsFor, r savings_goal.Record, ts time.Time) error {
 	var (
 		savings = s[r.Settings.Currency]
-		gf      = filters.SavingsGoals{Currency: r.Settings.Currency}
+		gf      = filters.SavingsGoals{
+			Currencies: []currency.Type{r.Settings.Currency},
+		}
 	)
 
 	goals, err := h.goals.Where(ctx, gf)
