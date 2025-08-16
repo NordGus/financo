@@ -1,4 +1,14 @@
-import { add, differenceInDays, endOfMonth, endOfWeek, endOfYear, startOfMonth, startOfWeek, startOfYear, sub } from "date-fns";
+import {
+  add,
+  differenceInDays,
+  endOfMonth,
+  endOfWeek,
+  endOfYear,
+  startOfMonth,
+  startOfWeek,
+  startOfYear,
+  sub
+} from "date-fns";
 import { Period } from "../types/transactions";
 
 type Range = {

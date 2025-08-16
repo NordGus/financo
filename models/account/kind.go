@@ -57,24 +57,12 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 		return err
 	}
 
-	switch strings.ToLower(s) {
-	default:
-		return fmt.Errorf("account: invalid account kind \"%s\"", s)
-	case "history":
-		*k = History
-	case "capital":
-		*k = Capital
-	case "savings":
-		*k = Savings
-	case "debt":
-		*k = Debt
-	case "credit":
-		*k = Credit
-	case "income":
-		*k = Income
-	case "expense":
-		*k = Expense
+	kind, err := NewKind(s)
+	if err != nil {
+		return err
 	}
+
+	*k = kind
 
 	return nil
 }
@@ -85,25 +73,9 @@ func (k *Kind) UnmarshalJSON(b []byte) error {
 // It returns an error if [Kind] is an unsupported value or if json encoding
 // fails.
 func (k Kind) MarshalJSON() ([]byte, error) {
-	var s string
-
-	switch k {
-	default:
-		return []byte{}, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
-	case History:
-		s = "history"
-	case Capital:
-		s = "capital"
-	case Savings:
-		s = "savings"
-	case Debt:
-		s = "debt"
-	case Credit:
-		s = "credit"
-	case Income:
-		s = "income"
-	case Expense:
-		s = "expense"
+	s, err := KindToString(k)
+	if err != nil {
+		return nil, err
 	}
 
 	return json.Marshal(s)
@@ -119,24 +91,12 @@ func (k *Kind) Scan(value any) error {
 		return errors.New("account: invalid column type")
 	}
 
-	switch strings.ToLower(s) {
-	default:
-		return fmt.Errorf("account: invalid account kind \"%s\"", value)
-	case "history":
-		*k = History
-	case "capital":
-		*k = Capital
-	case "savings":
-		*k = Savings
-	case "debt":
-		*k = Debt
-	case "credit":
-		*k = Credit
-	case "income":
-		*k = Income
-	case "expense":
-		*k = Expense
+	kind, err := NewKind(s)
+	if err != nil {
+		return err
 	}
+
+	*k = kind
 
 	return nil
 }
@@ -146,31 +106,52 @@ func (k *Kind) Scan(value any) error {
 //
 // It returns an error if [Kind] is an unsupported value.
 func (k Kind) Value() (driver.Value, error) {
-	var s string
-
-	switch k {
-	default:
-		return s, fmt.Errorf("account: invalid account kind \"%s\"", string(k))
-	case History:
-		s = "history"
-	case Capital:
-		s = "capital"
-	case Savings:
-		s = "savings"
-	case Debt:
-		s = "debt"
-	case Credit:
-		s = "credit"
-	case Income:
-		s = "income"
-	case Expense:
-		s = "expense"
-	}
-
-	return s, nil
+	return KindToString(k)
 }
 
 // String returns the cast value of [Kind] as a string
 func (k Kind) String() string {
 	return string(k)
+}
+
+func NewKind(value string) (Kind, error) {
+	switch strings.ToLower(value) {
+	default:
+		return "", fmt.Errorf("account: invalid account kind \"%s\"", value)
+	case "history":
+		return History, nil
+	case "capital":
+		return Capital, nil
+	case "savings":
+		return Savings, nil
+	case "debt":
+		return Debt, nil
+	case "credit":
+		return Credit, nil
+	case "income":
+		return Income, nil
+	case "expense":
+		return Expense, nil
+	}
+}
+
+func KindToString(value Kind) (string, error) {
+	switch value {
+	default:
+		return "", fmt.Errorf("account: invalid account kind \"%s\"", string(value))
+	case History:
+		return "history", nil
+	case Capital:
+		return "capital", nil
+	case Savings:
+		return "savings", nil
+	case Debt:
+		return "debt", nil
+	case Credit:
+		return "credit", nil
+	case Income:
+		return "income", nil
+	case Expense:
+		return "expense", nil
+	}
 }

@@ -8,22 +8,23 @@ import (
 	"financo/core/scope_savings_goals/domain/repositories"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
+	"financo/core/scope_savings_goals/infrastructure/lock"
 	"time"
 )
 
 type command struct {
 	req    requests.Update
-	goal   repositories.SavingsGoalRepository
+	goal   repositories.SavingsGoal
 	update repositories.UpdateRepository
 	broker brokers.Updated
 }
 
 func New(
 	req requests.Update,
-	goal repositories.SavingsGoalRepository,
+	goal repositories.SavingsGoal,
 	update repositories.UpdateRepository,
 	broker brokers.Updated,
-) commands.Command[responses.Updated] {
+) commands.Command[responses.Detailed] {
 	return &command{
 		req:    req,
 		goal:   goal,
@@ -32,15 +33,19 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Updated, error) {
+func (c *command) Run(ctx context.Context) (responses.Detailed, error) {
 	var (
 		timestamp = time.Now().UTC()
 
-		res responses.Updated
+		res responses.Detailed
 	)
+
+	// Locking to prevent weird behavior
+	lock.GlobalLock().Lock()
 
 	prev, err := c.goal.Find(ctx, c.req.ID)
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
 
@@ -48,15 +53,20 @@ func (c *command) Run(ctx context.Context) (responses.Updated, error) {
 
 	err = c.update.Save(ctx, current)
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
+
+	// needs to unlock the system before publishing the message for the background processes to regain a lock.
+	// This is probably a design flaw.
+	lock.GlobalLock().Unlock()
 
 	err = c.broker.Publish(messages.Updated{Previous: prev, Current: current})
 	if err != nil {
 		return res, err
 	}
 
-	res = responses.NewUpdated(current)
+	res = responses.SavingsGoalRecordToDetailed(current)
 
 	return res, nil
 }

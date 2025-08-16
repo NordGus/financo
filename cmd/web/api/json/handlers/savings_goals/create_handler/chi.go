@@ -5,7 +5,7 @@ import (
 	"financo/core/scope_savings_goals/application/commands/create_command"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/infrastructure/repositories/create_repository"
-	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
+	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals"
 	"financo/core/scope_savings_goals/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
 	"log"
@@ -15,7 +15,7 @@ import (
 func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
 		db     = postgresql_database.New()
-		goals  = savings_goals_repository.NewPostgreSQL(db)
+		goals  = savings_goals.NewPostgreSQL(db)
 		create = create_repository.NewPostgreSQL(db)
 		broker = message_broker.New()
 		body   = r.Body

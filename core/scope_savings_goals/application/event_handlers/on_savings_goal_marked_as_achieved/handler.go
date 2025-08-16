@@ -30,11 +30,12 @@ func New(
 
 func (h *handler) Handle(message messages.MarkedAsAchieved) error {
 	var (
-		ctx       = context.Background()
-		timestamp = time.Now().UTC()
+		ctx        = context.Background()
+		timestamp  = time.Now().UTC()
+		currencies = []currency.Type{message.Record.Settings.Currency}
 
-		gf = filters.SavingsGoals{Currency: message.Record.Settings.Currency}
-		sf = filters.Savings{Currencies: []currency.Type{message.Record.Settings.Currency}}
+		gf = filters.SavingsGoals{Currencies: currencies}
+		sf = filters.Savings{Currencies: currencies}
 	)
 
 	goals, err := h.goals.Where(ctx, gf)

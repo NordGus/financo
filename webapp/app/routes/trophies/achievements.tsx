@@ -1,15 +1,17 @@
 import { format } from "date-fns";
-import { Fragment } from "react";
 import { Outlet } from "react-router";
 import z from "zod";
 import { list as listMilestonesQuery } from "~/modules/achievements/trophies/api/queries/list";
 import { SavingsGoal } from "~/modules/achievements/trophies/components/achievements/saving-goal";
+import { MoveDateRangeLink } from "~/modules/achievements/trophies/components/buttons/move-date-rage-link";
 import { isDefaultFilters } from "~/modules/achievements/trophies/types/filters";
 import { getFilters } from "~/modules/achievements/trophies/utils/router-requests";
+import { DateGroup } from "~/modules/shared/components/previews/date-group";
 import { Card, CardDescription, CardHeader, CardTitle } from "~/modules/shared/components/ui/card";
-import { Heading3 } from "~/modules/shared/components/ui/headings";
 import { CurrenciesForZodEnum } from "~/modules/shared/types/currency";
 import { Route } from "./+types/achievements";
+
+const DATE_FORMAT_STRING = "PPP"
 
 const milestoneSchema = z.object({
   timestamp: z.iso.datetime(),
@@ -55,6 +57,34 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <section className="flex flex-col gap-2 overflow-y-hidden my-2 relative">
+        <div className="flex justify-between">
+          <MoveDateRangeLink direction="backwards" variant={"outline"} />
+          <span className="h-9 px-4 py-2 has-[>svg]:px-3 text-sm font-medium flex-1 inline-flex justify-center items-center">
+            {
+              filters.period === "unlimited"
+                ? (<>{"Entire Achievement History"}</>)
+                : filters.period === "daily"
+                  ? (
+                    <span className="font-bold">
+                      {format(filters.from!, DATE_FORMAT_STRING)}
+                    </span>
+                  )
+                  : (
+                    <span>
+                      {"From "}
+                      <span className="font-bold">
+                        {format(filters.from!, DATE_FORMAT_STRING)}
+                      </span>
+                      {" to "}
+                      <span className="font-bold">
+                        {format(filters.to!, DATE_FORMAT_STRING)}
+                      </span>
+                    </span>
+                  )
+            }
+          </span>
+          <MoveDateRangeLink direction="forwards" variant={"outline"} />
+        </div>
         <div className="flex flex-col flex-1 gap-2 overflow-y-hidden relative">
           <span
             className="absolute top-0 left-0 right-0 contents-[' '] h-2 bg-linear-to-b from-background to-transparent z-50"
@@ -62,8 +92,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           <div className="flex flex-col flex-1 gap-2 py-2 overflow-y-scroll no-scrollbar">
             {
               milestones.map(({ timestamp, achievements }) => (
-                <Fragment key={timestamp}>
-                  <Heading3>{format(new Date(timestamp), "PPP")}</Heading3>
+                <DateGroup key={timestamp} date={timestamp}>
                   {
                     achievements.map((achievement) => {
                       switch (achievement.kind) {
@@ -89,13 +118,13 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                               key={achievement.id}
                               className="bg-destructive rounded-xl p-6 text-destructive-foreground"
                             >
-                              {"Sorry, this kind of achievement is not supported"}
+                              {"If you are seeing this, financo has a bug please fix it"}
                             </span>
                           )
                       }
                     })
                   }
-                </Fragment>
+                </DateGroup>
               ))
             }
             {
