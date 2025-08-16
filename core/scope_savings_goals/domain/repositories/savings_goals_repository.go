@@ -7,5 +7,6 @@ import (
 )
 
 type SavingsGoalsRepository interface {
+	// records must be returned ordered by position ascending
 	Where(ctx context.Context, f filters.SavingsGoals) ([]savings_goal.Record, error)
 }

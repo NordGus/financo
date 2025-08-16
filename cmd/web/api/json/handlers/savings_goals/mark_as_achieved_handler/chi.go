@@ -2,23 +2,21 @@ package mark_as_achieved_handler
 
 import (
 	"encoding/json"
+	"financo/core/infrastructure/http/utils/params"
 	"financo/core/scope_savings_goals/application/commands/mark_as_achieved_command"
 	"financo/core/scope_savings_goals/domain/requests"
-	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals_repository"
+	"financo/core/scope_savings_goals/infrastructure/repositories/savings_goals"
 	"financo/core/scope_savings_goals/infrastructure/repositories/update_repository"
 	"financo/core/scope_savings_goals/infrastructure/services/message_broker"
 	"financo/services/postgresql_database"
 	"log"
 	"net/http"
-	"strconv"
-
-	"github.com/go-chi/chi/v5"
 )
 
 func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	var (
 		db     = postgresql_database.New()
-		goals  = savings_goals_repository.NewPostgreSQL(db)
+		goals  = savings_goals.NewPostgreSQL(db)
 		update = update_repository.NewPostgreSQL(db)
 		broker = message_broker.New()
 		body   = r.Body
@@ -27,7 +25,7 @@ func HandlerFunc(w http.ResponseWriter, r *http.Request) {
 	)
 	defer body.Close()
 
-	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	id, err := params.ParseGenericID(r, "id")
 	if err != nil {
 		log.Println("savings_goals: mark_as_achieved_handler: failed to parse savings goal id", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

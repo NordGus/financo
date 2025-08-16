@@ -6,5 +6,5 @@ import (
 )
 
 type ActiveSavingsGoals interface {
-	Find(ctx context.Context) ([]responses.Active, error)
+	Find(ctx context.Context) ([]responses.Listed, error)
 }
