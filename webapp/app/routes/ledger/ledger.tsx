@@ -36,7 +36,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar relative my-2">
+      <section className="flex flex-col gap-2 overflow-y-hidden no-scrollbar relative">
         {
           pendingTransactions.length > 0 && (
             <Accordion
@@ -44,8 +44,11 @@ export default function Index({ loaderData }: Route.ComponentProps) {
               type="single"
               collapsible
             >
-              <AccordionItem value="pending" className="flex flex-col h-full overflow-y-auto no-scrollbar relative rounded-lg overflow-clip border!">
-                <AccordionTrigger className="items-center px-4 [&[data-state=open]]:border-b! rounded-none">
+              <AccordionItem
+                value="pending"
+                className="flex flex-col h-full overflow-y-auto no-scrollbar relative overflow-clip border-b!"
+              >
+                <AccordionTrigger className="items-center px-4">
                   <div className="flex gap-2 items-center">
                     <p className="leading-none">Pending Transactions</p>
                     <Tooltip>
@@ -60,20 +63,19 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                     </Tooltip>
                   </div>
                 </AccordionTrigger>
-                <AccordionContent className="flex-1 flex flex-col h-full overflow-y-auto no-scrollbar relative">
+                <AccordionContent className="flex-1 flex flex-col h-full overflow-y-auto no-scrollbar relative pb-4">
                   <TransactionsSearchResults transactions={pendingTransactions} />
+                  <span
+                    className="absolute bottom-0 left-0 right-0 contents-[' '] h-2 bg-linear-to-b from-transparent to-background z-50"
+                  />
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
           )
         }
-        <div className="flex-2 flex flex-col h-full overflow-y-hidden rounded-lg overflow-clip border">
-          <div className="border-b flex justify-between">
-            <MoveDateRangeLink
-              direction="backwards"
-              variant={"outline"}
-              className="border-0 border-r rounded-none"
-            />
+        <div className="flex-2 flex flex-col gap-2 h-full overflow-y-hidden overflow-clip">
+          <div className="flex justify-between">
+            <MoveDateRangeLink direction="backwards" variant={"outline"} />
             <span className="h-9 px-4 py-2 has-[>svg]:px-3 text-sm font-medium flex-1 inline-flex justify-center items-center">
               {
                 filters.period === "unlimited"
@@ -98,16 +100,15 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                     )
               }
             </span>
-            <MoveDateRangeLink
-              direction="forwards"
-              variant={"outline"}
-              className="border-0 border-l rounded-none"
-            />
+            <MoveDateRangeLink direction="forwards" variant={"outline"} />
           </div>
-          <div className="flex-1 overflow-y-auto no-scrollbar relative">
+          <div className="flex-1 overflow-y-auto no-scrollbar relative pb-4">
             <TransactionsSearchResults transactions={executedTransactions} futureEnable />
           </div>
         </div>
+        <span
+          className="absolute bottom-0 left-0 right-0 contents-[' '] h-2 bg-linear-to-b from-transparent to-background z-50"
+        />
       </section>
       <Outlet />
     </>

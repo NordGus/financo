@@ -84,7 +84,7 @@ func startHTTPServer(ctx context.Context) {
 		r.Use(
 			chimiddleware.ContentCharset("UTF-8"),
 			chimiddleware.AllowContentType("application/json"),
-			chimiddleware.Timeout(time.Second*30),
+			chimiddleware.Timeout(time.Second*10),
 		)
 
 		r.Group(func(public chi.Router) {

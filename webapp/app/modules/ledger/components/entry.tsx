@@ -1,5 +1,5 @@
 import { isFuture } from "date-fns";
-import { ArrowDown, ArrowLeftRight, ArrowUp, NotepadText } from "lucide-react";
+import { NotepadText } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useMemo } from "react";
 import { Link, useLocation, useResolvedPath } from "react-router";
@@ -74,41 +74,14 @@ export function Entry({
 
   const amountColor = currencyAmountColor(amountColorCode(transaction))
 
-  const kindIcon = useMemo(() => {
-    switch (transaction.metadata.kind) {
-      case "expense":
-        return <ArrowDown />
-      case "income":
-        return <ArrowUp />
-      case "transfer":
-        return <ArrowLeftRight />
-    }
-  }, [transaction.metadata.kind])
-
   return (
     <Link
       to={{ pathname, search, hash }}
       className={cn(
-        "grid grid-cols-[min-content_min-content_1fr_1fr] items-top gap-2 p-2 hover:bg-muted cursor-pointer relative",
+        "grid grid-cols-[min-content_1fr_1fr] items-top gap-1 py-2.5 px-2 hover:border-foreground! cursor-pointer relative border border-transparent rounded-lg",
         futureEnable && inTheFuture && "opacity-75"
       )}
     >
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className={cn("size-8 [&_svg]:size-5 z-0 flex items-center justify-center", amountColor)}>
-            {kindIcon}
-          </span>
-        </TooltipTrigger>
-        <TooltipContent>
-          {
-            {
-              expense: "Expense",
-              income: "Income",
-              transfer: "Transfer"
-            }[transaction.metadata.kind]
-          }
-        </TooltipContent>
-      </Tooltip>
       <AccountListingIcon
         kind={start.kind}
         icon={start.icon}

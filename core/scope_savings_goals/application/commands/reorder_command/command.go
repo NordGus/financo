@@ -1,6 +1,7 @@
 package reorder_command
 
 import (
+	"cmp"
 	"context"
 	"financo/core/domain/commands"
 	"financo/core/scope_savings_goals/domain/brokers"
@@ -9,8 +10,10 @@ import (
 	"financo/core/scope_savings_goals/domain/repositories"
 	"financo/core/scope_savings_goals/domain/requests"
 	"financo/core/scope_savings_goals/domain/responses"
+	"financo/core/scope_savings_goals/infrastructure/lock"
 	"financo/lib/currency"
 	"financo/models/achievement/savings_goal"
+	"slices"
 	"time"
 )
 
@@ -28,7 +31,7 @@ func New(
 	savings repositories.SavingsRepository,
 	update repositories.UpdateRepository,
 	broker brokers.Reordered,
-) commands.Command[responses.Reordered] {
+) commands.Command[responses.Listed] {
 	return &command{
 		req:     req,
 		goals:   goals,
@@ -38,30 +41,35 @@ func New(
 	}
 }
 
-func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
+func (c *command) Run(ctx context.Context) (responses.Listed, error) {
 	var (
 		timestamp = time.Now().UTC()
 
 		savings int64
-		res     responses.Reordered
+		res     responses.Listed
 	)
+
+	// Locking to prevent weird behavior
+	lock.GlobalLock().Lock()
 
 	record, err := c.goals.Find(ctx, c.req.ID)
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
 
-	previous, err := c.goals.Where(ctx, filters.SavingsGoals{Currency: record.Settings.Currency})
+	previous, err := c.goals.Where(ctx, filters.SavingsGoals{
+		Currencies: filters.FilterSavingsGoalCurrency([]currency.Type{record.Settings.Currency}),
+	})
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
 
 	goals := make([]savings_goal.Record, 0, len(previous))
 
 	// reordering array
-	for i := 0; i < len(previous); i++ {
-		position := int64(i + 1)
-
+	for position := range previous {
 		if c.req.From == position {
 			continue
 		}
@@ -70,11 +78,12 @@ func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
 			goals = append(goals, record)
 		}
 
-		goals = append(goals, previous[i])
+		goals = append(goals, previous[position])
 	}
 
 	s, err := c.savings.Where(ctx, filters.Savings{Currencies: []currency.Type{record.Settings.Currency}})
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
 
@@ -110,15 +119,24 @@ func (c *command) Run(ctx context.Context) (responses.Reordered, error) {
 
 	err = c.update.SaveMultiple(ctx, updated)
 	if err != nil {
+		lock.GlobalLock().Unlock() // deferred does not help here. This is probably a design flaw.
 		return res, err
 	}
+
+	// needs to unlock the system before publishing the message for the background processes to regain a lock.
+	// This is probably a design flaw.
+	lock.GlobalLock().Unlock()
 
 	err = c.broker.Publish(messages.Reordered{Currency: record.Settings.Currency})
 	if err != nil {
 		return res, err
 	}
 
-	res = responses.NewReordered(record.Settings.Currency, updated)
+	slices.SortFunc(updated, func(a savings_goal.Record, b savings_goal.Record) int {
+		return cmp.Compare(a.Settings.Position, b.Settings.Position)
+	})
+
+	res = responses.SavingsGoalRecordsToListed(record.Settings.Currency, updated)
 
 	return res, nil
 }
