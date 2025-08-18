@@ -93,10 +93,12 @@ func WaitForShutdownAndDisarm() {
 }
 
 func TerminateWithErr(code int, err error) {
+	wg.Wait()
 	exit(code, err)
 }
 
 func TerminateFromPanic(code int, systemPanic systemPanic) {
+	wg.Wait()
 	exit(code, systemPanic)
 }
 
